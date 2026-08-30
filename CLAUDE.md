@@ -51,6 +51,16 @@ de capitales espacées. Elle est reprise de la home de proplace.co. `/pitch`,
 `/legal` et `/privacy` gardent l'ancien jeu de classes (`.pf-wrap`, `.mod`,
 `.fund-table`…) : les deux cohabitent, ne pas les mélanger.
 
+**Le popup d'abonnement appelle un vrai backend.** `DealFlowModal.tsx` POSTe
+`https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run/profund/subscribe`,
+route définie dans l'AUTRE dépôt (monorepo antigravity, `modal_proxy/proxy.py`,
+app Modal `proplace-chat-proxy`). Le site reste statique : c'est le seul appel
+réseau de l'app. Les 5 identifiants de section (`pending`, `market`, `sourcing`,
+`autonomous`, `stats`) sont le contrat partagé avec le renderer d'email
+(`stan_proxy.py`, `_sec_on`) — les renommer ici casse le filtrage là-bas.
+⚠️ L'inscription STOCKE (Dict `profund-subscribers`, `status: pending`) mais
+**rien n'envoie encore** : le job d'envoi par abonné reste à écrire.
+
 **AUCUN MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08). La taille du fonds,
 la construction, les tickets et les rendements cibles vivent **uniquement** dans
 la fiche PDF, qui porte la mention de pré-commercialisation AIFMD. L'accueil

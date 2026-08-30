@@ -382,6 +382,7 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-btn { display: inline-flex; align-items: center; height: 54px; padding: 0 26px;
   border-radius: 13px; border: 1px solid var(--ink); background: var(--ink); color: #fff;
   font-size: 15px; font-weight: 700; letter-spacing: -.01em; text-decoration: none;
+  font-family: inherit; cursor: pointer;
   transition: background .18s, border-color .18s, transform .18s, box-shadow .18s; }
 .pfh-btn::after { content: "→"; margin-left: 10px; }
 .pfh-btn:hover { background: var(--blue-dk); border-color: var(--blue-dk);
@@ -465,6 +466,55 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 
 .pfh-note { margin: 26px auto 0; max-width: 60ch; font-size: 12.5px; line-height: 1.65; color: var(--lite); }
 
+/* « Ongoing » en liste : une ligne par societe, logo a gauche, phrase a droite. */
+.pfh-list { margin-top: 34px; border-top: 1px solid var(--line); }
+.pfh-li { display: grid; grid-template-columns: 190px 1fr; align-items: center; gap: 28px;
+  padding: 26px 4px; border-bottom: 1px solid var(--line); }
+.pfh-li img { display: block; height: 26px; width: auto; max-width: 100%; }
+.pfh-li p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--sub); }
+
+/* ── le popup d'abonnement au deal flow ─────────────────────────────────── */
+.pfm-back { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center;
+  padding: 24px; background: rgba(10, 10, 10, .55); overflow: auto; }
+.pfm { position: relative; width: 100%; max-width: 520px; background: #fff;
+  border: 1px solid var(--line); padding: 36px 34px 30px; max-height: 92vh; overflow: auto; }
+.pfm-x { position: absolute; top: 10px; right: 12px; width: 34px; height: 34px; border: 0;
+  background: none; color: var(--mid); font-size: 24px; line-height: 1; cursor: pointer; }
+.pfm-x:hover { color: var(--ink); }
+.pfm-h { margin: 0 0 8px; font-size: 24px; font-weight: 800; letter-spacing: -.03em; }
+.pfm-sub { margin: 0 0 22px; font-size: 14px; line-height: 1.6; color: var(--mid); }
+.pfm-lbl { display: block; margin: 18px 0 8px; font-size: 12px; font-weight: 700; color: var(--mid); }
+.pfm-lbl:first-of-type { margin-top: 0; }
+.pfm-in { width: 100%; height: 50px; padding: 0 14px; border: 1px solid var(--line);
+  border-radius: 11px; background: #fff; color: var(--ink); font-size: 15.5px; font-family: inherit; }
+.pfm-in:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(98, 124, 153, .14); }
+.pfm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pfm-seg { display: flex; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+.pfm-seg button { flex: 1; height: 44px; border: 0; background: none; cursor: pointer;
+  font-family: inherit; font-size: 13px; font-weight: 600; color: var(--mid); }
+.pfm-seg button.on { background: var(--ink); color: #fff; }
+.pfm-step { display: flex; align-items: center; justify-content: space-between;
+  height: 44px; padding: 0 6px; border: 1px solid var(--line); border-radius: 11px; }
+.pfm-step button { width: 34px; height: 34px; border: 0; background: none; cursor: pointer;
+  font-family: inherit; font-size: 18px; color: var(--mid); }
+.pfm-step button:hover { color: var(--ink); }
+.pfm-step b { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pfm-secs { display: grid; gap: 8px; }
+.pfm-sec { display: flex; align-items: center; gap: 10px; padding: 11px 13px;
+  border: 1px solid var(--line); border-radius: 10px; font-size: 13.5px; cursor: pointer; }
+.pfm-sec.on { border-color: var(--blue); background: var(--gp); }
+.pfm-sec input { accent-color: var(--blue-dk); flex: none; }
+.pfm-consent { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px;
+  font-size: 12.5px; line-height: 1.55; color: var(--mid); cursor: pointer; }
+.pfm-consent input { accent-color: var(--blue-dk); margin-top: 2px; flex: none; }
+.pfm-err { margin: 14px 0 0; font-size: 13px; color: var(--red); }
+.pfm-go { width: 100%; justify-content: center; margin-top: 20px; }
+.pfm-go:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+.pfm-fine { margin: 14px 0 0; font-size: 11px; line-height: 1.5; color: var(--lite); text-align: center; }
+.pfm-done { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding: 8px 0; }
+.pfm-done h3 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
+.pfm-done p { margin: 0; font-size: 14px; line-height: 1.65; color: var(--mid); }
+
 @media (max-width: 900px) {
   .pfh-stats { grid-template-columns: repeat(2, 1fr); }
   .pfh-steps { grid-template-columns: 1fr; }
@@ -473,6 +523,9 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 }
 
 @media (max-width: 640px) {
+  .pfh-li { grid-template-columns: 1fr; gap: 14px; }
+  .pfm { padding: 30px 22px 26px; }
+  .pfm-grid { grid-template-columns: 1fr; }
   .pfh-wrap { padding: 0 20px; }
   .pfh-s { padding: 68px 0; }
   .pfh-hero { padding: 50px 0 58px; }

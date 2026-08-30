@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 608 120" role="img" aria-label="Maximum Insurance">
   <title>Maximum Insurance</title>
-  <rect width="608" height="120" fill="#ffffff"/>
-  <!-- Wordmark officiel : MAXIMUM [+ carré rouge] INSURANCE — fond blanc, marge 24px -->
+    <!-- Wordmark officiel : MAXIMUM [+ carré rouge] INSURANCE. Fond TRANSPARENT (le rect blanc d'origine a été retiré) : le logo se fond dans la section teintée de l'accueil profund.vc. -->
   <g transform="translate(24,24)" font-family="Archivo, 'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="44" letter-spacing="-1">
     <text x="4" y="48" fill="#201e1d">MAXIMUM</text>
     <g transform="translate(247, 16)">
