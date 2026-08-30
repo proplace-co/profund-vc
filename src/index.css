@@ -353,8 +353,8 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
    ══════════════════════════════════════════════════════════════════════════ */
 .pfh {
   color: var(--ink); background: var(--bg);
-  display: flex; flex-direction: column; justify-content: center;
-  gap: clamp(18px, 3.4vh, 54px);
+  display: flex; flex-direction: column; justify-content: space-evenly;
+  gap: clamp(14px, 2vh, 34px);
   padding: clamp(18px, 3vh, 44px) 0;
   min-height: calc(100vh - 60px);        /* repli navigateurs anciens */
   min-height: calc(100svh - 60px);       /* 60px = hauteur du pied de page */
@@ -383,13 +383,14 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-lead b { color: var(--ink); font-weight: 600; }
 
 .pfh-eyeb { display: flex; align-items: center; justify-content: center; gap: 12px;
-  margin: 0 0 14px; font-size: 12px; font-weight: 600; color: var(--mid); }
+  margin: 0 0 clamp(12px, 2vh, 24px); font-size: 12px; font-weight: 600; color: var(--mid); }
 .pfh-eyeb::before { content: ""; width: 22px; height: 2px; background: var(--blue);
   border-radius: 2px; flex: none; }
 
 .pfh-hero { padding: 0; text-align: center; }
-.pfh-hero-logo { display: block; height: 30px; width: auto; margin: 0 auto 26px; }
-.pfh-cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+.pfh-hero-logo { display: block; height: 30px; width: auto; margin: 0 auto clamp(18px, 2.8vh, 34px); }
+.pfh-cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  margin-top: clamp(20px, 3.2vh, 42px); }
 
 .pfh-btn { display: inline-flex; align-items: center; height: 54px; padding: 0 26px;
   border-radius: 13px; border: 1px solid var(--ink); background: var(--ink); color: #fff;
@@ -480,12 +481,12 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
    prendre le meme gris que la page, sinon une bande blanche la termine. */
 .pf-footer.on-grey { background: var(--bg); }
 
-.pfh-note { margin: 18px auto 0; max-width: 60ch; font-size: 12.5px; line-height: 1.65; color: var(--lite); }
+.pfh-note { margin: clamp(16px, 2.4vh, 28px) auto 0; max-width: 60ch; font-size: 12.5px; line-height: 1.65; color: var(--lite); }
 
 /* « Ongoing » en liste : une ligne par societe, logo a gauche, phrase a droite. */
-.pfh-list { margin-top: 22px; border-top: 1px solid var(--line); }
+.pfh-list { margin-top: clamp(14px, 2.2vh, 28px); border-top: 1px solid var(--line); }
 .pfh-li { display: grid; grid-template-columns: 420px 1fr; align-items: center; gap: 28px;
-  padding: 18px 4px; border-bottom: 1px solid var(--line); }
+  padding: clamp(16px, 2.6vh, 34px) 4px; border-bottom: 1px solid var(--line); }
 .pfh-li img { display: block; width: auto; height: auto; max-height: 36px; max-width: 100%; }
 .pfh-li img.wide { max-height: none; width: 100%; }
 .pfh-li p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--sub); }
