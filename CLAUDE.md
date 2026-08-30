@@ -51,6 +51,12 @@ de capitales espacées. Elle est reprise de la home de proplace.co. `/pitch`,
 `/legal` et `/privacy` gardent l'ancien jeu de classes (`.pf-wrap`, `.mod`,
 `.fund-table`…) : les deux cohabitent, ne pas les mélanger.
 
+**AUCUN MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08). La taille du fonds,
+la construction, les tickets et les rendements cibles vivent **uniquement** dans
+la fiche PDF, qui porte la mention de pré-commercialisation AIFMD. L'accueil
+parle du passé, de ce qui est en cours, et du deal flow. `/pitch` garde ses
+chiffres : c'est le deck, pas la vitrine.
+
 **La fiche PDF est un fichier commité, pas un artefact de build.**
 `public/profund-factsheet.pdf` est produit par `python scripts/factsheet.py`
 (reportlab). `npm run build` ne le régénère PAS. Après toute modification d'un

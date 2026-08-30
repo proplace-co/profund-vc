@@ -449,6 +449,14 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-s.dark .pfh-step p { color: rgba(255, 255, 255, .72); }
 .pfh-s.dark .pfh-step b { border-color: rgba(255, 255, 255, .3); color: rgba(255, 255, 255, .72); }
 
+/* Ce que l'abonné règle lui-même — liste sobre, lisible sur la surface sombre. */
+.pfh-set { max-width: 460px; margin: 40px auto 0; text-align: left; }
+.pfh-setrow { display: flex; justify-content: space-between; align-items: baseline; gap: 18px;
+  padding: 13px 0; border-top: 1px solid rgba(255, 255, 255, .17); font-size: 14.5px; }
+.pfh-setrow:last-child { border-bottom: 1px solid rgba(255, 255, 255, .17); }
+.pfh-setrow span:first-child { color: #fff; font-weight: 700; }
+.pfh-setrow span:last-child { color: rgba(255, 255, 255, .68); text-align: right; }
+
 .pfh-fs { display: flex; align-items: center; justify-content: space-between; gap: 28px;
   flex-wrap: wrap; border: 1px solid var(--line); background: #fff;
   padding: 30px 32px; margin-top: 46px; text-align: left; }
