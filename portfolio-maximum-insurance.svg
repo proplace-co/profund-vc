@@ -1,21 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257 112" role="img" aria-label="Maximum Insurance">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 533 33" role="img" aria-label="Maximum Insurance">
   <title>Maximum Insurance</title>
-  <!-- Wordmark MAXIMUM [+ croix rouge] INSURANCE, EMPILE SUR DEUX LIGNES.
-       L'original est une bande de 608x120 : contrainte en hauteur dans la liste
-       « Ongoing », elle devenait illisible a cote du logo Proplace.
-       Les deux lignes sont calees a x=0 et la boite est ajustee au trace (aucune
-       marge morte) : le logo s'aligne donc au pixel sur le bord de la colonne.
-       La position du carre rouge est calculee sur les METRIQUES REELLES d'Arial
-       Bold 44 (letter-spacing -1), pas estimee — cf. scripts/factsheet.py pour
-       le meme procede. Fond transparent. -->
+  <!-- Wordmark MAXIMUM [+ croix rouge] INSURANCE, SUR UNE LIGNE.
+       La boite est ajustee au TRACE : hauteur = hauteur de capitale exacte
+       d'Arial Bold 44 (0,717 em), largeur = somme des largeurs mesurees. Aucune
+       marge morte, donc le logo se cale au pixel sur le bord de sa colonne et
+       ses capitales font la meme hauteur que celles du logo Proplace voisin.
+       Positions calculees sur les metriques reelles, jamais estimees.
+       Fond transparent. -->
   <g font-family="Archivo, 'Helvetica Neue', Arial, sans-serif" font-weight="800"
      font-size="44" letter-spacing="-1" fill="#201e1d">
-    <text x="0" y="44">MAXIMUM</text>
-    <g transform="translate(227.1, 14)">
+    <text x="0" y="31.5">MAXIMUM</text>
+    <g transform="translate(229.1, 1.5)">
       <rect width="30" height="30" fill="#ec3013"/>
       <rect x="12" y="5" width="6" height="20" fill="#ffffff"/>
       <rect x="5" y="12" width="20" height="6" fill="#ffffff"/>
     </g>
-    <text x="0" y="102">INSURANCE</text>
+    <text x="279.1" y="31.5">INSURANCE</text>
   </g>
 </svg>
