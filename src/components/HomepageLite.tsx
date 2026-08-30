@@ -75,13 +75,9 @@ export default function HomepageLite() {
         </div>
       </section>
 
-      <section className="pfh-s dark" id="live">
-        <div className="pfh-wrap" style={{ textAlign: 'center' }}>
-          <div className="pfh-cta-row" style={{ marginTop: 0 }}>
-            <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
-          </div>
-        </div>
-      </section>
+      {/* Pas de bande sombre finale : elle ne portait qu'une reprise du bouton du
+          hero et faisait deborder la page d'un ecran. Le seul appel a l'action
+          vit en haut. */}
 
       <DealFlowModal open={open} onClose={() => setOpen(false)} />
     </div>
