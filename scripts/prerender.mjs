@@ -27,8 +27,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
-const BASE_TITLE = 'ProFund - Self-Improving AI Venture Platform';
-const BASE_DESC = 'Self-Improving AI Venture Platform';
+const BASE_TITLE = 'ProFund builds and invests in AI-native companies';
+const BASE_DESC = 'ProFund builds and invests in AI-native companies. Follow our deal flow live: the companies our platform detects, every morning, before they are obvious.';
 
 // '' = accueil (déjà écrit par Vite, on ne fait que le laisser en place).
 const ROUTES = [

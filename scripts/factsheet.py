@@ -113,7 +113,7 @@ def _stat_band(c, y, items, h=23 * mm):
         c.setFont("Helvetica", 7.4)
         for j, ln in enumerate(_wrap_lines(c, lab, cell - 20, "Helvetica", 7.4)[:2]):
             c.drawString(x + 10, top - 15.5 * mm - j * 9, ln)
-    return top - h - 9 * mm
+    return top - h - 7 * mm
 
 
 def _card(c, x, y, w, header, header_bg, big, big_unit, bullets, h=None):
@@ -156,8 +156,8 @@ def _kv(c, x, y, w, rows, head=None, head_color=INK):
         _rule(c, y, x, x + w, head_color, 1.4)
         y -= 13
     for k, v in rows:
-        vlines = _wrap_lines(c, v, w * 0.52, "Helvetica-Bold", 8.6)
-        klines = _wrap_lines(c, k, w * 0.44, "Helvetica", 8.6)
+        vlines = _wrap_lines(c, v, w * 0.34, "Helvetica-Bold", 8.6)
+        klines = _wrap_lines(c, k, w * 0.62, "Helvetica", 8.6)
         n = max(len(vlines), len(klines))
         c.setFillColor(SUB)
         c.setFont("Helvetica", 8.6)
@@ -167,8 +167,8 @@ def _kv(c, x, y, w, rows, head=None, head_color=INK):
         c.setFont("Helvetica-Bold", 8.6)
         for i, ln in enumerate(vlines):
             c.drawRightString(x + w, y - i * 10.5, ln)
-        y -= n * 10.5 + 5
-        _rule(c, y + 5, x, x + w)
+        y -= n * 10.5 + 14
+        _rule(c, y + 7, x, x + w)
     return y
 
 
@@ -177,7 +177,7 @@ def _accent_and_header(c, page):
     c.rect(0, H - 3.2 * mm, W, 3.2 * mm, stroke=0, fill=1)
     y = H - 15 * mm
     if LOGO.exists():
-        c.drawImage(str(LOGO), M, y - 5 * mm, height=9 * mm, width=31 * mm,
+        c.drawImage(str(LOGO), M, y - 5 * mm, height=9 * mm, width=34 * mm,
                     preserveAspectRatio=True, anchor="sw", mask="auto")
     c.setFillColor(BLUE_DK)
     c.setFont("Helvetica-Bold", 11)
@@ -204,9 +204,9 @@ def page_one(c):
 
     c.setFillColor(INK)
     c.setFont("Helvetica-Bold", 25)
-    c.drawString(M, y, "Backing Europe's next")
+    c.drawString(M, y, "ProFund builds and invests in")
     y -= 27
-    c.drawString(M, y, "category winners.")
+    c.drawString(M, y, "AI-native companies")
     y -= 17
     c.setFillColor(MID)
     c.setFont("Helvetica", 11)
@@ -230,7 +230,7 @@ def page_one(c):
           "Directive 2011/61/EU (AIFMD). The fund is not yet established and no units may be "
           "subscribed at this stage. Addressed to professional investors only.",
           CW - 24, size=8, color=SUB, leading=10.5)
-    y -= box_h + 9 * mm
+    y -= box_h + 7 * mm
 
     y = _section(c, y, "In one sentence")
     y = _para(c, M, y,
@@ -239,7 +239,7 @@ def page_one(c):
               "investment - with a platform that reads every weak signal in an emerging category, "
               "six to eighteen months before it is obvious.",
               CW, size=10, leading=14.5)
-    y -= 8 * mm
+    y -= 5 * mm
 
     y = _stat_band(c, y, [
         ("EUR 35M", "Target fund size, incl. reserves"),
@@ -254,7 +254,7 @@ def page_one(c):
               "is worth the most. Core tickets concentrate capital on validated conviction at Seed+ "
               "and Series A. The best Scout bets graduate to Core.",
               CW, leading=13.5)
-    y -= 6 * mm
+    y -= 4 * mm
 
     col = (CW - 8 * mm) / 2
     y1 = _card(c, M, y, col, "Scout portfolio", INK, "EUR 150K", "per deal, 12 deals", [
@@ -269,7 +269,7 @@ def page_one(c):
         "Co-investing alongside Tier 1 leads.",
         "Target 3.1x MOIC - EUR 74.9M exit value.",
     ])
-    y = min(y1, y2) - 9 * mm
+    y = min(y1, y2) - 7 * mm
 
     y = _section(c, y, "Capital allocation")
     _rule(c, y + 9, M, W - M, INK, 1.4)
@@ -314,8 +314,8 @@ def page_two(c):
         c.setFont("Helvetica", 8.8)
         c.drawString(M + CW * 0.64, y, b)
         c.drawString(M + CW * 0.84, y, d)
-        y -= 14
-        _rule(c, y + 4)
+        y -= 17
+        _rule(c, y + 7)
     y -= 6 * mm
 
     y = _section(c, y, "Strategy")
@@ -347,13 +347,13 @@ def page_two(c):
     y = _kv(c, M, y, CW, [
         ("Deal-01 - exited 2007", "10.0x"),
         ("Deal-02 - exited 2014", "20.0x"),
-        ("Deal-03 - seed 2014 at EUR 5.3M post, LBO exit Feb 2025 at EUR 100M", "19.0x"),
-        ("Deal-04 - buyout 2016 at EUR 45M, held, valued EUR 112.5M", "2.5x CoC"),
+        ("Deal-03 - seed 2014, LBO exit Feb 2025 at EUR 100M", "19.0x"),
+        ("Deal-04 - buyout 2016 at EUR 45M, held at EUR 112.5M", "2.5x CoC"),
     ]) - 4 * mm
 
     y = _section(c, y, "Portfolio today")
     y = _kv(c, M, y, CW, [
-        ("Proplace - AI-native sourcing platform for venture and private equity funds", "Operating"),
+        ("Proplace - AI-native sourcing platform for VC and PE funds", "Operating"),
         ("Maximum Insurance - Swiss travel insurtech, duty of care", "Operating"),
     ]) - 5 * mm
 
