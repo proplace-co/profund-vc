@@ -351,12 +351,14 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
    Les couleurs sortent des jetons ProFund du :root ci-dessus (--blue, --ink,
    --line, --bg) : ne pas réintroduire de valeurs en dur ici.
    ══════════════════════════════════════════════════════════════════════════ */
-.pfh { color: var(--ink); }
+.pfh { color: var(--ink); background: var(--bg); }
 .pfh *, .pfh *::before, .pfh *::after { box-sizing: border-box; }
 
 .pfh-wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
 .pfh-wrap.nar { max-width: 860px; }
-.pfh-s { padding: 104px 0; border-top: 1px solid var(--line); }
+/* Fond gris unifie : plus de filet entre les sections, le rythme vient du
+   seul blanc tournant (padding). Seule la bande sombre tranche encore. */
+.pfh-s { padding: 92px 0; }
 .pfh-s.tint { background: var(--bg); }
 .pfh-s.dark { background: var(--ink); color: #fff; border-top: 0; }
 
@@ -467,13 +469,17 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-fs h3 { margin: 0 0 6px; font-size: 18px; font-weight: 800; letter-spacing: -.022em; }
 .pfh-fs p { margin: 0; font-size: 14px; color: var(--mid); }
 
+/* Le pied de page est partage par les 4 routes : sur l'accueil, il doit
+   prendre le meme gris que la page, sinon une bande blanche la termine. */
+.pf-footer.on-grey { background: var(--bg); }
+
 .pfh-note { margin: 26px auto 0; max-width: 60ch; font-size: 12.5px; line-height: 1.65; color: var(--lite); }
 
 /* « Ongoing » en liste : une ligne par societe, logo a gauche, phrase a droite. */
 .pfh-list { margin-top: 34px; border-top: 1px solid var(--line); }
 .pfh-li { display: grid; grid-template-columns: 190px 1fr; align-items: center; gap: 28px;
   padding: 26px 4px; border-bottom: 1px solid var(--line); }
-.pfh-li img { display: block; height: 26px; width: auto; max-width: 100%; }
+.pfh-li img { display: block; width: auto; height: auto; max-height: 52px; max-width: 175px; }
 .pfh-li p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--sub); }
 
 /* ── le popup d'abonnement au deal flow ─────────────────────────────────── */
@@ -486,10 +492,19 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfm-x:hover { color: var(--ink); }
 .pfm-h { margin: 0 0 8px; font-size: 24px; font-weight: 800; letter-spacing: -.03em; }
 .pfm-sub { margin: 0 0 22px; font-size: 14px; line-height: 1.6; color: var(--mid); }
-.pfm-lbl { display: block; margin: 18px 0 8px; font-size: 12px; font-weight: 700; color: var(--mid); }
-.pfm-lbl:first-of-type { margin-top: 0; }
+.pfm-lbl { display: block; margin: 0 0 9px; font-size: 12px; font-weight: 700; color: var(--mid); }
+/* Chaque groupe de champs est un bloc : c'est LUI qui porte l'espacement,
+   pas le label — sinon deux champs cote a cote se decalent l'un l'autre. */
+.pfm-fld { margin-top: 26px; }
+.pfm-fld:first-of-type { margin-top: 0; }
+.pfm-hint { margin: 9px 0 0; font-size: 12px; color: var(--lite); }
 .pfm-in { width: 100%; height: 50px; padding: 0 14px; border: 1px solid var(--line);
   border-radius: 11px; background: #fff; color: var(--ink); font-size: 15.5px; font-family: inherit; }
+select.pfm-in { appearance: none; cursor: pointer; padding-right: 34px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--mid) 50%),
+                    linear-gradient(135deg, var(--mid) 50%, transparent 50%);
+  background-position: calc(100% - 19px) 22px, calc(100% - 14px) 22px;
+  background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
 .pfm-in:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(98, 124, 153, .14); }
 .pfm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .pfm-seg { display: flex; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
@@ -507,7 +522,7 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   border: 1px solid var(--line); border-radius: 10px; font-size: 13.5px; cursor: pointer; }
 .pfm-sec.on { border-color: var(--blue); background: var(--gp); }
 .pfm-sec input { accent-color: var(--blue-dk); flex: none; }
-.pfm-consent { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px;
+.pfm-consent { display: flex; align-items: flex-start; gap: 10px; margin-top: 28px;
   font-size: 12.5px; line-height: 1.55; color: var(--mid); cursor: pointer; }
 .pfm-consent input { accent-color: var(--blue-dk); margin-top: 2px; flex: none; }
 .pfm-err { margin: 14px 0 0; font-size: 13px; color: var(--red); }

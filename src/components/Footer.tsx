@@ -5,7 +5,7 @@ export default function Footer() {
   const isHome = pathname === '/';
 
   return (
-    <footer className="pf-footer">
+    <footer className={`pf-footer${isHome ? ' on-grey' : ''}`}>
       <span className="foot-r">© 2025 ProFund</span>
       <div className="foot-links">
         {!isHome && <Link to="/" style={{ fontSize: '12px', color: 'var(--mid)', textDecoration: 'none' }}>profund.vc</Link>}

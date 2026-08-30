@@ -1,13 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 608 120" role="img" aria-label="Maximum Insurance">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 142" role="img" aria-label="Maximum Insurance">
   <title>Maximum Insurance</title>
-    <!-- Wordmark officiel : MAXIMUM [+ carré rouge] INSURANCE. Fond TRANSPARENT (le rect blanc d'origine a été retiré) : le logo se fond dans la section teintée de l'accueil profund.vc. -->
-  <g transform="translate(24,24)" font-family="Archivo, 'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="44" letter-spacing="-1">
-    <text x="4" y="48" fill="#201e1d">MAXIMUM</text>
-    <g transform="translate(247, 16)">
+  <!-- Wordmark officiel MAXIMUM [+ croix rouge] INSURANCE, EMPILE SUR DEUX LIGNES.
+       L'original est une bande de 608x120 : dans la liste « Ongoing » de l'accueil,
+       contrainte en hauteur, elle devenait illisible a cote du logo Proplace. Cette
+       version empilee occupe le meme carre optique que les autres logos.
+       Fond TRANSPARENT : le logo se fond dans le fond gris de la page. -->
+  <g font-family="Archivo, 'Helvetica Neue', Arial, sans-serif" font-weight="800"
+     font-size="44" letter-spacing="-1" fill="#201e1d">
+    <text x="24" y="60">MAXIMUM</text>
+    <g transform="translate(266, 24)">
       <rect width="30" height="30" fill="#ec3013"/>
       <rect x="12" y="5" width="6" height="20" fill="#ffffff"/>
       <rect x="5" y="12" width="20" height="6" fill="#ffffff"/>
     </g>
-    <text x="290" y="48" fill="#201e1d">INSURANCE</text>
+    <text x="24" y="118">INSURANCE</text>
   </g>
 </svg>

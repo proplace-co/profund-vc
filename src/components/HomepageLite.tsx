@@ -32,7 +32,7 @@ export default function HomepageLite() {
       <header className="pfh-hero">
         <div className="pfh-wrap">
           <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
-          <h1 className="pfh-h1 one">ProFund builds and invests in <em>AI-native companies</em></h1>
+          <h1 className="pfh-h1">ProFund builds and invests in<br /><em>AI-native companies</em></h1>
           <div className="pfh-cta-row">
             <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
           </div>
@@ -46,7 +46,7 @@ export default function HomepageLite() {
         </div>
       </section>
 
-      <section className="pfh-s tint" id="ongoing">
+      <section className="pfh-s" id="ongoing">
         <div className="pfh-wrap nar">
           <p className="pfh-eyeb">Ongoing</p>
           <div className="pfh-list">
@@ -60,25 +60,25 @@ export default function HomepageLite() {
         </div>
       </section>
 
+      <section className="pfh-s" id="factsheet">
+        <div className="pfh-wrap nar" style={{ textAlign: 'center' }}>
+          <h2 className="pfh-h2">Build &amp; invest with us.</h2>
+          <p className="pfh-lead">
+            The fund fact sheet: strategy, construction, target returns and track record.
+          </p>
+          <div className="pfh-cta-row">
+            <a href={FACTSHEET_URL} className="pfh-btn ghost" download>Download the fact sheet</a>
+          </div>
+          <p className="pfh-note">
+            Pre-marketing communication, professional investors only. Not an offer to subscribe.
+          </p>
+        </div>
+      </section>
+
       <section className="pfh-s dark" id="live">
         <div className="pfh-wrap" style={{ textAlign: 'center' }}>
           <div className="pfh-cta-row" style={{ marginTop: 0 }}>
             <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
-          </div>
-        </div>
-      </section>
-
-      <section className="pfh-s" id="factsheet">
-        <div className="pfh-wrap nar">
-          <div className="pfh-fs">
-            <div>
-              <h3>Fund fact sheet</h3>
-              <p>
-                Strategy, fund construction, target returns and track record. Two pages, PDF.
-                <br />Pre-marketing communication, professional investors only.
-              </p>
-            </div>
-            <a href={FACTSHEET_URL} className="pfh-btn ghost" download>Download</a>
           </div>
         </div>
       </section>
