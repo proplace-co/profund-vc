@@ -1,0 +1,43 @@
+name: Deploy profund.vc
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Deux pushes rapprochés sur main lançaient deux runs qui clonent puis poussent
+# gh-pages en parallèle : le second part en non-fast-forward et le job échoue
+# (vécu sur les workflows peaceiris du monorepo). Ici on annule le run précédent.
+concurrency:
+  group: pages-profund
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # Le CNAME est déjà dans dist/ (copié depuis public/), mais peaceiris
+      # remplace tout le contenu de la branche gh-pages à chaque déploiement :
+      # si le fichier venait à manquer, GitHub Pages perdrait silencieusement le
+      # domaine custom et redemanderait un certificat. `cname:` est la ceinture,
+      # public/CNAME les bretelles.
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          cname: profund.vc

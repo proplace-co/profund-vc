@@ -1,0 +1,12 @@
+# Fins de ligne normalisées en LF dans le dépôt. Les pages Legal / Privacy
+# contiennent des caractères non-ASCII (— · € ’) : tout doit rester en UTF-8
+# sans BOM, sinon le rendu part en mojibake sur une page qu'on ne relit pas.
+* text=auto eol=lf
+
+# Le CNAME doit arriver chez GitHub Pages à l'octet près : ni CRLF, ni BOM.
+public/CNAME text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
