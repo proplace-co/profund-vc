@@ -15,12 +15,12 @@ const ONGOING = [
   {
     name: 'Proplace',
     logo: PROPLACE_LOGO,
-    line: 'AI-native sourcing platform for venture and private equity funds.',
+    line: 'Your AI Corporate Developer',
   },
   {
     name: 'Maximum Insurance',
     logo: MAXIMUM_LOGO,
-    line: 'Swiss travel insurtech — duty of care for companies and their travellers.',
+    line: 'Swiss Travel Insurtech',
     wide: true,
   },
 ];

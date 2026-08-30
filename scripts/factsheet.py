@@ -353,8 +353,8 @@ def page_two(c):
 
     y = _section(c, y, "Portfolio today")
     y = _kv(c, M, y, CW, [
-        ("Proplace - AI-native sourcing platform for VC and PE funds", "Operating"),
-        ("Maximum Insurance - Swiss travel insurtech, duty of care", "Operating"),
+        ("Proplace - Your AI Corporate Developer", "Operating"),
+        ("Maximum Insurance - Swiss Travel Insurtech", "Operating"),
     ]) - 5 * mm
 
     # Bloc d'appel sombre — l'equivalent du « Souscrire en 3 minutes » du modele.

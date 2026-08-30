@@ -555,8 +555,6 @@ select.pfm-in { appearance: none; cursor: pointer; padding-right: 34px;
   .pfm { padding: 30px 22px 26px; }
   .pfm-grid { grid-template-columns: 1fr; }
   .pfh-wrap { padding: 0 20px; }
-  .pfh-s { padding: 68px 0; }
-  .pfh-hero { padding: 50px 0 58px; }
   .pfh-stats { grid-template-columns: 1fr; }
   .pfh-fs { padding: 24px 22px; }
   .pfh-words { gap: 12px 26px; }
