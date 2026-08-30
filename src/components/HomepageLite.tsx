@@ -32,7 +32,7 @@ export default function HomepageLite() {
       <header className="pfh-hero">
         <div className="pfh-wrap">
           <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
-          <h1 className="pfh-h1">An AI platform to<br /><em>build &amp; invest</em></h1>
+          <h1 className="pfh-h1 one">ProFund builds and invests in <em>AI-native companies</em></h1>
           <div className="pfh-cta-row">
             <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
           </div>
@@ -62,10 +62,7 @@ export default function HomepageLite() {
 
       <section className="pfh-s dark" id="live">
         <div className="pfh-wrap" style={{ textAlign: 'center' }}>
-          <p className="pfh-eyeb">
-            <span className="pfh-live"><span className="pfh-dot" />Live</span>
-          </p>
-          <div className="pfh-cta-row" style={{ marginTop: '4px' }}>
+          <div className="pfh-cta-row" style={{ marginTop: 0 }}>
             <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
           </div>
         </div>

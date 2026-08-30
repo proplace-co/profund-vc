@@ -363,6 +363,9 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-h1 { margin: 0; font-size: clamp(34px, 5vw, 60px); line-height: 1.03;
   letter-spacing: -.043em; font-weight: 800; text-wrap: balance; }
 .pfh-h1 em { font-style: normal; color: var(--blue); }
+/* `.one` : titre d'une seule phrase, plus long — l'echelle descend pour qu'il
+   tienne sur UNE ligne au-dela de 900 px, et se replie naturellement en dessous. */
+.pfh-h1.one { font-size: clamp(26px, 3.7vw, 44px); line-height: 1.12; }
 .pfh-h2 { margin: 0; font-size: clamp(26px, 3.2vw, 40px); line-height: 1.12;
   letter-spacing: -.036em; font-weight: 800; text-wrap: balance; }
 .pfh-h2 em { font-style: normal; color: var(--blue); }
