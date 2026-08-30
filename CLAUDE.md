@@ -44,6 +44,23 @@ qui dépend à la fois de `--border` dans le `:root` du CSS **et** de
 Privacy sont l'exception : leur texte est dans un tableau en haut du fichier
 (`CLAUSES`, `SECTIONS`), c'est là qu'il faut le modifier.
 
+**L'accueil a sa propre grammaire visuelle, scopée `.pfh`** (bas de
+`src/index.css`) : gabarit 1120 px, sections à `padding: 104px 0` séparées par
+des filets 1 px, titres à interlettrage négatif, chapeaux à filet bleu — jamais
+de capitales espacées. Elle est reprise de la home de proplace.co. `/pitch`,
+`/legal` et `/privacy` gardent l'ancien jeu de classes (`.pf-wrap`, `.mod`,
+`.fund-table`…) : les deux cohabitent, ne pas les mélanger.
+
+**La fiche PDF est un fichier commité, pas un artefact de build.**
+`public/profund-factsheet.pdf` est produit par `python scripts/factsheet.py`
+(reportlab). `npm run build` ne le régénère PAS. Après toute modification d'un
+chiffre, relancer le script ET commiter le PDF.
+⚠️ Les chiffres du fonds vivent à **trois endroits** qui doivent rester
+d'accord : `ProFundPage.tsx` (/pitch), `HomepageLite.tsx` (accueil) et
+`scripts/factsheet.py` (PDF). Le PDF emploie « EUR » et de l'ASCII pur : les
+polices Helvetica de base de reportlab sont en WinAnsi et rendent un caractère
+de remplacement sur `€` ou `—`.
+
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`
 (`HeroSection`, `TheOpportunity`, `ThePlatform`…), assemblés en bas du fichier.
 Pour réordonner les sections, changer l'ordre dans le `export default`.
