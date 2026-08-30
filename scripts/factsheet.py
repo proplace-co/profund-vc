@@ -168,7 +168,7 @@ def _kv(c, x, y, w, rows, head=None, head_color=INK):
         for i, ln in enumerate(vlines):
             c.drawRightString(x + w, y - i * 10.5, ln)
         y -= n * 10.5 + 14
-        _rule(c, y + 7, x, x + w)
+        _rule(c, y + 12, x, x + w)
     return y
 
 
@@ -314,8 +314,8 @@ def page_two(c):
         c.setFont("Helvetica", 8.8)
         c.drawString(M + CW * 0.64, y, b)
         c.drawString(M + CW * 0.84, y, d)
-        y -= 17
-        _rule(c, y + 7)
+        y -= 20
+        _rule(c, y + 10)
     y -= 6 * mm
 
     y = _section(c, y, "Strategy")

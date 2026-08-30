@@ -21,6 +21,7 @@ const ONGOING = [
     name: 'Maximum Insurance',
     logo: MAXIMUM_LOGO,
     line: 'Swiss travel insurtech — duty of care for companies and their travellers.',
+    wide: true,
   },
 ];
 
@@ -52,7 +53,7 @@ export default function HomepageLite() {
           <div className="pfh-list">
             {ONGOING.map((p) => (
               <div className="pfh-li" key={p.name}>
-                <img src={p.logo} alt={p.name} />
+                <img src={p.logo} alt={p.name} className={"wide" in p && p.wide ? 'wide' : undefined} />
                 <p>{p.line}</p>
               </div>
             ))}
@@ -63,9 +64,6 @@ export default function HomepageLite() {
       <section className="pfh-s" id="factsheet">
         <div className="pfh-wrap nar" style={{ textAlign: 'center' }}>
           <h2 className="pfh-h2">Build &amp; invest with us.</h2>
-          <p className="pfh-lead">
-            The fund fact sheet: strategy, construction, target returns and track record.
-          </p>
           <div className="pfh-cta-row">
             <a href={FACTSHEET_URL} className="pfh-btn ghost" download>Download the fact sheet</a>
           </div>
