@@ -321,12 +321,14 @@ def page_two(c):
     y = _section(c, y, "Strategy")
     y = _bullets(c, M, y, [
         "Paris first, then Europe. Early-stage only, from pre-seed to Series A.",
-        "The thesis is recalibrated weekly: detection parameters are updated every Monday.",
-        "Human time is reserved for the top 1% of signals. Every other signal is processed "
-        "automatically, and the reason it was discarded is written down.",
+        "Digital + human sourcing on one IA platform: every signal is processed automatically; "
+        "human time is reserved for the top 1% (CALL). The reason every other signal was "
+        "discarded is written down. Thesis parameters are recalibrated every Monday.",
+        "The same platform operates outbound for Proplace, Maximum Insurance, ProFund and "
+        "portfolio startups - and books meetings with AI-native founders (Seed with traction, "
+        "every Series A) and international VCs (allocation on Scout and Core).",
         "A full investment memo and financial model are generated automatically for every "
-        "high-conviction match.",
-        "Fund administration fully externalised. Reporting automated, daily and weekly.",
+        "high-conviction match. Fund administration fully externalised. Reporting automated.",
         "5% GP commitment on management fees. No investment committee on Scout decisions - "
         "one person accountable.",
     ], CW) - 4 * mm
@@ -335,12 +337,15 @@ def page_two(c):
     y = _para(c, M, y,
               "Every signal is matched against the active themes, then qualified automatically against "
               "dozens of green and red flags weighted by their historical predictive accuracy. Only the "
-              "top 1% surfaces as a CALL - the single verdict that requires human attention.",
+              "top 1% surfaces as a CALL - the single verdict that requires human attention. Pre-seed "
+              "without traction stays in detection (Scout); outbound is reserved for Seed with traction "
+              "and Series A.",
               CW, size=8.8, leading=12) - 2
     y = _bullets(c, M, y, [
         "SSL certificate registrations, Pappers legal filings, GitHub repositories.",
         "LinkedIn job posts, Crunchbase API, semantic search, Google Alerts.",
-        "VC portfolio additions and grandes ecoles alumni networks.",
+        "VC portfolio additions, grandes ecoles alumni, and founder / LP / VC outbound "
+        "operated on the same engine as Proplace and Maximum Insurance.",
     ], CW, gap=3) - 4 * mm
 
     y = _section(c, y, "GP track record, prior to the fund")
