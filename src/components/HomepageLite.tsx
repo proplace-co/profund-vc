@@ -35,8 +35,8 @@ export default function HomepageLite() {
           <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
           <h1 className="pfh-h1">ProFund builds and invests in<br /><em>AI-native companies</em></h1>
           <p className="pfh-lead">
-            Seed with traction and Series A, as co-investor. Pre-seed stays in detection.
-            The same platform already operates two companies.
+            Seed &amp; Series A as co-investor<br />
+            ProFund &amp; support to portfolio companies operated through a unique AI platform.
           </p>
           <div className="pfh-cta-row">
             <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
@@ -44,16 +44,16 @@ export default function HomepageLite() {
         </div>
       </header>
 
-      <section className="pfh-s" id="past">
+      <section className="pfh-s pfh-prior" id="past">
         <div className="pfh-wrap">
           <p className="pfh-eyeb">Prior</p>
-          <img src={TRACK_RECORD_URL} className="pfh-logos" alt="Partech · Ardian · Google · Mirakl · leboncoin" />
+          <img src={TRACK_RECORD_URL} className="pfh-logos" alt="Partech · Ardian · Google · leboncoin" />
         </div>
       </section>
 
-      <section className="pfh-s" id="ongoing">
+      <section className="pfh-s pfh-port" id="ongoing">
         <div className="pfh-wrap nar">
-          <p className="pfh-eyeb">Portfolio</p>
+          <p className="pfh-eyeb pfh-eyeb-port">Portfolio</p>
           <div className="pfh-list">
             {ONGOING.map((p) => (
               <div className="pfh-li" key={p.name}>

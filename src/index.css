@@ -378,14 +378,17 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-h2 { margin: 0; font-size: clamp(26px, 3.2vw, 40px); line-height: 1.12;
   letter-spacing: -.036em; font-weight: 800; text-wrap: balance; }
 .pfh-h2 em { font-style: normal; color: var(--blue); }
-.pfh-lead { margin: 18px auto 0; max-width: 68ch; font-size: clamp(16px, 1.35vw, 18.5px);
-  line-height: 1.68; color: var(--sub); text-wrap: pretty; }
+.pfh-lead { margin: 18px auto 0; max-width: 42em; font-size: clamp(15px, 1.25vw, 17.5px);
+  line-height: 1.55; color: var(--sub); text-wrap: pretty; }
 .pfh-lead b { color: var(--ink); font-weight: 600; }
 
 .pfh-eyeb { display: flex; align-items: center; justify-content: center; gap: 12px;
-  margin: 0 0 clamp(12px, 2vh, 24px); font-size: 12px; font-weight: 600; color: var(--mid); }
-.pfh-eyeb::before { content: ""; width: 22px; height: 2px; background: var(--blue);
+  margin: 0 0 clamp(12px, 2vh, 24px); font-size: 11px; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--lite); }
+.pfh-eyeb::before { content: ""; width: 22px; height: 1px; background: var(--line);
   border-radius: 2px; flex: none; }
+.pfh-eyeb-port { color: var(--blue-dk); letter-spacing: .2em; font-weight: 700; }
+.pfh-eyeb-port::before { background: var(--blue); height: 2px; }
 
 .pfh-hero { padding: 0; text-align: center; }
 .pfh-hero-logo { display: block; height: 30px; width: auto; margin: 0 auto clamp(18px, 2.8vh, 34px); }
@@ -424,8 +427,9 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-row span:first-child { color: var(--mid); }
 .pfh-row span:last-child { color: var(--ink); font-weight: 600; text-align: right; }
 
-.pfh-logos { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto;
-  opacity: .55; filter: grayscale(1); }
+.pfh-prior { opacity: .85; }
+.pfh-logos { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto;
+  opacity: .42; filter: grayscale(1); }
 .pfh-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 44px; margin-top: 28px; }
 .pfh-words span { font-size: 15px; font-weight: 700; color: var(--mid); }
 
@@ -485,12 +489,13 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-note { margin: clamp(16px, 2.4vh, 28px) auto 0; max-width: 60ch; font-size: 12.5px; line-height: 1.65; color: var(--lite); }
 
 /* « Ongoing » en liste : une ligne par societe, logo a gauche, phrase a droite. */
+.pfh-port { background: #fff; padding: clamp(22px, 3.4vh, 40px) 0; }
 .pfh-list { margin-top: clamp(14px, 2.2vh, 28px); border-top: 1px solid var(--line); }
 .pfh-li { display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: 36px;
   padding: clamp(16px, 2.6vh, 34px) 4px; border-bottom: 1px solid var(--line); }
-.pfh-li img { display: block; width: auto; height: auto; max-height: 22px; max-width: 160px;
-  opacity: .55; filter: grayscale(1); }
-.pfh-li img.wide { max-height: 22px; width: auto; max-width: 180px; }
+.pfh-li img { display: block; width: auto; height: auto; max-height: 28px; max-width: 180px;
+  opacity: .92; filter: none; }
+.pfh-li img.wide { max-height: 28px; width: auto; max-width: 200px; }
 .pfh-li p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--sub); }
 
 /* ── le popup d'abonnement au deal flow ─────────────────────────────────── */
