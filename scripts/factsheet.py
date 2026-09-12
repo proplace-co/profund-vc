@@ -34,6 +34,7 @@ from reportlab.pdfgen import canvas
 
 ROOT = Path(__file__).resolve().parent.parent
 LOGO = ROOT / "public" / "logo.png"
+PHOTO = ROOT / "public" / "gp-photo-sheet.jpg"
 OUT = ROOT / "public" / "profund-factsheet.pdf"
 
 INK = colors.HexColor("#0A0A0A")
@@ -150,7 +151,7 @@ def _card(c, x, y, w, header, header_bg, big, big_unit, bullets, h=None):
     return y - h
 
 
-def _kv(c, x, y, w, rows, head=None, head_color=INK):
+def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14):
     if head:
         c.setFillColor(INK)
         c.setFont("Helvetica-Bold", 9.2)
@@ -170,7 +171,7 @@ def _kv(c, x, y, w, rows, head=None, head_color=INK):
         c.setFont("Helvetica-Bold", 8.6)
         for i, ln in enumerate(vlines):
             c.drawRightString(x + w, y - i * 10.5, ln)
-        y -= n * 10.5 + 14
+        y -= n * 10.5 + extra
         _rule(c, y + 12, x, x + w)
     return y
 
@@ -385,13 +386,51 @@ def page_two(c):
         "made sourcing their core focus.",
     ], CW) - 2.5 * mm
 
-    y = _section(c, y, "GP track record, prior to the fund")
-    y = _kv(c, M, y, CW, [
+    # The GP (photo + short CV) | prior track record
+    split = CW * 0.54
+    rx = M + split + 6 * mm
+    rw = CW - split - 6 * mm
+    c.setFillColor(BLUE)
+    c.setFont("Helvetica-Bold", 9.6)
+    c.drawString(M, y, "THE GP")
+    c.drawString(rx, y, "TRACK RECORD, PRIOR TO THE FUND")
+    y -= 16
+
+    ph, pw = 36 * mm, 26 * mm
+    if PHOTO.exists():
+        c.setStrokeColor(LINE)
+        c.setLineWidth(0.6)
+        c.rect(M, y - ph, pw, ph, stroke=1, fill=0)
+        c.drawImage(str(PHOTO), M + 0.4, y - ph + 0.4, width=pw - 0.8, height=ph - 0.8,
+                    preserveAspectRatio=True, anchor="c", mask="auto")
+
+    tx = M + pw + 5 * mm
+    c.setFillColor(INK)
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(tx, y - 10, "Alexandre Busson")
+    c.setFillColor(MID)
+    c.setFont("Helvetica", 8)
+    c.drawString(tx, y - 21, "Founding Partner")
+    yy = y - 34
+    for role in (
+        "Principal, Schibsted Growth",
+        "Associate, Partech Ventures",
+        "Founder / Investor, Dreamzer Games",
+        "Investment Analyst, AXA Private Equity",
+        "Owner and CEO, Fadparis.com",
+    ):
+        c.setFillColor(SUB)
+        c.setFont("Helvetica", 8.2)
+        c.drawString(tx, yy, role)
+        yy -= 10.5
+
+    y_kv = _kv(c, rx, y, rw, [
         ("Deal-01 - exited 2007", "10.0x"),
         ("Deal-02 - exited 2014", "20.0x"),
-        ("Deal-03 - seed 2014, LBO exit Feb 2025 at EUR 100M", "19.0x"),
-        ("Deal-04 - buyout 2016 at EUR 45M, held at EUR 112.5M", "2.5x CoC"),
-    ]) - 4 * mm
+        ("Deal-03 - LBO 2025", "19.0x"),
+        ("Deal-04 - held", "2.5x"),
+    ], extra=8)
+    y = min(y - ph, y_kv) - 4 * mm
 
     y = _section(c, y, "Portfolio today")
     y = _kv(c, M, y, CW, [
