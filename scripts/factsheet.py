@@ -234,48 +234,48 @@ def page_one(c):
 
     y = _section(c, y, "In one sentence")
     y = _para(c, M, y,
-              "A EUR 35M early-stage fund investing in 21 European companies. Investors and builders: "
-              "we built and scaled companies first, and we extend that operating experience to "
-              "investment - with a platform that reads every weak signal in an emerging category, "
-              "six to eighteen months before it is obvious.",
+              "A EUR 35M co-invest fund. Seed with traction and Series A, alongside a Tier 1 lead. "
+              "Operators who built companies first. A platform that reads every weak signal in an "
+              "emerging category, six to eighteen months before it is obvious. Pre-seed without "
+              "traction stays in detection - it is not where the fund deploys.",
               CW, size=10, leading=14.5)
     y -= 5 * mm
 
     y = _stat_band(c, y, [
         ("EUR 35M", "Target fund size, incl. reserves"),
-        ("21", "Deals: 12 Scout + 9 Core"),
-        ("26%", "Target net IRR (15% base case)"),
+        ("9 + 12", "Core co-invest (the fund) + Scout options"),
+        ("Not lead", "Seed traction / Series A, next to a Tier 1"),
         ("6-18mo", "Detection lead before announcement"),
     ])
 
     y = _section(c, y, "Fund construction")
     y = _para(c, M, y,
-              "Two tiers. Scout tickets buy asymmetric exposure at pre-seed, where the detection lead "
-              "is worth the most. Core tickets concentrate capital on validated conviction at Seed+ "
-              "and Series A. The best Scout bets graduate to Core.",
+              "Core is the fund: nine co-invest tickets at Seed with traction and Series A. "
+              "Scout is the option: twelve small tickets where the detection lead is worth the most. "
+              "The best Scout bets graduate to Core. We do not lead the round.",
               CW, leading=13.5)
     y -= 4 * mm
 
     col = (CW - 8 * mm) / 2
-    y1 = _card(c, M, y, col, "Scout portfolio", INK, "EUR 150K", "per deal, 12 deals", [
-        "Pre-seed, entry at EUR 4M - 6M post-money.",
-        "EUR 1.8M initial + EUR 7.5M follow-on reserved.",
-        "3 of 12 graduate to Core at Seed+ validation.",
-        "Target 2.5x MOIC - EUR 23.7M exit value.",
-    ])
-    y2 = _card(c, M + col + 8 * mm, y, col, "Core portfolio", BLUE_DK, "EUR 1.1M", "per deal, 9 deals", [
-        "Seed+ / Series A, entry at EUR 25M - 35M pre-money.",
+    y1 = _card(c, M, y, col, "Core portfolio", BLUE_DK, "EUR 1.1M", "per deal, 9 deals", [
+        "Seed with traction / Series A, entry at EUR 25M - 35M pre-money.",
         "EUR 9.9M initial + EUR 14M follow-on reserved.",
         "Co-investing alongside Tier 1 leads.",
         "Target 3.1x MOIC - EUR 74.9M exit value.",
+    ])
+    y2 = _card(c, M + col + 8 * mm, y, col, "Scout portfolio", INK, "EUR 150K", "per deal, 12 deals", [
+        "Pre-seed detection capital, entry at EUR 4M - 6M post-money.",
+        "EUR 1.8M initial + EUR 7.5M follow-on reserved.",
+        "3 of 12 graduate to Core at Seed+ validation.",
+        "Target 2.5x MOIC - EUR 23.7M exit value.",
     ])
     y = min(y1, y2) - 7 * mm
 
     y = _section(c, y, "Capital allocation")
     _rule(c, y + 9, M, W - M, INK, 1.4)
     _kv(c, M, y, CW, [
-        ("Scout initial tickets - 12 deals at EUR 150K", "EUR 1.8M"),
         ("Core initial tickets - 9 deals at EUR 1.1M", "EUR 9.9M"),
+        ("Scout initial tickets - 12 deals at EUR 150K", "EUR 1.8M"),
         ("Scout follow-on reserves", "EUR 7.5M"),
         ("Core follow-on reserves", "EUR 14.0M"),
         ("Fees and reserves - balance", "EUR 1.8M"),
@@ -320,15 +320,14 @@ def page_two(c):
 
     y = _section(c, y, "Strategy")
     y = _bullets(c, M, y, [
-        "Paris first, then Europe. Early-stage only, from pre-seed to Series A.",
-        "Digital + human sourcing on one IA platform: every signal is processed automatically; "
-        "human time is reserved for the top 1% (CALL). The reason every other signal was "
-        "discarded is written down. Thesis parameters are recalibrated every Monday.",
-        "The same platform operates outbound for Proplace, Maximum Insurance, ProFund and "
-        "portfolio startups - and books meetings with AI-native founders (Seed with traction, "
-        "every Series A) and international VCs (allocation on Scout and Core).",
+        "Paris first, then Europe. Core capital: Seed with traction and Series A, as co-investor.",
+        "Digital + human on one platform. Every signal is processed automatically. Human time "
+        "is reserved for the top 1% (CALL). The reason every other signal was discarded is "
+        "written down. Thesis parameters are recalibrated every Monday.",
+        "The same engine already books meetings for Proplace and Maximum Insurance - two "
+        "operating companies in the portfolio. Proof, not a slide.",
         "A full investment memo and financial model are generated automatically for every "
-        "high-conviction match. Fund administration fully externalised. Reporting automated.",
+        "high-conviction match. Fund administration fully externalised.",
         "5% GP commitment on management fees. No investment committee on Scout decisions - "
         "one person accountable.",
     ], CW) - 4 * mm
@@ -338,14 +337,13 @@ def page_two(c):
               "Every signal is matched against the active themes, then qualified automatically against "
               "dozens of green and red flags weighted by their historical predictive accuracy. Only the "
               "top 1% surfaces as a CALL - the single verdict that requires human attention. Pre-seed "
-              "without traction stays in detection (Scout); outbound is reserved for Seed with traction "
-              "and Series A.",
+              "without traction stays in detection. Outbound is reserved for Seed with traction and "
+              "Series A.",
               CW, size=8.8, leading=12) - 2
     y = _bullets(c, M, y, [
         "SSL certificate registrations, Pappers legal filings, GitHub repositories.",
         "LinkedIn job posts, Crunchbase API, semantic search, Google Alerts.",
-        "VC portfolio additions, grandes ecoles alumni, and founder / LP / VC outbound "
-        "operated on the same engine as Proplace and Maximum Insurance.",
+        "VC portfolio additions and grandes ecoles alumni networks.",
     ], CW, gap=3) - 4 * mm
 
     y = _section(c, y, "GP track record, prior to the fund")
@@ -375,8 +373,8 @@ def page_two(c):
     c.setFillColor(colors.HexColor("#B8B8B8"))
     c.setFont("Helvetica", 8.2)
     c.drawString(M + 14, y - 18.5 * mm,
-                 "The companies our platform detects, every morning. You choose the rhythm, "
-                 "the hour and the sections.")
+                 "Request LP access. The companies our platform detects, every morning. "
+                 "Professional investors only.")
     c.drawString(M + 14, y - 22 * mm, "Questions: alexandre@profund.vc")
     y -= bh + 6 * mm
 

@@ -354,8 +354,8 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh {
   color: var(--ink); background: var(--bg);
   display: flex; flex-direction: column; justify-content: space-evenly;
-  gap: clamp(14px, 2vh, 34px);
-  padding: clamp(18px, 3vh, 44px) 0;
+  gap: clamp(28px, 4.2vh, 56px);
+  padding: clamp(28px, 4.5vh, 64px) 0;
   min-height: calc(100vh - 60px);        /* repli navigateurs anciens */
   min-height: calc(100svh - 60px);       /* 60px = hauteur du pied de page */
 }
@@ -424,7 +424,8 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-row span:first-child { color: var(--mid); }
 .pfh-row span:last-child { color: var(--ink); font-weight: 600; text-align: right; }
 
-.pfh-logos { display: block; width: 100%; max-width: 880px; height: auto; margin: 0 auto; }
+.pfh-logos { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto;
+  opacity: .55; filter: grayscale(1); }
 .pfh-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 44px; margin-top: 28px; }
 .pfh-words span { font-size: 15px; font-weight: 700; color: var(--mid); }
 
@@ -485,10 +486,11 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 
 /* « Ongoing » en liste : une ligne par societe, logo a gauche, phrase a droite. */
 .pfh-list { margin-top: clamp(14px, 2.2vh, 28px); border-top: 1px solid var(--line); }
-.pfh-li { display: grid; grid-template-columns: 420px 1fr; align-items: center; gap: 28px;
+.pfh-li { display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: 36px;
   padding: clamp(16px, 2.6vh, 34px) 4px; border-bottom: 1px solid var(--line); }
-.pfh-li img { display: block; width: auto; height: auto; max-height: 36px; max-width: 100%; }
-.pfh-li img.wide { max-height: none; width: 100%; }
+.pfh-li img { display: block; width: auto; height: auto; max-height: 22px; max-width: 160px;
+  opacity: .55; filter: grayscale(1); }
+.pfh-li img.wide { max-height: 22px; width: auto; max-width: 180px; }
 .pfh-li p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--sub); }
 
 /* ── le popup d'abonnement au deal flow ─────────────────────────────────── */

@@ -16,7 +16,7 @@ function HeroSection() {
         </div>
         <div className="hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--line)' }}>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">€35M</span><span className="sg-l">Target fund size · High-conviction reserves</span></div>
-          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">21</span><span className="sg-l">Deals · 12 Scout (€150K) + 9 Core (€1.1M)</span></div>
+          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">9 + 12</span><span className="sg-l">Core co-invest (the fund) + Scout options</span></div>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">Weekly</span><span className="sg-l">Thesis calibration — detection parameters updated every Monday</span></div>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">6–18mo</span><span className="sg-l">Average detection lead before public announcement</span></div>
         </div>
@@ -197,7 +197,7 @@ function PortfolioArch() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Portfolio Architecture</span>
         <h2 className="h2">The Conviction Funnel.<br /><em>Balancing Alpha with Capacity.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>Two-tier construction: Scout deals for asymmetric alpha at pre-seed, Core deals for validated conviction at Seed+ / Series A. The best Scout deals graduate to Core.</p>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>Core is the fund: nine co-invest tickets at Seed with traction and Series A, alongside a Tier 1 lead. Scout is the option: twelve small tickets where the detection lead is worth the most. The best Scout bets graduate to Core. We do not lead the round.</p>
         <div className="funnel-grid">
           <div>
             <div className="tier scout">
