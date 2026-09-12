@@ -377,15 +377,20 @@ def page_two(c):
     y -= 1.2 * mm
 
     y = _section(c, y, "How we source")
-    y = _numbered(c, M, y, [
-        "Physical network and human interactions with top founders.",
-        "In-house sourcing platform, gathering more than 25 custom sourcing engines "
-        "detecting signals such as SSL certificate registrations, Pappers legal filings, "
-        "GitHub repositories, leadership at Tier 1 startups changing jobs, LinkedIn job "
-        "posts, semantic search, grandes ecoles alumni networks... to which we add new "
-        "custom engines every month in the form of innovative ideas or startups which "
-        "made sourcing their core focus.",
-    ], CW) - 2.5 * mm
+    y = _para(c, M, y,
+              "Warm intro, network of top-tier founders, VCs, selected private events, "
+              "friends and family network...",
+              CW, size=8.5, leading=11.3) - 2.2 * mm
+    y = _para(c, M, y,
+              "In-house sourcing platform gathering more than 25 custom sourcing engines "
+              "detecting weak signals (monitoring signals in GitHub repositories, change of "
+              "leadership at top-tier startups, C-level at top-tier startups changing job, "
+              "LinkedIn job posts, semantic search, grandes ecoles alumni networks...). "
+              "We add on top of that the latest web search API and AI-native tools built to "
+              "detect any signal indicating that a startup is being created by a top-tier "
+              "founder, and we add new sourcing engines every week and make any great "
+              "sourcing idea a reality within minutes.",
+              CW, size=8.5, leading=11.3) - 2.5 * mm
 
     # The GP (photo + short CV) | prior track record
     split = CW * 0.54
@@ -397,21 +402,14 @@ def page_two(c):
     c.drawString(rx, y, "TRACK RECORD, PRIOR TO THE FUND")
     y -= 16
 
-    ph, pw = 36 * mm, 26 * mm
+    # Full portrait, no zoom: box follows the photo's aspect ratio.
+    ir = ImageReader(str(PHOTO)) if PHOTO.exists() else None
+    iw, ih = ir.getSize() if ir else (1, 1)
+    pw = 28 * mm
+    ph = pw * (ih / float(iw))
     if PHOTO.exists():
-        # Cover the box, clipped — no stroke, no grey letterbox.
-        ir = ImageReader(str(PHOTO))
-        iw, ih = ir.getSize()
-        scale = max(pw / iw, ph / ih)
-        dw, dh = iw * scale, ih * scale
-        ox = M + (pw - dw) / 2
-        oy = (y - ph) + (ph - dh) / 2
-        c.saveState()
-        clip = c.beginPath()
-        clip.rect(M, y - ph, pw, ph)
-        c.clipPath(clip, stroke=0)
-        c.drawImage(str(PHOTO), ox, oy, width=dw, height=dh, mask="auto")
-        c.restoreState()
+        c.drawImage(str(PHOTO), M, y - ph, width=pw, height=ph,
+                    preserveAspectRatio=True, anchor="c", mask="auto")
 
     tx = M + pw + 5 * mm
     c.setFillColor(INK)
