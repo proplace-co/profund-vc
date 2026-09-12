@@ -24,6 +24,9 @@ Regenerer a la main apres toute modification (npm run build ne le fait PAS) :
 
 from pathlib import Path
 
+from reportlab.graphics import renderPDF
+from reportlab.graphics.barcode.qr import QrCodeWidget
+from reportlab.graphics.shapes import Drawing
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -188,6 +191,21 @@ def _accent_and_header(c, page):
     return y - 13 * mm
 
 
+def _qr(c, x, y, size, url):
+    """QR on a white quiet zone. (x, y) is the bottom-left of the pad."""
+    pad = 1.5 * mm
+    inner = size - 2 * pad
+    c.setFillColor(WHITE)
+    c.roundRect(x, y, size, size, 1.4, stroke=0, fill=1)
+    widget = QrCodeWidget(url, barLevel="M")
+    b0, b1, b2, b3 = widget.getBounds()
+    bw, bh = b2 - b0, b3 - b1
+    d = Drawing(inner, inner, transform=[inner / bw, 0, 0, inner / bh, 0, 0])
+    d.add(widget)
+    renderPDF.draw(d, c, x + pad, y + pad)
+    c.linkURL(url, (x, y, x + size, y + size), relative=0, thickness=0)
+
+
 def _footer(c):
     y = 10 * mm
     _rule(c, y + 16)
@@ -330,23 +348,18 @@ def page_two(c):
         "operating companies in the portfolio. Proof, not a slide.",
         "A full investment memo and financial model are generated automatically for every "
         "high-conviction match. Fund administration fully externalised.",
-        "5% GP commitment on management fees. No investment committee on Scout decisions - "
-        "one person accountable.",
+        "5% GP commitment on management fees.",
     ], CW) - 4 * mm
 
     y = _section(c, y, "How we source")
-    y = _para(c, M, y,
-              "An in-house AI platform reads 24/7 weak signals in emerging categories and detects "
-              "founders matching our thesis before they become obvious. Every signal is matched "
-              "against the active themes, then qualified automatically against dozens of green and "
-              "red flags. Only the top 1% surfaces as a CALL - the single verdict that requires "
-              "human attention.",
-              CW, size=8.8, leading=12) - 2
     y = _bullets(c, M, y, [
-        "SSL certificate registrations, Pappers legal filings, GitHub repositories.",
-        "LinkedIn job posts, Crunchbase API, semantic search, Google Alerts.",
-        "VC portfolio additions and grandes ecoles alumni networks.",
-    ], CW, gap=2) - 3 * mm
+        "Physical network and human interactions with top founders.",
+        "Digital: the latest AI tools added to our in-house sourcing platform, gathering "
+        "more than 25 custom sourcing engines detecting signals such as SSL certificate "
+        "registrations, Pappers legal filings, GitHub repositories, leadership at Tier 1 "
+        "startups changing jobs, LinkedIn job posts, semantic search, grandes ecoles "
+        "alumni networks.",
+    ], CW, gap=3) - 3 * mm
 
     y = _section(c, y, "GP track record, prior to the fund")
     y = _kv(c, M, y, CW, [
@@ -362,23 +375,42 @@ def page_two(c):
         ("Maximum Insurance - Swiss Travel Insurtech", "Operating"),
     ]) - 4 * mm
 
-    # Bloc d'appel sombre — l'equivalent du « Souscrire en 3 minutes » du modele.
-    bh = 22 * mm
+    # CTA sombre : bouton cliquable + QR vers profund.vc. "Questions" doit
+    # tenir entierement dans le bloc (pas sur le filet du pied de page).
+    SITE = "https://profund.vc"
+    MAIL = "mailto:alexandre@profund.vc"
+    qr_s = 22 * mm
+    bh = 30 * mm
     c.setFillColor(INK)
     c.rect(M, y - bh, CW, bh, stroke=0, fill=1)
+
+    btn_h = 8.2 * mm
+    btn_w = 62 * mm
+    btn_x = M + 12
+    btn_y = y - 12.2 * mm
     c.setFillColor(WHITE)
-    c.setFont("Helvetica-Bold", 15)
-    c.drawString(M + 14, y - 8.5 * mm, "Follow our deal flow, live.")
-    c.setFillColor(colors.HexColor("#8FA6C0"))
-    c.setFont("Helvetica-Bold", 13)
-    c.drawString(M + 14, y - 14 * mm, "profund.vc")
+    c.roundRect(btn_x, btn_y, btn_w, btn_h, 2.2, stroke=0, fill=1)
+    c.setFillColor(INK)
+    c.setFont("Helvetica-Bold", 9.2)
+    label = "Follow our deal flow live"
+    c.drawString(btn_x + (btn_w - c.stringWidth(label, "Helvetica-Bold", 9.2)) / 2,
+                 btn_y + 3.1, label)
+    c.linkURL(SITE, (btn_x, btn_y, btn_x + btn_w, btn_y + btn_h), relative=0, thickness=0)
+
     c.setFillColor(colors.HexColor("#B8B8B8"))
-    c.setFont("Helvetica", 8.2)
-    c.drawString(M + 14, y - 18.5 * mm,
-                 "Request LP access. The companies our platform detects, every morning. "
-                 "Professional investors only.")
-    c.drawString(M + 14, y - 22 * mm, "Questions: alexandre@profund.vc")
-    y -= bh + 6 * mm
+    c.setFont("Helvetica", 8)
+    c.drawString(M + 12, y - 18.4 * mm,
+                 "The companies our platform detects, every morning. Professional investors only.")
+    q = "Questions: alexandre@profund.vc"
+    c.setFillColor(colors.HexColor("#8FA6C0"))
+    c.setFont("Helvetica-Bold", 8.4)
+    c.drawString(M + 12, y - 24.4 * mm, q)
+    c.linkURL(MAIL, (M + 12, y - 26.2 * mm,
+                     M + 12 + c.stringWidth(q, "Helvetica-Bold", 8.4), y - 21.6 * mm),
+              relative=0, thickness=0)
+
+    _qr(c, W - M - 4 * mm - qr_s, y - bh + (bh - qr_s) / 2, qr_s, SITE)
+    y -= bh + 5 * mm
 
     _para(c, M, y,
           "This document is a summary prepared for information purposes only, in the context of "

@@ -57,13 +57,13 @@ function ThePlatform() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">The Platform</span>
         <h2 className="h2">Every weak signal in an emerging category.<br /><em>Automatically. Before anyone else sees it.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '620px', marginBottom: '36px' }}>An in-house AI platform reads 24/7 weak signals in emerging categories and detects founders matching our thesis — domain-specific AI harness with self-improving loops, built by highly technical AI-native teams — before they become obvious to the category. Traditional funds spend the majority of their time on tasks a machine can do. We spend ours on the one thing a machine cannot do: building the relationships that win the lead at seed, and the allocation at Series A.</p>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '620px', marginBottom: '36px' }}>Physical network and human interactions with top founders. Digitally, the latest AI tools sit on top of our in-house sourcing platform — more than 25 custom engines reading 24/7 weak signals in emerging categories, detecting founders matching our thesis before they become obvious to the category.</p>
         <div className="mods">
           <div className="mod">
             <div className="mod-num">① WHAT IT READS</div>
-            <div className="mod-title">Fifteen Engines. Parallel. Every Morning.</div>
-            <div className="mod-sub">The platform runs at 8:30 UTC across Paris and European startup hubs.</div>
-            <div className="mod-desc">SSL certificate registrations · Pappers legal filings · GitHub repositories · LinkedIn job posts · Crunchbase API · Semantic search · Google Alerts · VC portfolio additions · Grandes écoles alumni networks. Every signal matched against our active themes. Every match qualified automatically against dozens of green flags and red flags, weighted by their historical predictive accuracy.<br /><br /><strong>A full investment memo and financial model generated automatically for every high-conviction match. Only the top 1% surfaces as a CALL — the only verdict that requires human attention.</strong> The same engine operates outbound for Proplace, Maximum Insurance, ProFund and portfolio startups — and books meetings with AI-native founders (seed, where we lead; Series A, where we co-invest alongside a Tier 1) and international VCs for allocation.</div>
+            <div className="mod-title">25+ custom engines. Parallel. Every morning.</div>
+            <div className="mod-sub">The latest AI tools, added to our in-house sourcing platform.</div>
+            <div className="mod-desc">SSL certificate registrations · Pappers legal filings · GitHub repositories · leadership at Tier 1 startups changing jobs · LinkedIn job posts · semantic search · grandes écoles alumni networks. Every signal matched against our active themes. Every match qualified automatically against dozens of green flags and red flags, weighted by their historical predictive accuracy.<br /><br /><strong>A full investment memo and financial model generated automatically for every high-conviction match. Only the top 1% surfaces as a CALL — the only verdict that requires human attention.</strong> The same engine operates outbound for Proplace, Maximum Insurance, ProFund and portfolio startups — and books meetings with AI-native founders (seed, where we lead; Series A, where we co-invest alongside a Tier 1) and international VCs for allocation.</div>
             <div className="mod-out">
               <span className="mod-out-title">Output</span>
               <div className="mod-out-row"><strong>Daily curated pipeline</strong> — off-market opportunities matching active themes, pre-ranked by conviction score.</div>
@@ -184,7 +184,7 @@ function WinningFounder() {
           <div className="sc"><div className="sc-h">Hands-On AI Support</div><p className="sc-p">Expert in AI-powered tools (n8n, Make, Airtable, any API, MCP servers, Cursor). We help founders stress-test their architecture and design autonomous workflows — ensuring they build defensible data moats, not LLM wrappers.</p></div>
           <div className="sc"><div className="sc-h">M&A Wargaming From Day One</div><p className="sc-p">Algorithms that detect acquisition races before the market. We know who will want to buy your company before you do — and we structure the exit path from the first term sheet.</p></div>
           <div className="sc"><div className="sc-h">Automated Elite Governance</div><p className="sc-p">Fund administration 100% externalized. Daily &amp; weekly reporting fully automated. Our platform parses founders' reports instantly, updates evergreen investment memos, and flags risks in real-time.</p></div>
-          <div className="sc"><div className="sc-h">Full Alignment</div><p className="sc-p">5% GP commitment on management fees. No investment committee on Scout decisions. One person accountable — fully committed. When we back a founder, the GP is on the line.</p></div>
+          <div className="sc"><div className="sc-h">Full Alignment</div><p className="sc-p">5% GP commitment on management fees. When we back a founder, the GP is on the line.</p></div>
         </div>
       </div>
     </div>
