@@ -30,6 +30,7 @@ from reportlab.graphics.shapes import Drawing
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -398,11 +399,19 @@ def page_two(c):
 
     ph, pw = 36 * mm, 26 * mm
     if PHOTO.exists():
-        c.setStrokeColor(LINE)
-        c.setLineWidth(0.6)
-        c.rect(M, y - ph, pw, ph, stroke=1, fill=0)
-        c.drawImage(str(PHOTO), M + 0.4, y - ph + 0.4, width=pw - 0.8, height=ph - 0.8,
-                    preserveAspectRatio=True, anchor="c", mask="auto")
+        # Cover the box, clipped — no stroke, no grey letterbox.
+        ir = ImageReader(str(PHOTO))
+        iw, ih = ir.getSize()
+        scale = max(pw / iw, ph / ih)
+        dw, dh = iw * scale, ih * scale
+        ox = M + (pw - dw) / 2
+        oy = (y - ph) + (ph - dh) / 2
+        c.saveState()
+        clip = c.beginPath()
+        clip.rect(M, y - ph, pw, ph)
+        c.clipPath(clip, stroke=0)
+        c.drawImage(str(PHOTO), ox, oy, width=dw, height=dh, mask="auto")
+        c.restoreState()
 
     tx = M + pw + 5 * mm
     c.setFillColor(INK)
@@ -439,25 +448,51 @@ def page_two(c):
     ]) - 3 * mm
 
     SITE = "https://profund.vc"
+    MAIL = "alexandre@profund.vc"
+    PHONE = "+33 6 83 10 72 86"
     qr_s = 20 * mm
-    bh = 26 * mm
+    bh = 28 * mm
+    band_bot = y - bh
     c.setFillColor(INK)
-    c.rect(M, y - bh, CW, bh, stroke=0, fill=1)
+    c.rect(M, band_bot, CW, bh, stroke=0, fill=1)
 
-    btn_h = 10 * mm
-    btn_w = 72 * mm
-    btn_x = M + 14
-    btn_y = y - bh + (bh - btn_h) / 2
+    btn_h = 9.2 * mm
+    btn_w = 56 * mm
+    btn_x = M + 10
+    btn_y = band_bot + (bh - btn_h) / 2
     c.setFillColor(BLUE)
-    c.roundRect(btn_x, btn_y, btn_w, btn_h, 2.6, stroke=0, fill=1)
+    c.roundRect(btn_x, btn_y, btn_w, btn_h, 2.4, stroke=0, fill=1)
     label = "Follow our deal flow live"
-    size = 10.5
+    size = 8.8
     c.setFillColor(WHITE)
     c.setFont("Helvetica-Bold", size)
     c.drawCentredString(btn_x + btn_w / 2, btn_y + btn_h / 2 - size * 0.35, label)
     c.linkURL(SITE, (btn_x, btn_y, btn_x + btn_w, btn_y + btn_h), relative=0, thickness=0)
 
-    _qr(c, W - M - 5 * mm - qr_s, y - bh + (bh - qr_s) / 2, qr_s, SITE)
+    qr_x = W - M - 5 * mm - qr_s
+    contacts = (
+        ("SITE", "profund.vc", SITE),
+        ("PHONE", PHONE, "tel:+33683107286"),
+        ("EMAIL", MAIL, "mailto:" + MAIL),
+    )
+    cx = btn_x + btn_w + 10 * mm
+    lab_w = 16 * mm
+    line_h = 6.4 * mm
+    block_h = 3 * line_h
+    cy0 = band_bot + (bh + block_h) / 2 - 4.2
+    for i, (lab, val, href) in enumerate(contacts):
+        cy = cy0 - i * line_h
+        c.setFillColor(colors.HexColor("#8FA6C0"))
+        c.setFont("Helvetica-Bold", 6.2)
+        c.drawString(cx, cy, lab)
+        c.setFillColor(WHITE)
+        c.setFont("Helvetica-Bold", 8.6)
+        c.drawString(cx + lab_w, cy, val)
+        tw = c.stringWidth(val, "Helvetica-Bold", 8.6)
+        c.linkURL(href, (cx, cy - 2.2, cx + lab_w + tw + 4, cy + 8),
+                  relative=0, thickness=0)
+
+    _qr(c, qr_x, band_bot + (bh - qr_s) / 2, qr_s, SITE)
 
     _footer(c)
 
