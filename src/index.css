@@ -378,7 +378,7 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-h2 { margin: 0; font-size: clamp(26px, 3.2vw, 40px); line-height: 1.12;
   letter-spacing: -.036em; font-weight: 800; text-wrap: balance; }
 .pfh-h2 em { font-style: normal; color: var(--blue); }
-.pfh-lead { margin: 18px auto 0; max-width: 42em; font-size: clamp(15px, 1.25vw, 17.5px);
+.pfh-lead { margin: 18px auto 0; max-width: 52em; font-size: clamp(15px, 1.25vw, 17.5px);
   line-height: 1.55; color: var(--sub); text-wrap: pretty; }
 .pfh-lead b { color: var(--ink); font-weight: 600; }
 

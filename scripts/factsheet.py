@@ -5,9 +5,9 @@ filet d'accent en tete, chapeaux de section en capitales couleur, bande de
 chiffres sur fond noir, cartes a en-tete plein, tableaux a filets fins, bloc
 d'appel sombre, mentions en pied. Palette ProFund (src/index.css :root).
 
-REGLE EDITORIALE (decision d'Antoine, 30/08) : les MONTANTS et la mention de
-PRE-COMMERCIALISATION vivent ICI et nulle part ailleurs. Le site public ne
-porte plus un seul chiffre de levee.
+REGLE EDITORIALE : construction detaillee, tickets et rendements cibles
+vivent ICI (et sur /pitch). L'accueil porte la these en une phrase
+(EUR 35M, Lead at seed / co-invest Series A) et renvoie a cette fiche.
 
 ⚠️ Les chiffres doivent rester identiques a ceux de
 src/components/ProFundPage.tsx (/pitch). Ne jamais en modifier un ici sans le
@@ -210,10 +210,10 @@ def page_one(c):
     y -= 17
     c.setFillColor(MID)
     c.setFont("Helvetica", 11)
-    c.drawString(M, y, "Early-stage venture capital. Paris first, then Europe.")
+    c.drawString(M, y, "Lead at seed. Co-invest Series A alongside a Tier 1 lead.")
     y -= 12
     _rule(c, y, color=INK, w=2.2)
-    y -= 20
+    y -= 16
 
     # Le cadre de pre-commercialisation, en tete de document.
     box_h = 20 * mm
@@ -234,42 +234,43 @@ def page_one(c):
 
     y = _section(c, y, "In one sentence")
     y = _para(c, M, y,
-              "A EUR 35M co-invest fund. Seed with traction and Series A, alongside a Tier 1 lead. "
-              "Operators who built companies first. A platform that reads every weak signal in an "
-              "emerging category, six to eighteen months before it is obvious. Pre-seed without "
-              "traction stays in detection - it is not where the fund deploys.",
-              CW, size=10, leading=14.5)
-    y -= 5 * mm
+              "A EUR 35M early-stage fund acting as Lead investor at seed stage and co-investing "
+              "in Series A alongside a Tier 1 lead. Targeting domain-specific AI harness with "
+              "self-improving loops built by highly technical AI-native teams. Powered by an "
+              "in-house AI platform that reads 24/7 weak signals in emerging categories and "
+              "detects founders matching our thesis before they become obvious to the category.",
+              CW, size=9.8, leading=13.8)
+    y -= 4 * mm
 
     y = _stat_band(c, y, [
         ("EUR 35M", "Target fund size, incl. reserves"),
-        ("9 + 12", "Core co-invest (the fund) + Scout options"),
-        ("Not lead", "Seed traction / Series A, next to a Tier 1"),
+        ("9 + 12", "Core Series A co-invest + Scout seed lead"),
+        ("Lead", "At seed. Co-invest Series A with a Tier 1"),
         ("6-18mo", "Detection lead before announcement"),
     ])
 
     y = _section(c, y, "Fund construction")
     y = _para(c, M, y,
-              "Core is the fund: nine co-invest tickets at Seed with traction and Series A. "
-              "Scout is the option: twelve small tickets where the detection lead is worth the most. "
-              "The best Scout bets graduate to Core. We do not lead the round.",
-              CW, leading=13.5)
-    y -= 4 * mm
+              "Scout is twelve seed tickets where we act as Lead - the detection lead is worth "
+              "the most. Core is nine Series A tickets, co-investing alongside a Tier 1 lead. "
+              "The best Scout bets graduate to Core.",
+              CW, leading=13)
+    y -= 3 * mm
 
     col = (CW - 8 * mm) / 2
     y1 = _card(c, M, y, col, "Core portfolio", BLUE_DK, "EUR 1.1M", "per deal, 9 deals", [
-        "Seed with traction / Series A, entry at EUR 25M - 35M pre-money.",
+        "Series A co-invest, entry at EUR 25M - 35M pre-money.",
         "EUR 9.9M initial + EUR 14M follow-on reserved.",
-        "Co-investing alongside Tier 1 leads.",
+        "Alongside a Tier 1 lead.",
         "Target 3.1x MOIC - EUR 74.9M exit value.",
     ])
     y2 = _card(c, M + col + 8 * mm, y, col, "Scout portfolio", INK, "EUR 150K", "per deal, 12 deals", [
-        "Pre-seed detection capital, entry at EUR 4M - 6M post-money.",
+        "Lead investor at seed, entry at EUR 4M - 6M post-money.",
         "EUR 1.8M initial + EUR 7.5M follow-on reserved.",
-        "3 of 12 graduate to Core at Seed+ validation.",
+        "3 of 12 graduate to Core at Series A.",
         "Target 2.5x MOIC - EUR 23.7M exit value.",
     ])
-    y = min(y1, y2) - 7 * mm
+    y = min(y1, y2) - 5 * mm
 
     y = _section(c, y, "Capital allocation")
     _rule(c, y + 9, M, W - M, INK, 1.4)
@@ -314,13 +315,14 @@ def page_two(c):
         c.setFont("Helvetica", 8.8)
         c.drawString(M + CW * 0.64, y, b)
         c.drawString(M + CW * 0.84, y, d)
-        y -= 20
+        y -= 18
         _rule(c, y + 10)
-    y -= 6 * mm
+    y -= 4 * mm
 
     y = _section(c, y, "Strategy")
     y = _bullets(c, M, y, [
-        "Paris first, then Europe. Core capital: Seed with traction and Series A, as co-investor.",
+        "Lead at seed. Co-invest Series A alongside a Tier 1 lead. Targeting domain-specific "
+        "AI harness with self-improving loops, built by highly technical AI-native teams.",
         "Digital + human on one platform. Every signal is processed automatically. Human time "
         "is reserved for the top 1% (CALL). The reason every other signal was discarded is "
         "written down. Thesis parameters are recalibrated every Monday.",
@@ -334,17 +336,17 @@ def page_two(c):
 
     y = _section(c, y, "How we source")
     y = _para(c, M, y,
-              "Every signal is matched against the active themes, then qualified automatically against "
-              "dozens of green and red flags weighted by their historical predictive accuracy. Only the "
-              "top 1% surfaces as a CALL - the single verdict that requires human attention. Pre-seed "
-              "without traction stays in detection. Outbound is reserved for Seed with traction and "
-              "Series A.",
+              "An in-house AI platform reads 24/7 weak signals in emerging categories and detects "
+              "founders matching our thesis before they become obvious. Every signal is matched "
+              "against the active themes, then qualified automatically against dozens of green and "
+              "red flags. Only the top 1% surfaces as a CALL - the single verdict that requires "
+              "human attention.",
               CW, size=8.8, leading=12) - 2
     y = _bullets(c, M, y, [
         "SSL certificate registrations, Pappers legal filings, GitHub repositories.",
         "LinkedIn job posts, Crunchbase API, semantic search, Google Alerts.",
         "VC portfolio additions and grandes ecoles alumni networks.",
-    ], CW, gap=3) - 4 * mm
+    ], CW, gap=2) - 3 * mm
 
     y = _section(c, y, "GP track record, prior to the fund")
     y = _kv(c, M, y, CW, [
@@ -358,10 +360,10 @@ def page_two(c):
     y = _kv(c, M, y, CW, [
         ("Proplace - Your AI Corporate Developer", "Operating"),
         ("Maximum Insurance - Swiss Travel Insurtech", "Operating"),
-    ]) - 5 * mm
+    ]) - 4 * mm
 
     # Bloc d'appel sombre — l'equivalent du « Souscrire en 3 minutes » du modele.
-    bh = 24 * mm
+    bh = 22 * mm
     c.setFillColor(INK)
     c.rect(M, y - bh, CW, bh, stroke=0, fill=1)
     c.setFillColor(WHITE)

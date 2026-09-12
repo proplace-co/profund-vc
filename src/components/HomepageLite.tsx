@@ -7,9 +7,8 @@ const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const FACTSHEET_URL = '/profund-factsheet.pdf';
 
-// ⚠️ AUCUN MONTANT SUR CETTE PAGE — décision d'Antoine du 30/08 : la taille du
-// fonds, la construction et les rendements cibles vivent UNIQUEMENT dans la
-// fiche PDF (scripts/factsheet.py), qui porte la mention de pré-commercialisation.
+// La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
+// Construction detaillee, tickets et rendements cibles : fiche PDF + /pitch.
 
 const ONGOING = [
   {
@@ -35,8 +34,9 @@ export default function HomepageLite() {
           <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
           <h1 className="pfh-h1">ProFund builds and invests in<br /><em>AI-native companies</em></h1>
           <p className="pfh-lead">
-            Seed &amp; Series A as co-investor<br />
-            ProFund &amp; support to portfolio companies operated through a unique AI platform.
+            A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A alongside a Tier 1 lead.<br />
+            Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.<br />
+            Powered by an in-house AI platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.
           </p>
           <div className="pfh-cta-row">
             <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>

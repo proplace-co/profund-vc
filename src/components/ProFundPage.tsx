@@ -9,14 +9,14 @@ function HeroSection() {
         <div style={{ display: 'inline-block', border: '1px solid var(--line)', color: 'var(--mid)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', padding: '8px 24px', marginBottom: '18px' }}>Pre-Marketing Phase</div>
         <span className="hero-tagline" style={{ display: 'block' }}>AI-Native Venture Platform</span>
         <h1 className="hero-title">We find Europe's next<br /><em>category winners.</em></h1>
-        <p className="hero-sub" style={{ maxWidth: '640px', margin: '0 auto 18px' }}>Before the category is obvious. An AI-native venture platform that reads every weak signal in an emerging category — automatically, at a depth no human team can match.</p>
-        <p className="hero-note">€35M Target · 21 Deals · Paris first, then Europe</p>
+        <p className="hero-sub" style={{ maxWidth: '720px', margin: '0 auto 18px' }}>A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A alongside a Tier 1 lead. Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams. Powered by an in-house AI platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.</p>
+        <p className="hero-note">€35M Target · 21 Deals · Lead at seed · Co-invest Series A</p>
         <div style={{ marginBottom: '40px' }}>
           <a href="#contact" className="btn">Request LP Access</a>
         </div>
         <div className="hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--line)' }}>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">€35M</span><span className="sg-l">Target fund size · High-conviction reserves</span></div>
-          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">9 + 12</span><span className="sg-l">Core co-invest (the fund) + Scout options</span></div>
+          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">9 + 12</span><span className="sg-l">Core Series A co-invest + Scout seed lead</span></div>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">Weekly</span><span className="sg-l">Thesis calibration — detection parameters updated every Monday</span></div>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">6–18mo</span><span className="sg-l">Average detection lead before public announcement</span></div>
         </div>
@@ -57,13 +57,13 @@ function ThePlatform() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">The Platform</span>
         <h2 className="h2">Every weak signal in an emerging category.<br /><em>Automatically. Before anyone else sees it.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '620px', marginBottom: '36px' }}>Traditional funds spend the majority of their time on tasks a machine can do — sourcing, screening, memo writing, portfolio reporting. We built a system that does all of it automatically, so we spend our time on the one thing a machine cannot do: building the relationships that win deals.</p>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '620px', marginBottom: '36px' }}>An in-house AI platform reads 24/7 weak signals in emerging categories and detects founders matching our thesis — domain-specific AI harness with self-improving loops, built by highly technical AI-native teams — before they become obvious to the category. Traditional funds spend the majority of their time on tasks a machine can do. We spend ours on the one thing a machine cannot do: building the relationships that win the lead at seed, and the allocation at Series A.</p>
         <div className="mods">
           <div className="mod">
             <div className="mod-num">① WHAT IT READS</div>
             <div className="mod-title">Fifteen Engines. Parallel. Every Morning.</div>
             <div className="mod-sub">The platform runs at 8:30 UTC across Paris and European startup hubs.</div>
-            <div className="mod-desc">SSL certificate registrations · Pappers legal filings · GitHub repositories · LinkedIn job posts · Crunchbase API · Semantic search · Google Alerts · VC portfolio additions · Grandes écoles alumni networks. Every signal matched against our active themes. Every match qualified automatically against dozens of green flags and red flags, weighted by their historical predictive accuracy.<br /><br /><strong>A full investment memo and financial model generated automatically for every high-conviction match. Only the top 1% surfaces as a CALL — the only verdict that requires human attention.</strong> The same engine operates outbound for Proplace, Maximum Insurance, ProFund and portfolio startups — and books meetings with AI-native founders (Seed with traction, every Series A) and international VCs for allocation.</div>
+            <div className="mod-desc">SSL certificate registrations · Pappers legal filings · GitHub repositories · LinkedIn job posts · Crunchbase API · Semantic search · Google Alerts · VC portfolio additions · Grandes écoles alumni networks. Every signal matched against our active themes. Every match qualified automatically against dozens of green flags and red flags, weighted by their historical predictive accuracy.<br /><br /><strong>A full investment memo and financial model generated automatically for every high-conviction match. Only the top 1% surfaces as a CALL — the only verdict that requires human attention.</strong> The same engine operates outbound for Proplace, Maximum Insurance, ProFund and portfolio startups — and books meetings with AI-native founders (seed, where we lead; Series A, where we co-invest alongside a Tier 1) and international VCs for allocation.</div>
             <div className="mod-out">
               <span className="mod-out-title">Output</span>
               <div className="mod-out-row"><strong>Daily curated pipeline</strong> — off-market opportunities matching active themes, pre-ranked by conviction score.</div>
@@ -197,24 +197,24 @@ function PortfolioArch() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Portfolio Architecture</span>
         <h2 className="h2">The Conviction Funnel.<br /><em>Balancing Alpha with Capacity.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>Core is the fund: nine co-invest tickets at Seed with traction and Series A, alongside a Tier 1 lead. Scout is the option: twelve small tickets where the detection lead is worth the most. The best Scout bets graduate to Core. We do not lead the round.</p>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A alongside a Tier 1 lead. Scout is twelve seed tickets where we act as Lead. Core is nine Series A tickets next to a Tier 1 lead. The best Scout bets graduate to Core.</p>
         <div className="funnel-grid">
           <div>
             <div className="tier scout">
               <div className="tier-tag">Tier 1 — Alpha Layer</div>
               <div className="tier-h">Scout Portfolio · 12 Deals</div>
               <div className="tier-row"><span className="tier-label">Ticket</span>€150K initial · follow-on reserved</div>
-              <div className="tier-row"><span className="tier-label">Stage</span>Pre-Seed / Stealth</div>
+              <div className="tier-row"><span className="tier-label">Stage</span>Seed · we lead</div>
               <div className="tier-row"><span className="tier-label">Team profile</span>Top-tier engineering (X, Centrale, EPFL…)</div>
               <div className="tier-row"><span className="tier-label">Entry valuation</span>€4M – €6M Post</div>
-              <div className="tier-row"><span className="tier-label">Role</span>High risk, massive multiple potential</div>
+              <div className="tier-row"><span className="tier-label">Role</span>Lead at seed · high risk, massive multiple</div>
               <div className="tier-row"><span className="tier-label">Graduation</span>3 of 12 graduate to Core</div>
             </div>
             <div className="tier">
               <div className="tier-tag">Tier 2 — Conviction Layer</div>
               <div className="tier-h">Core Portfolio · 9 Direct + 3 Graduates</div>
-              <div className="tier-row"><span className="tier-label">Ticket</span>€1.1M · co-investing with Tier 1 leads</div>
-              <div className="tier-row"><span className="tier-label">Stage</span>Seed+ / Series A</div>
+              <div className="tier-row"><span className="tier-label">Ticket</span>€1.1M · co-investing with a Tier 1 lead</div>
+              <div className="tier-row"><span className="tier-label">Stage</span>Series A</div>
               <div className="tier-row"><span className="tier-label">Entry valuation</span>€25M – €35M Pre (€30M – €40M Post)</div>
               <div className="tier-row"><span className="tier-label">Role</span>Validated breakout winners</div>
               <div className="tier-row"><span className="tier-label">Risk profile</span>Lower risk, massive multiple potential</div>
@@ -225,7 +225,7 @@ function PortfolioArch() {
               <div className="fw-s"><span className="fw-big">€35M</span><div className="fw-det"><strong>Total fund.</strong> €1.8M Scout + €9.9M Core + €7.5M Scout follow-on + €14M Core follow-on + fees &amp; reserves.</div></div>
               <div className="fw-s hl"><span className="fw-big">21</span><div className="fw-det"><strong>Total deals.</strong> 12 Scout for asymmetric alpha · 9 Core for institutional-grade returns.</div></div>
               <div className="fw-s"><span className="fw-big">€98.6M</span><div className="fw-det"><strong>Target gross exit value.</strong> €23.7M from Scout portfolio · €74.9M from Core portfolio.</div></div>
-              <div className="fw-s"><span className="fw-big">3 of 12</span><div className="fw-det"><strong>Scout-to-Core graduation rate.</strong> Best pre-seed bets receive Core follow-on at Seed+ validation.</div></div>
+              <div className="fw-s"><span className="fw-big">3 of 12</span><div className="fw-det"><strong>Scout-to-Core graduation rate.</strong> Best seed leads receive Core follow-on at Series A.</div></div>
             </div>
           </div>
         </div>
@@ -451,7 +451,7 @@ function CTASection() {
       <div className="pf-wrap">
         <span className="eyebrow" style={{ textAlign: 'center' }}>Get in Touch</span>
         <h2 className="cta-h">Invest in the future<br />of <em>European AI.</em></h2>
-        <p className="cta-p">We are selectively building our LP base. If you are interested in co-investing alongside a fund built around a proprietary AI-native venture platform — designed to find Europe's next category winners before the market does — let's talk.</p>
+        <p className="cta-p">We are selectively building our LP base. A €35M early-stage fund that leads at seed and co-invests in Series A alongside a Tier 1 lead — powered by an in-house AI platform that reads 24/7 weak signals and detects founders matching our thesis before they become obvious to the category.</p>
         <p className="cta-note" style={{ fontSize: '15px', marginTop: '12px' }}>Contact: <a href="mailto:alexandre@profund.vc">alexandre@profund.vc</a></p>
         <div style={{ marginTop: '40px', background: '#fff' }}>
           <iframe
