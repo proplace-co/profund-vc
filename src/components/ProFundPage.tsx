@@ -9,7 +9,7 @@ function HeroSection() {
         <div style={{ display: 'inline-block', border: '1px solid var(--line)', color: 'var(--mid)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', padding: '8px 24px', marginBottom: '18px' }}>Pre-Marketing Phase</div>
         <span className="hero-tagline" style={{ display: 'block' }}>AI-Native Venture Platform</span>
         <h1 className="hero-title">We find Europe's next<br /><em>category winners.</em></h1>
-        <p className="hero-sub" style={{ maxWidth: '720px', margin: '0 auto 18px' }}>A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A alongside a Tier 1 lead. Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams. Powered by an in-house AI platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.</p>
+        <p className="hero-sub" style={{ maxWidth: '720px', margin: '0 auto 18px' }}>A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A.<br /><br />Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.<br /><br />Powered by an in-house AI sourcing platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.</p>
         <p className="hero-note">€35M Target · 21 Deals · Lead at seed · Co-invest Series A</p>
         <div style={{ marginBottom: '40px' }}>
           <a href="#contact" className="btn">Request LP Access</a>

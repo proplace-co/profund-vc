@@ -206,14 +206,30 @@ def _qr(c, x, y, size, url):
     c.linkURL(url, (x, y, x + size, y + size), relative=0, thickness=0)
 
 
+def _numbered(c, x, y, items, width, size=8.6, leading=11.4, gap=4):
+    for i, it in enumerate(items, 1):
+        c.setFillColor(BLUE)
+        c.setFont("Helvetica-Bold", size)
+        num = f"{i}/"
+        c.drawString(x, y, num)
+        nw = c.stringWidth(num + " ", "Helvetica-Bold", size)
+        y = _para(c, x + nw, y, it, width - nw, size=size, leading=leading) - gap
+    return y
+
+
 def _footer(c):
-    y = 10 * mm
-    _rule(c, y + 16)
+    y = 9 * mm
+    _rule(c, y + 11)
+    line = ("Pre-marketing communication, professional investors only. "
+            "Not an offer to subscribe. Contact: alexandre@profund.vc")
     c.setFillColor(LITE)
-    c.setFont("Helvetica", 6.6)
-    c.drawString(M, y + 7, "ProFund - early-stage venture capital - Paris. Pre-marketing communication, "
-                           "professional investors only. Not an offer to subscribe.")
-    c.drawString(M, y - 1, "profund.vc/legal   .   profund.vc/privacy   .   alexandre@profund.vc")
+    c.setFont("Helvetica", 7)
+    c.drawString(M, y + 1.5, line)
+    mail = "alexandre@profund.vc"
+    x0 = M + c.stringWidth(line[: line.rfind(mail)], "Helvetica", 7)
+    c.linkURL("mailto:alexandre@profund.vc",
+              (x0, y - 1, x0 + c.stringWidth(mail, "Helvetica", 7), y + 9),
+              relative=0, thickness=0)
 
 
 # ── pages ───────────────────────────────────────────────────────────────────
@@ -228,7 +244,7 @@ def page_one(c):
     y -= 17
     c.setFillColor(MID)
     c.setFont("Helvetica", 11)
-    c.drawString(M, y, "Lead at seed. Co-invest Series A alongside a Tier 1 lead.")
+    c.drawString(M, y, "Lead at seed. Co-invest Series A.")
     y -= 12
     _rule(c, y, color=INK, w=2.2)
     y -= 16
@@ -251,27 +267,26 @@ def page_one(c):
     y -= box_h + 7 * mm
 
     y = _section(c, y, "In one sentence")
-    y = _para(c, M, y,
-              "A EUR 35M early-stage fund acting as Lead investor at seed stage and co-investing "
-              "in Series A alongside a Tier 1 lead. Targeting domain-specific AI harness with "
-              "self-improving loops built by highly technical AI-native teams. Powered by an "
-              "in-house AI platform that reads 24/7 weak signals in emerging categories and "
-              "detects founders matching our thesis before they become obvious to the category.",
-              CW, size=9.8, leading=13.8)
-    y -= 4 * mm
+    for s in (
+        "A EUR 35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A.",
+        "Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.",
+        "Powered by an in-house AI platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.",
+    ):
+        y = _para(c, M, y, s, CW, size=9.8, leading=13.4)
+        y -= 2.6 * mm
+    y -= 1 * mm
 
     y = _stat_band(c, y, [
         ("EUR 35M", "Target fund size, incl. reserves"),
         ("9 + 12", "Core Series A co-invest + Scout seed lead"),
-        ("Lead", "At seed. Co-invest Series A with a Tier 1"),
+        ("Lead", "At seed. Co-invest Series A"),
         ("6-18mo", "Detection lead before announcement"),
     ])
 
     y = _section(c, y, "Fund construction")
     y = _para(c, M, y,
               "Scout is twelve seed tickets where we act as Lead - the detection lead is worth "
-              "the most. Core is nine Series A tickets, co-investing alongside a Tier 1 lead. "
-              "The best Scout bets graduate to Core.",
+              "the most. Core is nine Series A tickets. The best Scout bets graduate to Core.",
               CW, leading=13)
     y -= 3 * mm
 
@@ -279,7 +294,6 @@ def page_one(c):
     y1 = _card(c, M, y, col, "Core portfolio", BLUE_DK, "EUR 1.1M", "per deal, 9 deals", [
         "Series A co-invest, entry at EUR 25M - 35M pre-money.",
         "EUR 9.9M initial + EUR 14M follow-on reserved.",
-        "Alongside a Tier 1 lead.",
         "Target 3.1x MOIC - EUR 74.9M exit value.",
     ])
     y2 = _card(c, M + col + 8 * mm, y, col, "Scout portfolio", INK, "EUR 150K", "per deal, 12 deals", [
@@ -333,33 +347,43 @@ def page_two(c):
         c.setFont("Helvetica", 8.8)
         c.drawString(M + CW * 0.64, y, b)
         c.drawString(M + CW * 0.84, y, d)
-        y -= 18
+        y -= 16
         _rule(c, y + 10)
-    y -= 4 * mm
+    y -= 3.2 * mm
 
     y = _section(c, y, "Strategy")
-    y = _bullets(c, M, y, [
-        "Lead at seed. Co-invest Series A alongside a Tier 1 lead. Targeting domain-specific "
-        "AI harness with self-improving loops, built by highly technical AI-native teams.",
-        "Digital + human on one platform. Every signal is processed automatically. Human time "
-        "is reserved for the top 1% (CALL). The reason every other signal was discarded is "
-        "written down. Thesis parameters are recalibrated every Monday.",
-        "The same engine already books meetings for Proplace and Maximum Insurance - two "
-        "operating companies in the portfolio. Proof, not a slide.",
-        "A full investment memo and financial model are generated automatically for every "
-        "high-conviction match. Fund administration fully externalised.",
-        "5% GP commitment on management fees.",
-    ], CW) - 4 * mm
+    for s in (
+        "Lead at seed. Co-invest Series A. Targeting domain-specific AI harness with "
+        "self-improving loops, built by highly technical AI-native teams.",
+        "Our in-house AI Venture Platform processes automatically hundreds of startups "
+        "and founders daily to detect the ones matching our thesis. Human time is reserved "
+        "for the top 1 percent that get a CALL recommendation by Stan, our AI Principal. The reason "
+        "every other signal was discarded is written down. Thesis parameters that drive our "
+        "sourcing, investment analysis and due diligence efforts are recalibrated every day "
+        "based on our feedback. We judge every day how Stan, our AI Principal, is sourcing "
+        "and qualifying investment opportunities.",
+        "The same platform already books dozens of meetings for our portfolio companies "
+        "Proplace and Maximum Insurance.",
+        "We deliver a standard investment memo and financial model for every company matching "
+        "our thesis, and a highly detailed investment memo, AI-powered due diligence and "
+        "human conviction statement for companies we want to invest in.",
+        "Fund administration fully externalised.",
+        "5 percent GP commitment on management fees.",
+    ):
+        y = _para(c, M, y, s, CW, size=8.5, leading=11.3)
+        y -= 2.2 * mm
+    y -= 1.2 * mm
 
     y = _section(c, y, "How we source")
-    y = _bullets(c, M, y, [
+    y = _numbered(c, M, y, [
         "Physical network and human interactions with top founders.",
-        "Digital: the latest AI tools added to our in-house sourcing platform, gathering "
-        "more than 25 custom sourcing engines detecting signals such as SSL certificate "
-        "registrations, Pappers legal filings, GitHub repositories, leadership at Tier 1 "
-        "startups changing jobs, LinkedIn job posts, semantic search, grandes ecoles "
-        "alumni networks.",
-    ], CW, gap=3) - 3 * mm
+        "In-house sourcing platform, gathering more than 25 custom sourcing engines "
+        "detecting signals such as SSL certificate registrations, Pappers legal filings, "
+        "GitHub repositories, leadership at Tier 1 startups changing jobs, LinkedIn job "
+        "posts, semantic search, grandes ecoles alumni networks... to which we add new "
+        "custom engines every month in the form of innovative ideas or startups which "
+        "made sourcing their core focus.",
+    ], CW) - 2.5 * mm
 
     y = _section(c, y, "GP track record, prior to the fund")
     y = _kv(c, M, y, CW, [
@@ -373,55 +397,28 @@ def page_two(c):
     y = _kv(c, M, y, CW, [
         ("Proplace - Your AI Corporate Developer", "Operating"),
         ("Maximum Insurance - Swiss Travel Insurtech", "Operating"),
-    ]) - 4 * mm
+    ]) - 3 * mm
 
-    # CTA sombre : bouton cliquable + QR vers profund.vc. "Questions" doit
-    # tenir entierement dans le bloc (pas sur le filet du pied de page).
     SITE = "https://profund.vc"
-    MAIL = "mailto:alexandre@profund.vc"
-    qr_s = 22 * mm
-    bh = 30 * mm
+    qr_s = 20 * mm
+    bh = 26 * mm
     c.setFillColor(INK)
     c.rect(M, y - bh, CW, bh, stroke=0, fill=1)
 
-    btn_h = 8.2 * mm
-    btn_w = 62 * mm
-    btn_x = M + 12
-    btn_y = y - 12.2 * mm
-    c.setFillColor(WHITE)
-    c.roundRect(btn_x, btn_y, btn_w, btn_h, 2.2, stroke=0, fill=1)
-    c.setFillColor(INK)
-    c.setFont("Helvetica-Bold", 9.2)
+    btn_h = 10 * mm
+    btn_w = 72 * mm
+    btn_x = M + 14
+    btn_y = y - bh + (bh - btn_h) / 2
+    c.setFillColor(BLUE)
+    c.roundRect(btn_x, btn_y, btn_w, btn_h, 2.6, stroke=0, fill=1)
     label = "Follow our deal flow live"
-    c.drawString(btn_x + (btn_w - c.stringWidth(label, "Helvetica-Bold", 9.2)) / 2,
-                 btn_y + 3.1, label)
+    size = 10.5
+    c.setFillColor(WHITE)
+    c.setFont("Helvetica-Bold", size)
+    c.drawCentredString(btn_x + btn_w / 2, btn_y + btn_h / 2 - size * 0.35, label)
     c.linkURL(SITE, (btn_x, btn_y, btn_x + btn_w, btn_y + btn_h), relative=0, thickness=0)
 
-    c.setFillColor(colors.HexColor("#B8B8B8"))
-    c.setFont("Helvetica", 8)
-    c.drawString(M + 12, y - 18.4 * mm,
-                 "The companies our platform detects, every morning. Professional investors only.")
-    q = "Questions: alexandre@profund.vc"
-    c.setFillColor(colors.HexColor("#8FA6C0"))
-    c.setFont("Helvetica-Bold", 8.4)
-    c.drawString(M + 12, y - 24.4 * mm, q)
-    c.linkURL(MAIL, (M + 12, y - 26.2 * mm,
-                     M + 12 + c.stringWidth(q, "Helvetica-Bold", 8.4), y - 21.6 * mm),
-              relative=0, thickness=0)
-
-    _qr(c, W - M - 4 * mm - qr_s, y - bh + (bh - qr_s) / 2, qr_s, SITE)
-    y -= bh + 5 * mm
-
-    _para(c, M, y,
-          "This document is a summary prepared for information purposes only, in the context of "
-          "pre-marketing under Article 30a of Directive 2011/61/EU. It does not constitute an offer "
-          "to sell or a solicitation to buy any interest in any fund, nor investment advice. The "
-          "fund is not yet established and has not been authorised; the information presented may "
-          "change and no subscription can be accepted at this stage. Target returns are objectives, "
-          "not forecasts, and are not guaranteed. Past performance does not predict future results. "
-          "Any investment in a venture capital fund carries a risk of total capital loss and is "
-          "illiquid over a long horizon.",
-          CW, size=7.2, color=LITE, leading=9.6)
+    _qr(c, W - M - 5 * mm - qr_s, y - bh + (bh - qr_s) / 2, qr_s, SITE)
 
     _footer(c)
 

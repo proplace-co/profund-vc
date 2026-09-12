@@ -378,9 +378,14 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-h2 { margin: 0; font-size: clamp(26px, 3.2vw, 40px); line-height: 1.12;
   letter-spacing: -.036em; font-weight: 800; text-wrap: balance; }
 .pfh-h2 em { font-style: normal; color: var(--blue); }
-.pfh-lead { margin: 18px auto 0; max-width: 52em; font-size: clamp(15px, 1.25vw, 17.5px);
-  line-height: 1.55; color: var(--sub); text-wrap: pretty; }
+.pfh-lead { margin: 18px auto 0; max-width: 72em; font-size: clamp(14px, 1.12vw, 16.5px);
+  line-height: 1.55; color: var(--sub); }
 .pfh-lead b { color: var(--ink); font-weight: 600; }
+.pfh-lead-line { display: block; }
+.pfh-lead-line + .pfh-lead-line { margin-top: 0.9em; }
+@media (min-width: 960px) {
+  .pfh-lead-line.fit { white-space: nowrap; }
+}
 
 .pfh-eyeb { display: flex; align-items: center; justify-content: center; gap: 12px;
   margin: 0 0 clamp(12px, 2vh, 24px); font-size: 11px; font-weight: 600;
@@ -430,6 +435,14 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfh-prior { opacity: .85; }
 .pfh-logos { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto;
   opacity: .42; filter: grayscale(1); }
+.pfh-brand { display: flex; justify-content: center; align-items: center;
+  gap: clamp(56px, 10vw, 120px); flex-wrap: wrap; }
+.pfh-brand a { display: block; line-height: 0; }
+.pfh-brand img { display: block; height: 22px; width: auto; max-width: 220px;
+  opacity: .42; filter: grayscale(1);
+  transition: opacity .18s; }
+.pfh-brand img.wide { height: 18px; max-width: 280px; }
+.pfh-brand a:hover img { opacity: .7; }
 .pfh-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 44px; margin-top: 28px; }
 .pfh-words span { font-size: 15px; font-weight: 700; color: var(--mid); }
 
@@ -486,7 +499,11 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
    prendre le meme gris que la page, sinon une bande blanche la termine. */
 .pf-footer.on-grey { background: var(--bg); }
 
-.pfh-note { margin: clamp(16px, 2.4vh, 28px) auto 0; max-width: 60ch; font-size: 12.5px; line-height: 1.65; color: var(--lite); }
+.pfh-note { margin: clamp(16px, 2.4vh, 28px) auto 0; max-width: none; font-size: 12.5px;
+  line-height: 1.65; color: var(--lite); white-space: nowrap; }
+@media (max-width: 720px) {
+  .pfh-note { white-space: normal; }
+}
 
 /* « Ongoing » en liste : une ligne par societe, logo a gauche, phrase a droite. */
 .pfh-port { background: #fff; padding: clamp(22px, 3.4vh, 40px) 0; }

@@ -14,12 +14,12 @@ const ONGOING = [
   {
     name: 'Proplace',
     logo: PROPLACE_LOGO,
-    line: 'Your AI Corporate Developer',
+    href: 'https://proplace.co',
   },
   {
     name: 'Maximum Insurance',
     logo: MAXIMUM_LOGO,
-    line: 'Swiss Travel Insurtech',
+    href: 'https://maximum-insurance.com',
     wide: true,
   },
 ];
@@ -34,9 +34,9 @@ export default function HomepageLite() {
           <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
           <h1 className="pfh-h1">ProFund builds and invests in<br /><em>AI-native companies</em></h1>
           <p className="pfh-lead">
-            A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A alongside a Tier 1 lead.<br />
-            Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.<br />
-            Powered by an in-house AI platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.
+            <span className="pfh-lead-line fit">A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A.</span>
+            <span className="pfh-lead-line">Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.</span>
+            <span className="pfh-lead-line">Powered by an in-house AI sourcing platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.</span>
           </p>
           <div className="pfh-cta-row">
             <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
@@ -51,23 +51,21 @@ export default function HomepageLite() {
         </div>
       </section>
 
-      <section className="pfh-s pfh-port" id="ongoing">
-        <div className="pfh-wrap nar">
-          <p className="pfh-eyeb pfh-eyeb-port">Portfolio</p>
-          <div className="pfh-list">
+      <section className="pfh-s pfh-prior" id="ongoing">
+        <div className="pfh-wrap">
+          <p className="pfh-eyeb">Portfolio</p>
+          <div className="pfh-brand">
             {ONGOING.map((p) => (
-              <div className="pfh-li" key={p.name}>
+              <a key={p.name} href={p.href} target="_blank" rel="noopener noreferrer">
                 <img src={p.logo} alt={p.name} className={"wide" in p && p.wide ? 'wide' : undefined} />
-                <p>{p.line}</p>
-              </div>
+              </a>
             ))}
           </div>
         </div>
       </section>
 
       <section className="pfh-s" id="factsheet">
-        <div className="pfh-wrap nar" style={{ textAlign: 'center' }}>
-          <h2 className="pfh-h2">Build &amp; invest with us.</h2>
+        <div className="pfh-wrap" style={{ textAlign: 'center' }}>
           <div className="pfh-cta-row">
             <a href={FACTSHEET_URL} className="pfh-btn ghost" download>Download the fact sheet</a>
           </div>
