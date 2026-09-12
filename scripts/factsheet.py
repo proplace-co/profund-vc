@@ -22,11 +22,10 @@ Regenerer a la main apres toute modification (npm run build ne le fait PAS) :
     python scripts/factsheet.py
 """
 
+import io
 from pathlib import Path
 
-from reportlab.graphics import renderPDF
-from reportlab.graphics.barcode.qr import QrCodeWidget
-from reportlab.graphics.shapes import Drawing
+import segno
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -36,6 +35,7 @@ from reportlab.pdfgen import canvas
 ROOT = Path(__file__).resolve().parent.parent
 LOGO = ROOT / "public" / "logo.png"
 PHOTO = ROOT / "public" / "gp-photo-sheet.jpg"
+COCKPIT = ROOT / "public" / "dealflow-cockpit.jpg"
 OUT = ROOT / "public" / "profund-factsheet.pdf"
 
 INK = colors.HexColor("#0A0A0A")
@@ -152,7 +152,7 @@ def _card(c, x, y, w, header, header_bg, big, big_unit, bullets, h=None):
     return y - h
 
 
-def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14):
+def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14, last_rule=True):
     if head:
         c.setFillColor(INK)
         c.setFont("Helvetica-Bold", 9.2)
@@ -160,20 +160,32 @@ def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14):
         y -= 6
         _rule(c, y, x, x + w, head_color, 1.4)
         y -= 13
-    for k, v in rows:
+    n_rows = len(rows)
+    for i, (k, v) in enumerate(rows):
         vlines = _wrap_lines(c, v, w * 0.34, "Helvetica-Bold", 8.6)
         klines = _wrap_lines(c, k, w * 0.62, "Helvetica", 8.6)
         n = max(len(vlines), len(klines))
         c.setFillColor(SUB)
         c.setFont("Helvetica", 8.6)
-        for i, ln in enumerate(klines):
-            c.drawString(x, y - i * 10.5, ln)
+        for j, ln in enumerate(klines):
+            c.drawString(x, y - j * 10.5, ln)
         c.setFillColor(INK)
         c.setFont("Helvetica-Bold", 8.6)
-        for i, ln in enumerate(vlines):
-            c.drawRightString(x + w, y - i * 10.5, ln)
+        for j, ln in enumerate(vlines):
+            c.drawRightString(x + w, y - j * 10.5, ln)
         y -= n * 10.5 + extra
-        _rule(c, y + 12, x, x + w)
+        if i < n_rows - 1 or last_rule:
+            _rule(c, y + 12, x, x + w)
+    return y
+
+
+def _labeled(c, y, items, width, label_w=26 * mm, size=8.3, leading=11, gap=2.5 * mm):
+    """Label a gauche (capitales bleues), texte a droite — plus lisible qu'un mur."""
+    for lab, body in items:
+        c.setFillColor(BLUE)
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(M, y, lab.upper())
+        y = _para(c, M + label_w, y, body, width - label_w, size=size, leading=leading) - gap
     return y
 
 
@@ -194,17 +206,16 @@ def _accent_and_header(c, page):
 
 
 def _qr(c, x, y, size, url):
-    """QR on a white quiet zone. (x, y) is the bottom-left of the pad."""
-    pad = 1.5 * mm
-    inner = size - 2 * pad
+    """Crisp QR (segno) on a white quiet zone. (x, y) is bottom-left of the pad."""
+    qr = segno.make(url, error="M")
+    buf = io.BytesIO()
+    qr.save(buf, kind="png", scale=8, border=2, dark="#0A0A0A", light="white")
+    buf.seek(0)
     c.setFillColor(WHITE)
-    c.roundRect(x, y, size, size, 1.4, stroke=0, fill=1)
-    widget = QrCodeWidget(url, barLevel="M")
-    b0, b1, b2, b3 = widget.getBounds()
-    bw, bh = b2 - b0, b3 - b1
-    d = Drawing(inner, inner, transform=[inner / bw, 0, 0, inner / bh, 0, 0])
-    d.add(widget)
-    renderPDF.draw(d, c, x + pad, y + pad)
+    c.roundRect(x, y, size, size, 1.8, stroke=0, fill=1)
+    pad = 2.0 * mm
+    c.drawImage(ImageReader(buf), x + pad, y + pad,
+                width=size - 2 * pad, height=size - 2 * pad, mask="auto")
     c.linkURL(url, (x, y, x + size, y + size), relative=0, thickness=0)
 
 
@@ -349,48 +360,46 @@ def page_two(c):
         c.setFont("Helvetica", 8.8)
         c.drawString(M + CW * 0.64, y, b)
         c.drawString(M + CW * 0.84, y, d)
-        y -= 16
+        y -= 14.5
         _rule(c, y + 10)
-    y -= 3.2 * mm
+    y -= 2.6 * mm
 
     y = _section(c, y, "Strategy")
-    for s in (
-        "Lead at seed. Co-invest Series A. Targeting domain-specific AI harness with "
-        "self-improving loops, built by highly technical AI-native teams.",
-        "Our in-house AI Venture Platform processes automatically hundreds of startups "
-        "and founders daily to detect the ones matching our thesis. Human time is reserved "
-        "for the top 1 percent that get a CALL recommendation by Stan, our AI Principal. The reason "
-        "every other signal was discarded is written down. Thesis parameters that drive our "
-        "sourcing, investment analysis and due diligence efforts are recalibrated every day "
-        "based on our feedback. We judge every day how Stan, our AI Principal, is sourcing "
-        "and qualifying investment opportunities.",
-        "The same platform already books dozens of meetings for our portfolio companies "
-        "Proplace and Maximum Insurance.",
-        "We deliver a standard investment memo and financial model for every company matching "
-        "our thesis, and a highly detailed investment memo, AI-powered due diligence and "
-        "human conviction statement for companies we want to invest in.",
-        "Fund administration fully externalised.",
-        "5 percent GP commitment on management fees.",
-    ):
-        y = _para(c, M, y, s, CW, size=8.5, leading=11.3)
-        y -= 2.2 * mm
-    y -= 1.2 * mm
+    y = _labeled(c, y, [
+        ("Thesis",
+         "Lead at seed. Co-invest Series A. Targeting domain-specific AI harness "
+         "with self-improving loops, built by highly technical AI-native teams."),
+        ("Stan",
+         "Our in-house AI Venture Platform processes automatically hundreds of startups "
+         "and founders daily to detect the ones matching our thesis. Human time is reserved "
+         "for the top 1 percent that get a CALL recommendation by Stan, our AI Principal. "
+         "The reason every other signal was discarded is written down. Thesis parameters "
+         "that drive sourcing, investment analysis and due diligence are recalibrated every "
+         "day based on our feedback."),
+        ("Proof",
+         "The same platform already books dozens of meetings for Proplace and Maximum Insurance."),
+        ("Memos",
+         "A standard investment memo and financial model for every company matching our "
+         "thesis. A highly detailed memo, AI-powered due diligence and human conviction "
+         "statement for companies we want to invest in."),
+        ("Governance",
+         "Fund administration fully externalised. 5 percent GP commitment on management fees."),
+    ], CW) - 1.2 * mm
 
     y = _section(c, y, "How we source")
-    y = _para(c, M, y,
-              "Warm intro, network of top-tier founders, VCs, selected private events, "
-              "friends and family network...",
-              CW, size=8.5, leading=11.3) - 2.2 * mm
-    y = _para(c, M, y,
-              "In-house sourcing platform gathering more than 25 custom sourcing engines "
-              "detecting weak signals (monitoring signals in GitHub repositories, change of "
-              "leadership at top-tier startups, C-level at top-tier startups changing job, "
-              "LinkedIn job posts, semantic search, grandes ecoles alumni networks...). "
-              "We add on top of that the latest web search API and AI-native tools built to "
-              "detect any signal indicating that a startup is being created by a top-tier "
-              "founder, and we add new sourcing engines every week and make any great "
-              "sourcing idea a reality within minutes.",
-              CW, size=8.5, leading=11.3) - 2.5 * mm
+    y = _labeled(c, y, [
+        ("Network",
+         "Warm intro, network of top-tier founders, VCs, selected private events, "
+         "friends and family network..."),
+        ("Platform",
+         "In-house sourcing platform gathering more than 25 custom sourcing engines "
+         "detecting weak signals (GitHub repositories, change of leadership at top-tier "
+         "startups, C-level at top-tier startups changing job, LinkedIn job posts, "
+         "semantic search, grandes ecoles alumni networks...). Latest web search API and "
+         "AI-native tools to detect any signal that a startup is being created by a "
+         "top-tier founder. New sourcing engines every week: any great sourcing idea "
+         "becomes a reality within minutes."),
+    ], CW) - 2 * mm
 
     # The GP (photo + short CV) | prior track record
     split = CW * 0.54
@@ -437,60 +446,60 @@ def page_two(c):
         ("Deal-03 - LBO 2025", "19.0x"),
         ("Deal-04 - held", "2.5x"),
     ], extra=8)
-    y = min(y - ph, y_kv) - 4 * mm
+    y = min(y - ph, y_kv) - 7 * mm
 
     y = _section(c, y, "Portfolio today")
     y = _kv(c, M, y, CW, [
         ("Proplace - Your AI Corporate Developer", "Operating"),
         ("Maximum Insurance - Swiss Travel Insurtech", "Operating"),
-    ]) - 3 * mm
+    ], extra=12, last_rule=False) - 5 * mm
 
     SITE = "https://profund.vc"
     MAIL = "alexandre@profund.vc"
     PHONE = "+33 6 83 10 72 86"
-    qr_s = 20 * mm
-    bh = 28 * mm
-    band_bot = y - bh
-    c.setFillColor(INK)
-    c.rect(M, band_bot, CW, bh, stroke=0, fill=1)
 
-    btn_h = 9.2 * mm
-    btn_w = 56 * mm
-    btn_x = M + 10
-    btn_y = band_bot + (bh - btn_h) / 2
-    c.setFillColor(BLUE)
-    c.roundRect(btn_x, btn_y, btn_w, btn_h, 2.4, stroke=0, fill=1)
-    label = "Follow our deal flow live"
-    size = 8.8
-    c.setFillColor(WHITE)
-    c.setFont("Helvetica-Bold", size)
-    c.drawCentredString(btn_x + btn_w / 2, btn_y + btn_h / 2 - size * 0.35, label)
-    c.linkURL(SITE, (btn_x, btn_y, btn_x + btn_w, btn_y + btn_h), relative=0, thickness=0)
+    y = _section(c, y, "Live deal flow")
+    box_h = 40 * mm
+    c.setFillColor(BG)
+    c.rect(M, y - box_h, CW, box_h, stroke=0, fill=1)
+    c.setStrokeColor(BLUE)
+    c.setLineWidth(2.4)
+    c.line(M, y - box_h, M, y)
 
+    img_h = box_h - 7 * mm
+    img_w = img_h * (1280 / 720.0)
+    if COCKPIT.exists():
+        c.drawImage(str(COCKPIT), M + 4 * mm, y - box_h + 3.5 * mm,
+                    width=img_w, height=img_h, preserveAspectRatio=True, anchor="sw", mask="auto")
+        c.linkURL(SITE, (M + 4 * mm, y - box_h + 3.5 * mm,
+                         M + 4 * mm + img_w, y - 3.5 * mm), relative=0, thickness=0)
+
+    rx = M + 4 * mm + img_w + 6 * mm
+    qr_s = 22 * mm
     qr_x = W - M - 5 * mm - qr_s
-    contacts = (
-        ("SITE", "profund.vc", SITE),
-        ("PHONE", PHONE, "tel:+33683107286"),
-        ("EMAIL", MAIL, "mailto:" + MAIL),
-    )
-    cx = btn_x + btn_w + 10 * mm
-    lab_w = 16 * mm
-    line_h = 6.4 * mm
-    block_h = 3 * line_h
-    cy0 = band_bot + (bh + block_h) / 2 - 4.2
-    for i, (lab, val, href) in enumerate(contacts):
-        cy = cy0 - i * line_h
-        c.setFillColor(colors.HexColor("#8FA6C0"))
-        c.setFont("Helvetica-Bold", 6.2)
-        c.drawString(cx, cy, lab)
-        c.setFillColor(WHITE)
-        c.setFont("Helvetica-Bold", 8.6)
-        c.drawString(cx + lab_w, cy, val)
-        tw = c.stringWidth(val, "Helvetica-Bold", 8.6)
-        c.linkURL(href, (cx, cy - 2.2, cx + lab_w + tw + 4, cy + 8),
-                  relative=0, thickness=0)
+    _qr(c, qr_x, y - 5 * mm - qr_s, qr_s, SITE)
 
-    _qr(c, qr_x, band_bot + (bh - qr_s) / 2, qr_s, SITE)
+    c.setFillColor(INK)
+    c.setFont("Helvetica-Bold", 10.5)
+    c.drawString(rx, y - 8 * mm, "Follow our deal flow live")
+    c.linkURL(SITE, (rx, y - 11 * mm, qr_x - 3 * mm, y - 4 * mm), relative=0, thickness=0)
+    c.setFillColor(MID)
+    c.setFont("Helvetica", 7.4)
+    c.drawString(rx, y - 12.5 * mm, "Scan, or tap. The companies we detect, every morning.")
+
+    contacts = (
+        ("profund.vc", SITE),
+        (PHONE, "tel:+33683107286"),
+        (MAIL, "mailto:" + MAIL),
+    )
+    cy = y - 18.5 * mm
+    for val, href in contacts:
+        c.setFillColor(BLUE_DK)
+        c.setFont("Helvetica-Bold", 8)
+        c.drawString(rx, cy, val)
+        tw = c.stringWidth(val, "Helvetica-Bold", 8)
+        c.linkURL(href, (rx, cy - 2, rx + tw + 2, cy + 8), relative=0, thickness=0)
+        cy -= 5.2 * mm
 
     _footer(c)
 
