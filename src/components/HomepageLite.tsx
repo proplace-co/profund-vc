@@ -1,5 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DealFlowModal from './DealFlowModal';
+
+const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
+
+function hashWantsDealflow() {
+  return DEALFLOW_HASHES.has((window.location.hash || '').toLowerCase());
+}
 
 const LOGO_URL = '/logo.png';
 const TRACK_RECORD_URL = '/track-record.png';
@@ -25,7 +31,27 @@ const ONGOING = [
 ];
 
 export default function HomepageLite() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => hashWantsDealflow());
+
+  useEffect(() => {
+    const onHash = () => setOpen(hashWantsDealflow());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  function openModal() {
+    setOpen(true);
+    if (!hashWantsDealflow()) {
+      window.history.replaceState(null, '', '#dealflow');
+    }
+  }
+
+  function closeModal() {
+    setOpen(false);
+    if (hashWantsDealflow()) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }
 
   return (
     <div className="pfh">
@@ -39,7 +65,7 @@ export default function HomepageLite() {
             <span className="pfh-lead-line">Powered by an in-house AI sourcing platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.</span>
           </p>
           <div className="pfh-cta-row">
-            <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
+            <button className="pfh-btn" onClick={openModal}>Follow our deal flow live</button>
           </div>
         </div>
       </header>
@@ -79,7 +105,7 @@ export default function HomepageLite() {
           hero et faisait deborder la page d'un ecran. Le seul appel a l'action
           vit en haut. */}
 
-      <DealFlowModal open={open} onClose={() => setOpen(false)} />
+      <DealFlowModal open={open} onClose={closeModal} />
     </div>
   );
 }
