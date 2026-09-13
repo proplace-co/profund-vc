@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomepageLite from './components/HomepageLite';
+import DealFlowPage from './components/DealFlowPage';
 import ProFundPage from './components/ProFundPage';
 import Footer from './components/Footer';
 import LegalPage from './components/LegalPage';
@@ -11,6 +12,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<><HomepageLite /><Footer /></>} />
+        <Route path="/dealflow" element={<DealFlowPage />} />
         <Route path="/pitch" element={<><ProFundPage /><Footer /></>} />
         <Route path="/legal" element={<><LegalPage /><Footer /></>} />
         <Route path="/privacy" element={<><PrivacyPage /><Footer /></>} />

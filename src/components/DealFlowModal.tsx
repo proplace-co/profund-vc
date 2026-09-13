@@ -3,8 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 // Le site est statique (GitHub Pages) : le formulaire POSTe directement le proxy
 // Modal, dont le middleware CORS est ouvert (allow_origins=["*"]). La route est
 // définie dans le monorepo, modal_proxy/proxy.py → POST /profund/subscribe.
-const SUBSCRIBE_URL =
-  'https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run/profund/subscribe';
+const PROXY =
+  'https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run';
+const SUBSCRIBE_URL = `${PROXY}/profund/subscribe`;
+const RESEND_URL = `${PROXY}/profund/resend`;
 
 // Les cinq identifiants sont ceux du renderer d'email (stan_proxy.py, _sec_on) :
 // ne pas les renommer ici sans les renommer là-bas, c'est le même contrat.
@@ -41,6 +43,8 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState('');
+  const [pane, setPane] = useState<'apply' | 'returning'>('apply');
+  const [doneKind, setDoneKind] = useState<'pending' | 'resent'>('pending');
   const firstRef = useRef<HTMLInputElement>(null);
 
   // Échap ferme, et on bloque le défilement du fond tant que la boîte est ouverte.
@@ -80,6 +84,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok || !data.ok) throw new Error(data.error || `HTTP ${r.status}`);
+      setDoneKind(data.status === 'accepted' ? 'resent' : 'pending');
       setStatus('done');
     } catch (err) {
       // On ne renvoie jamais le message brut du serveur à l'écran : il peut
@@ -95,6 +100,37 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
     }
   }
 
+  async function resend(e: React.FormEvent) {
+    e.preventDefault();
+    if (status === 'sending') return;
+    setStatus('sending');
+    setError('');
+    try {
+      const r = await fetch(RESEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (data.error === 'unknown') {
+        setStatus('error');
+        setError('We do not have this email. Apply first.');
+        return;
+      }
+      if (!r.ok || !data.ok) throw new Error(data.error || `HTTP ${r.status}`);
+      if (data.status === 'pending') {
+        setDoneKind('pending');
+        setStatus('done');
+        return;
+      }
+      setDoneKind('resent');
+      setStatus('done');
+    } catch {
+      setStatus('error');
+      setError('Something went wrong. Write to alexandre@profund.vc.');
+    }
+  }
+
   return (
     <div className="pfm-back" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="pfm" role="dialog" aria-modal="true" aria-label="Apply to follow our deal flow">
@@ -102,23 +138,46 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
 
         {status === 'done' ? (
           <div className="pfm-done">
-            <span className="pfh-live"><span className="pfh-dot" />Application received</span>
+            <span className="pfh-live"><span className="pfh-dot" />
+              {doneKind === 'resent' ? 'Link sent' : 'Application received'}
+            </span>
             <h3>Thank you, {first || 'and welcome'}.</h3>
-            <p>
-              We review every application and will come back to you. If we move forward,
-              you receive the deal flow {rhythm === 'daily' ? 'every morning' : 'once a week'} at {hour}:00
-              Paris time, with a one-click unsubscribe in every email.
-            </p>
+            {doneKind === 'resent' ? (
+              <p>
+                You are already on the list. We just emailed your private link
+                to open the live deal flow.
+              </p>
+            ) : pane === 'returning' ? (
+              <p>
+                Your application is still under review. Nothing is sent until
+                we accept — then you will receive a private link.
+              </p>
+            ) : (
+              <p>
+                We review every application. Nothing is sent until we accept.
+                If we do, you receive a private link to the live deal flow, plus
+                {rhythm === 'daily'
+                  ? ' a morning email — the companies we reviewed that day, at '
+                  : ' a weekly recap — thesis and the names that mattered, at '}
+                {hour}:00 Paris time. One-click unsubscribe in every email.
+              </p>
+            )}
             <button className="pfh-btn" onClick={onClose}>Close</button>
           </div>
         ) : (
-          <form onSubmit={submit}>
+          <form onSubmit={pane === 'returning' ? resend : submit}>
             <h3 className="pfm-h">Follow our deal flow.</h3>
             <p className="pfm-sub">
               The companies our platform detects, before they are obvious.
-              Set it up here — you can change it later from any email.
             </p>
+            <div className="pfm-seg" style={{ marginBottom: 8 }}>
+              <button type="button" className={pane === 'apply' ? 'on' : ''}
+                      onClick={() => { setPane('apply'); setError(''); }}>Apply</button>
+              <button type="button" className={pane === 'returning' ? 'on' : ''}
+                      onClick={() => { setPane('returning'); setError(''); }}>Already following</button>
+            </div>
 
+            {pane === 'apply' && (
             <div className="pfm-fld pfm-grid">
               <div>
                 <label className="pfm-lbl" htmlFor="pfm-first">First name</label>
@@ -133,6 +192,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
                        onChange={(e) => setLast(e.target.value)} />
               </div>
             </div>
+            )}
 
             <div className="pfm-fld">
               <label className="pfm-lbl" htmlFor="pfm-email">Your email</label>
@@ -141,9 +201,11 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
                      onChange={(e) => setEmail(e.target.value)} />
             </div>
 
+            {pane === 'apply' && (
+            <>
             <div className="pfm-fld">
               <label className="pfm-lbl" htmlFor="pfm-ticket">Indicative ticket</label>
-              <select id="pfm-ticket" className="pfm-in" required value={ticket}
+              <select id="pfm-ticket" className="pfm-in" required={pane === 'apply'} value={ticket}
                       onChange={(e) => setTicket(e.target.value)}>
                 <option value="" disabled>Choose a range</option>
                 {TICKETS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
@@ -151,16 +213,23 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
               <p className="pfm-hint">Minimum commitment €500k.</p>
             </div>
 
-            <div className="pfm-fld pfm-grid">
-              <div>
-                <span className="pfm-lbl">Rhythm</span>
-                <div className="pfm-seg">
-                  <button type="button" className={rhythm === 'daily' ? 'on' : ''}
-                          onClick={() => setRhythm('daily')}>Every morning</button>
-                  <button type="button" className={rhythm === 'weekly' ? 'on' : ''}
-                          onClick={() => setRhythm('weekly')}>Once a week</button>
-                </div>
+            <div className="pfm-fld">
+              <span className="pfm-lbl">Rhythm — what you actually receive</span>
+              <div className="pfm-ry">
+                <button type="button" className={rhythm === 'daily' ? 'on' : ''}
+                        onClick={() => setRhythm('daily')}>
+                  <b>Every morning</b>
+                  <span>The companies we reviewed that day: names we kept, names we passed, and why. The live list.</span>
+                </button>
+                <button type="button" className={rhythm === 'weekly' ? 'on' : ''}
+                        onClick={() => setRhythm('weekly')}>
+                  <b>Once a week</b>
+                  <span>A recap — how the thesis moved, the names that mattered. Not the daily list.</span>
+                </button>
               </div>
+            </div>
+
+            <div className="pfm-fld pfm-grid">
               <div>
                 <span className="pfm-lbl">Time (Paris)</span>
                 <div className="pfm-step">
@@ -174,7 +243,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
             </div>
 
             <div className="pfm-fld">
-              <span className="pfm-lbl">What you receive</span>
+              <span className="pfm-lbl">In the {rhythm === 'daily' ? 'morning' : 'weekly'} email</span>
               <div className="pfm-secs">
                 {SECTIONS.map((s) => (
                   <label key={s.id} className={`pfm-sec ${on.includes(s.id) ? 'on' : ''}`}>
@@ -192,11 +261,15 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
                 <a href="/privacy">privacy notice</a>.
               </span>
             </label>
+            </>
+            )}
 
             {status === 'error' && <p className="pfm-err">{error}</p>}
 
-            <button className="pfh-btn pfm-go" type="submit" disabled={!consent || status === 'sending'}>
-              {status === 'sending' ? 'Sending' : 'Apply'}
+            <button className="pfh-btn pfm-go" type="submit"
+                    disabled={(pane === 'apply' && !consent) || status === 'sending'}>
+              {status === 'sending' ? 'Sending'
+                : pane === 'returning' ? 'Send my access link' : 'Apply'}
             </button>
             <p className="pfm-fine">
               Every application is reviewed. We are free to accept it or not, and we may

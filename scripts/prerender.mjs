@@ -43,6 +43,11 @@ const ROUTES = [
     desc: "The platform, the two themes, portfolio construction and target returns of ProFund, an AI-native venture platform finding Europe's next category winners.",
   },
   {
+    path: 'dealflow',
+    title: 'ProFund deal flow — private',
+    desc: 'Private live deal flow for accepted ProFund investors.',
+  },
+  {
     path: 'legal',
     title: 'Legal Notice — Pre-Marketing Communication | ProFund',
     desc: 'AIFMD pre-marketing communication. Professional Investors and Eligible Counterparties only. Strictly confidential. Not an offer.',
