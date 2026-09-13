@@ -4,7 +4,8 @@ import DealFlowModal from './DealFlowModal';
 
 const PROXY =
   'https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run';
-const PREVIEW = 'https://proplace.co/cibles/profund-vc/?teaser=1';
+const PREVIEW =
+  'https://proplace.co/cibles/profund-vc/?teaser=1&guest=lp&ticker=0&onb=0&tab=kept';
 const LOGO = '/logo.png';
 
 export default function DealFlowPage() {
