@@ -4,7 +4,7 @@ import DealFlowModal from './DealFlowModal';
 
 const PROXY =
   'https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run';
-const PREVIEW =
+const FALLBACK_PREVIEW =
   'https://proplace.co/cibles/profund-vc/?teaser=1&guest=lp&ticker=0&onb=0&tab=kept';
 const LOGO = '/logo.png';
 
@@ -15,6 +15,7 @@ export default function DealFlowPage() {
     k ? 'check' : 'none',
   );
   const [first, setFirst] = useState('');
+  const [src, setSrc] = useState(FALLBACK_PREVIEW);
   const [modal, setModal] = useState(false);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function DealFlowPage() {
         if (stop) return;
         if (d && d.ok) {
           setFirst(d.first_name || '');
+          if (d.preview_src) setSrc(d.preview_src);
           setState('ok');
         } else setState('bad');
       })
@@ -52,7 +54,7 @@ export default function DealFlowPage() {
         <iframe
           className="pfd-frame"
           title="ProFund deal flow"
-          src={PREVIEW}
+          src={src}
           referrerPolicy="no-referrer"
         />
       )}
