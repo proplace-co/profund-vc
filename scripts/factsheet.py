@@ -598,7 +598,7 @@ def page_two(c):
          "Sourced 14 months before public announcement.", "19.0x"),
         ("Deal-04 - acquired 2016",
          "100% acquisition, EUR 45M buyout. Revenue growing ~20% YoY since "
-         "acquisition.", "Held"),
+         "acquisition.", ""),
     ])
     c.setFillColor(LITE)
     c.setFont("Helvetica", 6.8)
