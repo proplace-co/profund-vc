@@ -35,8 +35,19 @@ from reportlab.pdfgen import canvas
 ROOT = Path(__file__).resolve().parent.parent
 LOGO = ROOT / "public" / "logo.png"
 PHOTO = ROOT / "public" / "gp-photo-sheet.jpg"
+# Vraie capture de profund.vc/dealflow (vue LP marque blanche du cockpit), pas
+# une maquette. A refaire si l'ecran change.
 COCKPIT = ROOT / "public" / "dealflow-cockpit.jpg"
 OUT = ROOT / "public" / "profund-factsheet.pdf"
+# Logos du portefeuille, passes en gris a la generation (comme sur l'accueil).
+# Maximum Insurance n'existe qu'en SVG cote site : reportlab ne lit pas le SVG,
+# d'ou sa version PNG dans scripts/assets/.
+PORTFOLIO = (
+    ("Proplace", "Your AI Corporate Developer", ROOT / "public" / "portfolio-proplace.png"),
+    ("Maximum Insurance", "Swiss Travel Insurtech",
+     ROOT / "scripts" / "assets" / "portfolio-maximum-insurance.png"),
+    ("Sosuites", "AI-assisted personalised art prints", ROOT / "public" / "portfolio-sosuites.png"),
+)
 
 INK = colors.HexColor("#0A0A0A")
 SUB = colors.HexColor("#3A3A3A")
@@ -125,7 +136,7 @@ def _card(c, x, y, w, header, header_bg, big, big_unit, bullets, h=None):
     """Carte a en-tete plein : bandeau titre, grand chiffre, puces."""
     hh = 8.5 * mm
     body_lines = sum(len(_wrap_lines(c, b, w - 24, "Helvetica", 8.8)) for b in bullets)
-    h = h or (hh + 13 * mm + body_lines * 12 + len(bullets) * 5 + 8 * mm)
+    h = h or (hh + 13 * mm + body_lines * 12 + len(bullets) * 5 + 4 * mm)
     c.setStrokeColor(LINE)
     c.setLineWidth(0.8)
     c.rect(x, y - h, w, h, stroke=1, fill=0)
@@ -219,6 +230,90 @@ def _qr(c, x, y, size, url):
     c.linkURL(url, (x, y, x + size, y + size), relative=0, thickness=0)
 
 
+def _pillars(c, y, items):
+    """Encadre deux colonnes (Investment | Operations), repris de l'accueil :
+    fond blanc, filet fin, separation verticale, titre precede d'un filet bleu."""
+    pad = 5 * mm
+    colw = CW / len(items)
+    tw = colw - 2 * pad
+    size, lead = 8.6, 11.8
+    n = max(len(_wrap_lines(c, t, tw, "Helvetica", size)) for _, t in items)
+    h = pad + 9.4 + 7 + n * lead + pad - 12
+    c.setStrokeColor(LINE)
+    c.setLineWidth(0.8)
+    c.rect(M, y - h, CW, h, stroke=1, fill=0)
+    for i, (title, text) in enumerate(items):
+        x = M + i * colw
+        if i:
+            c.line(x, y - h, x, y)
+        ty = y - pad - 7
+        c.setFillColor(BLUE)
+        c.rect(x + pad, ty + 2.8, 4.6 * mm, 1.5, stroke=0, fill=1)
+        c.setFillColor(INK)
+        c.setFont("Helvetica-Bold", 9.4)
+        c.drawString(x + pad + 4.6 * mm + 5, ty, title)
+        _para(c, x + pad, ty - 14, text, tw, size=size, leading=lead)
+    return y - h - 6 * mm
+
+
+def _grey_logo(path):
+    """Logo recadre sur son trace et passe en gris clair, transparence gardee —
+    l'equivalent de `filter: grayscale(1); opacity: .42` de l'accueil."""
+    from PIL import Image
+    im = Image.open(path).convert("RGBA")
+    box = im.getchannel("A").getbbox()
+    if box:
+        im = im.crop(box)
+    g = im.convert("L").point(lambda v: int(255 - (255 - v) * 0.5))
+    out = Image.merge("RGBA", (g, g, g, im.getchannel("A")))
+    return ImageReader(out), out.size
+
+
+def _portfolio(c, y, items, logo_h=3.8 * mm):
+    """Bandeau en colonnes : mini logo gris, accroche, statut."""
+    cell = CW / len(items)
+    for i, (name, tagline, path) in enumerate(items):
+        x0 = M + i * cell
+        x = x0 + (5 * mm if i else 0)
+        maxw = cell - (10 * mm if i else 5 * mm)
+        if i:
+            c.setStrokeColor(LINE)
+            c.setLineWidth(0.7)
+            c.line(x0, y - 13 * mm, x0, y + 1 * mm)
+        if path.exists():
+            ir, (iw, ih) = _grey_logo(path)
+            lw, lh = logo_h * iw / float(ih), logo_h
+            if lw > maxw:
+                lw, lh = maxw, maxw * ih / float(iw)
+            c.drawImage(ir, x, y - lh, width=lw, height=lh, mask="auto")
+        else:
+            c.setFillColor(LITE)
+            c.setFont("Helvetica-Bold", 9)
+            c.drawString(x, y - logo_h + 1, name)
+        c.setFillColor(SUB)
+        c.setFont("Helvetica", 8)
+        c.drawString(x, y - logo_h - 4.6 * mm, tagline)
+        c.setFillColor(BLUE)
+        c.rect(x, y - logo_h - 8.6 * mm + 1.2, 3, 3, stroke=0, fill=1)
+        c.setFillColor(MID)
+        c.setFont("Helvetica", 7.2)
+        c.drawString(x + 6, y - logo_h - 8.6 * mm, "Operating")
+    return y - 14 * mm
+
+
+def _track(c, x, y, w, rows):
+    """Track record : tete en gras, multiple a droite, detail en petit dessous."""
+    for i, (head, detail, val) in enumerate(rows):
+        c.setFillColor(INK)
+        c.setFont("Helvetica-Bold", 8.6)
+        c.drawString(x, y, head)
+        c.drawRightString(x + w, y, val)
+        y = _para(c, x, y - 10.5, detail, w, size=7.4, color=MID, leading=9.2)
+        _rule(c, y + 4.5, x, x + w)
+        y -= 7
+    return y
+
+
 def _numbered(c, x, y, items, width, size=8.6, leading=11.4, gap=4):
     for i, it in enumerate(items, 1):
         c.setFillColor(BLUE)
@@ -283,11 +378,22 @@ def page_one(c):
     for s in (
         "A EUR 35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A.",
         "Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.",
-        "Powered by an in-house AI platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.",
     ):
         y = _para(c, M, y, s, CW, size=9.8, leading=13.4)
         y -= 2.6 * mm
     y -= 1 * mm
+
+    # Les deux plateformes maison — meme encadre et meme texte que l'accueil
+    # (src/components/HomepageLite.tsx, PILLARS).
+    y = _pillars(c, y + 2 * mm, [
+        ("Investment",
+         "An in-house AI platform for sourcing and deal assessment. It monitors weak signals "
+         "across emerging categories around the clock and identifies founders who match our "
+         "thesis before they become obvious."),
+        ("Operations",
+         "An in-house AI platform for inbound and outbound. It runs content and go-to-market "
+         "for our portfolio companies."),
+    ])
 
     y = _stat_band(c, y, [
         ("EUR 35M", "Target fund size, incl. reserves"),
@@ -326,7 +432,7 @@ def page_one(c):
         ("Core follow-on reserves", "EUR 14.0M"),
         ("Fees and reserves - balance", "EUR 1.8M"),
         ("Total fund", "EUR 35.0M"),
-    ])
+    ], extra=6.5)
 
     _footer(c)
 
@@ -360,8 +466,8 @@ def page_two(c):
         c.setFont("Helvetica", 8.8)
         c.drawString(M + CW * 0.64, y, b)
         c.drawString(M + CW * 0.84, y, d)
-        y -= 14.5
-        _rule(c, y + 10)
+        y -= 13.5
+        _rule(c, y + 9.5)
     y -= 2.6 * mm
 
     y = _section(c, y, "Strategy")
@@ -384,7 +490,7 @@ def page_two(c):
          "statement for companies we want to invest in."),
         ("Governance",
          "Fund administration fully externalised. 5 percent GP commitment on management fees."),
-    ], CW) - 1.2 * mm
+    ], CW, gap=1.6 * mm) - 1.2 * mm
 
     y = _section(c, y, "How we source")
     y = _labeled(c, y, [
@@ -399,10 +505,10 @@ def page_two(c):
          "AI-native tools to detect any signal that a startup is being created by a "
          "top-tier founder. New sourcing engines every week: any great sourcing idea "
          "becomes a reality within minutes."),
-    ], CW) - 2 * mm
+    ], CW, gap=1.6 * mm) - 2 * mm
 
     # The GP (photo + short CV) | prior track record
-    split = CW * 0.54
+    split = CW * 0.5
     rx = M + split + 6 * mm
     rw = CW - split - 6 * mm
     c.setFillColor(BLUE)
@@ -440,26 +546,34 @@ def page_two(c):
         c.drawString(tx, yy, role)
         yy -= 10.5
 
-    y_kv = _kv(c, rx, y, rw, [
-        ("Deal-01 - exited 2007", "10.0x"),
-        ("Deal-02 - exited 2014", "20.0x"),
-        ("Deal-03 - LBO 2025", "19.0x"),
-        ("Deal-04 - held", "2.5x"),
-    ], extra=8)
-    y = min(y - ph, y_kv) - 7 * mm
+    # Memes faits que le tableau Track Record de /pitch (ProFundPage.tsx) ; seul
+    # Deal-04 porte en plus la croissance depuis l'acquisition (05/10).
+    y_kv = _track(c, rx, y, rw, [
+        ("Deal-01 - exited 2007",
+         "Entry 2006, 100% owned. Full exit in 2007.", "10.0x"),
+        ("Deal-02 - exited 2014",
+         "Entry 2008 at 100%. Sold down to 40%, then full exit in 2014.", "20.0x"),
+        ("Deal-03 - LBO exit 2025",
+         "Seed ticket EUR 200K at EUR 5.3M in 2014. LBO exit in Feb 2025 at EUR 100M. "
+         "Sourced 14 months before public announcement.", "19.0x"),
+        ("Deal-04 - held",
+         "100% acquisition, EUR 45M buyout in 2016. Revenue growing ~20% YoY since "
+         "acquisition. 2.5x cash-on-cash to date.", "2.5x"),
+    ])
+    c.setFillColor(LITE)
+    c.setFont("Helvetica", 6.8)
+    c.drawString(rx, y_kv + 1, "Companies anonymised. Names and references on request.")
+    y = min(y - ph, y_kv - 1 * mm) - 5 * mm
 
     y = _section(c, y, "Portfolio today")
-    y = _kv(c, M, y, CW, [
-        ("Proplace - Your AI Corporate Developer", "Operating"),
-        ("Maximum Insurance - Swiss Travel Insurtech", "Operating"),
-    ], extra=12, last_rule=False) - 5 * mm
+    y = _portfolio(c, y + 1.5 * mm, PORTFOLIO) - 7.5 * mm
 
     SITE = "https://profund.vc"
     MAIL = "alexandre@profund.vc"
     PHONE = "+33 6 83 10 72 86"
 
     y = _section(c, y, "Live deal flow")
-    box_h = 40 * mm
+    box_h = 37 * mm
     c.setFillColor(BG)
     c.rect(M, y - box_h, CW, box_h, stroke=0, fill=1)
     c.setStrokeColor(BLUE)
@@ -471,6 +585,10 @@ def page_two(c):
     if COCKPIT.exists():
         c.drawImage(str(COCKPIT), M + 4 * mm, y - box_h + 3.5 * mm,
                     width=img_w, height=img_h, preserveAspectRatio=True, anchor="sw", mask="auto")
+        # filet autour de la capture : son fond blanc se fondait dans le gris
+        c.setStrokeColor(LINE)
+        c.setLineWidth(0.6)
+        c.rect(M + 4 * mm, y - box_h + 3.5 * mm, img_w, img_h, stroke=1, fill=0)
         c.linkURL(SITE, (M + 4 * mm, y - box_h + 3.5 * mm,
                          M + 4 * mm + img_w, y - 3.5 * mm), relative=0, thickness=0)
 
