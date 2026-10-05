@@ -10,13 +10,10 @@ const RESEND_URL = `${PROXY}/profund/resend`;
 
 // Les cinq identifiants sont ceux du renderer d'email (stan_proxy.py, _sec_on) :
 // ne pas les renommer ici sans les renommer là-bas, c'est le même contrat.
-const SECTIONS: { id: string; label: string }[] = [
-  { id: 'pending', label: 'Deals under review' },
-  { id: 'market', label: 'Market pulse and thesis' },
-  { id: 'sourcing', label: 'What we sourced today' },
-  { id: 'autonomous', label: 'Decisions taken automatically' },
-  { id: 'stats', label: 'Pipeline numbers' },
-];
+// Plus aucun choix côté abonné : toutes les sections, chaque matin, à 10 h.
+const SECTIONS = ['pending', 'market', 'sourcing', 'autonomous', 'stats'];
+const RHYTHM = 'daily';
+const HOUR = 10;
 
 // Fourchettes de ticket — mêmes identifiants que _PROFUND_TICKETS côté proxy.
 // Le plancher est 500 k€ : il n'existe volontairement aucune option en dessous.
@@ -27,9 +24,6 @@ const TICKETS: { id: string; label: string }[] = [
   { id: '5m+', label: '€5M +' },
 ];
 
-const HOUR_MIN = 6;
-const HOUR_MAX = 21;
-
 type Status = 'idle' | 'sending' | 'done' | 'error';
 
 export default function DealFlowModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -37,9 +31,6 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
   const [last, setLast] = useState('');
   const [email, setEmail] = useState('');
   const [ticket, setTicket] = useState('');
-  const [rhythm, setRhythm] = useState<'daily' | 'weekly'>('daily');
-  const [hour, setHour] = useState(8);
-  const [on, setOn] = useState<string[]>(SECTIONS.map((s) => s.id));
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState('');
@@ -64,9 +55,6 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
 
   if (!open) return null;
 
-  const toggle = (id: string) =>
-    setOn((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
-
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (status === 'sending') return;
@@ -77,7 +65,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email, consent, rhythm, hour, sections: on,
+          email, consent, rhythm: RHYTHM, hour: HOUR, sections: SECTIONS,
           first_name: first, last_name: last, ticket,
           source: 'profund.vc',
         }),
@@ -156,10 +144,8 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
               <p>
                 We review every application. Nothing is sent until we accept.
                 If we do, you receive a private link to the live deal flow, plus
-                {rhythm === 'daily'
-                  ? ' a morning email — the companies we reviewed that day, at '
-                  : ' a weekly recap — thesis and the names that mattered, at '}
-                {hour}:00 Paris time. One-click unsubscribe in every email.
+                a morning email — the companies we reviewed that day, at {HOUR}:00
+                Paris time. One-click unsubscribe in every email.
               </p>
             )}
             <button className="pfh-btn" onClick={onClose}>Close</button>
@@ -214,43 +200,10 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
             </div>
 
             <div className="pfm-fld">
-              <span className="pfm-lbl">Rhythm — what you actually receive</span>
-              <div className="pfm-ry">
-                <button type="button" className={rhythm === 'daily' ? 'on' : ''}
-                        onClick={() => setRhythm('daily')}>
-                  <b>Every morning</b>
-                  <span>The companies we reviewed that day: names we kept, names we passed, and why. The live list.</span>
-                </button>
-                <button type="button" className={rhythm === 'weekly' ? 'on' : ''}
-                        onClick={() => setRhythm('weekly')}>
-                  <b>Once a week</b>
-                  <span>A recap — how the thesis moved, the names that mattered. Not the daily list.</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="pfm-fld pfm-grid">
-              <div>
-                <span className="pfm-lbl">Time (Paris)</span>
-                <div className="pfm-step">
-                  <button type="button" onClick={() => setHour((h) => Math.max(HOUR_MIN, h - 1))}
-                          aria-label="Earlier">−</button>
-                  <b>{hour}:00</b>
-                  <button type="button" onClick={() => setHour((h) => Math.min(HOUR_MAX, h + 1))}
-                          aria-label="Later">+</button>
-                </div>
-              </div>
-            </div>
-
-            <div className="pfm-fld">
-              <span className="pfm-lbl">In the {rhythm === 'daily' ? 'morning' : 'weekly'} email</span>
-              <div className="pfm-secs">
-                {SECTIONS.map((s) => (
-                  <label key={s.id} className={`pfm-sec ${on.includes(s.id) ? 'on' : ''}`}>
-                    <input type="checkbox" checked={on.includes(s.id)} onChange={() => toggle(s.id)} />
-                    <span>{s.label}</span>
-                  </label>
-                ))}
+              <span className="pfm-lbl">What you receive</span>
+              <div className="pfm-plan">
+                <b>Every morning · {HOUR}:00 Paris time</b>
+                <span>The companies we reviewed that day: names we kept, names we passed, and why. The live list.</span>
               </div>
             </div>
 

@@ -11,6 +11,7 @@ const LOGO_URL = '/logo.png';
 const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
+const SOSUITES_LOGO = '/portfolio-sosuites.png';
 const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-09-12-live';
 
 // La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
@@ -27,6 +28,24 @@ const ONGOING = [
     logo: MAXIMUM_LOGO,
     href: 'https://maximum-insurance.com',
     wide: true,
+  },
+  {
+    name: 'Sosuites',
+    logo: SOSUITES_LOGO,
+    href: 'https://www.sosuites.com',
+    wide: true,
+  },
+];
+
+// Les deux plateformes maison, cote a cote sous le chapeau du hero.
+const PILLARS = [
+  {
+    title: 'Investment',
+    text: 'Powered by an in-house AI sourcing & deal flow assessment platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.',
+  },
+  {
+    title: 'Operations',
+    text: 'Powered by an in-house AI Allbound platform (Inbound and outbound) managing the Content & GoToMarket of our portfolio companies.',
   },
 ];
 
@@ -62,8 +81,15 @@ export default function HomepageLite() {
           <p className="pfh-lead">
             <span className="pfh-lead-line fit">A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A.</span>
             <span className="pfh-lead-line">Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.</span>
-            <span className="pfh-lead-line">Powered by an in-house AI sourcing platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.</span>
           </p>
+          <div className="pfh-pillars">
+            {PILLARS.map((p) => (
+              <div key={p.title} className="pfh-pillar">
+                <h2>{p.title}</h2>
+                <p>{p.text}</p>
+              </div>
+            ))}
+          </div>
           <div className="pfh-cta-row">
             <button className="pfh-btn" onClick={openModal}>Follow our deal flow live</button>
           </div>
