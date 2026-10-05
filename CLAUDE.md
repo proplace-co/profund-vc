@@ -61,6 +61,15 @@ réseau de l'app. Les 5 identifiants de section (`pending`, `market`, `sourcing`
 ⚠️ L'inscription STOCKE (Dict `profund-subscribers`, `status: pending`) mais
 **rien n'envoie encore** : le job d'envoi par abonné reste à écrire.
 
+**`/dealflow` embarque le cockpit Proplace en marque blanche.** L'iframe pointe
+`proplace.co/fr/carte?…&guest=lp` (URL fournie par `/profund/verify`). Côté
+monorepo, `guest=lp` résout le mode `lp` (`proplace/src/components/AtelierV2/uiState.ts`) :
+lecture seule, aucun élément Proplace (offre, crédits, Stan, RDV), contact du
+GP en pied (`LpContact.tsx`). Ce mode défile DANS l'iframe ; l'écouteur
+`pp-ck-h` de `DealFlowPage.tsx` ne sert qu'aux anciens cockpits qui annoncent
+leur hauteur. Les emails (accusé de réception, lien d'accès) sont rendus par
+`_profund_mail_html` dans `modal_proxy/proxy.py`.
+
 **AUCUN MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08). La taille du fonds,
 la construction, les tickets et les rendements cibles vivent **uniquement** dans
 la fiche PDF, qui porte la mention de pré-commercialisation AIFMD. L'accueil
