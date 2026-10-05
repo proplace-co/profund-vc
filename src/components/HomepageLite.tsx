@@ -17,22 +17,26 @@ const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-taglines';
 // La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
 // Construction detaillee, tickets et rendements cibles : fiche PDF + /pitch.
 
+// Memes accroches que la fiche PDF (scripts/factsheet.py, PORTFOLIO).
 const ONGOING = [
   {
     name: 'Proplace',
     logo: PROPLACE_LOGO,
     href: 'https://proplace.co',
+    tagline: 'AI harness for corporate development',
   },
   {
     name: 'Maximum Insurance',
     logo: MAXIMUM_LOGO,
     href: 'https://maximum-insurance.com',
+    tagline: 'Swiss travel insurtech & travel risk management platform',
     wide: true,
   },
   {
     name: 'Sosuites',
     logo: SOSUITES_LOGO,
     href: 'https://www.sosuites.com',
+    tagline: 'AI-assisted personalised art prints',
     wide: true,
   },
 ];
@@ -103,13 +107,17 @@ export default function HomepageLite() {
         </div>
       </section>
 
-      <section className="pfh-s pfh-prior" id="ongoing">
+      <section className="pfh-s" id="ongoing">
         <div className="pfh-wrap">
           <p className="pfh-eyeb">Portfolio</p>
-          <div className="pfh-brand">
+          <div className="pfh-port3">
             {ONGOING.map((p) => (
               <a key={p.name} href={p.href} target="_blank" rel="noopener noreferrer">
-                <img src={p.logo} alt={p.name} className={"wide" in p && p.wide ? 'wide' : undefined} />
+                <span className="lg">
+                  <img src={p.logo} alt={p.name} className={"wide" in p && p.wide ? 'wide' : undefined} />
+                </span>
+                <span className="tg">{p.tagline}</span>
+                <span className="st"><i aria-hidden="true" />Operating</span>
               </a>
             ))}
           </div>

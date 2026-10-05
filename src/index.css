@@ -459,6 +459,34 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   transition: opacity .18s; }
 .pfh-brand img.wide { height: 18px; max-width: 280px; }
 .pfh-brand a:hover img { opacity: .7; }
+/* Portfolio : trois colonnes separees par un filet — logo gris, accroche,
+   statut. Les logos ont des hauteurs differentes : la boite .lg a une hauteur
+   fixe pour que les accroches partent toutes de la meme ligne. */
+.pfh-port3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 980px; margin: 0 auto; }
+.pfh-port3 a { display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 2px 28px; text-align: center; text-decoration: none; color: inherit; }
+.pfh-port3 a + a { border-left: 1px solid var(--line); }
+.pfh-port3 .lg { display: flex; align-items: center; justify-content: center; height: 26px; max-width: 100%; }
+.pfh-port3 img { display: block; height: 22px; width: auto; max-width: min(220px, 100%); object-fit: contain;
+  opacity: .38; filter: grayscale(1); transition: opacity .18s; }
+.pfh-port3 img.wide { height: 18px; max-width: min(260px, 100%); }
+.pfh-port3 a:hover img { opacity: .7; }
+.pfh-port3 .tg { max-width: 30ch; font-size: 14px; line-height: 1.5; color: var(--sub);
+  text-wrap: balance; }
+/* margin-top:auto : les colonnes ont la meme hauteur (grille), le statut
+   descend en bas de chacune — alignes meme si une accroche tient sur 2 lignes */
+.pfh-port3 .st { margin-top: auto; display: inline-flex; align-items: center; gap: 7px; height: 24px; padding: 0 11px;
+  border: 1px solid var(--line); border-radius: 999px; background: #fff;
+  font-size: 11.5px; font-weight: 600; color: var(--mid); }
+.pfh-port3 .st i { width: 6px; height: 6px; border-radius: 50%; background: #12A150; flex: none; }
+@media (max-width: 900px) {
+  .pfh-port3 a { padding: 2px 16px; }
+}
+@media (max-width: 720px) {
+  .pfh-port3 { grid-template-columns: 1fr; }
+  .pfh-port3 a { padding: 20px 0; }
+  .pfh-port3 a + a { border-left: 0; border-top: 1px solid var(--line); }
+}
 .pfh-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 44px; margin-top: 28px; }
 .pfh-words span { font-size: 15px; font-weight: 700; color: var(--mid); }
 
