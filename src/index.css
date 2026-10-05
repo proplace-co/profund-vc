@@ -568,7 +568,8 @@ select.pfm-in { appearance: none; cursor: pointer; padding-right: 34px;
   color: var(--sub); }
 .pfd { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
 .pfd-bar { display: flex; align-items: center; justify-content: space-between;
-  height: 56px; padding: 0 20px; border-bottom: 1px solid var(--line); background: #fff; }
+  height: 56px; padding: 0 20px; border-bottom: 1px solid var(--line); background: #fff;
+  position: sticky; top: 0; z-index: 5; }
 .pfd-brand img { display: block; height: 22px; width: auto; }
 .pfd-who { font-size: 13px; color: var(--mid); }
 .pfd-frame { flex: 1; width: 100%; border: 0; min-height: calc(100vh - 56px); background: #fff; }

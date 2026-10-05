@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 
@@ -16,6 +16,13 @@ const VERIFY_TIMEOUT_MS = 15000;
 const VERIFY_TRIES = 2;
 const SLOW_AFTER_MS = 4000;
 
+// Le cockpit Proplace en embed=1 coupe son propre défilement (overflow:hidden)
+// et annonce sa hauteur au parent : { type: 'pp-ck-h', h } (CartePage.tsx du
+// monorepo). Sans écouteur ici, l'iframe restait à la hauteur de l'écran et
+// rien ne défilait. On agrandit donc l'iframe : c'est la page qui défile.
+const FRAME_ORIGIN = /^https:\/\/(www\.)?proplace\.co$/;
+const FRAME_MAX_H = 40000;
+
 type State = 'check' | 'ok' | 'bad' | 'none' | 'down';
 
 export default function DealFlowPage() {
@@ -27,6 +34,21 @@ export default function DealFlowPage() {
   const [first, setFirst] = useState('');
   const [src, setSrc] = useState(FALLBACK_PREVIEW);
   const [modal, setModal] = useState(false);
+  const [frameH, setFrameH] = useState<number | null>(null);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      if (!FRAME_ORIGIN.test(e.origin)) return;
+      if (e.source !== frameRef.current?.contentWindow) return;
+      const d = e.data as { type?: string; h?: number } | null;
+      if (!d || d.type !== 'pp-ck-h' || typeof d.h !== 'number' || !(d.h > 0)) return;
+      const h = Math.min(Math.ceil(d.h), FRAME_MAX_H);
+      setFrameH((cur) => (cur !== null && Math.abs(cur - h) < 2 ? cur : h));
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
 
   useEffect(() => {
     if (!k) {
@@ -87,10 +109,13 @@ export default function DealFlowPage() {
 
       {state === 'ok' && (
         <iframe
+          ref={frameRef}
           className="pfd-frame"
           title="ProFund deal flow"
           src={src}
           referrerPolicy="no-referrer"
+          scrolling={frameH ? 'no' : undefined}
+          style={frameH ? { height: frameH, flex: 'none' } : undefined}
         />
       )}
 
