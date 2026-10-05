@@ -43,8 +43,8 @@ OUT = ROOT / "public" / "profund-factsheet.pdf"
 # Maximum Insurance n'existe qu'en SVG cote site : reportlab ne lit pas le SVG,
 # d'ou sa version PNG dans scripts/assets/.
 PORTFOLIO = (
-    ("Proplace", "Your AI Corporate Developer", ROOT / "public" / "portfolio-proplace.png"),
-    ("Maximum Insurance", "Swiss Travel Insurtech",
+    ("Proplace", "AI harness for corporate development", ROOT / "public" / "portfolio-proplace.png"),
+    ("Maximum Insurance", "Swiss travel insurtech & travel risk management platform",
      ROOT / "scripts" / "assets" / "portfolio-maximum-insurance.png"),
     ("Sosuites", "AI-assisted personalised art prints", ROOT / "public" / "portfolio-sosuites.png"),
 )
@@ -269,17 +269,21 @@ def _grey_logo(path):
     return ImageReader(out), out.size
 
 
-def _portfolio(c, y, items, logo_h=3.8 * mm):
-    """Bandeau en colonnes : mini logo gris, accroche, statut."""
+def _portfolio(c, y, items, logo_h=3.8 * mm, lead=10):
+    """Bandeau en colonnes : mini logo gris, accroche (2 lignes au plus),
+    statut. Les statuts restent alignes d'une colonne a l'autre."""
     cell = CW / len(items)
+    widths = [cell - (10 * mm if i else 5 * mm) for i in range(len(items))]
+    wraps = [_wrap_lines(c, t, w, "Helvetica", 8)[:2] for (_, t, _), w in zip(items, widths)]
+    extra = (max(len(w) for w in wraps) - 1) * lead
     for i, (name, tagline, path) in enumerate(items):
         x0 = M + i * cell
         x = x0 + (5 * mm if i else 0)
-        maxw = cell - (10 * mm if i else 5 * mm)
+        maxw = widths[i]
         if i:
             c.setStrokeColor(LINE)
             c.setLineWidth(0.7)
-            c.line(x0, y - 13 * mm, x0, y + 1 * mm)
+            c.line(x0, y - 13 * mm - extra, x0, y + 1 * mm)
         if path.exists():
             ir, (iw, ih) = _grey_logo(path)
             lw, lh = logo_h * iw / float(ih), logo_h
@@ -292,13 +296,15 @@ def _portfolio(c, y, items, logo_h=3.8 * mm):
             c.drawString(x, y - logo_h + 1, name)
         c.setFillColor(SUB)
         c.setFont("Helvetica", 8)
-        c.drawString(x, y - logo_h - 4.6 * mm, tagline)
+        for j, ln in enumerate(wraps[i]):
+            c.drawString(x, y - logo_h - 4.6 * mm - j * lead, ln)
+        sy = y - logo_h - 8.6 * mm - extra
         c.setFillColor(BLUE)
-        c.rect(x, y - logo_h - 8.6 * mm + 1.2, 3, 3, stroke=0, fill=1)
+        c.rect(x, sy + 1.2, 3, 3, stroke=0, fill=1)
         c.setFillColor(MID)
         c.setFont("Helvetica", 7.2)
-        c.drawString(x + 6, y - logo_h - 8.6 * mm, "Operating")
-    return y - 14 * mm
+        c.drawString(x + 6, sy, "Operating")
+    return y - 14 * mm - extra
 
 
 def _track(c, x, y, w, rows):
@@ -563,17 +569,17 @@ def page_two(c):
     c.setFillColor(LITE)
     c.setFont("Helvetica", 6.8)
     c.drawString(rx, y_kv + 1, "Companies anonymised. Names and references on request.")
-    y = min(y - ph, y_kv - 1 * mm) - 5 * mm
+    y = min(y - ph, y_kv - 1 * mm) - 3.5 * mm
 
     y = _section(c, y, "Portfolio today")
-    y = _portfolio(c, y + 1.5 * mm, PORTFOLIO) - 7.5 * mm
+    y = _portfolio(c, y + 1.5 * mm, PORTFOLIO) - 6 * mm
 
     SITE = "https://profund.vc"
     MAIL = "alexandre@profund.vc"
     PHONE = "+33 6 83 10 72 86"
 
     y = _section(c, y, "Live deal flow")
-    box_h = 37 * mm
+    box_h = 36 * mm
     c.setFillColor(BG)
     c.rect(M, y - box_h, CW, box_h, stroke=0, fill=1)
     c.setStrokeColor(BLUE)

@@ -12,7 +12,7 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-pillars';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-taglines';
 
 // La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
 // Construction detaillee, tickets et rendements cibles : fiche PDF + /pitch.
