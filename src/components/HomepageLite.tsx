@@ -12,7 +12,7 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-edge';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-noop';
 
 // La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
 // Construction detaillee, tickets et rendements cibles : fiche PDF + /pitch.
@@ -139,7 +139,6 @@ export default function HomepageLite() {
                   <img src={p.logo} alt={p.name} className={"wide" in p && p.wide ? 'wide' : undefined} />
                 </span>
                 <span className="tg">{p.tagline}</span>
-                <span className="st"><i aria-hidden="true" />Operating</span>
               </a>
             ))}
           </div>

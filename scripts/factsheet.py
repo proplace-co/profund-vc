@@ -306,8 +306,8 @@ def _grey_logo(path):
 
 
 def _portfolio(c, y, items, logo_h=3.8 * mm, lead=10):
-    """Bandeau en colonnes : mini logo gris, accroche (2 lignes au plus),
-    statut. Les statuts restent alignes d'une colonne a l'autre."""
+    """Bandeau en colonnes : mini logo gris et accroche (2 lignes au plus).
+    Plus de statut « Operating » sous chaque societe (05/10 : plus propre)."""
     cell = CW / len(items)
     widths = [cell - (10 * mm if i else 5 * mm) for i in range(len(items))]
     wraps = [_wrap_lines(c, t, w, "Helvetica", 8)[:2] for (_, t, _), w in zip(items, widths)]
@@ -319,7 +319,7 @@ def _portfolio(c, y, items, logo_h=3.8 * mm, lead=10):
         if i:
             c.setStrokeColor(LINE)
             c.setLineWidth(0.7)
-            c.line(x0, y - 13 * mm - extra, x0, y + 1 * mm)
+            c.line(x0, y - 9.5 * mm - extra, x0, y + 1 * mm)
         if path.exists():
             ir, (iw, ih) = _grey_logo(path)
             lw, lh = logo_h * iw / float(ih), logo_h
@@ -334,13 +334,7 @@ def _portfolio(c, y, items, logo_h=3.8 * mm, lead=10):
         c.setFont("Helvetica", 8)
         for j, ln in enumerate(wraps[i]):
             c.drawString(x, y - logo_h - 4.6 * mm - j * lead, ln)
-        sy = y - logo_h - 8.6 * mm - extra
-        c.setFillColor(BLUE)
-        c.rect(x, sy + 1.2, 3, 3, stroke=0, fill=1)
-        c.setFillColor(MID)
-        c.setFont("Helvetica", 7.2)
-        c.drawString(x + 6, sy, "Operating")
-    return y - 14 * mm - extra
+    return y - 10.5 * mm - extra
 
 
 def _track(c, x, y, w, rows):
@@ -591,7 +585,9 @@ def page_two(c):
         yy -= 10.5
 
     # Memes faits que le tableau Track Record de /pitch (ProFundPage.tsx) ; seul
-    # Deal-04 porte en plus la croissance depuis l'acquisition (05/10).
+    # Deal-04 porte en plus la croissance depuis l'acquisition (05/10), et SANS
+    # multiple : un 2.5x cash-on-cash n'a pas de sens pour une acquisition a
+    # 100 % toujours detenue (decision d'Antoine, 05/10).
     y_kv = _track(c, rx, y, rw, [
         ("Deal-01 - exited 2007",
          "Entry 2006, 100% owned. Full exit in 2007.", "10.0x"),
@@ -600,9 +596,9 @@ def page_two(c):
         ("Deal-03 - LBO exit 2025",
          "Seed ticket EUR 200K at EUR 5.3M in 2014. LBO exit in Feb 2025 at EUR 100M. "
          "Sourced 14 months before public announcement.", "19.0x"),
-        ("Deal-04 - held",
-         "100% acquisition, EUR 45M buyout in 2016. Revenue growing ~20% YoY since "
-         "acquisition. 2.5x cash-on-cash to date.", "2.5x"),
+        ("Deal-04 - acquired 2016",
+         "100% acquisition, EUR 45M buyout. Revenue growing ~20% YoY since "
+         "acquisition.", "Held"),
     ])
     c.setFillColor(LITE)
     c.setFont("Helvetica", 6.8)
