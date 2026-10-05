@@ -12,7 +12,7 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-engines';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-edge';
 
 // La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
 // Construction detaillee, tickets et rendements cibles : fiche PDF + /pitch.
@@ -49,11 +49,13 @@ const PILLARS = [
     kicker: 'Investment',
     title: 'Deal Engine',
     text: 'An in-house AI platform for sourcing and deal assessment. It monitors weak signals across emerging categories around the clock and identifies founders who match our thesis before they become obvious.',
+    powers: ['ProFund'],
   },
   {
     kicker: 'Operations',
     title: 'Growth Engine',
     text: 'An in-house AI platform for inbound and outbound. It runs content and go-to-market for our portfolio companies.',
+    powers: ['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites'],
   },
 ];
 
@@ -91,11 +93,23 @@ export default function HomepageLite() {
             <span className="pfh-lead-line">Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.</span>
           </p>
           <div className="pfh-pillars">
+            {/* les deux moteurs sont l'avantage du fonds ET l'outil qui le fait
+                tourner : l'en-tete le dit, les pastilles « Powers » le montrent */}
+            <div className="pfh-pillars-hd">
+              <p className="k">Our edge</p>
+              <p className="t">Two in-house AI engines. ProFund itself runs on both.</p>
+            </div>
             {PILLARS.map((p) => (
               <div key={p.title} className="pfh-pillar">
                 <p className="k">{p.kicker}</p>
                 <h2>{p.title}</h2>
                 <p>{p.text}</p>
+                <div className="runs">
+                  <span className="l">Powers</span>
+                  {p.powers.map((n) => (
+                    <span key={n} className={n === 'ProFund' ? 'c pf' : 'c'}>{n}</span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

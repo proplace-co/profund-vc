@@ -136,7 +136,7 @@ def _card(c, x, y, w, header, header_bg, big, big_unit, bullets, h=None):
     """Carte a en-tete plein : bandeau titre, grand chiffre, puces."""
     hh = 8.5 * mm
     body_lines = sum(len(_wrap_lines(c, b, w - 24, "Helvetica", 8.8)) for b in bullets)
-    h = h or (hh + 13 * mm + body_lines * 12 + len(bullets) * 5 + 4 * mm)
+    h = h or (hh + 13 * mm + body_lines * 12 + len(bullets) * 5 + 3 * mm)
     c.setStrokeColor(LINE)
     c.setLineWidth(0.8)
     c.rect(x, y - h, w, h, stroke=1, fill=0)
@@ -163,7 +163,7 @@ def _card(c, x, y, w, header, header_bg, big, big_unit, bullets, h=None):
     return y - h
 
 
-def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14, last_rule=True):
+def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14, last_rule=True, rule_off=12):
     if head:
         c.setFillColor(INK)
         c.setFont("Helvetica-Bold", 9.2)
@@ -186,7 +186,7 @@ def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14, last_rule=True):
             c.drawRightString(x + w, y - j * 10.5, ln)
         y -= n * 10.5 + extra
         if i < n_rows - 1 or last_rule:
-            _rule(c, y + 12, x, x + w)
+            _rule(c, y + rule_off, x, x + w)
     return y
 
 
@@ -230,23 +230,38 @@ def _qr(c, x, y, size, url):
     c.linkURL(url, (x, y, x + size, y + size), relative=0, thickness=0)
 
 
-def _pillars(c, y, items):
+def _pillars(c, y, items, head=None):
     """Encadre deux colonnes (Investment | Operations), repris de l'accueil :
-    fond blanc, filet fin, separation verticale, titre precede d'un filet bleu."""
+    en-tete « Our edge » sur toute la largeur, puis par colonne chapeau, nom,
+    texte et ligne « Powers » calee en bas (alignee d'une colonne a l'autre)."""
     pad = 5 * mm
+    hd_h = 8 * mm if head else 0
     colw = CW / len(items)
     tw = colw - 2 * pad
-    size, lead = 8.6, 11.8
-    n = max(len(_wrap_lines(c, t, tw, "Helvetica", size)) for _, _, t in items)
-    h = pad + 9.4 + 7 + n * lead + pad - 12 + 13
+    size, lead = 8.6, 11.4
+    n = max(len(_wrap_lines(c, t, tw, "Helvetica", size)) for _, _, t, _ in items)
+    h = hd_h + pad + 9.4 + 7 + n * lead + pad - 12 + 13 + 22
     c.setStrokeColor(LINE)
     c.setLineWidth(0.8)
     c.rect(M, y - h, CW, h, stroke=1, fill=0)
-    for i, (kicker, title, text) in enumerate(items):
+    if head:
+        kicker, sentence = head
+        hy = y - 5.2 * mm
+        c.setFillColor(BLUE)
+        c.rect(M + pad, hy + 2.2, 4.6 * mm, 1.5, stroke=0, fill=1)
+        c.setFillColor(BLUE_DK)
+        c.setFont("Helvetica-Bold", 7.2)
+        kx = M + pad + 4.6 * mm + 5
+        c.drawString(kx, hy, kicker.upper())
+        c.setFillColor(INK)
+        c.setFont("Helvetica-Bold", 9.4)
+        c.drawString(kx + c.stringWidth(kicker.upper(), "Helvetica-Bold", 7.2) + 4 * mm, hy, sentence)
+        c.line(M, y - hd_h, M + CW, y - hd_h)
+    for i, (kicker, title, text, powers) in enumerate(items):
         x = M + i * colw
         if i:
-            c.line(x, y - h, x, y)
-        ty = y - pad - 7
+            c.line(x, y - h, x, y - hd_h)
+        ty = y - hd_h - pad - 7
         # chapeau = l'avantage (filet bleu + capitales), puis le nom = le modele
         c.setFillColor(BLUE)
         c.rect(x + pad, ty + 2.2, 4.6 * mm, 1.5, stroke=0, fill=1)
@@ -257,7 +272,24 @@ def _pillars(c, y, items):
         c.setFont("Helvetica-Bold", 11)
         c.drawString(x + pad, ty - 14, title)
         _para(c, x + pad, ty - 27, text, tw, size=size, leading=lead)
-    return y - h - 5.5 * mm
+        # « Powers » : qui tourne sur ce moteur — ProFund en bleu
+        py = y - h + pad - 1
+        c.setFillColor(MID)
+        c.setFont("Helvetica-Bold", 6.6)
+        c.drawString(x + pad, py, "POWERS")
+        px = x + pad + c.stringWidth("POWERS", "Helvetica-Bold", 6.6) + 2.5 * mm
+        for j, name in enumerate(powers):
+            sep = ", " if j else ""
+            c.setFillColor(SUB)
+            c.setFont("Helvetica", 8)
+            c.drawString(px, py, sep)
+            px += c.stringWidth(sep, "Helvetica", 8)
+            bold = name == "ProFund"
+            c.setFillColor(BLUE_DK if bold else SUB)
+            c.setFont("Helvetica-Bold" if bold else "Helvetica", 8)
+            c.drawString(px, py, name)
+            px += c.stringWidth(name, "Helvetica-Bold" if bold else "Helvetica", 8)
+    return y - h - 5 * mm
 
 
 def _grey_logo(path):
@@ -352,7 +384,7 @@ def _footer(c):
 
 # ── pages ───────────────────────────────────────────────────────────────────
 def page_one(c):
-    y = _accent_and_header(c, 1) - 5 * mm   # le titre est gros : il lui faut de l'air sous le logo
+    y = _accent_and_header(c, 1) - 3.5 * mm   # le titre est gros : il lui faut de l'air sous le logo
 
     c.setFillColor(INK)
     c.setFont("Helvetica-Bold", 25)
@@ -363,12 +395,12 @@ def page_one(c):
     c.setFillColor(MID)
     c.setFont("Helvetica", 11)
     c.drawString(M, y, "Lead at seed. Co-invest Series A.")
-    y -= 12
+    y -= 10
     _rule(c, y, color=INK, w=2.2)
-    y -= 16
+    y -= 14
 
     # Le cadre de pre-commercialisation, en tete de document.
-    box_h = 18.5 * mm
+    box_h = 17 * mm
     c.setFillColor(BG)
     c.rect(M, y - box_h, CW, box_h, stroke=0, fill=1)
     c.setStrokeColor(BLUE)
@@ -390,7 +422,7 @@ def page_one(c):
         "Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.",
     ):
         y = _para(c, M, y, s, CW, size=9.8, leading=13.4)
-        y -= 2.6 * mm
+        y -= 2 * mm
     y -= 1 * mm
 
     # Les deux plateformes maison — meme encadre, memes noms et meme texte que
@@ -399,13 +431,15 @@ def page_one(c):
         ("Investment", "Deal Engine",
          "An in-house AI platform for sourcing and deal assessment. It monitors weak signals "
          "across emerging categories around the clock and identifies founders who match our "
-         "thesis before they become obvious."),
+         "thesis before they become obvious.",
+         ["ProFund"]),
         ("Operations", "Growth Engine",
          "An in-house AI platform for inbound and outbound. It runs content and go-to-market "
-         "for our portfolio companies."),
-    ])
+         "for our portfolio companies.",
+         ["ProFund", "Proplace", "Maximum Insurance", "Sosuites"]),
+    ], head=("Our edge", "Two in-house AI engines. ProFund itself runs on both."))
 
-    y = _stat_band(c, y, [
+    y = _stat_band(c, y, h=20 * mm, items=[
         ("EUR 35M", "Target fund size, incl. reserves"),
         ("9 + 12", "Core Series A co-invest + Scout seed lead"),
         ("Lead", "At seed. Co-invest Series A"),
@@ -417,7 +451,7 @@ def page_one(c):
               "Scout is twelve seed tickets where we act as Lead - the detection lead is worth "
               "the most. Core is nine Series A tickets. The best Scout bets graduate to Core.",
               CW, leading=13)
-    y -= 3 * mm
+    y -= 2 * mm
 
     col = (CW - 8 * mm) / 2
     y1 = _card(c, M, y, col, "Core portfolio", BLUE_DK, "EUR 1.1M", "per deal, 9 deals", [
@@ -431,7 +465,7 @@ def page_one(c):
         "3 of 12 graduate to Core at Series A.",
         "Target 2.5x MOIC - EUR 23.7M exit value.",
     ])
-    y = min(y1, y2) - 5 * mm
+    y = min(y1, y2) - 4 * mm
 
     y = _section(c, y, "Capital allocation")
     _rule(c, y + 9, M, W - M, INK, 1.4)
@@ -442,7 +476,7 @@ def page_one(c):
         ("Core follow-on reserves", "EUR 14.0M"),
         ("Fees and reserves - balance", "EUR 1.8M"),
         ("Total fund", "EUR 35.0M"),
-    ], extra=5.5)
+    ], extra=4, rule_off=9.5, last_rule=False)   # filet centre ; pas de double filet sur le pied
 
     _footer(c)
 
