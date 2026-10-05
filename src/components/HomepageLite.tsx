@@ -41,11 +41,11 @@ const ONGOING = [
 const PILLARS = [
   {
     title: 'Investment',
-    text: 'Powered by an in-house AI sourcing & deal flow assessment platform that reads 24/7 weak signals in emerging categories and detects founders matching our thesis before they become obvious to the category.',
+    text: 'An in-house AI platform for sourcing and deal assessment. It monitors weak signals across emerging categories around the clock and identifies founders who match our thesis before they become obvious.',
   },
   {
     title: 'Operations',
-    text: 'Powered by an in-house AI Allbound platform (Inbound and outbound) managing the Content & GoToMarket of our portfolio companies.',
+    text: 'An in-house AI platform for inbound and outbound. It runs content and go-to-market for our portfolio companies.',
   },
 ];
 

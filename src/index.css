@@ -575,6 +575,7 @@ select.pfm-in { appearance: none; cursor: pointer; padding-right: 34px;
 .pfd-gate { max-width: 440px; margin: 12vh auto; padding: 0 24px; text-align: center; }
 .pfd-gate h1 { margin: 0 0 10px; font-size: 26px; letter-spacing: -.03em; }
 .pfd-gate p { margin: 0 0 22px; color: var(--sub); line-height: 1.6; }
+.pfd-gate p.pfd-hint { margin-top: -14px; font-size: 13px; color: var(--lite); }
 .pfm-consent { display: flex; align-items: flex-start; gap: 10px; margin-top: 28px;
   font-size: 12.5px; line-height: 1.55; color: var(--mid); cursor: pointer; }
 .pfm-consent input { accent-color: var(--blue-dk); margin-top: 2px; flex: none; }

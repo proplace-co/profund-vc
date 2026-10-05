@@ -142,8 +142,8 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
               </p>
             ) : (
               <p>
-                We review every application. Nothing is sent until we accept.
-                If we do, you receive a private link to the live deal flow, plus
+                We review every application. If we accept yours, you receive a
+                private link to the live deal flow, plus
                 a morning email — the companies we reviewed that day, at {HOUR}:00
                 Paris time. One-click unsubscribe in every email.
               </p>
