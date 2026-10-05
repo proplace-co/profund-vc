@@ -129,7 +129,7 @@ def _stat_band(c, y, items, h=23 * mm):
         c.setFont("Helvetica", 7.4)
         for j, ln in enumerate(_wrap_lines(c, lab, cell - 20, "Helvetica", 7.4)[:2]):
             c.drawString(x + 10, top - 15.5 * mm - j * 9, ln)
-    return top - h - 7 * mm
+    return top - h - 5.5 * mm
 
 
 def _card(c, x, y, w, header, header_bg, big, big_unit, bullets, h=None):
@@ -237,23 +237,27 @@ def _pillars(c, y, items):
     colw = CW / len(items)
     tw = colw - 2 * pad
     size, lead = 8.6, 11.8
-    n = max(len(_wrap_lines(c, t, tw, "Helvetica", size)) for _, t in items)
-    h = pad + 9.4 + 7 + n * lead + pad - 12
+    n = max(len(_wrap_lines(c, t, tw, "Helvetica", size)) for _, _, t in items)
+    h = pad + 9.4 + 7 + n * lead + pad - 12 + 13
     c.setStrokeColor(LINE)
     c.setLineWidth(0.8)
     c.rect(M, y - h, CW, h, stroke=1, fill=0)
-    for i, (title, text) in enumerate(items):
+    for i, (kicker, title, text) in enumerate(items):
         x = M + i * colw
         if i:
             c.line(x, y - h, x, y)
         ty = y - pad - 7
+        # chapeau = l'avantage (filet bleu + capitales), puis le nom = le modele
         c.setFillColor(BLUE)
-        c.rect(x + pad, ty + 2.8, 4.6 * mm, 1.5, stroke=0, fill=1)
+        c.rect(x + pad, ty + 2.2, 4.6 * mm, 1.5, stroke=0, fill=1)
+        c.setFillColor(BLUE_DK)
+        c.setFont("Helvetica-Bold", 7.2)
+        c.drawString(x + pad + 4.6 * mm + 5, ty, kicker.upper())
         c.setFillColor(INK)
-        c.setFont("Helvetica-Bold", 9.4)
-        c.drawString(x + pad + 4.6 * mm + 5, ty, title)
-        _para(c, x + pad, ty - 14, text, tw, size=size, leading=lead)
-    return y - h - 6 * mm
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(x + pad, ty - 14, title)
+        _para(c, x + pad, ty - 27, text, tw, size=size, leading=lead)
+    return y - h - 5.5 * mm
 
 
 def _grey_logo(path):
@@ -364,7 +368,7 @@ def page_one(c):
     y -= 16
 
     # Le cadre de pre-commercialisation, en tete de document.
-    box_h = 20 * mm
+    box_h = 18.5 * mm
     c.setFillColor(BG)
     c.rect(M, y - box_h, CW, box_h, stroke=0, fill=1)
     c.setStrokeColor(BLUE)
@@ -389,14 +393,14 @@ def page_one(c):
         y -= 2.6 * mm
     y -= 1 * mm
 
-    # Les deux plateformes maison — meme encadre et meme texte que l'accueil
-    # (src/components/HomepageLite.tsx, PILLARS).
+    # Les deux plateformes maison — meme encadre, memes noms et meme texte que
+    # l'accueil (src/components/HomepageLite.tsx, PILLARS).
     y = _pillars(c, y + 2 * mm, [
-        ("Investment",
+        ("Investment", "Deal Engine",
          "An in-house AI platform for sourcing and deal assessment. It monitors weak signals "
          "across emerging categories around the clock and identifies founders who match our "
          "thesis before they become obvious."),
-        ("Operations",
+        ("Operations", "Growth Engine",
          "An in-house AI platform for inbound and outbound. It runs content and go-to-market "
          "for our portfolio companies."),
     ])
@@ -438,7 +442,7 @@ def page_one(c):
         ("Core follow-on reserves", "EUR 14.0M"),
         ("Fees and reserves - balance", "EUR 1.8M"),
         ("Total fund", "EUR 35.0M"),
-    ], extra=6.5)
+    ], extra=5.5)
 
     _footer(c)
 
@@ -481,15 +485,15 @@ def page_two(c):
         ("Thesis",
          "Lead at seed. Co-invest Series A. Targeting domain-specific AI harness "
          "with self-improving loops, built by highly technical AI-native teams."),
-        ("Stan",
+        ("Deal Engine",
          "Our in-house AI Venture Platform processes automatically hundreds of startups "
          "and founders daily to detect the ones matching our thesis. Human time is reserved "
-         "for the top 1 percent that get a CALL recommendation by Stan, our AI Principal. "
+         "for the top 1 percent that get a CALL recommendation from Deal Engine. "
          "The reason every other signal was discarded is written down. Thesis parameters "
          "that drive sourcing, investment analysis and due diligence are recalibrated every "
          "day based on our feedback."),
         ("Proof",
-         "The same platform already books dozens of meetings for Proplace and Maximum Insurance."),
+         "Growth Engine already books dozens of meetings for Proplace and Maximum Insurance."),
         ("Memos",
          "A standard investment memo and financial model for every company matching our "
          "thesis. A highly detailed memo, AI-powered due diligence and human conviction "
@@ -571,7 +575,21 @@ def page_two(c):
     c.drawString(rx, y_kv + 1, "Companies anonymised. Names and references on request.")
     y = min(y - ph, y_kv - 1 * mm) - 3.5 * mm
 
+    lab_y = y
     y = _section(c, y, "Portfolio today")
+    # la phrase qui relie le portefeuille au Growth Engine, sur la ligne du
+    # chapeau : elle ne coute aucune hauteur a une page deja pleine
+    lx = M + c.stringWidth("PORTFOLIO TODAY", "Helvetica-Bold", 9.6) + 4 * mm
+    c.setStrokeColor(LINE)
+    c.setLineWidth(0.8)
+    c.line(lx - 2 * mm, lab_y - 1.5, lx - 2 * mm, lab_y + 7.5)
+    note = "All three run their content and go-to-market on "
+    c.setFillColor(SUB)
+    c.setFont("Helvetica", 8.4)
+    c.drawString(lx, lab_y, note)
+    c.setFillColor(INK)
+    c.setFont("Helvetica-Bold", 8.4)
+    c.drawString(lx + c.stringWidth(note, "Helvetica", 8.4), lab_y, "Growth Engine.")
     y = _portfolio(c, y + 1.5 * mm, PORTFOLIO) - 6 * mm
 
     SITE = "https://profund.vc"

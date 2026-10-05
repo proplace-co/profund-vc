@@ -404,11 +404,18 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   text-align: left; }
 .pfh-pillar { padding: clamp(20px, 2.8vh, 28px) 28px; }
 .pfh-pillar + .pfh-pillar { border-left: 1px solid var(--line); }
-.pfh-pillar h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 10px;
-  font-size: 15px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
-.pfh-pillar h2::before { content: ""; width: 18px; height: 2px; background: var(--blue);
+/* chapeau (l'avantage) a filet bleu, puis le nom de la plateforme (le modele) */
+.pfh-pillar .k { display: flex; align-items: center; gap: 10px; margin: 0 0 6px;
+  font-size: 12.5px; font-weight: 600; line-height: 1.4; color: var(--blue-dk); }
+.pfh-pillar .k::before { content: ""; width: 18px; height: 2px; background: var(--blue);
   border-radius: 2px; flex: none; }
+.pfh-pillar h2 { margin: 0 0 10px; font-size: 18px; line-height: 1.25; font-weight: 800;
+  letter-spacing: -.025em; color: var(--ink); }
 .pfh-pillar p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--sub); }
+/* la phrase qui relie le portefeuille au Growth Engine, sous le chapeau */
+.pfh-port-note { margin: 0 auto clamp(18px, 2.6vh, 30px); text-align: center; font-size: 14px;
+  line-height: 1.5; color: var(--sub); }
+.pfh-port-note b { color: var(--ink); font-weight: 600; }
 @media (max-width: 720px) {
   .pfh-pillars { grid-template-columns: 1fr; }
   .pfh-pillar + .pfh-pillar { border-left: 0; border-top: 1px solid var(--line); }

@@ -12,7 +12,7 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-taglines';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-engines';
 
 // La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
 // Construction detaillee, tickets et rendements cibles : fiche PDF + /pitch.
@@ -41,14 +41,18 @@ const ONGOING = [
   },
 ];
 
-// Les deux plateformes maison, cote a cote sous le chapeau du hero.
+// Les deux plateformes maison, cote a cote sous le chapeau du hero. Le chapeau
+// dit l'avantage (Investment / Operations), le nom dit le modele — memes noms
+// dans la fiche PDF (scripts/factsheet.py).
 const PILLARS = [
   {
-    title: 'Investment',
+    kicker: 'Investment',
+    title: 'Deal Engine',
     text: 'An in-house AI platform for sourcing and deal assessment. It monitors weak signals across emerging categories around the clock and identifies founders who match our thesis before they become obvious.',
   },
   {
-    title: 'Operations',
+    kicker: 'Operations',
+    title: 'Growth Engine',
     text: 'An in-house AI platform for inbound and outbound. It runs content and go-to-market for our portfolio companies.',
   },
 ];
@@ -89,6 +93,7 @@ export default function HomepageLite() {
           <div className="pfh-pillars">
             {PILLARS.map((p) => (
               <div key={p.title} className="pfh-pillar">
+                <p className="k">{p.kicker}</p>
                 <h2>{p.title}</h2>
                 <p>{p.text}</p>
               </div>
@@ -110,6 +115,9 @@ export default function HomepageLite() {
       <section className="pfh-s" id="ongoing">
         <div className="pfh-wrap">
           <p className="pfh-eyeb">Portfolio</p>
+          <p className="pfh-port-note">
+            All three run their content and go-to-market on <b>Growth Engine</b>.
+          </p>
           <div className="pfh-port3">
             {ONGOING.map((p) => (
               <a key={p.name} href={p.href} target="_blank" rel="noopener noreferrer">
