@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
+import { dealFlowPreview } from '../lib/dealFlowPreview';
 
 const PROXY =
   'https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run';
-const FALLBACK_PREVIEW =
-  'https://proplace.co/cibles/profund-vc/?teaser=1&guest=lp&ticker=0&onb=0&tab=kept';
 const LOGO = '/logo.png';
 
 // Le proxy Modal peut mettre plusieurs dizaines de secondes à se réveiller, et
@@ -32,7 +31,7 @@ export default function DealFlowPage() {
   const [slow, setSlow] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [first, setFirst] = useState('');
-  const [src, setSrc] = useState(FALLBACK_PREVIEW);
+  const [src, setSrc] = useState(() => dealFlowPreview());
   const [modal, setModal] = useState(false);
   const [frameH, setFrameH] = useState<number | null>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
@@ -71,7 +70,9 @@ export default function DealFlowPage() {
           if (stop) return;
           if (r.ok && d && d.ok) {
             setFirst(d.first_name || '');
-            if (d.preview_src) setSrc(d.preview_src);
+            // The access server may still return the old Retenues URL.
+            setSrc(dealFlowPreview(d.preview_src));
+            setFrameH(null);
             setState('ok');
             return;
           }

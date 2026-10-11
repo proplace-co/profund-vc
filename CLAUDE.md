@@ -62,10 +62,15 @@ réseau de l'app. Les 5 identifiants de section (`pending`, `market`, `sourcing`
 **rien n'envoie encore** : le job d'envoi par abonné reste à écrire.
 
 **`/dealflow` embarque le cockpit Proplace en marque blanche.** L'iframe pointe
-`proplace.co/fr/carte?…&guest=lp` (URL fournie par `/profund/verify`). Côté
+`proplace.co/fr/carte?…&guest=lp` (jeton fourni par `/profund/verify`, présentation
+normalisée par `src/lib/dealFlowPreview.ts` : Validées, période complète, liste).
+Côté
 monorepo, `guest=lp` résout le mode `lp` (`proplace/src/components/AtelierV2/uiState.ts`) :
 lecture seule, aucun élément Proplace (offre, crédits, Stan, RDV), contact du
-GP en pied (`LpContact.tsx`). Ce mode défile DANS l'iframe ; l'écouteur
+GP en pied (`LpContact.tsx`). La vue LP est simplifiée et montre les mémos
+complets en lecture seule ; les décisions, liens et versions enregistrées sont
+relus automatiquement toutes les 30 secondes et au retour sur l'onglet.
+Ce mode défile DANS l'iframe ; l'écouteur
 `pp-ck-h` de `DealFlowPage.tsx` ne sert qu'aux anciens cockpits qui annoncent
 leur hauteur. Les emails (accusé de réception, lien d'accès) sont rendus par
 `_profund_mail_html` dans `modal_proxy/proxy.py`.
