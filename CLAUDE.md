@@ -70,6 +70,12 @@ lecture seule, aucun élément Proplace (offre, crédits, Stan, RDV), contact du
 GP en pied (`LpContact.tsx`). La vue LP est simplifiée et montre les mémos
 complets en lecture seule ; les décisions, liens et versions enregistrées sont
 relus automatiquement toutes les 30 secondes et au retour sur l'onglet.
+Dans le panneau de lecture, l'onglet Mémo embarque la page native
+`analysis.proplace.co/…?embed=cockpit&reader=1` : aperçu, Plan, version enregistrée,
+export PDF et synthèse en deck, sans « Modifier ». Les exports conservent leurs
+droits existants (PDF par impression pour un lecteur public ; deck pour un compte
+autorisé du fonds). L'iframe attend la confirmation du mode lecteur avant de
+s'afficher pour ne jamais exposer un ancien éditeur mis en cache.
 Ce mode défile DANS l'iframe ; l'écouteur
 `pp-ck-h` de `DealFlowPage.tsx` ne sert qu'aux anciens cockpits qui annoncent
 leur hauteur. Les emails (accusé de réception, lien d'accès) sont rendus par
