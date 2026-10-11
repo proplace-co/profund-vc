@@ -80,6 +80,9 @@ Ce mode défile DANS l'iframe ; l'écouteur
 `pp-ck-h` de `DealFlowPage.tsx` ne sert qu'aux anciens cockpits qui annoncent
 leur hauteur. Les emails (accusé de réception, lien d'accès) sont rendus par
 `_profund_mail_html` dans `modal_proxy/proxy.py`.
+L'intégration LP conserve la classe de mise en page `pp-desk` du cockpit source :
+titre, pastilles avec le bouton « + » à droite, puis période/recherche/filtres.
+Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 
 **AUCUN MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08). La taille du fonds,
 la construction, les tickets et les rendements cibles vivent **uniquement** dans
