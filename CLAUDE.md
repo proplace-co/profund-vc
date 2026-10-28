@@ -73,8 +73,13 @@ relus automatiquement toutes les 30 secondes et au retour sur l'onglet.
 Dans le panneau de lecture, l'onglet Mémo embarque la page native
 `analysis.proplace.co/…?embed=cockpit&reader=1` : aperçu, Plan, version enregistrée,
 export PDF et synthèse en deck, sans « Modifier ». Les exports conservent leurs
-droits existants (PDF par impression pour un lecteur public ; deck pour un compte
-autorisé du fonds). L'iframe attend la confirmation du mode lecteur avant de
+droits du serveur : depuis le 28/10, le dossier comité PDF et le deck pour tout lecteur
+de la dernière version (decks des lecteurs non connectés plafonnés par jour).
+**Depuis le 28/10, `/profund/verify` choisit la vue** : `guest=gp` pour le lien du GP
+(alexandre@profund.vc, alexandre@proplace.co : tous les gestes de la fiche sauf
+S'abonner), `guest=lp` pour un LP (lecture + discussion), et `lpk=<lien magique>` qui
+signe les messages de la discussion du dossier. `dealFlowPreview.ts` les reprend tels
+quels — ne pas les remettre en dur. L'iframe attend la confirmation du mode lecteur avant de
 s'afficher pour ne jamais exposer un ancien éditeur mis en cache.
 Ce mode défile DANS l'iframe ; l'écouteur
 `pp-ck-h` de `DealFlowPage.tsx` ne sert qu'aux anciens cockpits qui annoncent
