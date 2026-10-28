@@ -10,8 +10,8 @@ ni versionnée ni modifiable hors de leur interface.
 
 | URL         | Contenu                                                          |
 |-------------|------------------------------------------------------------------|
-| `/`         | Accueil : hero, badge « Pre-Marketing Phase », 4 chiffres clés, formulaire Brevo |
-| `/pitch`    | Deck LP complet — 17 sections, simulations de fonds, track record  |
+| `/`         | Accueil : hero (sans aucun montant), deux moteurs IA, portefeuille, fiche PDF, popup deal flow |
+| `/pitch`    | Deck LP complet — 17 sections, thèse, trois étages, simulations, track record |
 | `/legal`    | Legal Notice — communication de pré-commercialisation AIFMD        |
 | `/privacy`  | Politique de confidentialité (RGPD)                                |
 
@@ -24,6 +24,20 @@ npm run typecheck  # tsc --noEmit
 npm run build      # dist/ prêt pour GitHub Pages
 npm run preview    # sert dist/ en local
 ```
+
+## Chiffres du fonds
+
+Une seule source : `scripts/fund_model.py`. Il écrit `src/data/fund.json`, que
+lisent `/pitch` et la fiche PDF. Après toute modification d'une hypothèse :
+
+```bash
+python scripts/fund_model.py     # contrôles + src/data/fund.json
+python scripts/factsheet.py      # public/profund-factsheet.pdf
+```
+
+Commiter le JSON et le PDF (ni l'un ni l'autre n'est produit par `npm run build`)
+et changer le `?v=` de la fiche dans `HomepageLite.tsx`. La V1 (35 M€) est
+conservée sous le tag git `v1` et dans `archive/v1/`.
 
 En `preview`, ouvrir les routes profondes **avec le slash final** (`/pitch/`) :
 c'est ce que sert GitHub Pages. Sans slash, le serveur de preview retombe sur

@@ -12,10 +12,11 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-05-nomult';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-28-v2';
 
-// La these (EUR 35M, Lead at seed / co-invest Series A) vit ici.
-// Construction detaillee, tickets et rendements cibles : fiche PDF + /pitch.
+// AUCUN MONTANT SUR CETTE PAGE (decision d'Antoine, 30/08) : la these tient en
+// une phrase. Taille du fonds, construction, tickets et rendements cibles vivent
+// dans la fiche PDF et sur /pitch, tous deux generes depuis src/data/fund.json.
 
 // Memes accroches que la fiche PDF (scripts/factsheet.py, PORTFOLIO).
 const ONGOING = [
@@ -89,7 +90,7 @@ export default function HomepageLite() {
           <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
           <h1 className="pfh-h1">ProFund builds and invests in<br /><em>AI-native companies</em></h1>
           <p className="pfh-lead">
-            <span className="pfh-lead-line fit">A €35M early-stage fund acting as Lead investor at seed stage and co-investing in Series A.</span>
+            <span className="pfh-lead-line fit">A European venture fund, seed to growth: we track every seed round and back the companies that go exponential.</span>
             <span className="pfh-lead-line">Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.</span>
           </p>
           <div className="pfh-pillars">

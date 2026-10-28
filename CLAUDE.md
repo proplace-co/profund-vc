@@ -19,8 +19,13 @@ src/
     Footer.tsx          pied de page commun aux 4 routes
     CookieBanner.tsx    bandeau, monté globalement dans App.tsx
     ErrorBoundary.tsx   filet anti-page-blanche
+  lib/fund.ts           types de fund.json + formateurs (€, ×, %) de /pitch
+  data/fund.json        CHIFFRES DU FONDS — généré, ne pas éditer à la main
+scripts/fund_model.py   modèle du fonds : la seule source des chiffres → fund.json
+scripts/factsheet.py    fiche PDF (reportlab), lit fund.json
 scripts/prerender.mjs   post-build : un index.html par route + 404.html
 public/                 images, CNAME, robots.txt, sitemap.xml
+archive/v1/             fiche PDF de la V1 (hors public/ : jamais publiée)
 ```
 
 ## Conventions
@@ -93,17 +98,43 @@ Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 la construction, les tickets et les rendements cibles vivent **uniquement** dans
 la fiche PDF, qui porte la mention de pré-commercialisation AIFMD. L'accueil
 parle du passé, de ce qui est en cours, et du deal flow. `/pitch` garde ses
-chiffres : c'est le deck, pas la vitrine.
+chiffres : c'est le deck, pas la vitrine. La règle couvre aussi le shell
+`index.html` (meta description et `<noscript>`), servi sur TOUTES les routes et
+sur `404.html` : `prerender.mjs` fait échouer le build s'il y trouve un montant.
+Seule exception : les fourchettes de souscription des LPs de `DealFlowModal.tsx`
+(contrat avec `_PROFUND_TICKETS` du proxy).
 
-**La fiche PDF est un fichier commité, pas un artefact de build.**
-`public/profund-factsheet.pdf` est produit par `python scripts/factsheet.py`
-(reportlab). `npm run build` ne le régénère PAS. Après toute modification d'un
-chiffre, relancer le script ET commiter le PDF.
-⚠️ Les chiffres du fonds vivent à **trois endroits** qui doivent rester
-d'accord : `ProFundPage.tsx` (/pitch), `HomepageLite.tsx` (accueil) et
-`scripts/factsheet.py` (PDF). Le PDF emploie « EUR » et de l'ASCII pur : les
-polices Helvetica de base de reportlab sont en WinAnsi et rendent un caractère
-de remplacement sur `€` ou `—`.
+**Les chiffres du fonds ont UNE source : `scripts/fund_model.py`** (v2, 28/10 :
+un fonds de 100 M€, trois étages Seed / Venture / Growth, SPV de co-investissement
+au-delà de 10 M€ par société). Le modèle porte les hypothèses, les lignes de
+simulation (S-, V-, G-), les frais, la cascade de distribution, le TRI, et
+vérifie ses invariants (total = engagements, tickets dans les bornes, plafond par
+société, arrondis…). Il écrit `src/data/fund.json`, que lisent `/pitch` (via
+`src/lib/fund.ts`), la fiche PDF et le titre de `/pitch` dans `prerender.mjs`.
+Ne JAMAIS taper un montant, un multiple ou un TRI du fonds dans un composant
+ou dans la fiche : changer le modèle, puis
+
+```bash
+python scripts/fund_model.py     # contrôles + écrit src/data/fund.json
+python scripts/factsheet.py      # régénère public/profund-factsheet.pdf
+```
+
+commiter le JSON **et** le PDF, et changer le `?v=` de `FACTSHEET_URL`
+(`HomepageLite.tsx`) pour que les navigateurs reprennent la nouvelle fiche.
+`npm run build` ne régénère NI le JSON NI le PDF (ils sont commités).
+`python scripts/fund_model.py --check` échoue si le JSON n'est plus à jour ;
+`factsheet.py` refuse aussi de tourner dans ce cas. Les frais du fonds du modèle
+sont une estimation en attendant le devis du gestionnaire EuVECA.
+
+**La fiche PDF est en ASCII pur** (« EUR », « - », « >= ») : les polices
+Helvetica de base de reportlab sont en WinAnsi et rendent un caractère de
+remplacement sur `€` ou `—`. `factsheet.py` le vérifie (`AsciiCanvas`) et
+échoue aussi si une page déborde sur le pied : la page 1 n'a que quelques
+millimètres de marge, tout ajout se paie ailleurs.
+
+**La V1 est sauvegardée** : tag git `v1` (le site à 35 M€, Scout + Core, avant
+la v2) et `archive/v1/profund-factsheet-v1.pdf`. Pour y revenir : partir du tag
+(`git checkout v1 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`
 (`HeroSection`, `TheOpportunity`, `ThePlatform`…), assemblés en bas du fichier.
@@ -138,15 +169,28 @@ assets. C'est attendu, ne pas « corriger » cette valeur.
 **Contenu juridiquement sensible.** `/legal` est une communication de
 pré-commercialisation AIFMD (art. 30a) et `/pitch` contient des chiffres de
 performance cible. Ne jamais reformuler, arrondir ou « améliorer » un chiffre,
-une date ou une clause de ces pages sans demande explicite.
+une date ou une clause de ces pages sans demande explicite. La v2 vise un fonds
+EuVECA géré par un tiers : la référence à l'art. 30a de `/legal` et de la fiche
+est à revoir avec l'avocat et le gestionnaire, pas à changer de sa propre
+initiative. Les chiffres de tiers cités sur `/pitch` (Lovable, Stripe) sont
+sourcés en note : ne pas les modifier sans relire la source.
+
+**Le workflow de déploiement accepte n'importe quelle branche** via « Run
+workflow » (`workflow_dispatch` sans garde) : ne jamais le lancer sur une
+branche de travail, ce serait la mettre en ligne.
 
 ## Vérifier une modification
 
 ```bash
+python scripts/fund_model.py --check   # fund.json à jour et invariants du modèle
 npm run typecheck              # doit sortir 0 erreur
 npm run build                  # doit finir par "prerender: N routes ... écrits"
 npm run preview                # puis ouvrir /, /pitch/, /legal/, /privacy/
 ```
+
+Après un changement de la fiche : rendre ses deux pages en PNG (PyMuPDF,
+`python -c "import fitz; …"`, sans `-I` : fitz est installé dans le site-packages
+utilisateur) et les regarder.
 
 Contrôler le rendu à 390 px, 768 px et 1440 px : le CSS bascule à 768 px
 (`@media (max-width: 768px)`), où les grilles passent en une colonne, la grille

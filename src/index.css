@@ -135,7 +135,8 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 /* ── Portfolio Funnel ── */
 .funnel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-top: 28px; }
 .tier { background: var(--white); border: 1px solid var(--line); padding: 24px; border-top: 3px solid var(--blue); margin-bottom: 16px; }
-.tier.scout { border-top-color: var(--mid); }
+.tier.seed { border-top-color: var(--mid); }
+.tier.growth { border-top-color: var(--ink); }
 .tier-tag { font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--mid); margin-bottom: 4px; }
 .tier-h { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
 .tier-row { font-size: 12px; color: var(--sub); padding: 4px 0; border-bottom: 1px solid var(--line); display: flex; gap: 8px; line-height: 1.45; }

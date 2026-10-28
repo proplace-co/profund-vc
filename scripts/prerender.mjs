@@ -28,7 +28,12 @@ const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
 const BASE_TITLE = 'ProFund builds and invests in AI-native companies';
-const BASE_DESC = 'ProFund builds and invests in AI-native companies. Follow our deal flow live: the companies our platform detects, every morning, before they are obvious.';
+const BASE_DESC = 'ProFund builds and invests in AI-native companies, from seed to growth. Follow our deal flow live: the companies our platform detects, every morning, before they are obvious.';
+
+// Le titre de /pitch porte la taille du fonds : lue dans le modèle
+// (scripts/fund_model.py → src/data/fund.json), jamais tapée ici.
+const FUND = JSON.parse(readFileSync(join(here, '..', 'src', 'data', 'fund.json'), 'utf8'));
+const FUND_SIZE = `€${FUND.fund.commitments / 1e6}M`;
 
 // '' = accueil (déjà écrit par Vite, on ne fait que le laisser en place).
 const ROUTES = [
@@ -39,8 +44,8 @@ const ROUTES = [
   },
   {
     path: 'pitch',
-    title: 'ProFund — AI-Native Venture Platform · €35M target, 21 deals',
-    desc: "The platform, the two themes, portfolio construction and target returns of ProFund, an AI-native venture platform finding Europe's next category winners.",
+    title: `ProFund — Seed to Growth · ${FUND_SIZE} target`,
+    desc: "The thesis, the platform, the three-layer portfolio construction and target returns of ProFund, an AI-native venture fund from seed to growth finding Europe's next category winners.",
   },
   {
     path: 'dealflow',
@@ -87,6 +92,11 @@ function render(shell, { path, title, desc }) {
 }
 
 const shell = readFileSync(join(DIST, 'index.html'), 'utf8');
+
+// Le shell (meta + <noscript>) est servi sur TOUTES les routes, accueil et
+// 404.html compris : aucun montant ne doit y figurer (règle de l'accueil).
+const amount = shell.match(/(?:€|EUR)\s?\d[^<"]*/);
+if (amount) throw new Error(`Montant dans index.html (shell de toutes les routes) : « ${amount[0]} »`);
 
 for (const route of ROUTES) {
   const html = render(shell, route);
