@@ -475,11 +475,13 @@ function FoundingPartner() {
           <div><img src={GP_PHOTO_URL} alt="Alexandre Busson" style={{ width: '160px', height: '200px', objectFit: 'cover', objectPosition: 'center top', border: '1px solid var(--line)', display: 'block' }} /></div>
           <div>
             <div className="gp-name">Alexandre Busson</div>
-            <div className="gp-role">Founding Partner &amp; GP · ProFund · ESSEC · Ardian · Partech · Leboncoin</div>
+            <div className="gp-role">Founding Partner &amp; GP · ProFund · ESSEC · Ardian · Partech · Leboncoin · Google</div>
             <div className="f-rows">
               <div className="f-row"><span className="f-co">Ardian — LBO Analyst</span><span className="f-desc">Financial analysis, due diligence and portfolio monitoring across European mid-market companies. The work these products automate — done manually, at institutional standard.</span></div>
               <div className="f-row"><span className="f-co">Partech Ventures — Senior Associate</span><span className="f-desc">Sourcing and qualification of European pre-seed to Series B startups. Hundreds of founding teams evaluated. The conviction the platform encodes today was built here — manually, before it was an algorithm.</span></div>
               <div className="f-row"><span className="f-co">Leboncoin — M&amp;A Director</span><span className="f-desc">End-to-end acquisitions across Europe. The only GP who has sat on the acquirer's side of the table — and knows what makes a company unmissable at the LOI stage.</span></div>
+              <div className="f-row"><span className="f-co">Google — Key Account Manager assistant</span><span className="f-desc">Key account management at Google.</span></div>
+              <div className="f-row"><span className="f-co">Founder &amp; operator</span><span className="f-desc">Owner and CEO of Fadparis.com. Founder and investor of Dreamzer Games.</span></div>
               <div className="f-row"><span className="f-co">Network</span><span className="f-desc">ESSEC graduate. Active across Station F, the incubateur de l'X, and HEC's entrepreneurship program. Direct relationships with founding teams before they are visible.</span></div>
               <div className="f-row"><span className="f-co">Deal-03 · 19×</span><span className="f-desc">Seed ticket €200K at €5.3M. LBO exit at €100M. Sourced 14 months before public announcement — via the same weak signal methodology the platform now runs at scale every morning. <span className="f-kpi">19× return.</span></span></div>
               <div className="f-row"><span className="f-co">Deal-04 · Acquired 2016</span><span className="f-desc">100% acquisition, €45M buyout. Revenue growing ~20% YoY since acquisition.</span></div>

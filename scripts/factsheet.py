@@ -739,11 +739,13 @@ def page_two(c):
     c.setFont("Helvetica", 8)
     c.drawString(tx, y - 21, "Founding Partner")
     yy = y - 34
+    # Memes intitules que /pitch (ProFundPage.tsx, GP) - confirmes par Alexandre le 29/10.
     for role in (
-        "Principal, Schibsted Growth",
-        "Associate, Partech Ventures",
+        "M&A Director, Leboncoin",
+        "Senior Associate, Partech Ventures",
+        "LBO Analyst, Ardian (ex-AXA PE)",
+        "Key Account Manager assistant, Google",
         "Founder / Investor, Dreamzer Games",
-        "Investment Analyst, AXA Private Equity",
         "Owner and CEO, Fadparis.com",
     ):
         c.setFillColor(SUB)
