@@ -254,12 +254,12 @@ def _tier_rows(layer):
                 ("COMPANIES", str(x["companies"])), ("INVESTED", _eur(x["invested"])),
                 ("TARGET GROSS", moic)]
     if layer == "venture":
-        return [("STAGE", "Seed+ / Series A"), ("ROLE", "At the inflection point"), ("ENTRY POST", entry),
-                ("COMPANIES", str(x["companies"])), ("INVESTED", _eur(x["invested"])),
+        return [("STAGE", "Seed+ / Series A"), ("ROLE", "Direct, at the inflection"), ("ENTRY POST", entry),
+                ("COMPANIES", f"{x['companies']} direct entries"), ("INVESTED", _eur(x["invested"])),
                 ("TARGET GROSS", moic)]
     follow = x["positions"] - x["companies"]
-    return [("STAGE", "Series B and beyond"), ("ROLE", "Own breakouts first"), ("ENTRY POST", entry),
-            ("POSITIONS", f"{x['companies']} new + {follow} follow-ons"), ("INVESTED", _eur(x["invested"])),
+    return [("STAGE", "Series B and beyond"), ("ROLE", "Direct + our breakouts"), ("ENTRY POST", entry),
+            ("POSITIONS", f"{x['companies']} direct + {follow} follow-ons"), ("INVESTED", _eur(x["invested"])),
             ("TARGET GROSS", moic)]
 
 
@@ -556,7 +556,7 @@ def page_one(c):
     for s in (
         f"Seed to Growth. {_eur(FUND['commitments'], 'tile')} to back European founders leveraging AI "
         "in breathtaking ways.",
-        "Domain-specific AI harnesses with self-improving loops, built by teams that pilot AI agents.",
+        "Domain-specific AI harnesses with self-improving loops.",
     ):
         if len(_wrap_lines(c, s, CW, "Helvetica", 9.8)) > 1:
             raise SystemExit(f"\"In one sentence\" sur plus d'une ligne : {s!r}")
@@ -591,7 +591,7 @@ def page_one(c):
     lab_y = y
     y = _section(c, y, "Fund construction")
     _section_note(c, lab_y, "Fund construction",
-                  "One funnel: the best Seed companies graduate to Venture, then to ", "Growth.")
+                  "Two ways in at every layer: direct entries in top rounds, and our own ", "breakouts.")
     y += 2 * mm
 
     gap = 5 * mm
@@ -612,7 +612,7 @@ def page_one(c):
     y1 = _kv(c, M, ys, half, [
         (f"Seed - {seed['companies']} companies", _eur(ALLOC["seed"])),
         (f"Venture - {LAYERS['venture']['companies']} companies", _eur(ALLOC["venture"])),
-        (f"Growth - {growth['companies']} new + {growth['positions'] - growth['companies']} follow-ons",
+        (f"Growth - {growth['companies']} direct + {growth['positions'] - growth['companies']} follow-ons",
          _eur(ALLOC["growth"])),
         (f"Invested ({_pct(ALLOC['follow_on_pct'])} in follow-ons)", _eur(ALLOC["invested"])),
         ("Management fees", _eur(ALLOC["mgmt_fees"])),

@@ -12,7 +12,7 @@ export type LayerId = 'seed' | 'venture' | 'growth';
 export type Outcome =
   | 'fund_returner' | 'breakout' | 'strategic_exit' | 'early_exit' | 'zombie' | 'loss'
   | 'anchor' | 'strategic_win' | 'base_hit'
-  | 'breakout_follow_on' | 'pro_rata' | 'external_growth';
+  | 'breakout_follow_on' | 'pro_rata' | 'external_growth' | 'downside_protected';
 
 export interface FundLine {
   id: string;
@@ -53,6 +53,8 @@ export interface FundLayer {
   external?: number;
   internal_pct?: number;
   internal_min_pct?: number;
+  direct_pct?: number;
+  direct_min_pct?: number;
 }
 
 export interface FundCase {
@@ -194,6 +196,7 @@ export function outcomeTag(line: FundLine): { label: string; tone: Tone } {
     case 'base_hit': return { label: 'Base hit', tone: 'grey' };
     case 'breakout_follow_on': return { label: `Breakout (${line.company})`, tone: 'green' };
     case 'pro_rata': return { label: `Pro-rata (${line.company})`, tone: 'blue' };
-    case 'external_growth': return { label: 'External growth', tone: 'blue' };
+    case 'external_growth': return { label: 'Direct growth entry', tone: 'blue' };
+    case 'downside_protected': return { label: 'Downside, preference', tone: 'grey' };
   }
 }

@@ -26,14 +26,14 @@ function HeroSection() {
         <div style={{ display: 'inline-block', border: '1px solid var(--line)', color: 'var(--mid)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', padding: '8px 24px', marginBottom: '18px' }}>Pre-Marketing Phase</div>
         <span className="hero-tagline" style={{ display: 'block' }}>AI-Native Venture Platform</span>
         <h1 className="hero-title">We find Europe's next<br /><em>category winners.</em></h1>
-        <p className="hero-sub" style={{ maxWidth: '720px', margin: '0 auto 18px' }}>A {eur(F.commitments, 'tile')} European venture fund, seed to growth. We lead at seed, enter at the inflection point in Series A and double down on our breakouts, up to {eur(F.company_max_with_spv, 'tile')} per company with co-investment SPVs.<br /><br />Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.<br /><br />Powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals in emerging categories. Our objective: never miss a European company entering exponential growth.</p>
+        <p className="hero-sub" style={{ maxWidth: '720px', margin: '0 auto 18px' }}>A {eur(F.commitments, 'tile')} European venture fund, seed to growth. We lead at seed, enter at the inflection point in Series A — in our own companies or directly in the best external rounds — and double down at growth, up to {eur(F.company_max_with_spv, 'tile')} per company with co-investment SPVs.<br /><br />Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.<br /><br />Powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals in emerging categories. Our objective: never miss a European company entering exponential growth.</p>
         <p className="hero-note">{eur(F.commitments, 'tile')} Target · Seed to Growth · Europe · Up to {eur(F.company_max_with_spv, 'tile')} per company</p>
         <div style={{ marginBottom: '40px' }}>
           <a href="#contact" className="btn">Request LP Access</a>
         </div>
         <div className="hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--line)' }}>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">{eur(F.commitments, 'tile')}</span><span className="sg-l">Target Fund I · closed-ended · closings over {F.closing_months} months</span></div>
-          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">3 layers</span><span className="sg-l">{L.seed.companies} Seed · {L.venture.companies} Venture · Growth for our breakouts</span></div>
+          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">3 layers</span><span className="sg-l">{L.seed.companies} Seed · {L.venture.companies} Venture · {L.growth.companies} direct Growth entries, plus follow-ons in our breakouts</span></div>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">Weekly</span><span className="sg-l">Seed Radar — every European seed round re-scored on growth signals</span></div>
           <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">6–18mo</span><span className="sg-l">Average detection lead before public announcement</span></div>
         </div>
@@ -238,7 +238,7 @@ function WhatWeBack() {
         <div className="serve-grid">
           <div className="sc"><div className="sc-h">01 · Founders, From Day One</div><p className="sc-p">Exceptional, highly technical founders, detected before their first round through alumni networks, tier-1 departures, GitHub and job posts. At seed, we lead or co-lead with {eur(L.seed.ticket_min, 'tile')} to {eur(L.seed.ticket_max, 'tile')}.</p></div>
           <div className="sc"><div className="sc-h">02 · Every Seed Round</div><p className="sc-p">The Seed Radar follows every European pre-seed and seed round of the last 24 months and re-scores each company on dated, sourced growth signals. A round proves that someone else underwrote the founders.</p></div>
-          <div className="sc"><div className="sc-h">03 · The Inflection</div><p className="sc-p">We double down when the curve bends: ARR tripling in 12 months, EUR 1M ARR within 18 months of launch, record revenue per employee. Venture and Growth layers, up to {eur(F.company_max_with_spv, 'tile')} per company with SPVs.</p></div>
+          <div className="sc"><div className="sc-h">03 · The Inflection</div><p className="sc-p">We enter or double down when the curve bends, in our own companies or directly in the best external rounds: ARR tripling in 12 months, EUR 1M ARR within 18 months of launch, record revenue per employee. Venture and Growth layers, up to {eur(F.company_max_with_spv, 'tile')} per company with SPVs.</p></div>
           <div className="sc"><div className="sc-h">04 · Fund Returners</div><p className="sc-p">Category leaders in Europe with global ambition, a TAM above EUR 10B and winner-take-most dynamics. Each position must be able to return a meaningful part of the fund at its layer.</p></div>
           <div className="sc"><div className="sc-h">05 · Autonomy by Design</div><p className="sc-p">Companies that run as autonomously as possible: self-improving AI loops at the core, and small teams that pilot AI agents with maximum leverage to build the most ambitious things.</p></div>
           <div className="sc" style={{ background: 'var(--ink)' }}><div className="sc-h" style={{ color: '#fff' }}>We Live It</div><p className="sc-p" style={{ color: 'rgba(255,255,255,.78)' }}>One GP and a team of AI agents run the fund — and operate three companies almost autonomously: {OPERATED.map((o) => o.name).join(', ')}. They are 100% owned by the GP and sit outside the fund. We apply to ourselves what we look for in founders.</p></div>
@@ -301,8 +301,8 @@ function tierRows(id: LayerId): [string, string][] {
     ['Ticket', `${eurRange(x.ticket_min, F.company_cap)} from the fund · up to ${eur(F.company_max_with_spv, 'tile')} with SPVs`],
     ['Stage', 'Series B and beyond'],
     ['Entry valuation', entry],
-    ['Priority', `At least ${pct(x.internal_min_pct ?? 0)} for our own breakouts · external deals alongside leading growth funds`],
-    ['Invested', `${eur(x.invested)} · ${pct(x.internal_pct ?? 0)} in our own breakouts`],
+    ['Two ways in', `At least ${pct(x.direct_min_pct ?? 0)} direct entries alongside leading growth funds · the rest doubles down on our breakouts`],
+    ['Invested', `${eur(x.invested)} · ${pct(x.direct_pct ?? 0)} direct, ${pct(x.internal_pct ?? 0)} in our breakouts`],
   ];
 }
 
@@ -327,7 +327,7 @@ function PortfolioArch() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Portfolio Architecture</span>
         <h2 className="h2">The Conviction Funnel.<br /><em>One Fund, From Seed to Growth.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>A {eur(F.commitments, 'tile')} European venture fund in three layers. Seed is {L.seed.companies} companies where we lead or co-lead before the round. Venture is {L.venture.companies} entries at the inflection point, next to a Tier 1 lead. Growth doubles down on our breakouts, alongside leading growth funds. The best Seed companies graduate to Venture, the best Venture companies to Growth.</p>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>A {eur(F.commitments, 'tile')} European venture fund in three layers. Every layer has two ways in: direct entries into the best external rounds, and follow-ons in our own companies that take off. Seed is {L.seed.companies} companies where we lead or co-lead before the round. Venture is {L.venture.companies} direct entries at the inflection point, next to a Tier 1 lead — our own Seed graduates are funded from Seed reserves. Growth is {L.growth.companies} direct entries alongside leading growth funds ({pct(L.growth.direct_pct ?? 0)} of the layer), and the rest doubles down on our breakouts.</p>
         <div className="funnel-grid">
           <div>
             {(['seed', 'venture', 'growth'] as LayerId[]).map((id) => <TierCard key={id} id={id} />)}
@@ -335,7 +335,7 @@ function PortfolioArch() {
           <div>
             <div className="fw-stats">
               <div className="fw-s"><span className="fw-big">{eur(F.commitments, 'tile')}</span><div className="fw-det"><strong>Total fund.</strong> {eur(A.invested)} invested · {eur(A.mgmt_fees)} management fees · {eur(A.fund_expenses)} fund expenses · {eur(A.contingency)} contingency.</div></div>
-              <div className="fw-s hl"><span className="fw-big">{F.companies}</span><div className="fw-det"><strong>Companies.</strong> {L.seed.companies} Seed · {L.venture.companies} Venture · {g.companies} external Growth, plus {g.positions - g.companies} Growth follow-ons in our own breakouts.</div></div>
+              <div className="fw-s hl"><span className="fw-big">{F.companies}</span><div className="fw-det"><strong>Companies.</strong> {L.seed.companies} Seed · {L.venture.companies} Venture · {g.companies} direct Growth entries, plus {g.positions - g.companies} Growth follow-ons in our own breakouts.</div></div>
               <div className="fw-s"><span className="fw-big">{pct(A.follow_on_pct)}</span><div className="fw-det"><strong>Reserved for follow-ons.</strong> Pro-rata and super pro-rata in the companies that go exponential.</div></div>
               <div className="fw-s"><span className="fw-big">{eur(F.company_cap, 'tile')}</span><div className="fw-det"><strong>Maximum per company from the fund</strong> ({pct(F.company_cap_pct)} of commitments). Up to {eur(F.company_max_with_spv, 'tile')} with one or several co-investment SPVs.</div></div>
               <div className="fw-s"><span className="fw-big">{eur(TARGET.gross_exits, 'tile')}</span><div className="fw-det"><strong>Target gross exit value.</strong> Seed {eur(L.seed.proceeds.target)} · Venture {eur(L.venture.proceeds.target)} · Growth {eur(g.proceeds.target)}.</div></div>
@@ -410,7 +410,7 @@ function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
         </table></div>
         {(marked || id === 'growth') && (
           <p style={{ fontSize: '11px', color: 'var(--lite)', marginTop: '12px', lineHeight: 1.6 }}>
-            {id === 'growth' && <>Positions with a company in brackets are follow-ons in our own breakouts; the external growth deal is made alongside a leading growth fund.<br /></>}
+            {id === 'growth' && <>Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are made alongside leading growth funds, with a liquidation preference.<br /></>}
             {marked && <>* Fund Return shown at exit value. In the fund model, {pct(fund.secondary.share)} of this position is sold in a year-{fund.secondary.year} secondary at {pct(fund.secondary.price_pct)} of its exit value (see Fund Performance).</>}
           </p>
         )}

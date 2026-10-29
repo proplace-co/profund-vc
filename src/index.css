@@ -544,7 +544,6 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   letter-spacing: -.02em; color: var(--ink); }
 .pfh-crit-i p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--sub); }
 .pfh-crit-foot { margin: 16px 0 0; font-size: 13px; color: var(--mid); }
-.pfh-port-after { margin: clamp(18px, 2.6vh, 30px) auto 0; max-width: 640px; }
 @media (max-width: 960px) {
   .pfh-crit { grid-template-columns: repeat(2, 1fr); }
   .pfh-crit-i + .pfh-crit-i { border-left: 0; }

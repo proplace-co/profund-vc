@@ -13,7 +13,7 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-29-v3';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-29-v4';
 
 // UN SEUL MONTANT SUR CETTE PAGE : la taille du fonds dans la phrase du hero
 // (Alexandre, 29/10 — revient sur la regle « aucun montant » d'Antoine du 30/08),
@@ -69,7 +69,7 @@ const PILLARS = [
 const CRITERIA = [
   { t: 'Founders, from day one', d: 'Exceptional, highly technical founders, found before their first round. At seed, we lead.' },
   { t: 'Every seed round', d: 'Our Seed Radar follows every European seed round and re-scores each company, every week.' },
-  { t: 'The inflection', d: 'We double down when the curve bends: revenue tripling within a year, record revenue per employee.' },
+  { t: 'The inflection', d: 'We enter or double down when the curve bends, in our own companies or directly in the best external rounds.' },
   { t: 'Category winners', d: 'Companies that can lead their category in Europe and win globally. Each one could return the fund.' },
   { t: 'Autonomy by design', d: 'Self-improving AI loops at the core, run by teams that pilot AI agents with maximum leverage.' },
 ];
@@ -160,8 +160,8 @@ export default function HomepageLite() {
         <div className="pfh-wrap">
           <p className="pfh-eyeb">Operated by the GP</p>
           <p className="pfh-port-note">
-            We live what we back. <b>Proplace, Maximum Insurance and Sosuites are run almost autonomously
-            by AI agents and the GP</b>, who owns them outright: they sit outside the fund.
+            <b>We live what we back.</b><br />
+            Operations from our companies below are run almost autonomously by our engines &amp; agents.
           </p>
           <div className="pfh-port3">
             {ONGOING.map((p) => (
@@ -173,10 +173,6 @@ export default function HomepageLite() {
               </a>
             ))}
           </div>
-          <p className="pfh-port-note pfh-port-after">
-            The fund works the same way. We look for people who pilot AI agents with maximum leverage,
-            to build the most ambitious things.
-          </p>
         </div>
       </section>
 

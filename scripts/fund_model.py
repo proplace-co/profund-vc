@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
 VERSION = "v2"
-MODEL_DATE = "2026-10-28"   # fixe : --check doit rester stable d'un jour a l'autre
+MODEL_DATE = "2026-10-29"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
 
@@ -75,8 +75,12 @@ BOUNDS = {
              "own": (0.05, 0.125), "companies": 18},
     "venture": {"ticket": (1_500_000, 5 * M), "post": (25 * M, 80 * M),
                 "own": (0.05, 0.08), "companies": 8},
+    # 29/10 (Alexandre) : pas seulement une filiere Seed -> Venture -> Growth. Chaque etage
+    # entre aussi en direct dans les meilleurs tours externes : le Venture est 100 % direct,
+    # le Growth au moins 40 % direct (aux cotes d'un grand fonds growth), le reste pour nos
+    # propres gagnants.
     "growth": {"ticket": (5 * M, 10 * M), "post": (80 * M, 400 * M),
-               "own": (0.02, 0.05), "companies": 1, "internal_min_pct": 0.70},
+               "own": (0.02, 0.05), "companies": 3, "direct_min_pct": 0.40},
 }
 # Politique de reserves, en esperance : les lignes de suivi doivent la retrouver.
 RESERVES = {
@@ -86,7 +90,7 @@ RESERVES = {
                 "bridges": 0},
 }
 # Complement par SPV (hors fonds) jusqu'a company_max_with_spv, a titre indicatif.
-SPV_COMPANIES = ("S-01", "V-01", "V-02", "G-07")
+SPV_COMPANIES = ("S-01", "V-01", "G-07")
 
 
 @dataclass(frozen=True)
@@ -140,21 +144,19 @@ LINES = (
       recovery=0.4),
     L("V-07", "venture", "V-07", 2, "loss", "new", 6 * M, 40 * M, 2_400_000, 3, 4, 6,
       recovery=0.0),
-    # Growth : >= 70 % pour nos gagnants, une entree externe aux cotes d'un lead growth
+    # Growth : 3 entrees directes aux cotes d'un lead growth (>= 40 %), 3 suivis de nos gagnants
     L("G-01", "growth", "S-01", 1, "breakout_follow_on", "follow_on", 7 * M, 250 * M, 0, 3, None, 8,
       exit_pct=0.022, exit_value=1500 * M),
     L("G-02", "growth", "V-01", 1, "breakout_follow_on", "follow_on", 5 * M, 400 * M, 0, 4, None, 8,
       exit_pct=0.01, exit_value=1200 * M),
     L("G-03", "growth", "S-02", 1, "breakout_follow_on", "follow_on", 5 * M, 150 * M, 0, 3, None, 7,
       exit_pct=0.028, exit_value=600 * M),
-    L("G-04", "growth", "V-02", 1, "breakout_follow_on", "follow_on", 5 * M, 250 * M, 0, 4, None, 7,
-      exit_pct=0.017, exit_value=600 * M),
-    L("G-05", "growth", "S-03", 1, "pro_rata", "follow_on", 2 * M, 100 * M, 0, 4, None, 7,
-      exit_pct=0.016, exit_value=300 * M),
-    L("G-06", "growth", "S-04", 1, "pro_rata", "follow_on", 2 * M, 100 * M, 0, 4, None, 5,
-      exit_pct=0.02, exit_value=150 * M),
-    L("G-07", "growth", "G-07", 1, "external_growth", "new", 7 * M, 250 * M, 0, 2, None, 6,
-      exit_pct=0.024, exit_value=1000 * M),
+    L("G-07", "growth", "G-07", 1, "external_growth", "new", 6 * M, 250 * M, 0, 2, None, 6,
+      exit_pct=0.021, exit_value=1000 * M),
+    L("G-08", "growth", "G-08", 1, "external_growth", "new", 5 * M, 250 * M, 0, 3, None, 7,
+      exit_pct=0.017, exit_value=900 * M),
+    L("G-09", "growth", "G-09", 1, "downside_protected", "new", 5 * M, 200 * M, 0, 3, None, 7,
+      recovery=0.8),
 )
 
 
@@ -401,7 +403,10 @@ def validate(data: dict) -> Checks:
         for name, v in x["proceeds"].items():
             c.need(on_grain(v), f"{layer} : produits {name} {v} hors maille d'affichage")
     g = data["layers"]["growth"]
-    c.need(g["internal"] / g["invested"] >= BOUNDS["growth"]["internal_min_pct"], "growth : part interne < 70 %")
+    c.need(g["external"] / g["invested"] >= BOUNDS["growth"]["direct_min_pct"],
+           "growth : entrees directes < 40 %")
+    c.need(all(x.kind == "new" for x in LINES if x.layer == "venture"),
+           "venture : toutes les entrees doivent etre directes")
     for layer, ev in data["reserve_policy"].items():
         if layer == "growth":
             continue
@@ -462,7 +467,8 @@ def build() -> dict:
             entry["internal"] = internal
             entry["external"] = inv - internal
             entry["internal_pct"] = ratio(internal / inv, 2)
-            entry["internal_min_pct"] = b["internal_min_pct"]
+            entry["direct_pct"] = ratio((inv - internal) / inv, 2)
+            entry["direct_min_pct"] = b["direct_min_pct"]
         for name, cap in CASES:
             got = sum(proceeds(x, cap) for x in lines)
             entry["proceeds"][name] = got
