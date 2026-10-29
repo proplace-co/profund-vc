@@ -554,8 +554,8 @@ def page_one(c):
 
     y = _section(c, y, "In one sentence")
     for s in (
-        f"A {_eur(FUND['commitments'], 'tile')} European fund, seed to growth: we read every seed round "
-        "and back what goes exponential.",
+        f"Seed to Growth. {_eur(FUND['commitments'], 'tile')} to back European founders leveraging AI "
+        "in breathtaking ways.",
         "Domain-specific AI harnesses with self-improving loops, built by teams that pilot AI agents.",
     ):
         if len(_wrap_lines(c, s, CW, "Helvetica", 9.8)) > 1:

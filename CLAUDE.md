@@ -101,8 +101,9 @@ L'intégration LP conserve la classe de mise en page `pp-desk` du cockpit source
 titre, pastilles avec le bouton « + » à droite, puis période/recherche/filtres.
 Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 
-**AUCUN MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08). La taille du fonds,
-la construction, les tickets et les rendements cibles vivent **uniquement** dans
+**UN SEUL MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08, assouplie par
+Alexandre le 29/10) : la taille du fonds dans la phrase du hero, lue dans
+`fund.json`. La construction, les tickets et les rendements cibles vivent **uniquement** dans
 la fiche PDF, qui porte la mention de pré-commercialisation EuVECA. L'accueil
 parle du passé, de ce qui est en cours, et du deal flow. `/pitch` garde ses
 chiffres : c'est le deck, pas la vitrine. La règle couvre aussi le shell

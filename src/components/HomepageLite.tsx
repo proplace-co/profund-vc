@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import DealFlowModal from './DealFlowModal';
+import { eur, fund } from '../lib/fund';
 
 const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
 
@@ -14,9 +15,11 @@ const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
 const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-29-v3';
 
-// AUCUN MONTANT SUR CETTE PAGE (decision d'Antoine, 30/08) : la these tient en
-// une phrase. Taille du fonds, construction, tickets et rendements cibles vivent
-// dans la fiche PDF et sur /pitch, tous deux generes depuis src/data/fund.json.
+// UN SEUL MONTANT SUR CETTE PAGE : la taille du fonds dans la phrase du hero
+// (Alexandre, 29/10 — revient sur la regle « aucun montant » d'Antoine du 30/08),
+// lue dans src/data/fund.json. Construction, tickets et rendements cibles vivent
+// toujours dans la fiche PDF et sur /pitch seulement.
+const FUND_SIZE = eur(fund.fund.commitments, 'tile');
 
 // Les sociétés que le GP opère avec ses agents, hors du fonds (détenues à 100 %).
 // Mêmes accroches que la fiche PDF (scripts/factsheet.py, PORTFOLIO).
@@ -101,8 +104,7 @@ export default function HomepageLite() {
           <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
           <h1 className="pfh-h1">ProFund builds and invests in<br /><em>AI-native companies</em></h1>
           <p className="pfh-lead">
-            <span className="pfh-lead-line fit">One European fund, seed to growth. We read every seed round and back the companies that go exponential.</span>
-            <span className="pfh-lead-line">Domain-specific AI harnesses with self-improving loops, built by small, highly technical teams that pilot AI agents with maximum leverage.</span>
+            <span className="pfh-lead-line fit">Seed to Growth. {FUND_SIZE} to back European founders leveraging AI in breathtaking ways.</span>
           </p>
           <div className="pfh-pillars">
             {/* les deux moteurs sont l'avantage du fonds ET l'outil qui le fait
