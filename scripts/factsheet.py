@@ -554,9 +554,9 @@ def page_one(c):
 
     y = _section(c, y, "In one sentence")
     for s in (
-        f"A {_eur(FUND['commitments'], 'tile')} European venture fund, seed to growth: we back AI-native "
-        "companies just before the exponential.",
-        "Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.",
+        f"A {_eur(FUND['commitments'], 'tile')} European fund, seed to growth: we read every seed round "
+        "and back what goes exponential.",
+        "Domain-specific AI harnesses with self-improving loops, built by teams that pilot AI agents.",
     ):
         if len(_wrap_lines(c, s, CW, "Helvetica", 9.8)) > 1:
             raise SystemExit(f"\"In one sentence\" sur plus d'une ligne : {s!r}")
@@ -568,15 +568,15 @@ def page_one(c):
     # l'accueil (src/components/HomepageLite.tsx, PILLARS).
     y = _pillars(c, y + 2 * mm, [
         ("Investment", "Deal Engine",
-         "An in-house AI platform for sourcing and deal assessment. It monitors weak signals "
-         "across emerging categories around the clock and identifies founders who match our "
-         "thesis before they become obvious.",
+         "Reads every European seed round, every senior hire and every launch, around the "
+         "clock. It scores each founder against our thesis and flags the inflection point "
+         "before it becomes obvious.",
          ["ProFund"]),
         ("Operations", "Growth Engine",
-         "An in-house AI platform for inbound and outbound. It runs content and go-to-market "
-         "for our portfolio companies.",
+         "AI agents that run content, inbound and outbound, end to end. They operate the fund "
+         "and the GP's companies today, and they work for the founders we back.",
          ["ProFund", "Proplace", "Maximum Insurance", "Sosuites"]),
-    ], head=("Our edge", "Two in-house AI engines. ProFund itself runs on both."))
+    ], head=("Our edge", "We run on what we back: two in-house AI engines, one GP and his agents."))
 
     seed = LAYERS["seed"]
     y = _stat_band(c, y, h=20 * mm, items=[
@@ -676,41 +676,46 @@ def page_two(c):
         f"two largest winners at {_pct(SECONDARY['price_pct'])} of exit value. Model outputs, not a forecast."),
         CW, size=6.8, color=LITE, leading=8.6) - 2.2 * mm
 
+    # 29/10 (Alexandre) — la vision, puis la these du fonds en clair (memes cinq
+    # criteres que l'accueil et /pitch, issus de theses/profund_vc/v2.json du monorepo).
     y = _section(c, y, "Strategy")
     y = _labeled(c, y, [
-        ("Thesis",
-         "AI-native companies now go from seed to growth in months. One fund follows them from "
-         f"{_eur(LAYERS['seed']['ticket_min'])} to {_eur(FUND['company_max_with_spv'], 'tile')}: we position just "
-         "before the exponential and fund exceptional talent, the Revolut standard."),
-        ("Deal Engine",
-         "Our in-house AI Venture Platform processes hundreds of startups and founders daily. Human "
-         "time is reserved for the top 1 percent that get a CALL recommendation, and the reason every "
-         "other signal was discarded is written down. Thesis parameters are recalibrated every day."),
-        ("Proof",
-         "Growth Engine already books dozens of meetings for Proplace and Maximum Insurance."),
-        ("Memos",
-         "A standard investment memo and financial model for every company matching our "
-         "thesis. A highly detailed memo, AI-powered due diligence and human conviction "
-         "statement for companies we want to invest in."),
-        ("Governance",
-         "Solo GP on an AI platform. Administration, audit and reporting outsourced to a third-party "
-         f"EuVECA manager. GP commitment of at least {_pct(TERMS['gp_commit_min_pct'])} of the fund, in cash."),
-    ], CW, gap=1.6 * mm) - 1.2 * mm
+        ("Vision",
+         "An age of abundance is starting. With AI, a handful of people can build what once took "
+         "thousands, and founders who direct AI agents will realise their ambitions in record time. "
+         "We believe AI will first free humanity from material needs, then give people time for "
+         "what matters most."),
+        ("One fund",
+         "AI-native companies go from seed to growth in months. One fund follows them from "
+         f"{_eur(LAYERS['seed']['ticket_min'])} to {_eur(FUND['company_max_with_spv'], 'tile')} per "
+         "company, just before the exponential. It uses AI everywhere; its capital goes first to "
+         "the people who get the most leverage out of AI."),
+        ("We live it",
+         "One GP and a team of AI agents run the fund and three companies: we live what we back."),
+    ], CW, gap=1.4 * mm) - 0.6 * mm
+
+    y = _section(c, y, "What we back - our fund thesis")
+    y = _labeled(c, y, [
+        ("01 Founders",
+         "Exceptional, highly technical founders, found before their first round. At seed, we lead."),
+        ("02 Seed Radar",
+         "Every European seed round of the last 24 months, re-scored on dated growth signals."),
+        ("03 Inflection",
+         "We double down when the curve bends: ARR x3 in 12 months, record revenue per employee."),
+        ("04 Returners",
+         "Category leaders in Europe with global ambition, TAM above EUR 10B, winner-take-most."),
+        ("05 Autonomy",
+         "Self-improving AI loops at the core; small teams that pilot agents with maximum leverage."),
+    ], CW, gap=0.9 * mm) - 0.6 * mm
 
     y = _section(c, y, "How we source")
     y = _labeled(c, y, [
-        ("Network",
-         "Warm intro, network of top-tier founders, VCs, selected private events, "
-         "friends and family network..."),
-        ("Seed Radar",
-         "Every European seed round is tracked and re-scored weekly on growth signals: exceptional "
-         "hires, hiring velocity, traffic, product releases, revenue proxies. Objective: never miss "
-         "a company entering exponential growth."),
-        ("Platform",
-         "More than 25 custom engines detect weak signals before the round: GitHub repositories, "
-         "leadership changes at top-tier startups, LinkedIn job posts, semantic search, grandes "
-         "ecoles alumni networks. New sourcing engines every week."),
-    ], CW, gap=1.6 * mm) - 2 * mm
+        ("Deal Engine",
+         "25+ in-house engines read weak signals daily (GitHub, tier-1 departures, job posts, "
+         "alumni networks), plus warm introductions from top-tier founders and VCs. A memo and a "
+         "model for every match, human time for the top 1 percent. Third-party EuVECA manager; GP "
+         f"commitment of at least {_pct(TERMS['gp_commit_min_pct'])} in cash."),
+    ], CW, gap=1.4 * mm) - 1.6 * mm
 
     # The GP (photo + short CV) | prior track record
     split = CW * 0.5
@@ -775,11 +780,10 @@ def page_two(c):
     y = min(y - ph, y_kv - 1 * mm) - 3.5 * mm
 
     lab_y = y
-    y = _section(c, y, "Portfolio today")
-    # la phrase qui relie le portefeuille au Growth Engine, sur la ligne du
-    # chapeau : elle ne coute aucune hauteur a une page deja pleine
-    _section_note(c, lab_y, "Portfolio today",
-                  "All three run their content and go-to-market on ", "Growth Engine.")
+    y = _section(c, y, "Operated by the GP")
+    # 29/10 — hors du fonds : detenues a 100 % par le GP, operees par ses agents IA
+    _section_note(c, lab_y, "Operated by the GP",
+                  "Outside the fund, 100% owned by the GP: run almost autonomously by ", "AI agents.")
     y = _portfolio(c, y + 1.5 * mm, PORTFOLIO) - 6 * mm
 
     SITE = "https://profund.vc"
@@ -817,7 +821,7 @@ def page_two(c):
     c.linkURL(SITE, (rx, y - 11 * mm, qr_x - 3 * mm, y - 4 * mm), relative=0, thickness=0)
     c.setFillColor(MID)
     c.setFont("Helvetica", 7.4)
-    c.drawString(rx, y - 12.5 * mm, "Scan, or tap. The companies we detect, every morning.")
+    c.drawString(rx, y - 12.5 * mm, "Scan, or tap. The companies we detect, every evening.")
 
     contacts = (
         ("profund.vc", SITE),

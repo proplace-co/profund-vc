@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import DealFlowModal from './DealFlowModal';
 import { fund, eur, eurRange, mult, pct, rowId, outcomeTag, type CaseId, type LayerId } from '../lib/fund';
 
 const LOGO_URL = '/logo.png';
@@ -211,6 +213,35 @@ function TheConversion() {
             <div className="fw-s"><span className="fw-big" style={{ fontSize: '28px', letterSpacing: '0' }}>X · HEC</span><div className="fw-det"><strong>Grandes écoles networks.</strong> X · Centrale · HEC · ESSEC · EPFL. Primary signal sources. Teams in our system before they register their SARL.</div></div>
             <div className="fw-s"><span className="fw-big">0</span><div className="fw-det"><strong>Cold introductions.</strong> Every outreach is specific, informed, and timed to the moment the signal appears — not when the founder is already meeting 20 other funds.</div></div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 29/10 (Alexandre) — la vision et les critères : la thèse du fonds (theses/profund_vc/v2.json
+// du monorepo) en clair pour un LP, et la preuve que le GP l'applique à lui-même.
+const OPERATED = [
+  { name: 'Proplace', what: 'AI harness for corporate development' },
+  { name: 'Maximum Insurance', what: 'Swiss travel insurtech & travel risk management platform' },
+  { name: 'Sosuites', what: 'AI-assisted personalised art prints' },
+];
+
+function WhatWeBack() {
+  return (
+    <div className="pf-section" style={{ background: 'var(--bg)' }}>
+      <div className="pf-wrap-wide">
+        <span className="eyebrow">What We Back</span>
+        <h2 className="h2">An age of abundance is starting.<br /><em>We back the people who will build it.</em></h2>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.8, maxWidth: '760px', marginBottom: '12px' }}>With AI, a handful of people can now build what once took thousands. Founders who direct AI agents will turn their ambitions into companies in record time. We believe AI will first free humanity from material constraints, then give people the time and freedom to pursue what matters most.</p>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.8, maxWidth: '760px', marginBottom: '28px' }}>Our fund is built for that world: it uses AI everywhere it can, and its capital goes first to the best people — those who get the most leverage out of AI. <strong style={{ color: 'var(--ink)' }}>These five criteria are our fund thesis. They drive the Deal Engine every morning.</strong></p>
+        <div className="serve-grid">
+          <div className="sc"><div className="sc-h">01 · Founders, From Day One</div><p className="sc-p">Exceptional, highly technical founders, detected before their first round through alumni networks, tier-1 departures, GitHub and job posts. At seed, we lead or co-lead with {eur(L.seed.ticket_min, 'tile')} to {eur(L.seed.ticket_max, 'tile')}.</p></div>
+          <div className="sc"><div className="sc-h">02 · Every Seed Round</div><p className="sc-p">The Seed Radar follows every European pre-seed and seed round of the last 24 months and re-scores each company on dated, sourced growth signals. A round proves that someone else underwrote the founders.</p></div>
+          <div className="sc"><div className="sc-h">03 · The Inflection</div><p className="sc-p">We double down when the curve bends: ARR tripling in 12 months, EUR 1M ARR within 18 months of launch, record revenue per employee. Venture and Growth layers, up to {eur(F.company_max_with_spv, 'tile')} per company with SPVs.</p></div>
+          <div className="sc"><div className="sc-h">04 · Fund Returners</div><p className="sc-p">Category leaders in Europe with global ambition, a TAM above EUR 10B and winner-take-most dynamics. Each position must be able to return a meaningful part of the fund at its layer.</p></div>
+          <div className="sc"><div className="sc-h">05 · Autonomy by Design</div><p className="sc-p">Companies that run as autonomously as possible: self-improving AI loops at the core, and small teams that pilot AI agents with maximum leverage to build the most ambitious things.</p></div>
+          <div className="sc" style={{ background: 'var(--ink)' }}><div className="sc-h" style={{ color: '#fff' }}>We Live It</div><p className="sc-p" style={{ color: 'rgba(255,255,255,.78)' }}>One GP and a team of AI agents run the fund — and operate three companies almost autonomously: {OPERATED.map((o) => o.name).join(', ')}. They are 100% owned by the GP and sit outside the fund. We apply to ourselves what we look for in founders.</p></div>
         </div>
       </div>
     </div>
@@ -553,6 +584,7 @@ function GovernanceSection() {
 }
 
 function CTASection() {
+  const [open, setOpen] = useState(false);
   return (
     <div id="contact" className="pf-section" style={{ textAlign: 'center', paddingBottom: '0' }}>
       <div className="pf-wrap">
@@ -560,18 +592,12 @@ function CTASection() {
         <h2 className="cta-h">Invest in the future<br />of <em>European AI.</em></h2>
         <p className="cta-p">We are selectively building our LP base. A {eur(F.commitments, 'tile')} European venture fund, seed to growth: one fund that follows AI-native companies from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_max_with_spv, 'tile')} — powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals before they become obvious to the category.</p>
         <p className="cta-note" style={{ fontSize: '15px', marginTop: '12px' }}>Contact: <a href="mailto:alexandre@profund.vc">alexandre@profund.vc</a></p>
-        <div style={{ marginTop: '40px', background: '#fff' }}>
-          <iframe
-            width="540"
-            height="700"
-            src="https://77f02b89.sibforms.com/serve/MUIFALUiZIPfuoaTzppPYzP7z6tpgQFfbhCHQuX8eO58o9PB8ue7e3ED7js4wkM1mNJErqEK2YtgwSU2koncoKMtNmozRmy55vEGK6wgnJk0AwqAxzWcwM67GiIBHz1XgOlkmNF00qqP7cGXUx69taacMVNXnPaZ3F9jnvVMDP-DFnCpN2SWKX10fWKRxNSpSxIZUKeJV4KlahCGNw=="
-            frameBorder={0}
-            scrolling="auto"
-            allowFullScreen
-            style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '100%', maxWidth: '540px', marginBottom: '-6px' }}
-            title="Newsletter Signup"
-          />
+        {/* 29/10 — le même formulaire que l'accueil (DealFlowModal), plus l'ancien iframe Brevo */}
+        <div style={{ margin: '36px 0 56px' }}>
+          <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
+          <p style={{ fontSize: '12px', color: 'var(--lite)', marginTop: '14px' }}>Every evening, the companies we reviewed that day, the ones we kept, and why.</p>
         </div>
+        <DealFlowModal open={open} onClose={() => setOpen(false)} />
       </div>
     </div>
   );
@@ -585,6 +611,8 @@ export default function ProFundPage() {
       <TheOpportunity />
       <hr className="pf-div" />
       <WhyOneFund />
+      <hr className="pf-div" />
+      <WhatWeBack />
       <hr className="pf-div" />
       <ThePlatform />
       <hr className="pf-div" />

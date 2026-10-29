@@ -532,6 +532,32 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   100% { box-shadow: 0 0 0 0 rgba(18, 161, 80, 0); }
 }
 
+/* « What we back » (29/10) : la vision, puis les cinq critères de la thèse du fonds. */
+.pfh-vision { max-width: 760px; }
+.pfh-crit { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: clamp(28px, 4vh, 46px);
+  border: 1px solid var(--line); background: #fff; text-align: left; }
+.pfh-crit-i { padding: 24px 22px 26px; }
+.pfh-crit-i + .pfh-crit-i { border-left: 1px solid var(--line); }
+.pfh-crit-i b { display: block; margin-bottom: 12px; font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; color: var(--blue); }
+.pfh-crit-i h3 { margin: 0 0 8px; font-size: 16px; line-height: 1.25; font-weight: 800;
+  letter-spacing: -.02em; color: var(--ink); }
+.pfh-crit-i p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--sub); }
+.pfh-crit-foot { margin: 16px 0 0; font-size: 13px; color: var(--mid); }
+.pfh-port-after { margin: clamp(18px, 2.6vh, 30px) auto 0; max-width: 640px; }
+@media (max-width: 960px) {
+  .pfh-crit { grid-template-columns: repeat(2, 1fr); }
+  .pfh-crit-i + .pfh-crit-i { border-left: 0; }
+  .pfh-crit-i { border-top: 1px solid var(--line); }
+  .pfh-crit-i:nth-child(-n + 2) { border-top: 0; }
+  .pfh-crit-i:nth-child(2n) { border-left: 1px solid var(--line); }
+}
+@media (max-width: 560px) {
+  .pfh-crit { grid-template-columns: 1fr; }
+  .pfh-crit-i:nth-child(2n) { border-left: 0; }
+  .pfh-crit-i:nth-child(2) { border-top: 1px solid var(--line); }
+}
+
 .pfh-steps { display: grid; grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid var(--line); margin-top: 52px; text-align: left; }
 .pfh-step { padding: 28px 30px; }
