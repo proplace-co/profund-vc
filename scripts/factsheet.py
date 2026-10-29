@@ -222,7 +222,15 @@ def _stat_band(c, y, items, h=23 * mm):
     c.setFillColor(INK)
     c.rect(M, top - h, CW, h, stroke=0, fill=1)
     cell = CW / len(items)
-    for i, (num, lab) in enumerate(items):
+    wrapped = [_wrap_lines(c, lab, cell - 20, "Helvetica", 7.4) for _, lab in items]
+    if any(len(w) > 2 for w in wrapped):
+        raise SystemExit("bande de chiffres : libelle sur plus de 2 lignes")
+    # 29/10 — bloc (chiffre + libelle) centre verticalement dans la bande : hauteur
+    # = capitale du chiffre (11.6 pt) + ecart + lignes du libelle (capitale 5.4 pt).
+    n_max = max(len(w) for w in wrapped)
+    block = 11.6 + 7.5 + 5.4 + 9 * (n_max - 1)
+    num_y = top - (h - block) / 2 - 11.6
+    for i, ((num, _), lines) in enumerate(zip(items, wrapped)):
         x = M + i * cell
         if i:
             c.setStrokeColor(colors.HexColor("#3A3A3A"))
@@ -230,14 +238,11 @@ def _stat_band(c, y, items, h=23 * mm):
             c.line(x, top - h + 6 * mm, x, top - 6 * mm)
         c.setFillColor(WHITE)
         c.setFont("Helvetica-Bold", 16)
-        c.drawString(x + 10, top - 11 * mm, num)
+        c.drawString(x + 10, num_y, num)
         c.setFillColor(colors.HexColor("#B8B8B8"))
         c.setFont("Helvetica", 7.4)
-        lines = _wrap_lines(c, lab, cell - 20, "Helvetica", 7.4)
-        if len(lines) > 2:
-            raise SystemExit(f"bande de chiffres : libelle sur plus de 2 lignes : {lab!r}")
         for j, ln in enumerate(lines):
-            c.drawString(x + 10, top - 15.5 * mm - j * 9, ln)
+            c.drawString(x + 10, num_y - 7.5 - 5.4 - j * 9, ln)
     return top - h - 5.5 * mm
 
 
@@ -524,13 +529,14 @@ def page_one(c):
 
     c.setFillColor(INK)
     c.setFont("Helvetica-Bold", 25)
-    c.drawString(M, y, "ProFund builds and invests in")
+    c.drawString(M, y, "Turning AI into")
     y -= 27
-    c.drawString(M, y, "AI-native companies")
+    c.drawString(M, y, "unfair leverage")
     y -= 17
     c.setFillColor(MID)
     c.setFont("Helvetica", 11)
-    c.drawString(M, y, "Seed to growth. One fund. Europe.")
+    c.drawString(M, y, f"Seed to Growth. {_eur(FUND['commitments'], 'tile')} for the founders turning AI "
+                       "into unfair leverage.")
     y -= 10
     _rule(c, y, color=INK, w=2.2)
     y -= 14
@@ -551,18 +557,6 @@ def page_one(c):
           "subscribed at this stage. For professional and eligible investors only.",
           CW - 24, size=8, color=SUB, leading=10.5)
     y -= box_h + 7 * mm
-
-    y = _section(c, y, "In one sentence")
-    for s in (
-        f"Seed to Growth. {_eur(FUND['commitments'], 'tile')} to back European founders leveraging AI "
-        "in breathtaking ways.",
-        "Domain-specific AI harnesses with self-improving loops.",
-    ):
-        if len(_wrap_lines(c, s, CW, "Helvetica", 9.8)) > 1:
-            raise SystemExit(f"\"In one sentence\" sur plus d'une ligne : {s!r}")
-        y = _para(c, M, y, s, CW, size=9.8, leading=13.4)
-        y -= 2 * mm
-    y -= 1 * mm
 
     # Les deux plateformes maison — meme encadre, memes noms et meme texte que
     # l'accueil (src/components/HomepageLite.tsx, PILLARS).
@@ -627,7 +621,6 @@ def page_one(c):
         ("Then, on invested capital", _pct(TERMS["fee_post_pct"], 1)),
         ("Carried interest, European", _pct(TERMS["carry_pct"])),
         ("Hurdle, with GP catch-up", _pct(TERMS["hurdle_pct"])),
-        ("GP commitment, in cash", f">= {_pct(TERMS['gp_commit_min_pct'])}"),
         ("Per company: fund / with SPVs",
          f"{_eur(FUND['company_cap'], 'tile')} / {_short(FUND['company_max_with_spv'])}"),
     ], extra=4, rule_off=9.5, last_rule=False)
@@ -696,7 +689,7 @@ def page_two(c):
     y = _section(c, y, "What we back - our fund thesis")
     y = _labeled(c, y, [
         ("01 Founders",
-         "Exceptional, highly technical founders, found before their first round. At pre-seed, we lead."),
+         "Exceptional, highly technical founders, found before their first round."),
         ("02 Seed Radar",
          "Every European seed round of the last 24 months, re-scored on dated growth signals."),
         ("03 Inflection",

@@ -261,7 +261,6 @@ function WinningFounder() {
           <div className="sc"><div className="sc-h">Hands-On AI Support</div><p className="sc-p">Expert in AI-powered tools (n8n, Make, Airtable, any API, MCP servers, Cursor). We help founders stress-test their architecture and design autonomous workflows — ensuring they build defensible data moats, not LLM wrappers.</p></div>
           <div className="sc"><div className="sc-h">M&A Wargaming From Day One</div><p className="sc-p">Algorithms that detect acquisition races before the market. We know who will want to buy your company before you do — and we structure the exit path from the first term sheet.</p></div>
           <div className="sc"><div className="sc-h">Automated Elite Governance</div><p className="sc-p">Fund administration 100% externalized. Daily &amp; weekly reporting fully automated. Our platform parses founders' reports instantly, updates evergreen investment memos, and flags risks in real-time.</p></div>
-          <div className="sc"><div className="sc-h">Full Alignment</div><p className="sc-p">GP commitment of at least {pct(T.gp_commit_min_pct)} of the fund, in cash. When we back a founder, the GP is on the line.</p></div>
         </div>
       </div>
     </div>
@@ -563,7 +562,7 @@ function GovernanceSection() {
           </div>
           <div className="gov">
             <div className="gov-h">Fund Terms</div>
-            <p className="gov-p">{pct(T.fee_ip_pct)} management fee on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital ({pct(T.fee_first_close_pct, 2)} for first-close investors)<br />{pct(T.carry_pct)} carried interest · {pct(T.hurdle_pct)} hurdle · European whole-of-fund waterfall with GP catch-up and clawback<br /><br />GP commitment of at least {pct(T.gp_commit_min_pct)} of the fund, in cash.</p>
+            <p className="gov-p">{pct(T.fee_ip_pct)} management fee on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital ({pct(T.fee_first_close_pct, 2)} for first-close investors)<br />{pct(T.carry_pct)} carried interest · {pct(T.hurdle_pct)} hurdle · European whole-of-fund waterfall with GP catch-up and clawback</p>
           </div>
           <div className="gov">
             <div className="gov-h">3-Person Advisory Committee</div>
@@ -573,7 +572,7 @@ function GovernanceSection() {
         <div style={{ marginTop: '32px' }}>
           <div className="impact-grid">
             <div className="imp"><span className="imp-n">{eur(F.commitments, 'tile')}</span><span className="imp-h">Target Fund I</span><p className="imp-p">Closed-ended · {F.term_years} years · closings over {F.closing_months} months</p></div>
-            <div className="imp"><span className="imp-n">{(T.fee_ip_pct * 100).toFixed(0)}/{(T.carry_pct * 100).toFixed(0)}</span><span className="imp-h">Fee Structure</span><p className="imp-p">Then {pct(T.fee_post_pct, 1)} on invested capital · {pct(T.hurdle_pct)} hurdle · ≥{pct(T.gp_commit_min_pct)} GP commitment</p></div>
+            <div className="imp"><span className="imp-n">{(T.fee_ip_pct * 100).toFixed(0)}/{(T.carry_pct * 100).toFixed(0)}</span><span className="imp-h">Fee Structure</span><p className="imp-p">Then {pct(T.fee_post_pct, 1)} on invested capital · {pct(T.hurdle_pct)} hurdle</p></div>
             <div className="imp"><span className="imp-n">{eur(F.company_max_with_spv, 'tile')}</span><span className="imp-h">Max per Company</span><p className="imp-p">Up to {eur(F.company_cap, 'tile')} from the fund, the rest through co-investment SPVs offered to our investors</p></div>
             <div className="imp"><span className="imp-n">1 GP</span><span className="imp-h">Solo GP + AI Platform</span><p className="imp-p">Back office outsourced · automated monitoring and LP reporting</p></div>
           </div>
