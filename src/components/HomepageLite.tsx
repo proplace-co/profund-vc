@@ -13,7 +13,7 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-29-v4';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-29-v5';
 
 // UN SEUL MONTANT SUR CETTE PAGE : la taille du fonds dans la phrase du hero
 // (Alexandre, 29/10 — revient sur la regle « aucun montant » d'Antoine du 30/08),
@@ -67,7 +67,7 @@ const PILLARS = [
 // Ce que nous cherchons : la thèse du fonds (theses/profund_vc/v2.json du monorepo),
 // sans montant — les seuils chiffrés vivent sur /pitch et dans la fiche.
 const CRITERIA = [
-  { t: 'Founders, from day one', d: 'Exceptional, highly technical founders, found before their first round. At seed, we lead.' },
+  { t: 'Founders, from day one', d: 'Exceptional, highly technical founders, found before their first round. At pre-seed, we lead.' },
   { t: 'Every seed round', d: 'Our Seed Radar follows every European seed round and re-scores each company, every week.' },
   { t: 'The inflection', d: 'We enter or double down when the curve bends, in our own companies or directly in the best external rounds.' },
   { t: 'Category winners', d: 'Companies that can lead their category in Europe and win globally. Each one could return the fund.' },

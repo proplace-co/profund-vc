@@ -78,7 +78,7 @@ function WhyOneFund() {
         <span className="eyebrow">Why One Fund, Seed to Growth</span>
         <div className="fw-grid">
           <div>
-            <h2 className="h2">The stage ladder has collapsed.<br /><em>We position just before the exponential.</em></h2>
+            <h2 className="h2">The stage ladder has collapsed.<br /><em>We position ideally just before the exponential.</em></h2>
             <p className="fw-body">AI-native companies no longer climb one stage every eighteen months. The best of them go from first revenue to growth-stage metrics in a few months, with a fraction of the team a SaaS company needed. A fund split by stage arrives either too early or too late.</p>
             <p className="fw-body">The value created by AI growth has nothing in common with classic software growth: it compounds faster, with far fewer resources. What these companies still need capital for is people — a small number of exceptional profiles, with a culture of excellence and radical execution, the Revolut standard. <strong>Our tickets fund that talent density.</strong></p>
             <p className="fw-body">So ProFund is one fund, organised in three layers. We lead at seed when we detect the team before the round, we enter at the inflection point when the curve bends, and we double down at growth — from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_max_with_spv, 'tile')} in the same company, without changing vehicle.</p>
@@ -234,7 +234,7 @@ function WhatWeBack() {
         <span className="eyebrow">What We Back</span>
         <h2 className="h2">An age of abundance is starting.<br /><em>We back the people who will build it.</em></h2>
         <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.8, maxWidth: '760px', marginBottom: '12px' }}>With AI, a handful of people can now build what once took thousands. Founders who direct AI agents will turn their ambitions into companies in record time. We believe AI will first free humanity from material constraints, then give people the time and freedom to pursue what matters most.</p>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.8, maxWidth: '760px', marginBottom: '28px' }}>Our fund is built for that world: it uses AI everywhere it can, and its capital goes first to the best people — those who get the most leverage out of AI. <strong style={{ color: 'var(--ink)' }}>These five criteria are our fund thesis. They drive the Deal Engine every morning.</strong></p>
+        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.8, maxWidth: '760px', marginBottom: '28px' }}>Our fund is built for that world: it uses AI everywhere it can. <strong style={{ color: 'var(--ink)' }}>These five criteria are our fund thesis. They drive the Deal Engine every morning.</strong></p>
         <div className="serve-grid">
           <div className="sc"><div className="sc-h">01 · Founders, From Day One</div><p className="sc-p">Exceptional, highly technical founders, detected before their first round through alumni networks, tier-1 departures, GitHub and job posts. At seed, we lead or co-lead with {eur(L.seed.ticket_min, 'tile')} to {eur(L.seed.ticket_max, 'tile')}.</p></div>
           <div className="sc"><div className="sc-h">02 · Every Seed Round</div><p className="sc-p">The Seed Radar follows every European pre-seed and seed round of the last 24 months and re-scores each company on dated, sourced growth signals. A round proves that someone else underwrote the founders.</p></div>

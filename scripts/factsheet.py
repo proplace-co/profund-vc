@@ -688,8 +688,7 @@ def page_two(c):
         ("One fund",
          "AI-native companies go from seed to growth in months. One fund follows them from "
          f"{_eur(LAYERS['seed']['ticket_min'])} to {_eur(FUND['company_max_with_spv'], 'tile')} per "
-         "company, just before the exponential. It uses AI everywhere; its capital goes first to "
-         "the people who get the most leverage out of AI."),
+         "company, ideally just before the exponential. It uses AI everywhere."),
         ("We live it",
          "One GP and a team of AI agents run the fund and three companies: we live what we back."),
     ], CW, gap=1.4 * mm) - 0.6 * mm
@@ -697,7 +696,7 @@ def page_two(c):
     y = _section(c, y, "What we back - our fund thesis")
     y = _labeled(c, y, [
         ("01 Founders",
-         "Exceptional, highly technical founders, found before their first round. At seed, we lead."),
+         "Exceptional, highly technical founders, found before their first round. At pre-seed, we lead."),
         ("02 Seed Radar",
          "Every European seed round of the last 24 months, re-scored on dated growth signals."),
         ("03 Inflection",
@@ -713,8 +712,7 @@ def page_two(c):
         ("Deal Engine",
          "25+ in-house engines read weak signals daily (GitHub, tier-1 departures, job posts, "
          "alumni networks), plus warm introductions from top-tier founders and VCs. A memo and a "
-         "model for every match, human time for the top 1 percent. Third-party EuVECA manager; GP "
-         f"commitment of at least {_pct(TERMS['gp_commit_min_pct'])} in cash."),
+         "model for every match, human time for the top 1 percent. Third-party EuVECA manager."),
     ], CW, gap=1.4 * mm) - 1.6 * mm
 
     # The GP (photo + short CV) | prior track record
