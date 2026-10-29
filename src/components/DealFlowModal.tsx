@@ -10,33 +10,40 @@ const RESEND_URL = `${PROXY}/profund/resend`;
 
 // Les cinq identifiants sont ceux du renderer d'email (stan_proxy.py, _sec_on) :
 // ne pas les renommer ici sans les renommer là-bas, c'est le même contrat.
-// Plus aucun choix côté abonné : toutes les sections, chaque matin, à 10 h.
+// Plus aucun choix côté abonné : toutes les sections, chaque soir, à 18 h
+// (l'heure du daily brief de /cibles/profund-vc, dont le mail LP est la copie).
 const SECTIONS = ['pending', 'market', 'sourcing', 'autonomous', 'stats'];
 const RHYTHM = 'daily';
-const HOUR = 10;
+const HOUR = 18;
 
 // Fourchettes de ticket — mêmes identifiants que _PROFUND_TICKETS côté proxy.
 // Le plancher est 500 k€ : il n'existe volontairement aucune option en dessous.
 const TICKETS: { id: string; label: string }[] = [
-  { id: '500k-1m', label: '€500k – €1M' },
-  { id: '1m-2.5m', label: '€1M – €2.5M' },
-  { id: '2.5m-5m', label: '€2.5M – €5M' },
-  { id: '5m+', label: '€5M +' },
+  { id: '500k-1m', label: '€500k–1M' },
+  { id: '1m-2.5m', label: '€1–2.5M' },
+  { id: '2.5m-5m', label: '€2.5–5M' },
+  { id: '5m+', label: '€5M+' },
 ];
 
 type Status = 'idle' | 'sending' | 'done' | 'error';
 
+// Un seul champ « nom » à l'écran ; le proxy exige prénom ET nom : le premier
+// mot est le prénom, le reste le nom (« Jean-Marc de la Tour » → Jean-Marc / de la Tour).
+function splitName(full: string): [string, string] {
+  const parts = full.trim().split(/\s+/).filter(Boolean);
+  return [parts[0] || '', parts.slice(1).join(' ')];
+}
+
 export default function DealFlowModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [first, setFirst] = useState('');
-  const [last, setLast] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [ticket, setTicket] = useState('');
-  const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState('');
   const [pane, setPane] = useState<'apply' | 'returning'>('apply');
   const [doneKind, setDoneKind] = useState<'pending' | 'resent'>('pending');
   const firstRef = useRef<HTMLInputElement>(null);
+  const [first] = splitName(name);
 
   // Échap ferme, et on bloque le défilement du fond tant que la boîte est ouverte.
   useEffect(() => {
@@ -55,18 +62,37 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
 
   if (!open) return null;
 
+  function switchPane(next: 'apply' | 'returning') {
+    setPane(next);
+    setError('');
+    setStatus('idle');
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (status === 'sending') return;
+    const [firstName, lastName] = splitName(name);
+    if (!lastName) {
+      setStatus('error');
+      setError('Please give your first and last name.');
+      return;
+    }
+    if (!ticket) {
+      setStatus('error');
+      setError('Please choose an indicative ticket.');
+      return;
+    }
     setStatus('sending');
     setError('');
     try {
+      // consent : le bouton « Apply » EST la demande de recevoir ces e-mails
+      // (la phrase sous le bouton le dit, avec le lien vers /privacy).
       const r = await fetch(SUBSCRIBE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email, consent, rhythm: RHYTHM, hour: HOUR, sections: SECTIONS,
-          first_name: first, last_name: last, ticket,
+          email, consent: true, rhythm: RHYTHM, hour: HOUR, sections: SECTIONS,
+          first_name: firstName, last_name: lastName, ticket,
           source: 'profund.vc',
         }),
       });
@@ -106,12 +132,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
         return;
       }
       if (!r.ok || !data.ok) throw new Error(data.error || `HTTP ${r.status}`);
-      if (data.status === 'pending') {
-        setDoneKind('pending');
-        setStatus('done');
-        return;
-      }
-      setDoneKind('resent');
+      setDoneKind(data.status === 'pending' ? 'pending' : 'resent');
       setStatus('done');
     } catch {
       setStatus('error');
@@ -129,7 +150,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
             <span className="pfh-live"><span className="pfh-dot" />
               {doneKind === 'resent' ? 'Link sent' : 'Application received'}
             </span>
-            <h3>Thank you, {first || 'and welcome'}.</h3>
+            <h3>Thank you{first ? `, ${first}` : ''}.</h3>
             {doneKind === 'resent' ? (
               <p>
                 You are already on the list. We just emailed your private link
@@ -142,92 +163,79 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
               </p>
             ) : (
               <p>
-                We review every application. If we accept yours, you receive a
-                private link to the live deal flow, plus
-                a morning email — the companies we reviewed that day, at {HOUR}:00
-                Paris time. One-click unsubscribe in every email.
+                We review every application. Once accepted, you receive a private
+                link to the live deal flow and, every evening at {HOUR}:00 Paris time,
+                the companies we reviewed that day. One-click unsubscribe.
               </p>
             )}
             <button className="pfh-btn" onClick={onClose}>Close</button>
           </div>
-        ) : (
-          <form onSubmit={pane === 'returning' ? resend : submit}>
-            <h3 className="pfm-h">Follow our deal flow.</h3>
-            <p className="pfm-sub">
-              The companies our platform detects, before they are obvious.
-            </p>
-            <div className="pfm-seg" style={{ marginBottom: 8 }}>
-              <button type="button" className={pane === 'apply' ? 'on' : ''}
-                      onClick={() => { setPane('apply'); setError(''); }}>Apply</button>
-              <button type="button" className={pane === 'returning' ? 'on' : ''}
-                      onClick={() => { setPane('returning'); setError(''); }}>Already following</button>
-            </div>
-
-            {pane === 'apply' && (
-            <div className="pfm-fld pfm-grid">
-              <div>
-                <label className="pfm-lbl" htmlFor="pfm-first">First name</label>
-                <input id="pfm-first" ref={firstRef} className="pfm-in" required
-                       autoComplete="given-name" value={first}
-                       onChange={(e) => setFirst(e.target.value)} />
-              </div>
-              <div>
-                <label className="pfm-lbl" htmlFor="pfm-last">Last name</label>
-                <input id="pfm-last" className="pfm-in" required
-                       autoComplete="family-name" value={last}
-                       onChange={(e) => setLast(e.target.value)} />
-              </div>
-            </div>
-            )}
-
+        ) : pane === 'returning' ? (
+          <form onSubmit={resend}>
+            <h3 className="pfm-h">Get your access link.</h3>
+            <p className="pfm-sub">We email a private link to the live deal flow.</p>
             <div className="pfm-fld">
-              <label className="pfm-lbl" htmlFor="pfm-email">Your email</label>
-              <input id="pfm-email" className="pfm-in" type="email" required
+              <label className="pfm-lbl" htmlFor="pfm-email">Email</label>
+              <input id="pfm-email" ref={firstRef} className="pfm-in" type="email" required
                      autoComplete="email" placeholder="you@fund.com" value={email}
                      onChange={(e) => setEmail(e.target.value)} />
             </div>
+            {status === 'error' && <p className="pfm-err">{error}</p>}
+            <button className="pfh-btn pfm-go" type="submit" disabled={status === 'sending'}>
+              {status === 'sending' ? 'Sending' : 'Send my access link'}
+            </button>
+            <p className="pfm-fine">
+              New here? <button type="button" className="pfm-alt" onClick={() => switchPane('apply')}>Apply</button>
+            </p>
+          </form>
+        ) : (
+          <form onSubmit={submit}>
+            <h3 className="pfm-h">Follow our deal flow.</h3>
+            <p className="pfm-sub">
+              Every evening at {HOUR}:00 Paris time: the companies we reviewed that day,
+              the ones we kept, and why.
+            </p>
 
-            {pane === 'apply' && (
-            <>
-            <div className="pfm-fld">
-              <label className="pfm-lbl" htmlFor="pfm-ticket">Indicative ticket</label>
-              <select id="pfm-ticket" className="pfm-in" required={pane === 'apply'} value={ticket}
-                      onChange={(e) => setTicket(e.target.value)}>
-                <option value="" disabled>Choose a range</option>
-                {TICKETS.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-              </select>
-              <p className="pfm-hint">Minimum commitment €500k.</p>
-            </div>
-
-            <div className="pfm-fld">
-              <span className="pfm-lbl">What you receive</span>
-              <div className="pfm-plan">
-                <b>Every morning · {HOUR}:00 Paris time</b>
-                <span>The companies we reviewed that day: names we kept, names we passed, and why. The live list.</span>
+            <div className="pfm-fld pfm-grid">
+              <div>
+                <label className="pfm-lbl" htmlFor="pfm-name">Full name</label>
+                <input id="pfm-name" ref={firstRef} className="pfm-in" required
+                       autoComplete="name" value={name}
+                       onChange={(e) => setName(e.target.value)} />
+              </div>
+              <div>
+                <label className="pfm-lbl" htmlFor="pfm-email">Email</label>
+                <input id="pfm-email" className="pfm-in" type="email" required
+                       autoComplete="email" placeholder="you@fund.com" value={email}
+                       onChange={(e) => setEmail(e.target.value)} />
               </div>
             </div>
 
-            <label className="pfm-consent">
-              <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-              <span>
-                I agree to receive these emails. I can unsubscribe at any time — see the{' '}
-                <a href="/privacy">privacy notice</a>.
-              </span>
-            </label>
-            </>
-            )}
+            <div className="pfm-fld">
+              <span className="pfm-lbl" id="pfm-ticket">Indicative ticket · minimum €500k</span>
+              <div className="pfm-seg pfm-tk" role="radiogroup" aria-labelledby="pfm-ticket">
+                {TICKETS.map((t) => (
+                  <button key={t.id} type="button" role="radio" aria-checked={ticket === t.id}
+                          className={ticket === t.id ? 'on' : ''}
+                          onClick={() => { setTicket(t.id); if (error) setError(''); }}>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {status === 'error' && <p className="pfm-err">{error}</p>}
 
-            <button className="pfh-btn pfm-go" type="submit"
-                    disabled={(pane === 'apply' && !consent) || status === 'sending'}>
-              {status === 'sending' ? 'Sending'
-                : pane === 'returning' ? 'Send my access link' : 'Apply'}
+            <button className="pfh-btn pfm-go" type="submit" disabled={status === 'sending'}>
+              {status === 'sending' ? 'Sending' : 'Apply'}
             </button>
             <p className="pfm-fine">
-              Every application is reviewed. We are free to accept it or not, and we may
-              ask for further information before we do.
-              <br />Pre-marketing communication, professional investors only. Not an offer to subscribe.
+              By applying, you ask to receive these emails. One-click unsubscribe,
+              see the <a href="/privacy">privacy notice</a>. Every application is reviewed.
+              <br />EuVECA pre-marketing communication, eligible investors only. Not an offer to subscribe.
+            </p>
+            <p className="pfm-fine">
+              Already following? <button type="button" className="pfm-alt" onClick={() => switchPane('returning')}>Get my access link</button>
             </p>
           </form>
         )}

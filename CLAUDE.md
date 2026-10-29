@@ -63,8 +63,15 @@ app Modal `proplace-chat-proxy`). Le site reste statique : c'est le seul appel
 réseau de l'app. Les 5 identifiants de section (`pending`, `market`, `sourcing`,
 `autonomous`, `stats`) sont le contrat partagé avec le renderer d'email
 (`stan_proxy.py`, `_sec_on`) — les renommer ici casse le filtrage là-bas.
-⚠️ L'inscription STOCKE (Dict `profund-subscribers`, `status: pending`) mais
-**rien n'envoie encore** : le job d'envoi par abonné reste à écrire.
+L'inscription stocke (Dict `profund-subscribers`, `status: pending`) ; le GP
+accepte d'un clic (`/profund/accept`). **Le brief du soir des LPs** (29/10) : c'est
+le daily brief du fonds « Profund VC » de Proplace, logo ProFund, sans crédits ni
+pouces ni lien /cibles (variante `html_profund` de `stan_proxy.py`), envoyé par
+`_profund_lp_run` (monorepo, `modal_app.py`) à chaque LP accepté juste après le
+brief du fonds, à 18 h Paris, une fois par jour. Désabonnement :
+`/profund/unsubscribe` (garde l'accès au deal flow). Le popup n'a plus que nom
+complet (coupé en prénom/nom), email, ticket en boutons : le bouton « Apply »
+vaut demande de recevoir les emails (`consent: true`).
 
 **`/dealflow` embarque le cockpit Proplace en marque blanche.** L'iframe pointe
 `proplace.co/fr/carte?…&guest=lp` (jeton fourni par `/profund/verify`, présentation
@@ -96,7 +103,7 @@ Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 
 **AUCUN MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08). La taille du fonds,
 la construction, les tickets et les rendements cibles vivent **uniquement** dans
-la fiche PDF, qui porte la mention de pré-commercialisation AIFMD. L'accueil
+la fiche PDF, qui porte la mention de pré-commercialisation EuVECA. L'accueil
 parle du passé, de ce qui est en cours, et du deal flow. `/pitch` garde ses
 chiffres : c'est le deck, pas la vitrine. La règle couvre aussi le shell
 `index.html` (meta description et `<noscript>`), servi sur TOUTES les routes et
@@ -167,12 +174,15 @@ site servi sur `proplace-co.github.io/profund-vc/` affiche des 404 sur tous les
 assets. C'est attendu, ne pas « corriger » cette valeur.
 
 **Contenu juridiquement sensible.** `/legal` est une communication de
-pré-commercialisation AIFMD (art. 30a) et `/pitch` contient des chiffres de
-performance cible. Ne jamais reformuler, arrondir ou « améliorer » un chiffre,
-une date ou une clause de ces pages sans demande explicite. La v2 vise un fonds
-EuVECA géré par un tiers : la référence à l'art. 30a de `/legal` et de la fiche
-est à revoir avec l'avocat et le gestionnaire, pas à changer de sa propre
-initiative. Les chiffres de tiers cités sur `/pitch` (Lovable, Stripe) sont
+pré-commercialisation au sens de l'art. 4a du règlement EuVECA (UE 345/2013,
+inséré par le règlement 2019/1156 ; passage depuis l'art. 30a AIFMD le 29/10,
+demandé par Alexandre) et `/pitch` contient des chiffres de performance cible.
+Ne jamais reformuler, arrondir ou « améliorer » un chiffre, une date ou une
+clause de ces pages sans demande explicite. La même mention figure en tête et
+en pied de la fiche (`factsheet.py`), dans le pied de l'accueil et du popup :
+les changer ensemble. Destinataires : investisseurs professionnels et
+investisseurs éligibles de l'art. 6(1) EuVECA (100 000 € minimum, déclaration
+écrite des risques). Les chiffres de tiers cités sur `/pitch` (Lovable, Stripe) sont
 sourcés en note : ne pas les modifier sans relire la source.
 
 **Le workflow de déploiement accepte n'importe quelle branche** via « Run

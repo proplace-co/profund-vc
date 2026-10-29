@@ -12,7 +12,7 @@ ni versionnée ni modifiable hors de leur interface.
 |-------------|------------------------------------------------------------------|
 | `/`         | Accueil : hero (sans aucun montant), deux moteurs IA, portefeuille, fiche PDF, popup deal flow |
 | `/pitch`    | Deck LP complet — 17 sections, thèse, trois étages, simulations, track record |
-| `/legal`    | Legal Notice — communication de pré-commercialisation AIFMD        |
+| `/legal`    | Legal Notice — communication de pré-commercialisation EuVECA       |
 | `/privacy`  | Politique de confidentialité (RGPD)                                |
 
 ## Développer

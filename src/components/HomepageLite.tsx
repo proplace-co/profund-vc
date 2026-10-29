@@ -12,7 +12,7 @@ const TRACK_RECORD_URL = '/track-record.png';
 const PROPLACE_LOGO = '/portfolio-proplace.png';
 const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
 const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-28-v2';
+const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-29-v2';
 
 // AUCUN MONTANT SUR CETTE PAGE (decision d'Antoine, 30/08) : la these tient en
 // une phrase. Taille du fonds, construction, tickets et rendements cibles vivent
@@ -152,7 +152,7 @@ export default function HomepageLite() {
             <a href={FACTSHEET_URL} className="pfh-btn ghost" download>Download the fact sheet</a>
           </div>
           <p className="pfh-note">
-            Pre-marketing communication, professional investors only. Not an offer to subscribe.
+            EuVECA pre-marketing communication, professional and eligible investors only. Not an offer to subscribe.
           </p>
         </div>
       </section>

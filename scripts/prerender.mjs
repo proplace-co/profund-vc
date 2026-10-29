@@ -55,7 +55,7 @@ const ROUTES = [
   {
     path: 'legal',
     title: 'Legal Notice — Pre-Marketing Communication | ProFund',
-    desc: 'AIFMD pre-marketing communication. Professional Investors and Eligible Counterparties only. Strictly confidential. Not an offer.',
+    desc: 'EuVECA pre-marketing communication. Professional and eligible investors only. Strictly confidential. Not an offer.',
   },
   {
     path: 'privacy',

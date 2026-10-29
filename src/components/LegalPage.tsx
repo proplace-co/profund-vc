@@ -1,11 +1,11 @@
 const CLAUSES = [
   {
     n: '1', title: 'Nature',
-    body: `This page and any related materials (decks, memos, models, calls — the "Materials") constitute a pre-marketing communication within the meaning of Articles 4(1)(aea) and 30a of Directive 2011/61/EU (AIFMD), as amended by Directive (EU) 2019/1160, and Articles L. 214-24-1 and R. 214-208-1 of the French Monetary and Financial Code.\n\nThey are not an offer, solicitation, prospectus, PPM, KID, or marketing within the meaning of AIFMD Art. 4(1)(x). No binding subscription can arise from them. The contemplated fund (the "Fund") is not constituted, registered, passported, or authorised by the AMF, ESMA, or any other authority.`
+    body: `This page and any related materials (decks, memos, models, calls — the "Materials") constitute a pre-marketing communication within the meaning of Article 4a of Regulation (EU) No 345/2013 on European venture capital funds (the "EuVECA Regulation"), as inserted by Regulation (EU) 2019/1156. The contemplated fund (the "Fund") is intended to be a qualifying venture capital fund established in Luxembourg and managed by a registered third-party EuVECA manager.\n\nThey are not an offer, solicitation, prospectus, PPM, KID, or marketing. They contain no subscription form and no final constitutive document, and are not sufficient to commit to the Fund. The information is incomplete, subject to change, and must not be relied upon. No binding subscription can arise from them. The Fund is not established, registered, notified for marketing, or authorised by the CSSF, the AMF, ESMA, or any other authority.`
   },
   {
     n: '2', title: 'Recipients',
-    body: `Addressed exclusively on a one-to-one, named basis to persons qualifying as Professional Investors (MiFID II, Annex II) or Eligible Counterparties (MiFID II, Art. 30). No public distribution, advertising, or mass communication. Non-qualifying recipients must cease consulting, delete all copies, and notify the sender.`
+    body: `Addressed exclusively on a one-to-one, named basis to (i) Professional Investors (MiFID II, Annex II) and (ii) other investors eligible under Article 6(1) of the EuVECA Regulation, who commit to invest at least EUR 100,000 and state in writing, in a document separate from their commitment, that they are aware of the risks. No public distribution, advertising, or mass communication. Non-qualifying recipients must cease consulting, delete all copies, and notify the sender.`
   },
   {
     n: '3', title: 'No advice, no reliance',
@@ -32,8 +32,8 @@ const CLAUSES = [
     body: `Materials are confidential and proprietary. Recipient may not copy, forward, quote, or disclose them in whole or in part without prior written consent. Breach may give rise to damages and injunctive relief.`
   },
   {
-    n: '9', title: 'AIFMD 18-month rule',
-    body: `Pursuant to AIFMD Art. 30a, any subscription by a recipient within 18 months of initial pre-marketing contact is deemed the result of marketing and subject to applicable notification requirements. Internal records are kept as required.`
+    n: '9', title: 'EuVECA 18-month rule',
+    body: `Pursuant to Article 4a(3) of the EuVECA Regulation, any subscription by a recipient, within 18 months of the start of pre-marketing, to the Fund or to a fund established as a result of this pre-marketing is deemed the result of marketing and subject to the notification procedure of that Regulation. Pre-marketing is documented and notified to the competent authority of the manager's home Member State, as Article 4a requires.`
   },
   {
     n: '10', title: 'Subject to change — No reliance on terms',
@@ -58,8 +58,8 @@ export default function LegalPage() {
           Pre-Marketing Communication
         </h1>
         <p style={{ fontSize: '12px', color: 'var(--lite)', marginBottom: '40px', lineHeight: 1.6 }}>
-          Professional Investors and Eligible Counterparties only. Strictly confidential. Not an offer.<br />
-          Last updated: May 2025
+          Professional Investors and investors eligible under the EuVECA Regulation only. Strictly confidential. Not an offer.<br />
+          Last updated: October 2026
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -94,7 +94,7 @@ export default function LegalPage() {
           <div style={{ background: 'var(--gp)', border: '1px solid var(--line)', borderLeft: '3px solid var(--blue)', padding: '20px 24px', marginTop: '8px' }}>
             <div style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--blue)', marginBottom: '10px' }}>Acknowledgement</div>
             <p style={{ fontSize: '12px', color: 'var(--sub)', lineHeight: 1.75 }}>
-              By continuing, the recipient confirms it (i) qualifies as a Professional Investor or Eligible Counterparty, (ii) was not reached by general solicitation, (iii) has read and accepts this notice, and (iv) is bound by its confidentiality and use restrictions.
+              By continuing, the recipient confirms it (i) qualifies as a Professional Investor or as an investor eligible under Article 6(1) of the EuVECA Regulation, (ii) was not reached by general solicitation, (iii) has read and accepts this notice, and (iv) is bound by its confidentiality and use restrictions.
             </p>
           </div>
         </div>

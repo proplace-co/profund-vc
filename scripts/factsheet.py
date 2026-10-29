@@ -503,7 +503,7 @@ def _track(c, x, y, w, rows):
 def _footer(c):
     y = 9 * mm
     _rule(c, y + 11)
-    line = ("Pre-marketing communication, professional investors only. "
+    line = ("EuVECA pre-marketing communication, eligible investors only. "
             "Not an offer to subscribe. Contact: alexandre@profund.vc")
     c.setFillColor(LITE)
     c.setFont("Helvetica", 7)
@@ -546,9 +546,9 @@ def page_one(c):
     c.setFont("Helvetica-Bold", 9.2)
     c.drawString(M + 12, y - 7.5 * mm, "PRE-MARKETING PHASE")
     _para(c, M + 12, y - 11.5 * mm,
-          "This document is a pre-marketing communication within the meaning of Article 30a of "
-          "Directive 2011/61/EU (AIFMD). The fund is not yet established and no units may be "
-          "subscribed at this stage. Addressed to professional investors only.",
+          "This document is a pre-marketing communication within the meaning of Article 4a of "
+          "Regulation (EU) No 345/2013 (EuVECA). The fund is not yet established and no units may be "
+          "subscribed at this stage. For professional and eligible investors only.",
           CW - 24, size=8, color=SUB, leading=10.5)
     y -= box_h + 7 * mm
 
