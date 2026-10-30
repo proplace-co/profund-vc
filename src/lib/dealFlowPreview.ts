@@ -24,7 +24,7 @@ export function dealFlowPreview(serverSrc?: string): string {
   preview.search = new URLSearchParams({
     cb: token, embed: '1', chrome: '0', ui: 'v2', teaser: '1', guest,
     ...(lpk ? { lpk } : {}),
-    ticker: '0', onb: '0', ptab: '4', tab: 'callyes', dens: 'liste', win: 'all',
+    ticker: '0', onb: '0', ptab: '1', tab: 'kept', dens: 'liste', win: 'all',
     memo_ui: 'reader16', cockpit_ui: 'aligned2',
   }).toString();
   return preview.href;
