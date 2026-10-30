@@ -31,7 +31,6 @@ function HeroSection() {
           <p className="pv-lead">
             {eur(F.commitments, 'tile')} from Seed to Growth for visionary founders building <span className="nw">self-improving</span> AI systems across massive markets.
           </p>
-          <p className="pv-tagline">Stop managing armies. Start directing intelligence.</p>
           <p className="pv-hero-note">A {eur(F.commitments, 'tile')} European venture fund, seed to growth. We lead at seed, enter at the inflection point in Series A (in our own companies or directly in the best external rounds) and double down at growth, up to {eur(F.company_max_with_spv, 'tile')} per company with co-investment SPVs.</p>
           <div className="pv-ctas">
             <a href="#contact" className="pv-btn">Request LP access <Icon name="arrow" /></a>

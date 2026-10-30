@@ -53,10 +53,9 @@ LOGO = ROOT / "public" / "logo.png"
 PHOTO = ROOT / "public" / "gp-photo-sheet.jpg"
 # Vraie capture de profund.vc/dealflow (vue LP marque blanche du cockpit), pas
 # une maquette. A refaire si l'ecran change.
-# Captures du deal flow ProFund (proplace.co/cibles/profund-vc, 30/10) : (fichier, hauteur / largeur).
-MAP_SHOT = (ROOT / "public" / "dealflow-map.jpg", 919 / 1800)
-PIPE_SHOT = (ROOT / "public" / "dealflow-pipeline.jpg", 1016 / 1040)
-EVAL_SHOT = (ROOT / "public" / "dealflow-evaluate.jpg", 205 / 1400)
+# Captures 3x du deal flow ProFund (vue LP de profund.vc/dealflow, 30/10) : (fichier, hauteur / largeur).
+MAP_SHOT = (ROOT / "public" / "dealflow-map.jpg", 1212 / 2000)
+PIPE_SHOT = (ROOT / "public" / "dealflow-pipeline.jpg", 937 / 1500)
 OUT = ROOT / "public" / "profund-factsheet.pdf"
 FUND_JSON = ROOT / "src" / "data" / "fund.json"
 
@@ -278,21 +277,41 @@ def browser(F, u, v, w, url="profund.vc/dealflow"):
     return ih + 26
 
 
-def snap(F, u, v, w, h, shot, r=9.0):
-    """Une capture posee devant la fenetre, recadree en haut a gauche."""
+def snap(F, u, v, w, shot, r=9.0):
+    """Une capture posee devant la fenetre, entiere ; rend la hauteur."""
     path, ratio = shot
+    h = w * ratio
     F.shadow(u, v, w, h, r, 0.8, 0.03)
     F.rr(u, v, w, h, r, fill=WHITE, stroke=LINE2, lw=1)
     F.clip(u + 0.5, v + 0.5, w - 1, h - 1, r - 0.5)
     F.image(path, u + 0.5, v + 0.5, w - 1, (w - 1) * ratio)
     F.unclip()
     F.link(u, v, w, h, DEALFLOW)
+    return h
+
+
+def powers(F, u, v, w, names, draw=True):
+    """« POWERS » puis les pastilles des societes, a la ligne si besoin ; rend la hauteur."""
+    lab = F.tw("POWERS", "xgras", 7.4, 0.1) + 8
+    if draw:
+        F.text(u, v + 4, "POWERS", "xgras", 7.4, SOFT, 0.1)
+    cx_, cy_ = u + lab, v
+    for name_ in names:
+        cw_ = F.tw(name_, "semi", 8.6) + 16
+        if cx_ + cw_ > u + w:
+            cx_, cy_ = u + lab, cy_ + 22
+        if draw:
+            pf = name_ == "ProFund"
+            F.rr(cx_, cy_ + 1, cw_, 17, 8.5, fill=BLUE_SOFT if pf else WARM)
+            F.text(cx_ + cw_ / 2, cy_ + 5, name_, "semi", 8.6, BLUE_DK if pf else INK2, align="c")
+        cx_ += cw_ + 5
+    return cy_ - v + 19
 
 
 # ── page 1 : la vision ──────────────────────────────────────────────────────
 LAWS = (
-    ("crown", "Sovereign architects, not managers",
-     "We back obsessive, highly technical visionaries from Day 1. Founders who don't build org charts, but "
+    ("crown", "Visionary founders",
+     "We back obsessive visionaries from Day 1. Founders who don't build org charts, but "
      "iterate directly with AI until the machine mirrors their exact ambition."),
     ("loop", "Self-improving systems",
      "We look for closed-loop architectures. Products that don't just automate a task, but compound in "
@@ -360,19 +379,15 @@ def page_one(F):
                     markup=f'{x("Pure Vision.")}<br/><font color="{BLUE}">{x("Autonomous Scale.")}</font>')
     y += 12 + F.para(M, y + 12, tw, x(f"{FUND_SIZE} from Seed to Growth for visionary founders building "
                                       "self-improving AI systems across massive markets."), 12.2, "reg", INK2, 1.5)
-    y += 6 + F.para(M, y + 6, tw, x("Stop managing armies. Start directing intelligence."), 12.2, "gras", INK, 1.4)
-    y += 12 + micro(F, M, y + 14, tw, ["Two autonomous AI engines", "EuVECA fund, Luxembourg"])
+    y += 12 + micro(F, M, y + 14, tw, ["Live deal flow", "Growth & Deal AI engines", "EuVECA fund, Luxembourg"])
 
-    # le visuel : la carte du deal flow dans la fenetre, le pipeline et la barre
-    # d'evaluation poses devant (les memes captures que le heros du site)
-    vw = 262.0
+    # le visuel : la carte du deal flow dans la fenetre, le pipeline pose devant
+    # (les memes captures que le heros du site)
+    vw = 252.0
     vx = M + W - vw
     bh = browser(F, vx, 82, vw)
-    pw, ph = 112.0, 88.0
-    snap(F, vx - 40, 82 + bh - 64, pw, ph, PIPE_SHOT)
-    ew = 222.0
-    snap(F, vx + 52, 82 + bh - 4, ew, ew * EVAL_SHOT[1], EVAL_SHOT, 7)
-    y = max(y, 82 + bh + 36)
+    ph = snap(F, vx - 52, 82 + bh - 78, 140.0, PIPE_SHOT)
+    y = max(y, 82 + bh - 78 + ph + 8)
 
     # l'encadre de pre-commercialisation, en tete de document
     y += 14
@@ -399,9 +414,9 @@ def page_one(F):
         "Today, a single visionary who knows how to challenge, direct, and iterate with AI can architect an "
         "integral, self-improving system in record time. AI frees humanity from mechanical execution, "
         "returning creation to pure thought."), 9.8, "reg", MUTED, 1.45)
-    h3 = F.para(rx, y + 2 + h1 + 7 + h2 + 7, rw, x("We don't fund headcount.") + "<br/>" + x(
-        "We back AI-native teams transforming a vision into an autonomous AI system having a massive "
-        "real-world utility."), 9.8, "semi", INK, 1.45)
+    h3 = F.para(rx, y + 2 + h1 + 7 + h2 + 7, rw, x(
+        "We don't fund headcount. We back tight-knit AI-native teams building self-improving systems with "
+        "massive real-world utility."), 9.8, "semi", INK, 1.45)
     y += max(2 + h1 + 7 + h2 + 7 + h3, 70) + 20
 
     # les quatre lois
@@ -499,41 +514,40 @@ def page_two(F):
     y = 164.0
     engines = (
         ("radar", "The Deal Engine",
-         "Scores every company against our thesis and flags inflection points before they become consensus."),
+         "Scores every company against our thesis and flags inflection points before they become consensus. "
+         "Autonomously detects the right targets for our portfolio companies.",
+         ("ProFund", "Proplace", "Portfolio companies")),
         ("bot", "The Growth Engine",
          "Autonomous AI agents running content, inbound, and outbound end-to-end. They operate our fund and "
-         "companies today and can be plugged directly into the founders we back tomorrow."),
+         "companies today and can be plugged directly into the founders we back tomorrow.",
+         ("ProFund", "Proplace", "Maximum Insurance", "Sosuites", "Portfolio companies")),
     )
     gap = 16.0
     ew = (W - gap) / 2
     pad = 16.0
-    eh = pad + 30 + 12 + max(F.hpara(ew - 2 * pad, x(t), 9.8, "reg", 1.48) for _i, _n, t in engines) + 12 + 22 + pad
-    for i, (ic, name, text) in enumerate(engines):
+    th = max(F.hpara(ew - 2 * pad, x(t), 9.8, "reg", 1.48) for _i, _n, t, _p in engines)
+    chips = max(powers(F, 0, 0, ew - 2 * pad, p_, draw=False) for _i, _n, _t, p_ in engines)
+    eh = pad + 30 + 12 + th + 12 + chips + 3 + pad
+    for i, (ic, name, text, names) in enumerate(engines):
         ex = M + i * (ew + gap)
         card(F, ex, y, ew, eh)
         F.tile(ex + pad, y + pad, 30, 9)
         F.icon(ic, ex + pad + 6.5, y + pad + 6.5, 17, WHITE)
         F.text(ex + pad + 42, y + pad + 7, name, "gras", 14, INK)
         F.para(ex + pad, y + pad + 42, ew - 2 * pad, x(text), 9.8, "reg", MUTED, 1.48)
-        fy = y + eh - pad - 20
-        F.line(ex + pad, fy - 8, ex + ew - pad, fy - 8, LINE, 1)
         if i == 0:
-            # le lien du deal flow en direct
-            F.circle(ex + pad + 4, fy + 9, 6, fill=GREEN, alpha=0.18)
-            F.circle(ex + pad + 4, fy + 9, 3.2, fill=GREEN)
-            wl = F.text(ex + pad + 16, fy + 3, "Follow live deal flow", "semi", 10.2, BLUE_DK)
-            F.svg(ARROW, ex + pad + 16 + wl + 5, fy + 3.5, 12, BLUE_DK)
-            F.link(ex + pad - 2, fy, wl + 40, 20, DEALFLOW)
-        else:
-            # qui tourne sur ce moteur (les « Powers » de l'ancienne fiche)
-            cx_ = ex + pad + F.text(ex + pad, fy + 4, "POWERS", "xgras", 7.4, SOFT, 0.1) + 8
-            for name_ in ("ProFund", "Proplace", "Maximum Insurance", "Sosuites"):
-                pf = name_ == "ProFund"
-                cw_ = F.tw(name_, "semi", 8.6) + 16
-                F.rr(cx_, fy + 1, cw_, 17, 8.5, fill=BLUE_SOFT if pf else WARM)
-                F.text(cx_ + cw_ / 2, fy + 5, name_, "semi", 8.6, BLUE_DK if pf else INK2, align="c")
-                cx_ += cw_ + 5
-    y += eh + 22
+            # le lien du deal flow en direct, sur la ligne du titre
+            lx = ex + ew - pad - 12 - 5 - F.tw("Follow live deal flow", "semi", 9.6)
+            F.circle(lx - 10, y + pad + 12.5, 5.5, fill=GREEN, alpha=0.18)
+            F.circle(lx - 10, y + pad + 12.5, 3, fill=GREEN)
+            wl = F.text(lx, y + pad + 7.5, "Follow live deal flow", "semi", 9.6, BLUE_DK)
+            F.svg(ARROW, lx + wl + 5, y + pad + 8, 12, BLUE_DK)
+            F.link(lx - 18, y + pad + 2, wl + 40, 20, DEALFLOW)
+        # qui tourne sur ce moteur
+        fy = y + eh - pad - chips
+        F.line(ex + pad, fy - 9, ex + ew - pad, fy - 9, LINE, 1)
+        powers(F, ex + pad, fy, ew - 2 * pad, names)
+    y += eh + 16
 
     # termes | allocation
     half = (W - 16) / 2
@@ -626,7 +640,7 @@ def page_two(F):
     kick(F, M, y, "Proof of work")
     title(F, M, y + 17, W, "We live what we back.", 18)
     y += 44
-    y += F.para(M, y, W, x("Before funding autonomous companies, we built our own. Profund and the companies below are "
+    y += F.para(M, y, W, x("Profund and the companies below are "
                            "operated almost entirely by our in-house engines and agents:"), 10, "reg", MUTED, 1.45) + 10
     gap = 12.0
     pcw = (W - 2 * gap) / 3

@@ -60,7 +60,6 @@ export default function HomepageLite() {
             <p className="pv-lead">
               {FUND_SIZE} from Seed to Growth for visionary founders building <span className="nw">self-improving</span> AI systems across massive markets.
             </p>
-            <p className="pv-tagline">Stop managing armies. Start directing intelligence.</p>
             <div className="pv-ctas">
               <button type="button" className="pv-btn" onClick={openModal}>
                 Follow live deal flow <Icon name="arrow" />
@@ -70,8 +69,8 @@ export default function HomepageLite() {
               </a>
             </div>
             <ul className="pv-micro">
-              <li><Icon name="check" />Two autonomous AI engines</li>
-              <li><Icon name="check" />Live deal flow, every evening</li>
+              <li><Icon name="check" />Live deal flow</li>
+              <li><Icon name="check" />Growth &amp; Deal AI engines</li>
             </ul>
           </div>
           <HeroVisual />

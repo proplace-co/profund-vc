@@ -28,7 +28,7 @@ const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
 const BASE_TITLE = 'ProFund · Pure Vision. Autonomous Scale.';
-const BASE_DESC = 'From Seed to Growth, a venture fund for visionary founders building self-improving AI systems across massive markets. Stop managing armies. Start directing intelligence. Follow our deal flow live.';
+const BASE_DESC = 'From Seed to Growth, a venture fund for visionary founders building self-improving AI systems across massive markets. Follow our deal flow live.';
 
 // Le titre de /pitch porte la taille du fonds : lue dans le modèle
 // (scripts/fund_model.py → src/data/fund.json), jamais tapée ici.

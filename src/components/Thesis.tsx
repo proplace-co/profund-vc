@@ -49,19 +49,18 @@ export function SiteHeader({ links, children }: { links: { href: string; label: 
   );
 }
 
-// Le visuel du héros : trois vraies captures du deal flow ProFund (la carte et
-// ses encadrés dans une fenêtre, le pipeline et la barre « Screen a target » en
-// cartes posées de biais). Captures de proplace.co/cibles/profund-vc, 30/10.
+// Le visuel du héros : deux vraies captures du deal flow ProFund, la carte et ses
+// encadrés dans une fenêtre, le pipeline posé devant. Captures 3x de la vue LP
+// (profund.vc/dealflow), 30/10 : jamais de rotation CSS, elle rend le texte flou.
 export function HeroVisual() {
   return (
     <div className="pv-visual" aria-hidden="true">
       <div className="pv-shot">
         <div className="pv-shot-bar"><i /><i /><i /><span className="pv-shot-url">profund.vc/dealflow</span></div>
-        <img src="/dealflow-map.jpg" alt="" width={1800} height={919} />
+        <img src="/dealflow-map.jpg" alt="" width={2000} height={1212} />
         <span className="pv-live pv-shot-live"><span className="pv-dot" />Live deal flow</span>
       </div>
-      <div className="pv-snap pv-snap-pipe"><img src="/dealflow-pipeline.jpg" alt="" width={1040} height={1016} /></div>
-      <div className="pv-snap pv-snap-eval"><img src="/dealflow-evaluate.jpg" alt="" width={1400} height={205} /></div>
+      <div className="pv-snap pv-snap-pipe"><img src="/dealflow-pipeline.jpg" alt="" width={1500} height={937} /></div>
     </div>
   );
 }
@@ -85,9 +84,8 @@ export function Manifesto({ tint = false }: { tint?: boolean }) {
             mechanical execution, returning creation to pure thought.
           </p>
           <p>
-            <b>We don’t fund headcount.</b><br />
-            We back AI-native teams transforming a vision into an autonomous AI system having a
-            massive real-world utility.
+            <b>We don’t fund headcount.</b> We back tight-knit AI-native teams building
+            self-improving systems with massive real-world utility.
           </p>
         </div>
       </div>
@@ -98,8 +96,8 @@ export function Manifesto({ tint = false }: { tint?: boolean }) {
 const LAWS: { icon: IconName; t: string; d: string }[] = [
   {
     icon: 'crown',
-    t: 'Sovereign architects, not managers',
-    d: 'We back obsessive, highly technical visionaries from Day 1. Founders who don’t build org charts, but iterate directly with AI until the machine mirrors their exact ambition.',
+    t: 'Visionary founders',
+    d: 'We back obsessive visionaries from Day 1. Founders who don’t build org charts, but iterate directly with AI until the machine mirrors their exact ambition.',
   },
   {
     icon: 'loop',
@@ -141,6 +139,16 @@ export function FourLaws({ tint = true }: { tint?: boolean }) {
   );
 }
 
+// Qui tourne sur un moteur : mêmes pastilles que la fiche PDF.
+function Powers({ names }: { names: string[] }) {
+  return (
+    <div className="pv-chips">
+      <b>Powers</b>
+      {names.map((n) => <span key={n} className={n === 'ProFund' ? 'pf' : undefined}>{n}</span>)}
+    </div>
+  );
+}
+
 export function OurEdge({ onFollow }: { onFollow: () => void }) {
   return (
     <section className="pv-sec night" id="edge">
@@ -156,8 +164,9 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
             <h3>The Deal Engine</h3>
             <p>
               Scores every company against our thesis and flags inflection points before they
-              become consensus.
+              become consensus. Autonomously detects the right targets for our portfolio companies.
             </p>
+            <Powers names={['ProFund', 'Proplace', 'Portfolio companies']} />
             <button type="button" className="pv-btn light" onClick={onFollow}>
               Follow live deal flow <Icon name="arrow" />
             </button>
@@ -170,13 +179,7 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
               our fund and companies today and can be plugged directly into the founders we back
               tomorrow.
             </p>
-            {/* qui tourne sur ce moteur — mêmes pastilles que la fiche PDF */}
-            <div className="pv-chips">
-              <b>Powers</b>
-              {['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites'].map((n) => (
-                <span key={n} className={n === 'ProFund' ? 'pf' : undefined}>{n}</span>
-              ))}
-            </div>
+            <Powers names={['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites', 'Portfolio companies']} />
           </div>
         </div>
       </div>
@@ -202,8 +205,8 @@ export function ProofOfWork({ tint = false }: { tint?: boolean }) {
           <p className="pv-kick">Proof of work</p>
           <h2 className="pv-h2">We live what we back.</h2>
           <p className="sub">
-            Before funding autonomous companies, we built our own. Profund and the companies below
-            are operated almost entirely by our in-house engines and agents:
+            Profund and the companies below are operated almost entirely by our in-house engines
+            and agents:
           </p>
         </div>
         <div className="pv-proof">

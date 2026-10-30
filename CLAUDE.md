@@ -62,8 +62,9 @@ les changer ensemble. **Ton de la copie (Antoine, 30/10)** : pas de tiret long
 ou parenthèses à la place ; cellules vides des tableaux : « – »), et titres en
 casse de phrase, pas en Title Case (« Self-improving systems »). /legal et
 /privacy n'ont pas été retouchés (texte juridique). Le visuel du héros (site et
-fiche p. 1) : trois captures du deal flow (`public/dealflow-map.jpg`,
-`-pipeline.jpg`, `-evaluate.jpg`, prises sur proplace.co/cibles/profund-vc).
+fiche p. 1) : deux captures du deal flow (`public/dealflow-map.jpg` et
+`-pipeline.jpg`), prises en 3x sur la vue LP marque blanche et affichées SANS
+rotation CSS (une rotation rend le texte des captures flou).
 
 **Le style reprend la grammaire de Maximum Insurance V5** (maximum-insurance.com,
 `landing_v5.py` du dépôt Maximum) dans les couleurs ProFund (30/10, Antoine) :
