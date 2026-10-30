@@ -27,8 +27,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
-const BASE_TITLE = 'ProFund builds and invests in AI-native companies';
-const BASE_DESC = 'ProFund builds and invests in AI-native companies, from seed to growth. Follow our deal flow live: the companies our platform detects, every morning, before they are obvious.';
+const BASE_TITLE = 'ProFund — Pure Vision. Autonomous Scale.';
+const BASE_DESC = 'Seed to Growth. A venture fund for the architects turning AI into self-improving systems. Stop managing armies. Start directing intelligence. Follow our deal flow live.';
 
 // Le titre de /pitch porte la taille du fonds : lue dans le modèle
 // (scripts/fund_model.py → src/data/fund.json), jamais tapée ici.
@@ -45,7 +45,7 @@ const ROUTES = [
   {
     path: 'pitch',
     title: `ProFund — Seed to Growth · ${FUND_SIZE} target`,
-    desc: "The thesis, the platform, the three-layer portfolio construction and target returns of ProFund, an AI-native venture fund from seed to growth finding Europe's next category winners.",
+    desc: 'The thesis, the platform, the three-layer portfolio construction, the fund simulation and target returns of ProFund, a venture fund from seed to growth for the architects turning AI into self-improving systems.',
   },
   {
     path: 'dealflow',

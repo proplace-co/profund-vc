@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import DealFlowModal from './DealFlowModal';
+import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
 import { fund, eur, eurRange, mult, pct, rowId, outcomeTag, type CaseId, type LayerId } from '../lib/fund';
+import { FACTSHEET_URL, MODEL_XLSX_URL } from '../lib/links';
 
-const LOGO_URL = '/logo.png';
 const GP_PHOTO_URL = '/gp-photo.jpg';
 
 // Chiffres du fonds : src/data/fund.json, généré par scripts/fund_model.py.
@@ -18,41 +19,50 @@ const STRESS = fund.cases.stress;
 const BASE_CAP = eur(BASE.exit_cap ?? 0, 'val');
 const STRESS_CAP = eur(STRESS.exit_cap ?? 0, 'val');
 
+// Le héros reprend le texte de l'accueil (Thesis.tsx), puis ce que seul le deck
+// dit : la mécanique du fonds et ses chiffres, tous lus dans fund.json.
 function HeroSection() {
   return (
-    <div id="hero" style={{ padding: '52px 0 56px', borderBottom: '1px solid var(--line)' }}>
-      <div className="pf-wrap" style={{ textAlign: 'center' }}>
-        <img src={LOGO_URL} className="hero-logo" alt="ProFund" style={{ display: 'block', margin: '0 auto 20px' }} />
-        <div style={{ display: 'inline-block', border: '1px solid var(--line)', color: 'var(--mid)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', padding: '8px 24px', marginBottom: '18px' }}>Pre-Marketing Phase</div>
-        <span className="hero-tagline" style={{ display: 'block' }}>AI-Native Venture Platform</span>
-        <h1 className="hero-title">We find Europe's next<br /><em>category winners.</em></h1>
-        <p className="hero-sub" style={{ maxWidth: '720px', margin: '0 auto 18px' }}>A {eur(F.commitments, 'tile')} European venture fund, seed to growth. We lead at seed, enter at the inflection point in Series A — in our own companies or directly in the best external rounds — and double down at growth, up to {eur(F.company_max_with_spv, 'tile')} per company with co-investment SPVs.<br /><br />Targeting domain-specific AI harness with self-improving loops built by highly technical AI-native teams.<br /><br />Powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals in emerging categories. Our objective: never miss a European company entering exponential growth.</p>
-        <p className="hero-note">{eur(F.commitments, 'tile')} Target · Seed to Growth · Europe · Up to {eur(F.company_max_with_spv, 'tile')} per company</p>
-        <div style={{ marginBottom: '40px' }}>
-          <a href="#contact" className="btn">Request LP Access</a>
+    <header className="pv-hero pv-hero-pitch" id="hero">
+      <div className="pv-wrap pv-hero-grid">
+        <div className="pv-hero-copy">
+          <span className="pv-eyebrow"><b />Pre-Marketing Phase · EuVECA</span>
+          <h1 className="pv-h1">Pure Vision.<span>Autonomous Scale.</span></h1>
+          <p className="pv-lead">
+            Seed to Growth. {eur(F.commitments, 'tile')} for the architects turning AI into <span className="nw">self-improving</span> systems.
+          </p>
+          <p className="pv-tagline">Stop managing armies. Start directing intelligence.</p>
+          <p className="pv-hero-note">A {eur(F.commitments, 'tile')} European venture fund, seed to growth. We lead at seed, enter at the inflection point in Series A — in our own companies or directly in the best external rounds — and double down at growth, up to {eur(F.company_max_with_spv, 'tile')} per company with co-investment SPVs.</p>
+          <div className="pv-ctas">
+            <a href="#contact" className="pv-btn">Request LP Access <Icon name="arrow" /></a>
+            <a href={MODEL_XLSX_URL} className="pv-btn line" download><Icon name="sheet" />Fund model (Excel)</a>
+          </div>
         </div>
-        <div className="hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--line)' }}>
-          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">{eur(F.commitments, 'tile')}</span><span className="sg-l">Target Fund I · closed-ended · closings over {F.closing_months} months</span></div>
-          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">3 layers</span><span className="sg-l">{L.seed.companies} Seed · {L.venture.companies} Venture · {L.growth.companies} direct Growth entries, plus follow-ons in our breakouts</span></div>
-          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">Weekly</span><span className="sg-l">Seed Radar — every European seed round re-scored on growth signals</span></div>
-          <div className="sg" style={{ textAlign: 'left' }}><span className="sg-n">6–18mo</span><span className="sg-l">Average detection lead before public announcement</span></div>
+        <HeroVisual amount={`${eur(F.commitments, 'tile')} target`} />
+      </div>
+      <div className="pv-wrap">
+        <div className="hero-stats pv-stats">
+          <div className="sg"><span className="sg-n">{eur(F.commitments, 'tile')}</span><span className="sg-l">Target Fund I · closed-ended · closings over {F.closing_months} months</span></div>
+          <div className="sg"><span className="sg-n">3 layers</span><span className="sg-l">{L.seed.companies} Seed · {L.venture.companies} Venture · {L.growth.companies} direct Growth entries, plus follow-ons in our breakouts</span></div>
+          <div className="sg"><span className="sg-n">Weekly</span><span className="sg-l">Seed Radar — every European seed round re-scored on growth signals</span></div>
+          <div className="sg"><span className="sg-n">6–18mo</span><span className="sg-l">Average detection lead before public announcement</span></div>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 
 function TheOpportunity() {
   return (
-    <div id="thesis" className="pf-section" style={{ background: 'var(--bg)' }}>
+    <div id="opportunity" className="pf-section" style={{ background: 'var(--bg)' }}>
       <div className="pf-wrap-wide">
         <span className="eyebrow">The Opportunity</span>
         <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}>
           <div>
             <h2 className="h2">Every great company was<br /><em>invisible before it was obvious.</em></h2>
-            <p style={{ fontSize: '13px', color: 'var(--sub)', lineHeight: 1.8, marginBottom: '12px' }}>When a new category emerges, there is a window — twelve to eighteen months — where the future winner is already visible in the weak signals, but invisible to the market. The founding team is there. The architecture is taking shape. The data loop is being designed.</p>
-            <p style={{ fontSize: '13px', color: 'var(--sub)', lineHeight: 1.8, marginBottom: '12px' }}>Whoever enters that window invests at the right valuation, builds the relationship before anyone else, and backs the right founder before the category is decided. Missing that window means paying three to five times more for the same company once TechCrunch writes about it.</p>
-            <p style={{ fontSize: '13px', color: 'var(--sub)', lineHeight: 1.8 }}>The challenge is not judgment. Every good VC has judgment. <strong style={{ color: 'var(--ink)' }}>The challenge is seeing the signal before it becomes noise</strong> — systematically, on every emerging category, every day. That requires a system. Not a bigger team.</p>
+            <p className="pf-body">When a new category emerges, there is a window — twelve to eighteen months — where the future winner is already visible in the weak signals, but invisible to the market. The founding team is there. The architecture is taking shape. The data loop is being designed.</p>
+            <p className="pf-body">Whoever enters that window invests at the right valuation, builds the relationship before anyone else, and backs the right founder before the category is decided. Missing that window means paying three to five times more for the same company once TechCrunch writes about it.</p>
+            <p className="pf-body">The challenge is not judgment. Every good VC has judgment. <strong>The challenge is seeing the signal before it becomes noise</strong> — systematically, on every emerging category, every day. That requires a system. Not a bigger team.</p>
           </div>
           <div>
             <div className="stat-grid" style={{ marginBottom: '16px' }}>
@@ -91,7 +101,7 @@ function WhyOneFund() {
               <div className="fw-s"><span className="fw-big">Every</span><div className="fw-det"><strong>European seed round</strong> tracked by the Seed Radar and re-scored weekly, so the fund can move the moment the curve bends.</div></div>
               <div className="fw-s"><span className="fw-big">{eur(F.company_max_with_spv, 'tile')}</span><div className="fw-det"><strong>Per company, in one fund.</strong> Up to {eur(F.company_cap, 'tile')} from the fund across the three layers, the rest through co-investment SPVs.</div></div>
             </div>
-            <p style={{ fontSize: '11px', color: 'var(--lite)', marginTop: '12px', lineHeight: 1.6 }}>¹ TechCrunch, 23 July 2025 (company-reported figures). ² Stripe 2025 annual letter, reported by TechCrunch on 27 February 2025.</p>
+            <p className="pf-fine">¹ TechCrunch, 23 July 2025 (company-reported figures). ² Stripe 2025 annual letter, reported by TechCrunch on 27 February 2025.</p>
           </div>
         </div>
       </div>
@@ -105,7 +115,7 @@ function ThePlatform() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">The Platform</span>
         <h2 className="h2">Every weak signal in an emerging category.<br /><em>Automatically. Before anyone else sees it.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '620px', marginBottom: '36px' }}>Physical network and human interactions with top founders. Digitally, the latest AI tools sit on top of our in-house sourcing platform — more than 25 custom engines reading 24/7 weak signals in emerging categories, detecting founders matching our thesis before they become obvious to the category.</p>
+        <p className="pf-intro">Physical network and human interactions with top founders. Digitally, the latest AI tools sit on top of our in-house sourcing platform — more than 25 custom engines reading 24/7 weak signals in emerging categories, detecting founders matching our thesis before they become obvious to the category.</p>
         <div className="mods">
           <div className="mod">
             <div className="mod-num">① WHAT IT READS</div>
@@ -123,14 +133,14 @@ function ThePlatform() {
             <div className="mod-title">Representative signals from the platform.</div>
             <div className="mod-sub">These are examples of what the system detects — the type of early signal that precedes every category winner.</div>
             <div className="mod-desc">
-              <div style={{ marginBottom: '14px', paddingLeft: '12px', borderLeft: '2px solid var(--line)' }}>
-                <strong style={{ color: 'var(--ink)', fontSize: '12px' }}>→ SSL certificate registered.</strong><span style={{ color: 'var(--sub)', fontSize: '12px' }}> No LinkedIn, no press, no Crunchbase entry. Detected 3 weeks before first public mention.</span>
+              <div className="mod-sig">
+                <strong>→ SSL certificate registered.</strong><span> No LinkedIn, no press, no Crunchbase entry. Detected 3 weeks before first public mention.</span>
               </div>
-              <div style={{ marginBottom: '14px', paddingLeft: '12px', borderLeft: '2px solid var(--line)' }}>
-                <strong style={{ color: 'var(--ink)', fontSize: '12px' }}>→ New SARL registered, NAF 6201Z — founder ex-Doctolib.</strong><span style={{ color: 'var(--sub)', fontSize: '12px' }}> Detected via Pappers, 6 weeks before Crunchbase listing.</span>
+              <div className="mod-sig">
+                <strong>→ New SARL registered, NAF 6201Z — founder ex-Doctolib.</strong><span> Detected via Pappers, 6 weeks before Crunchbase listing.</span>
               </div>
-              <div style={{ paddingLeft: '12px', borderLeft: '2px solid var(--line)' }}>
-                <strong style={{ color: 'var(--ink)', fontSize: '12px' }}>→ GitHub repo created, 2 contributors, ex-Alan engineering team.</strong><span style={{ color: 'var(--sub)', fontSize: '12px' }}> Detected 11 months before Series A announcement.</span>
+              <div className="mod-sig">
+                <strong>→ GitHub repo created, 2 contributors, ex-Alan engineering team.</strong><span> Detected 11 months before Series A announcement.</span>
               </div>
             </div>
           </div>
@@ -163,9 +173,9 @@ function HowThemesWork() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">How Themes Work</span>
         <h2 className="h2">The themes are the parameters.<br /><em>The system is the edge.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '620px', marginBottom: '36px' }}>A theme is an emerging category where the future winner is not yet decided — where there is still alpha for an early investor who can identify the right founding team before the market does. We start with two themes. We add new ones as new categories emerge. We retire themes when a category matures — when the winner is obvious, when valuations reflect the opportunity, when the alpha is gone.</p>
-        <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', padding: '20px 24px', marginBottom: '36px', fontSize: '12px', lineHeight: 1.8 }}>
-          <p style={{ color: 'var(--sub)', margin: 0 }}>This is not a fixed mandate. It is a living system that covers the most promising emerging categories in European software at any given moment — with the same depth, the same speed, the same precision, regardless of which themes are active. The GP's job is to decide when a new category deserves focus — and when it no longer does.</p>
+        <p className="pf-intro">A theme is an emerging category where the future winner is not yet decided — where there is still alpha for an early investor who can identify the right founding team before the market does. We start with two themes. We add new ones as new categories emerge. We retire themes when a category matures — when the winner is obvious, when valuations reflect the opportunity, when the alpha is gone.</p>
+        <div className="pf-callout">
+          <p>This is not a fixed mandate. It is a living system that covers the most promising emerging categories in European software at any given moment — with the same depth, the same speed, the same precision, regardless of which themes are active. The GP's job is to decide when a new category deserves focus — and when it no longer does.</p>
         </div>
         <div className="mods">
           <div className="mod">
@@ -219,42 +229,13 @@ function TheConversion() {
   );
 }
 
-// 29/10 (Alexandre) — la vision et les critères : la thèse du fonds (theses/profund_vc/v2.json
-// du monorepo) en clair pour un LP, et la preuve que le GP l'applique à lui-même.
-const OPERATED = [
-  { name: 'Proplace', what: 'AI harness for corporate development' },
-  { name: 'Maximum Insurance', what: 'Swiss travel insurtech & travel risk management platform' },
-  { name: 'Sosuites', what: 'AI-assisted personalised art prints' },
-];
-
-function WhatWeBack() {
-  return (
-    <div className="pf-section" style={{ background: 'var(--bg)' }}>
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">What We Back</span>
-        <h2 className="h2">An age of abundance is starting.<br /><em>We back the people who will build it.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.8, maxWidth: '760px', marginBottom: '12px' }}>With AI, a handful of people can now build what once took thousands. Founders who direct AI agents will turn their ambitions into companies in record time. We believe AI will first free humanity from material constraints, then give people the time and freedom to pursue what matters most.</p>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.8, maxWidth: '760px', marginBottom: '28px' }}>Our fund is built for that world: it uses AI everywhere it can. <strong style={{ color: 'var(--ink)' }}>These five criteria are our fund thesis. They drive the Deal Engine every morning.</strong></p>
-        <div className="serve-grid">
-          <div className="sc"><div className="sc-h">01 · Founders, From Day One</div><p className="sc-p">Exceptional, highly technical founders, detected before their first round through alumni networks, tier-1 departures, GitHub and job posts. At seed, we lead or co-lead with {eur(L.seed.ticket_min, 'tile')} to {eur(L.seed.ticket_max, 'tile')}.</p></div>
-          <div className="sc"><div className="sc-h">02 · Every Seed Round</div><p className="sc-p">The Seed Radar follows every European pre-seed and seed round of the last 24 months and re-scores each company on dated, sourced growth signals. A round proves that someone else underwrote the founders.</p></div>
-          <div className="sc"><div className="sc-h">03 · The Inflection</div><p className="sc-p">We enter or double down when the curve bends, in our own companies or directly in the best external rounds: ARR tripling in 12 months, EUR 1M ARR within 18 months of launch, record revenue per employee. Venture and Growth layers, up to {eur(F.company_max_with_spv, 'tile')} per company with SPVs.</p></div>
-          <div className="sc"><div className="sc-h">04 · Fund Returners</div><p className="sc-p">Category leaders in Europe with global ambition, a TAM above EUR 10B and winner-take-most dynamics. Each position must be able to return a meaningful part of the fund at its layer.</p></div>
-          <div className="sc"><div className="sc-h">05 · Autonomy by Design</div><p className="sc-p">Companies that run as autonomously as possible: self-improving AI loops at the core, and small teams that pilot AI agents with maximum leverage to build the most ambitious things.</p></div>
-          <div className="sc" style={{ background: 'var(--ink)' }}><div className="sc-h" style={{ color: '#fff' }}>We Live It</div><p className="sc-p" style={{ color: 'rgba(255,255,255,.78)' }}>One GP and a team of AI agents run the fund — and operate three companies almost autonomously: {OPERATED.map((o) => o.name).join(', ')}. They are 100% owned by the GP and sit outside the fund. We apply to ourselves what we look for in founders.</p></div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function WinningFounder() {
   return (
     <div className="pf-section">
       <div className="pf-wrap-wide">
         <span className="eyebrow">Why the Best Founders Choose ProFund</span>
         <h2 className="h2">We were there first.<br /><em>And we can prove it.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '28px' }}>Why the best founders choose ProFund over generalist VCs.</p>
+        <p className="pf-intro">Why the best founders choose ProFund over generalist VCs.</p>
         <div className="serve-grid">
           <div className="sc"><div className="sc-h">We Were There First</div><p className="sc-p">We reach out before the round opens, before the deck exists. The founder who receives a message showing we understood their architecture before anyone else noticed them remembers that. The relationship starts months before any process.</p></div>
           <div className="sc"><div className="sc-h">A GP Who Built What We Use</div><p className="sc-p">The AI-native venture platform powering ProFund's deal flow was built and is operated by the GP. We understand data moat architecture and agent design at a level most VCs cannot — because we made those decisions ourselves.</p></div>
@@ -322,11 +303,11 @@ function TierCard({ id }: { id: LayerId }) {
 function PortfolioArch() {
   const g = L.growth;
   return (
-    <div className="pf-section" style={{ background: 'var(--bg)' }}>
+    <div className="pf-section" id="construction" style={{ background: 'var(--bg)' }}>
       <div className="pf-wrap-wide">
         <span className="eyebrow">Portfolio Architecture</span>
         <h2 className="h2">The Conviction Funnel.<br /><em>One Fund, From Seed to Growth.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>A {eur(F.commitments, 'tile')} European venture fund in three layers. Every layer has two ways in: direct entries into the best external rounds, and follow-ons in our own companies that take off. Seed is {L.seed.companies} companies where we lead or co-lead before the round. Venture is {L.venture.companies} direct entries at the inflection point, next to a Tier 1 lead — our own Seed graduates are funded from Seed reserves. Growth is {L.growth.companies} direct entries alongside leading growth funds ({pct(L.growth.direct_pct ?? 0)} of the layer), and the rest doubles down on our breakouts.</p>
+        <p className="pf-intro">A {eur(F.commitments, 'tile')} European venture fund in three layers. Every layer has two ways in: direct entries into the best external rounds, and follow-ons in our own companies that take off. Seed is {L.seed.companies} companies where we lead or co-lead before the round. Venture is {L.venture.companies} direct entries at the inflection point, next to a Tier 1 lead — our own Seed graduates are funded from Seed reserves. Growth is {L.growth.companies} direct entries alongside leading growth funds ({pct(L.growth.direct_pct ?? 0)} of the layer), and the rest doubles down on our breakouts.</p>
         <div className="funnel-grid">
           <div>
             {(['seed', 'venture', 'growth'] as LayerId[]).map((id) => <TierCard key={id} id={id} />)}
@@ -351,7 +332,7 @@ function PortfolioArch() {
               <tr><td>Seed</td><td>{eur(L.seed.initial)}</td><td>{pct(R.seed.graduation_pct)} raise a Series A of ~{eur(R.seed.next_round, 'tile')}, pro-rata ~{pct(R.seed.pro_rata_pct, 1)} · plus {eur(R.seed.bridges, 'tile')} of bridges</td><td>{eur(L.seed.follow_on)}</td></tr>
               <tr><td>Venture</td><td>{eur(L.venture.initial)}</td><td>{pct(R.venture.graduation_pct)} raise a Series B of ~{eur(R.venture.next_round, 'tile')}, pro-rata ~{pct(R.venture.pro_rata_pct, 1)}</td><td>{eur(L.venture.follow_on)}</td></tr>
               <tr><td>Growth</td><td>{eur(g.external ?? 0)}</td><td>Pro-rata and super pro-rata in our breakouts, Series B and beyond</td><td>{eur(g.internal ?? 0)}</td></tr>
-              <tr><td>Total</td><td>{eur(A.initial)}</td><td>{pct(A.follow_on_pct)} of invested capital goes to follow-ons</td><td>{eur(A.follow_on)}</td></tr>
+              <tr className="sub"><td>Total</td><td>{eur(A.initial)}</td><td>{pct(A.follow_on_pct)} of invested capital goes to follow-ons</td><td>{eur(A.follow_on)}</td></tr>
             </tbody>
           </table></div>
         </div>
@@ -367,8 +348,9 @@ const SIM_TITLE: Record<LayerId, string> = {
   growth: `The Growth Layer · ${L.growth.positions} Positions.`,
 };
 
-// Une table de simulation par étage, même markup que les tables V1 : la ligne
-// SUB doit rester la dernière (.fund-table met la dernière ligne en gras).
+// Une table de simulation par étage, même markup que les tables V1 ; la ligne
+// SUB porte la classe `sub` (gras, fond teinté). Mêmes colonnes en page 3 de
+// la fiche PDF (scripts/factsheet.py) et dans l'onglet Lines du modèle Excel.
 function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
   const x = L[id];
   const secondary = new Set(fund.secondary.companies);
@@ -378,7 +360,7 @@ function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Fund Simulation</span>
         <h2 className="h2">{SIM_TITLE[id]}<br /><em>Line-by-line Entry, Follow-on &amp; Exit.</em></h2>
-        <div className="table-scroll"><table className="fund-table">
+        <div className="table-scroll"><table className="fund-table sim">
           <thead>
             <tr>
               <th>Deal ID</th><th>Status</th><th>Initial Tkt</th><th>Entry Val (Post)</th><th>Entry %</th><th>Follow-On</th><th>Exit % (Diluted)</th><th>Exit Val</th><th>Fund Return</th><th>MOIC</th>
@@ -404,11 +386,11 @@ function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
                 </tr>
               );
             })}
-            <tr><td><strong>SUB</strong></td><td><strong>({LAYER_NAME[id]})</strong></td><td><strong>{eur(x.initial)}</strong></td><td>—</td><td>—</td><td><strong>{eur(x.follow_on)}</strong></td><td>—</td><td>—</td><td style={{ color: 'var(--blue-dk)', fontWeight: 700 }}>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
+            <tr className="sub"><td><strong>SUB</strong></td><td><strong>({LAYER_NAME[id]})</strong></td><td><strong>{eur(x.initial)}</strong></td><td>—</td><td>—</td><td><strong>{eur(x.follow_on)}</strong></td><td>—</td><td>—</td><td style={{ color: 'var(--blue-dk)', fontWeight: 700 }}>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
           </tbody>
         </table></div>
         {(marked || id === 'growth') && (
-          <p style={{ fontSize: '11px', color: 'var(--lite)', marginTop: '12px', lineHeight: 1.6 }}>
+          <p className="pf-fine">
             {id === 'growth' && <>Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are made alongside leading growth funds, with a liquidation preference.<br /></>}
             {marked && <>* Fund Return shown at exit value. In the fund model, {pct(fund.secondary.share)} of this position is sold in a year-{fund.secondary.year} secondary at {pct(fund.secondary.price_pct)} of its exit value (see Fund Performance).</>}
           </p>
@@ -422,7 +404,7 @@ function FundPerformance() {
   const cases = CASE_IDS.map((id) => fund.cases[id]);
   const cell = (i: number) => (i === 0 ? 'hl' : undefined);
   return (
-    <div className="pf-section" style={{ background: 'var(--bg)' }}>
+    <div className="pf-section" id="performance" style={{ background: 'var(--bg)' }}>
       <div className="pf-wrap-wide">
         <span className="eyebrow">Fund Performance</span>
         <h2 className="h2">Target Returns, Built Line by Line.<br /><em>Net of Fees, Expenses and Carry.</em></h2>
@@ -430,7 +412,7 @@ function FundPerformance() {
           <div>
             <div className="table-scroll"><table className="perf-table">
               <thead>
-                <tr><th>Metric</th><th>Target</th><th>Base</th><th>Stress</th></tr>
+                <tr><th>Metric</th><th className="hl">Target</th><th>Base</th><th>Stress</th></tr>
               </thead>
               <tbody>
                 <tr><td>Fund Size</td>{cases.map((_, i) => <td key={i} className={cell(i)}>{eur(F.commitments, 'tile')}</td>)}</tr>
@@ -444,7 +426,7 @@ function FundPerformance() {
                 ))}
               </tbody>
             </table></div>
-            <p style={{ fontSize: '11px', color: 'var(--lite)', marginTop: '12px', lineHeight: 1.6 }}>Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital), fund expenses and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. The target assumes one fund returner ({fund.fund_returner.company}, returning {mult(fund.fund_returner.multiple_of_fund)} the fund across its Seed and Growth lines) and a year-{fund.secondary.year} secondary sale of {pct(fund.secondary.share)} of the two largest winners at {pct(fund.secondary.price_pct)} of their exit value. Base caps every exit value at {BASE_CAP}, Stress at {STRESS_CAP}; everything else is unchanged. Targets are model outputs, not a forecast or a guarantee.</p>
+            <p className="pf-fine">Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital), fund expenses and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. The target assumes one fund returner ({fund.fund_returner.company}, returning {mult(fund.fund_returner.multiple_of_fund)} the fund across its Seed and Growth lines) and a year-{fund.secondary.year} secondary sale of {pct(fund.secondary.share)} of the two largest winners at {pct(fund.secondary.price_pct)} of their exit value. Base caps every exit value at {BASE_CAP}, Stress at {STRESS_CAP}; everything else is unchanged. Targets are model outputs, not a forecast or a guarantee.</p>
           </div>
           <div className="fw-stats">
             <div className="fw-s hl"><span className="fw-big">{pct(TARGET.net_irr)}</span><div className="fw-det"><strong>Target net IRR.</strong> Base case {pct(BASE.net_irr)} with no exit above {BASE_CAP}.</div></div>
@@ -453,7 +435,25 @@ function FundPerformance() {
             <div className="fw-s"><span className="fw-big">{mult(fund.fund_returner.multiple_of_fund)}</span><div className="fw-det"><strong>One fund returner.</strong> {fund.fund_returner.company} returns the fund across its Seed and Growth lines.</div></div>
           </div>
         </div>
+        <Downloads />
       </div>
+    </div>
+  );
+}
+
+// Le modèle Excel (scripts/fund_xlsx.py) et la fiche PDF (scripts/factsheet.py),
+// régénérés depuis fund.json ; leurs ?v= vivent dans src/lib/links.ts.
+function Downloads() {
+  return (
+    <div className="pv-dls">
+      <a className="pv-dl" href={MODEL_XLSX_URL} download>
+        <span className="pv-dl-ic"><Icon name="sheet" /></span>
+        <span><b>Fund model (Excel)</b><small>Every line, cash flow and the waterfall, in live formulas</small></span>
+      </a>
+      <a className="pv-dl" href={FACTSHEET_URL} download>
+        <span className="pv-dl-ic"><Icon name="file" /></span>
+        <span><b>Fact sheet (PDF)</b><small>Three pages, fund simulation included</small></span>
+      </a>
     </div>
   );
 }
@@ -464,7 +464,7 @@ function ExitStrategy() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Exit Strategy</span>
         <h2 className="h2">Reverse-Engineering the Exit.<br /><em>AI-Powered Wargaming &amp; Kingmaker Assets.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>We only invest if we can identify the exit at entry. Every position is underwritten against two scenarios: standalone giant (IPO) or strategic acquisition by a legacy incumbent who must buy to survive.</p>
+        <p className="pf-intro">We only invest if we can identify the exit at entry. Every position is underwritten against two scenarios: standalone giant (IPO) or strategic acquisition by a legacy incumbent who must buy to survive.</p>
         <div className="mods">
           <div className="mod">
             <div className="mod-num">① COLLISION ALGORITHMS</div>
@@ -498,7 +498,7 @@ function ExitStrategy() {
 
 function FoundingPartner() {
   return (
-    <div className="pf-section" style={{ background: 'var(--bg)' }}>
+    <div className="pf-section" id="gp" style={{ background: 'var(--bg)' }}>
       <div className="pf-wrap-wide">
         <span className="eyebrow">Founding Partner</span>
         <div className="gp-grid" style={{ marginTop: '28px' }}>
@@ -530,7 +530,7 @@ function TrackRecord() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Track Record</span>
         <h2 className="h2">Generating tens of millions in value<br /><em>at every stage, every employer.</em></h2>
-        <p style={{ fontSize: '12px', color: 'var(--lite)', marginBottom: '20px', lineHeight: 1.6 }}><em>Methodology: Public figures. Exit valuations and transaction metrics may contain assumptions &amp; estimations.</em></p>
+        <p className="pf-fine" style={{ marginTop: 0 }}><em>Methodology: Public figures. Exit valuations and transaction metrics may contain assumptions &amp; estimations.</em></p>
         <div className="table-scroll"><table className="fund-table">
           <thead>
             <tr><th>Deal ID</th><th>Status</th><th>Entry Date</th><th>Exit Date</th><th>Initial Tkt</th><th>Entry Val (Post)</th><th>Entry %</th><th>Exit Val (Total)</th><th>Return</th><th>CoC</th></tr>
@@ -542,7 +542,7 @@ function TrackRecord() {
             <tr><td>Deal-04</td><td><span className="tag grey">Ongoing (100% held)</span></td><td>2016</td><td>Ongoing</td><td>€45M</td><td>€45M</td><td>100%</td><td>—</td><td>—</td><td className="moic" style={{ color: 'var(--mid)' }}>—</td></tr>
           </tbody>
         </table></div>
-        <p style={{ fontSize: '11px', color: 'var(--lite)', marginTop: '12px', lineHeight: 1.6 }}>* Deal-03: Entry seed €5.3M · Follow-on at €15M round · Exit LBO/MBO Feb 2025 at €100M · 12.5× EBITDA on €8M EBITDA · Estimated 19× on seed ticket.<br />** Deal-04: 100% acquisition, €45M buyout in 2016 · Revenue growing ~20% YoY since acquisition · No multiple shown for a position still fully held.</p>
+        <p className="pf-fine">* Deal-03: Entry seed €5.3M · Follow-on at €15M round · Exit LBO/MBO Feb 2025 at €100M · 12.5× EBITDA on €8M EBITDA · Estimated 19× on seed ticket.<br />** Deal-04: 100% acquisition, €45M buyout in 2016 · Revenue growing ~20% YoY since acquisition · No multiple shown for a position still fully held.</p>
       </div>
     </div>
   );
@@ -554,7 +554,7 @@ function GovernanceSection() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Governance &amp; Terms</span>
         <h2 className="h2">One Fund. One GP. No Back Office.<br /><em>Standard Terms, Outsourced Operations.</em></h2>
-        <p style={{ fontSize: '14px', color: 'var(--sub)', lineHeight: 1.75, maxWidth: '600px', marginBottom: '32px' }}>A single fund run by a solo GP on an AI platform. Administration, audit, reporting and investor onboarding are outsourced to a regulated third-party EuVECA manager, so the GP's time goes to founders.</p>
+        <p className="pf-intro">A single fund run by a solo GP on an AI platform. Administration, audit, reporting and investor onboarding are outsourced to a regulated third-party EuVECA manager, so the GP's time goes to founders.</p>
         <div className="gov-grid">
           <div className="gov">
             <div className="gov-h">Fund Structure</div>
@@ -582,36 +582,55 @@ function GovernanceSection() {
   );
 }
 
-function CTASection() {
-  const [open, setOpen] = useState(false);
+function CTASection({ onFollow }: { onFollow: () => void }) {
   return (
-    <div id="contact" className="pf-section" style={{ textAlign: 'center', paddingBottom: '0' }}>
-      <div className="pf-wrap">
-        <span className="eyebrow" style={{ textAlign: 'center' }}>Get in Touch</span>
-        <h2 className="cta-h">Invest in the future<br />of <em>European AI.</em></h2>
-        <p className="cta-p">We are selectively building our LP base. A {eur(F.commitments, 'tile')} European venture fund, seed to growth: one fund that follows AI-native companies from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_max_with_spv, 'tile')} — powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals before they become obvious to the category.</p>
-        <p className="cta-note" style={{ fontSize: '15px', marginTop: '12px' }}>Contact: <a href="mailto:alexandre@profund.vc">alexandre@profund.vc</a></p>
-        {/* 29/10 — le même formulaire que l'accueil (DealFlowModal), plus l'ancien iframe Brevo */}
-        <div style={{ margin: '36px 0 56px' }}>
-          <button className="pfh-btn" onClick={() => setOpen(true)}>Follow our deal flow live</button>
-          <p style={{ fontSize: '12px', color: 'var(--lite)', marginTop: '14px' }}>Every evening, the companies we reviewed that day, the ones we kept, and why.</p>
+    <div id="contact" className="pf-section">
+      <div className="pf-wrap-wide">
+        <div className="pv-band pv-band-col">
+          <div>
+            <span className="eyebrow">Get in Touch</span>
+            <h2 className="cta-h">Invest in the future<br />of <em>European AI.</em></h2>
+            <p className="cta-p">We are selectively building our LP base. A {eur(F.commitments, 'tile')} European venture fund, seed to growth: one fund that follows AI-native companies from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_max_with_spv, 'tile')} — powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals before they become obvious to the category.</p>
+            <p className="cta-note">Contact: <a href="mailto:alexandre@profund.vc">alexandre@profund.vc</a></p>
+          </div>
+          {/* 29/10 — le même formulaire que l'accueil (DealFlowModal), plus l'ancien iframe Brevo */}
+          <div className="pv-band-ctas">
+            <button type="button" className="pv-btn light" onClick={onFollow}>Follow our deal flow live <Icon name="arrow" /></button>
+            <a href={MODEL_XLSX_URL} className="pv-btn ghost-light" download><Icon name="sheet" />Fund model (Excel)</a>
+            <p className="pv-band-fine">Every evening, the companies we reviewed that day, the ones we kept, and why.</p>
+          </div>
         </div>
-        <DealFlowModal open={open} onClose={() => setOpen(false)} />
       </div>
     </div>
   );
 }
 
+const PITCH_LINKS = [
+  { href: '#thesis', label: 'Thesis' },
+  { href: '#edge', label: 'Edge' },
+  { href: '#construction', label: 'Construction' },
+  { href: '#performance', label: 'Returns' },
+  { href: '#gp', label: 'GP' },
+];
+
 export default function ProFundPage() {
+  // Un seul popup pour la page : le moteur de deal flow (OurEdge) et le bloc contact l'ouvrent.
+  const [open, setOpen] = useState(false);
+  const follow = () => setOpen(true);
   return (
     <>
+      <SiteHeader links={PITCH_LINKS}>
+        <a href={MODEL_XLSX_URL} className="pv-btn line pv-hide-sm" download><Icon name="sheet" />Excel model</a>
+        <a href="#contact" className="pv-btn">Request LP Access</a>
+      </SiteHeader>
       <HeroSection />
-      <hr className="pf-div" />
+      <Manifesto />
+      <FourLaws />
+      <OurEdge onFollow={follow} />
+      <ProofOfWork />
       <TheOpportunity />
       <hr className="pf-div" />
       <WhyOneFund />
-      <hr className="pf-div" />
-      <WhatWeBack />
       <hr className="pf-div" />
       <ThePlatform />
       <hr className="pf-div" />
@@ -638,8 +657,8 @@ export default function ProFundPage() {
       <TrackRecord />
       <hr className="pf-div" />
       <GovernanceSection />
-      <hr className="pf-div" />
-      <CTASection />
+      <CTASection onFollow={follow} />
+      <DealFlowModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

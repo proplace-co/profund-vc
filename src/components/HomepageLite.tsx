@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import DealFlowModal from './DealFlowModal';
+import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
 import { eur, fund } from '../lib/fund';
+import { FACTSHEET_URL } from '../lib/links';
 
 const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
 
@@ -8,70 +10,17 @@ function hashWantsDealflow() {
   return DEALFLOW_HASHES.has((window.location.hash || '').toLowerCase());
 }
 
-const LOGO_URL = '/logo.png';
-const TRACK_RECORD_URL = '/track-record.png';
-const PROPLACE_LOGO = '/portfolio-proplace.png';
-const MAXIMUM_LOGO = '/portfolio-maximum-insurance.svg';
-const SOSUITES_LOGO = '/portfolio-sosuites.png';
-const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-29-v6';
-
-// UN SEUL MONTANT SUR CETTE PAGE : la taille du fonds dans la phrase du hero
-// (Alexandre, 29/10 — revient sur la regle « aucun montant » d'Antoine du 30/08),
-// lue dans src/data/fund.json. Construction, tickets et rendements cibles vivent
-// toujours dans la fiche PDF et sur /pitch seulement.
+// UN SEUL MONTANT SUR CETTE PAGE : la taille du fonds, dans la phrase du héros et
+// dans la loi 04 (texte d'Antoine du 30/10), lue dans src/data/fund.json.
+// Construction, tickets et rendements cibles vivent dans la fiche PDF et sur
+// /pitch seulement.
 const FUND_SIZE = eur(fund.fund.commitments, 'tile');
 
-// Les sociétés que le GP opère avec ses agents, hors du fonds (détenues à 100 %).
-// Mêmes accroches que la fiche PDF (scripts/factsheet.py, PORTFOLIO).
-const ONGOING = [
-  {
-    name: 'Proplace',
-    logo: PROPLACE_LOGO,
-    href: 'https://proplace.co',
-    tagline: 'AI harness for corporate development',
-  },
-  {
-    name: 'Maximum Insurance',
-    logo: MAXIMUM_LOGO,
-    href: 'https://maximum-insurance.com',
-    tagline: 'Swiss travel insurtech & travel risk management platform',
-    wide: true,
-  },
-  {
-    name: 'Sosuites',
-    logo: SOSUITES_LOGO,
-    href: 'https://www.sosuites.com',
-    tagline: 'AI-assisted personalised art prints',
-    wide: true,
-  },
-];
-
-// Les deux plateformes maison, cote a cote sous le chapeau du hero. Le chapeau
-// dit l'avantage (Investment / Operations), le nom dit le modele — memes noms
-// dans la fiche PDF (scripts/factsheet.py).
-const PILLARS = [
-  {
-    kicker: 'Investment',
-    title: 'Deal Engine',
-    text: 'Reads every European seed round, every senior hire and every launch, around the clock. It scores each founder against our thesis and flags the inflection point before it becomes obvious.',
-    powers: ['ProFund'],
-  },
-  {
-    kicker: 'Operations',
-    title: 'Growth Engine',
-    text: 'AI agents that run content, inbound and outbound, end to end. They operate the fund and the GP’s companies today, and they work for the founders we back.',
-    powers: ['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites'],
-  },
-];
-
-// Ce que nous cherchons : la thèse du fonds (theses/profund_vc/v2.json du monorepo),
-// sans montant — les seuils chiffrés vivent sur /pitch et dans la fiche.
-const CRITERIA = [
-  { t: 'Founders, from day one', d: 'Exceptional, highly technical founders, found before their first round.' },
-  { t: 'Every seed round', d: 'Our Seed Radar follows every European seed round and re-scores each company, every week.' },
-  { t: 'The inflection', d: 'We enter or double down when the curve bends, in our own companies or directly in the best external rounds.' },
-  { t: 'Category winners', d: 'Companies that can lead their category in Europe and win globally. Each one could return the fund.' },
-  { t: 'Autonomy by design', d: 'Self-improving AI loops at the core, run by teams that pilot AI agents with maximum leverage.' },
+const LINKS = [
+  { href: '#manifesto', label: 'Manifesto' },
+  { href: '#thesis', label: 'What we back' },
+  { href: '#edge', label: 'Our edge' },
+  { href: '#proof', label: 'Proof of work' },
 ];
 
 export default function HomepageLite() {
@@ -99,105 +48,63 @@ export default function HomepageLite() {
 
   return (
     <div className="pfh">
-      <header className="pfh-hero">
-        <div className="pfh-wrap">
-          <img src={LOGO_URL} className="pfh-hero-logo" alt="ProFund" />
-          <h1 className="pfh-h1">Turning AI into<br /><em>unfair leverage</em></h1>
-          <p className="pfh-lead">
-            <span className="pfh-lead-line fit">Seed to Growth. {FUND_SIZE} for the founders turning AI into unfair leverage.</span>
-          </p>
-          <div className="pfh-pillars">
-            {/* les deux moteurs sont l'avantage du fonds ET l'outil qui le fait
-                tourner : l'en-tete le dit, les pastilles « Powers » le montrent */}
-            <div className="pfh-pillars-hd">
-              <p className="k">Our edge</p>
-              <p className="t">We run on what we back: two in-house AI engines, one GP and his agents.</p>
+      <SiteHeader links={LINKS}>
+        <button type="button" className="pv-btn" onClick={openModal}>Follow live deal flow</button>
+      </SiteHeader>
+
+      <header className="pv-hero">
+        <div className="pv-wrap pv-hero-grid">
+          <div className="pv-hero-copy">
+            <span className="pv-eyebrow"><b />AI-native venture fund · Europe</span>
+            <h1 className="pv-h1">Pure Vision.<span>Autonomous Scale.</span></h1>
+            <p className="pv-lead">
+              Seed to Growth. {FUND_SIZE} for the architects turning AI into <span className="nw">self-improving</span> systems.
+            </p>
+            <p className="pv-tagline">Stop managing armies. Start directing intelligence.</p>
+            <div className="pv-ctas">
+              <button type="button" className="pv-btn" onClick={openModal}>
+                Follow live deal flow <Icon name="arrow" />
+              </button>
+              <a href={FACTSHEET_URL} className="pv-btn line" download>
+                <Icon name="file" />Download the fact sheet
+              </a>
             </div>
-            {PILLARS.map((p) => (
-              <div key={p.title} className="pfh-pillar">
-                <p className="k">{p.kicker}</p>
-                <h2>{p.title}</h2>
-                <p>{p.text}</p>
-                <div className="runs">
-                  <span className="l">Powers</span>
-                  {p.powers.map((n) => (
-                    <span key={n} className={n === 'ProFund' ? 'c pf' : 'c'}>{n}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
+            <ul className="pv-micro">
+              <li><Icon name="check" />One GP, zero analysts</li>
+              <li><Icon name="check" />Two autonomous engines</li>
+              <li><Icon name="check" />Live deal flow, every evening</li>
+            </ul>
           </div>
-          <div className="pfh-cta-row">
-            <button className="pfh-btn" onClick={openModal}>Follow our deal flow live</button>
-          </div>
+          <HeroVisual />
         </div>
       </header>
 
-      <section className="pfh-s" id="thesis">
-        <div className="pfh-wrap" style={{ textAlign: 'center' }}>
-          <p className="pfh-eyeb pfh-eyeb-port">What we back</p>
-          <h2 className="pfh-h2">An age of abundance is starting.<br /><em>We back the people who will build it.</em></h2>
-          <p className="pfh-lead pfh-vision">
-            With AI, a handful of people can now build what once took thousands. Founders who direct
-            AI agents will turn their ambitions into companies in record time. We believe AI will first
-            free humanity from material constraints, then give people the time and freedom to pursue
-            what matters most.
-          </p>
-          <div className="pfh-crit">
-            {CRITERIA.map((c, i) => (
-              <div key={c.t} className="pfh-crit-i">
-                <b>{String(i + 1).padStart(2, '0')}</b>
-                <h3>{c.t}</h3>
-                <p>{c.d}</p>
-              </div>
-            ))}
-          </div>
-          <p className="pfh-crit-foot">These criteria are our fund thesis. They drive the Deal Engine every morning.</p>
-        </div>
-      </section>
+      <Manifesto />
+      <FourLaws />
+      <OurEdge onFollow={openModal} />
+      <ProofOfWork />
 
-      <section className="pfh-s" id="ongoing">
-        <div className="pfh-wrap">
-          <p className="pfh-eyeb">Operated by the GP</p>
-          <p className="pfh-port-note">
-            <b>We live what we back.</b><br />
-            Operations from our companies below are run almost autonomously by our engines &amp; agents.
-          </p>
-          <div className="pfh-port3">
-            {ONGOING.map((p) => (
-              <a key={p.name} href={p.href} target="_blank" rel="noopener noreferrer">
-                <span className="lg">
-                  <img src={p.logo} alt={p.name} className={"wide" in p && p.wide ? 'wide' : undefined} />
-                </span>
-                <span className="tg">{p.tagline}</span>
+      <section className="pv-sec pv-sec-end" id="factsheet">
+        <div className="pv-wrap">
+          <div className="pv-band">
+            <div>
+              <h2>Follow our deal flow live</h2>
+              <p>Every evening, the companies we reviewed that day, the ones we kept, and why.</p>
+            </div>
+            <div className="pv-band-ctas">
+              <button type="button" className="pv-btn light" onClick={openModal}>
+                Apply to follow <Icon name="arrow" />
+              </button>
+              <a href={FACTSHEET_URL} className="pv-btn ghost-light" download>
+                <Icon name="file" />Download the fact sheet
               </a>
-            ))}
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section className="pfh-s pfh-prior" id="past">
-        <div className="pfh-wrap">
-          <p className="pfh-eyeb">Prior</p>
-          <img src={TRACK_RECORD_URL} className="pfh-logos" alt="Partech · Ardian · Google · leboncoin" />
-        </div>
-      </section>
-
-
-      <section className="pfh-s" id="factsheet">
-        <div className="pfh-wrap" style={{ textAlign: 'center' }}>
-          <div className="pfh-cta-row">
-            <a href={FACTSHEET_URL} className="pfh-btn ghost" download>Download the fact sheet</a>
-          </div>
-          <p className="pfh-note">
+          <p className="pv-note">
             EuVECA pre-marketing communication, professional and eligible investors only. Not an offer to subscribe.
           </p>
         </div>
       </section>
-
-      {/* Pas de bande sombre finale : elle ne portait qu'une reprise du bouton du
-          hero et faisait deborder la page d'un ecran. Le seul appel a l'action
-          vit en haut. */}
 
       <DealFlowModal open={open} onClose={closeModal} />
     </div>

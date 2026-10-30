@@ -147,7 +147,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
 
         {status === 'done' ? (
           <div className="pfm-done">
-            <span className="pfh-live"><span className="pfh-dot" />
+            <span className="pv-live"><span className="pv-dot" />
               {doneKind === 'resent' ? 'Link sent' : 'Application received'}
             </span>
             <h3>Thank you{first ? `, ${first}` : ''}.</h3>
@@ -168,7 +168,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
                 the companies we reviewed that day. One-click unsubscribe.
               </p>
             )}
-            <button className="pfh-btn" onClick={onClose}>Close</button>
+            <button className="pv-btn" onClick={onClose}>Close</button>
           </div>
         ) : pane === 'returning' ? (
           <form onSubmit={resend}>
@@ -181,7 +181,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
                      onChange={(e) => setEmail(e.target.value)} />
             </div>
             {status === 'error' && <p className="pfm-err">{error}</p>}
-            <button className="pfh-btn pfm-go" type="submit" disabled={status === 'sending'}>
+            <button className="pv-btn pfm-go" type="submit" disabled={status === 'sending'}>
               {status === 'sending' ? 'Sending' : 'Send my access link'}
             </button>
             <p className="pfm-fine">
@@ -226,7 +226,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
 
             {status === 'error' && <p className="pfm-err">{error}</p>}
 
-            <button className="pfh-btn pfm-go" type="submit" disabled={status === 'sending'}>
+            <button className="pv-btn pfm-go" type="submit" disabled={status === 'sending'}>
               {status === 'sending' ? 'Sending' : 'Apply'}
             </button>
             <p className="pfm-fine">

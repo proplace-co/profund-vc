@@ -132,7 +132,7 @@ export default function DealFlowPage() {
             <>
               <h1>We could not open your deal flow.</h1>
               <p>The server is taking too long to answer. Your link is fine, try again in a moment.</p>
-              <button className="pfh-btn" type="button" onClick={() => setAttempt((a) => a + 1)}>
+              <button className="pv-btn" type="button" onClick={() => setAttempt((a) => a + 1)}>
                 Try again
               </button>
             </>
@@ -141,7 +141,7 @@ export default function DealFlowPage() {
             <>
               <h1>This link is no longer valid.</h1>
               <p>Ask for a new one with the email you used to apply.</p>
-              <button className="pfh-btn" type="button" onClick={() => setModal(true)}>
+              <button className="pv-btn" type="button" onClick={() => setModal(true)}>
                 Send my access link
               </button>
             </>
@@ -153,7 +153,7 @@ export default function DealFlowPage() {
                 This page is for investors we have accepted. Apply, or if you
                 already follow, we will email you the link.
               </p>
-              <button className="pfh-btn" type="button" onClick={() => setModal(true)}>
+              <button className="pv-btn" type="button" onClick={() => setModal(true)}>
                 Apply or receive my link
               </button>
             </>

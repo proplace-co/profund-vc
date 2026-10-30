@@ -1,21 +1,27 @@
-"""Genere public/profund-factsheet.pdf — la fiche du fonds, deux pages A4.
+"""Genere public/profund-factsheet.pdf — la fiche du fonds, trois pages A4.
 
-Mise en page calquee sur https://maximum-insurance.com/fiche-individuel.pdf :
-filet d'accent en tete, chapeaux de section en capitales couleur, bande de
-chiffres sur fond noir, cartes a en-tete plein, tableaux a filets fins, bloc
-d'appel sombre, mentions en pied. Palette ProFund (src/index.css :root).
+Mise en page reprise des fiches V5 de Maximum Insurance (fiche entreprise :
+https://maximum-insurance.com/entreprises) avec leur moteur de dessin
+(scripts/sheet_engine.py) : Archivo, chapeaux en capitales espacees, grands
+titres serres, cartes arrondies a ombre douce, tuiles d'icones en degrade,
+tableau a colonne mise en avant, bande d'appel sombre avec un grand QR.
+Palette ProFund (gris bleu), la meme que le site.
 
-REGLE EDITORIALE : construction detaillee, tickets et rendements cibles
-vivent ICI (et sur /pitch). L'accueil porte la these en une phrase, SANS
-AUCUN MONTANT, et renvoie a cette fiche.
+    page 1  la vision : titre, manifeste, quatre lois, construction du fonds
+    page 2  l'avantage (deux moteurs), termes, le GP, la preuve, l'appel (QR)
+    page 3  la simulation ligne a ligne et la performance du fonds
+
+REGLE EDITORIALE : construction detaillee, tickets et rendements cibles vivent
+ICI (et sur /pitch). L'accueil ne porte que la taille du fonds et renvoie ici.
 
 CHIFFRES : tous lus dans src/data/fund.json, genere par scripts/fund_model.py
 (la meme source que /pitch). Aucun chiffre du fonds ne se tape ici. Le script
 refuse de produire la fiche si fund.json n'est plus a jour.
 
-TOUT LE TEXTE RENDU EST EN ASCII : les polices Helvetica de base de reportlab
-sont en WinAnsi et rendent un carre blanc sur « EUR », « — » ou les guillemets
-typographiques. On ecrit donc "EUR", "-" et "'". AsciiCanvas le verifie.
+TEXTE : Archivo est embarquee, « € », « — », « × » sont permis. Un caractere
+sans glyphe dans Archivo fait echouer la fiche (sheet_engine.check_glyphs).
+La mention de pre-commercialisation (encadre de tete et pied) est la meme que
+dans le pied de l'accueil et du popup : les changer ensemble.
 
 La page ne doit jamais deborder sur le pied : chaque page renvoie sa plus basse
 ligne et main() echoue si elle passe sous le filet du pied.
@@ -31,12 +37,16 @@ import json
 import sys
 from pathlib import Path
 
-import segno
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm
+from PIL import Image
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sheet_engine import (  # noqa: E402
+    ARROW, BLUE, BLUE_DK, BLUE_GRAD, BLUE_SOFT, BLUE_TINT, BOTTOM, CHECK, FOOT_RULE, GLOW, GREEN, GREEN_SOFT,
+    INK, INK2, LINE, LINE2, M, MUTED, NIGHT, NIGHT_LINE, NIGHT_TXT, PH, PW, PX, RED, RED_SOFT, SOFT, W, WARM,
+    WHITE, Frame, x,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 LOGO = ROOT / "public" / "logo.png"
@@ -46,38 +56,32 @@ PHOTO = ROOT / "public" / "gp-photo-sheet.jpg"
 COCKPIT = ROOT / "public" / "dealflow-cockpit.jpg"
 OUT = ROOT / "public" / "profund-factsheet.pdf"
 FUND_JSON = ROOT / "src" / "data" / "fund.json"
-# Logos du portefeuille, passes en gris a la generation (comme sur l'accueil).
-# Maximum Insurance n'existe qu'en SVG cote site : reportlab ne lit pas le SVG,
-# d'ou sa version PNG dans scripts/assets/.
-PORTFOLIO = (
-    ("Proplace", "AI harness for corporate development", ROOT / "public" / "portfolio-proplace.png"),
-    ("Maximum Insurance", "Swiss travel insurtech & travel risk management platform",
-     ROOT / "scripts" / "assets" / "portfolio-maximum-insurance.png"),
-    ("Sosuites", "AI-assisted personalised art prints", ROOT / "public" / "portfolio-sosuites.png"),
-)
 
-INK = colors.HexColor("#0A0A0A")
-SUB = colors.HexColor("#3A3A3A")
-MID = colors.HexColor("#777777")
-LITE = colors.HexColor("#9A9A9A")
-LINE = colors.HexColor("#E2E2DE")
-BLUE = colors.HexColor("#627C99")
-BLUE_DK = colors.HexColor("#4A6080")
-BG = colors.HexColor("#F6F6F3")
-WHITE = colors.white
-
-W, H = A4
-M = 17 * mm
-CW = W - 2 * M
-FOOTER_RULE = 9 * mm + 11      # filet du pied (cf. _footer), en points depuis le bas
+SITE = "https://profund.vc"
+DEALFLOW = "https://profund.vc/#dealflow"      # ce hash ouvre le popup d'abonnement de l'accueil
+MAIL = "alexandre@profund.vc"
+PHONE = "+33 6 83 10 72 86"
+PAGES = 3
 MONTHS = ("January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December")
+
+# Les societes que le GP opere avec ses agents, hors du fonds (detenues a 100 %).
+# Memes accroches que l'accueil (src/components/HomepageLite.tsx). Maximum
+# Insurance n'existe qu'en SVG cote site : reportlab ne lit pas le SVG, d'ou sa
+# version PNG dans scripts/assets/.
+PORTFOLIO = (
+    ("Proplace", "Autonomous AI operating system for corporate development & M&A.",
+     ROOT / "public" / "portfolio-proplace.png", "https://proplace.co"),
+    ("Maximum Insurance", "Travel Insurtech.",
+     ROOT / "scripts" / "assets" / "portfolio-maximum-insurance.png", "https://maximum-insurance.com"),
+    ("Sosuites", "AI-assisted personalised art prints to share.",
+     ROOT / "public" / "portfolio-sosuites.png", "https://www.sosuites.com"),
+)
 
 
 # ── donnees du fonds ────────────────────────────────────────────────────────
 def _load_fund():
     data = json.loads(FUND_JSON.read_text(encoding="utf-8"))
-    sys.path.insert(0, str(ROOT / "scripts"))
     import fund_model
     if json.loads(fund_model.render(fund_model.build())) != data:
         raise SystemExit("src/data/fund.json n'est plus a jour : lancer python scripts/fund_model.py")
@@ -91,650 +95,532 @@ LAYERS = DATA["layers"]
 CASES = DATA["cases"]
 ALLOC = DATA["allocation"]
 SECONDARY = DATA["secondary"]
+LAYER_IDS = ("seed", "venture", "growth")
+CASE_IDS = ("target", "base", "stress")
 
 
-# ── formats (meme logique que src/lib/fund.ts, en ASCII) ────────────────────
-def _eur(v, mode="table"):
-    """table : EUR 750K / EUR 27.6M ; val : EUR 45M / EUR 1.5B ; tile : EUR 100M."""
+# ── formats (meme logique que src/lib/fund.ts) ──────────────────────────────
+def eur(v, mode="table"):
+    """table : €750K / €27.6M ; val : €45M / €1.5B ; tile : €100M."""
     if v == 0:
-        return "EUR 0"
+        return "€0"
     if mode == "val":
         if v >= 1e9:
-            return f"EUR {v / 1e9:.1f}B"
+            return f"€{v / 1e9:.1f}B"
         if v >= 1e7:
-            return f"EUR {v / 1e6:.0f}M"
+            return f"€{v / 1e6:.0f}M"
     if mode == "tile" and v >= 1e6 and v % 1_000_000 == 0:
-        return f"EUR {v // 1_000_000}M"
+        return f"€{v // 1_000_000}M"
     if v < 1e6:
-        return f"EUR {v / 1e3:.0f}K"
-    return f"EUR {v / 1e6:.1f}M"
+        return f"€{v / 1e3:.0f}K"
+    return f"€{v / 1e6:.1f}M"
 
 
-def _short(v):
-    if v < 1e6:
-        return f"{v / 1e3:.0f}K"
-    if v % 1_000_000 == 0:
-        return f"{v // 1_000_000}M"
-    return f"{v / 1e6:.1f}M"
+def rng(a, b):
+    """€150K–€1.5M"""
+    return f"{eur(a, 'tile')}–{eur(b, 'tile')}"
 
 
-def _rng(a, b):
-    """EUR 150K-1.5M"""
-    return f"EUR {_short(a)}-{_short(b)}"
+def mult(v):
+    return f"{v:.1f}×"
 
 
-def _mult(x):
-    return f"{x:.1f}x"
+def pct(v, dp=0):
+    return f"{v * 100:.{dp}f}%"
 
 
-def _pct(x, dp=0):
-    return f"{x * 100:.{dp}f}%"
+def row_id(line):
+    """S-01 ; S-07–09 pour trois societes ; V-05/06 pour deux (src/lib/fund.ts, rowId)."""
+    if line["n"] == 1:
+        return line["id"]
+    prefix, num = line["id"].split("-")
+    last = str(int(num) + line["n"] - 1).zfill(len(num))
+    return f"{line['id']}/{last}" if line["n"] == 2 else f"{prefix}-{num}–{last}"
 
 
-class AsciiCanvas(canvas.Canvas):
-    """Refuse tout texte non ASCII (sinon carre blanc avec Helvetica WinAnsi)."""
-
-    def _ascii(self, text):
-        if not str(text).isascii():
-            raise SystemExit(f"texte non ASCII dans la fiche : {text!r}")
-
-    def drawString(self, x, y, text, *a, **k):
-        self._ascii(text)
-        return super().drawString(x, y, text, *a, **k)
-
-    def drawRightString(self, x, y, text, *a, **k):
-        self._ascii(text)
-        return super().drawRightString(x, y, text, *a, **k)
-
-    def drawCentredString(self, x, y, text, *a, **k):
-        self._ascii(text)
-        return super().drawCentredString(x, y, text, *a, **k)
-
-    def setTitle(self, title):
-        self._ascii(title)
-        return super().setTitle(title)
-
-    def setSubject(self, subject):
-        self._ascii(subject)
-        return super().setSubject(subject)
+# Libelle et ton du statut d'une ligne (src/lib/fund.ts, outcomeTag).
+def outcome_tag(line):
+    n, co = line["n"], line["company"]
+    return {
+        "fund_returner": ("Fund returner", "green"), "breakout": ("Breakout", "green"),
+        "strategic_exit": ("Strategic exit", "blue"), "early_exit": ("Early exit (M&A)", "blue"),
+        "zombie": (f"Zombies (×{n})", "grey"), "loss": (f"Losses (×{n})", "red"),
+        "anchor": ("Anchor", "green"), "strategic_win": ("Strategic win", "blue"),
+        "base_hit": ("Base hit", "grey"), "breakout_follow_on": (f"Breakout ({co})", "green"),
+        "pro_rata": (f"Pro-rata ({co})", "blue"), "external_growth": ("Direct growth entry", "blue"),
+        "downside_protected": ("Downside, preference", "grey"),
+    }[line["outcome"]]
 
 
-# ── primitives ──────────────────────────────────────────────────────────────
-def _wrap_lines(c, s, width, font, size):
-    out, line = [], ""
-    for w in s.split():
-        probe = f"{line} {w}".strip()
-        if c.stringWidth(probe, font, size) <= width:
-            line = probe
-        else:
-            out.append(line)
-            line = w
-    if line:
-        out.append(line)
-    return out
+TONE = {"green": (GREEN, GREEN_SOFT), "blue": (BLUE_DK, BLUE_SOFT), "grey": (MUTED, WARM), "red": (RED, RED_SOFT)}
+# couleur du « Fund return » (ProFundPage.tsx, TONE_COLOR)
+TONE_TEXT = {"green": BLUE_DK, "blue": BLUE_DK, "grey": MUTED, "red": RED}
+FUND_SIZE = eur(FUND["commitments"], "tile")
 
 
-def _para(c, x, y, s, width, font="Helvetica", size=9.6, color=SUB, leading=14):
-    c.setFillColor(color)
-    c.setFont(font, size)
-    for ln in _wrap_lines(c, s, width, font, size):
-        c.drawString(x, y, ln)
-        y -= leading
-    return y
+# ── le document ─────────────────────────────────────────────────────────────
+class Doc:
+    def __init__(self):
+        self.buf = io.BytesIO()
+        self.c = canvas.Canvas(self.buf, pagesize=(PW * PX, PH * PX), pageCompression=1)
+        self.c.setTitle("ProFund — Fund Fact Sheet")
+        self.c.setAuthor("ProFund")
+        self.c.setSubject(f"Venture capital, seed to growth — {FUND_SIZE} target Fund I — "
+                          "pre-marketing communication")
+        self.c.setCreator("ProFund · scripts/factsheet.py")
+        self.num = 0
+        self.F = None
+
+    def page(self) -> Frame:
+        if self.F is not None:
+            self._footer()
+            self.F.close()
+            self.c.showPage()
+        self.num += 1
+        self.c.bookmarkPage(f"p{self.num}", fit="XYZ", top=PH * PX, left=0, zoom=0)
+        self.F = Frame(self.c)
+        self._header()
+        return self.F
+
+    def _header(self):
+        F = self.F
+        lh = 25.0
+        lw = lh * 351 / 93
+        F.image(LOGO, M, 21, lw, lh)
+        F.link(M, 18, lw, lh + 6, SITE)
+        wn = F.text(M + W, 30, f"{self.num} / {PAGES}", "xgras", 11, BLUE_DK, align="r")
+        F.text(M + W - wn - 14, 30, "Fact sheet", "semi", 11, MUTED, align="r")
+        F.line(M, 60, M + W, 60, LINE2, 1)
+
+    def _footer(self):
+        F = self.F
+        F.line(M, FOOT_RULE, M + W, FOOT_RULE, LINE2, 1)
+        year, month, _ = DATA["model_date"].split("-")
+        legal = ("EuVECA pre-marketing communication, eligible investors only. Not an offer to subscribe. "
+                 f"Contact: {MAIL}")
+        F.para(M, 1062, W - 180, x(legal), 7.6, "reg", SOFT, 1.5)
+        # version et date : trace de ce qui a ete envoye a qui (regle des 18 mois)
+        F.text(M, 1077, f"Fact sheet {DATA['version']} · {MONTHS[int(month) - 1]} {year}", "semi", 7.6, SOFT)
+        w1 = F.text(M + W, 1062, "profund.vc", "xgras", 10, INK, align="r")
+        F.link(M + W - w1, 1060, w1, 14, SITE)
+        w2 = F.text(M + W, 1078, MAIL, "reg", 9, MUTED, align="r")
+        F.link(M + W - w2, 1076, w2, 13, "mailto:" + MAIL)
+
+    def fin(self) -> bytes:
+        self._footer()
+        self.F.close()
+        self.c.showPage()
+        self.c.save()
+        return self.buf.getvalue()
 
 
-def _rule(c, y, x0=M, x1=W - M, color=LINE, w=0.7):
-    c.setStrokeColor(color)
-    c.setLineWidth(w)
-    c.line(x0, y, x1, y)
+# ── les briques ─────────────────────────────────────────────────────────────
+def kick(F, u, v, s, color=BLUE):
+    return F.text(u, v, s.upper(), "xgras", 10, color, 0.14)
 
 
-def _section(c, y, label, color=BLUE, x=M):
-    """Chapeau : capitales, gras, interlettrees — le signe du modele MI."""
-    c.setFillColor(color)
-    c.setFont("Helvetica-Bold", 9.6)
-    c.drawString(x, y, label.upper())
-    return y - 17
+def title(F, u, v, w, s, size=30.0, color=INK, lead=1.08, markup=None):
+    return F.para(u, v, w, markup or x(s), size, "gras", color, lead)
 
 
-def _section_note(c, lab_y, label, plain, bold=""):
-    """Phrase posee sur la ligne du chapeau, derriere un filet vertical : elle ne
-    coute aucune hauteur a une page deja pleine."""
-    lx = M + c.stringWidth(label.upper(), "Helvetica-Bold", 9.6) + 4 * mm
-    c.setStrokeColor(LINE)
-    c.setLineWidth(0.8)
-    c.line(lx - 2 * mm, lab_y - 1.5, lx - 2 * mm, lab_y + 7.5)
-    c.setFillColor(SUB)
-    c.setFont("Helvetica", 8.4)
-    c.drawString(lx, lab_y, plain)
-    if bold:
-        c.setFillColor(INK)
-        c.setFont("Helvetica-Bold", 8.4)
-        c.drawString(lx + c.stringWidth(plain, "Helvetica", 8.4), lab_y, bold)
-    end = lx + c.stringWidth(plain, "Helvetica", 8.4) + c.stringWidth(bold, "Helvetica-Bold", 8.4)
-    if end > W - M:
-        raise SystemExit(f"note de chapeau trop longue : {plain}{bold!r}")
+def card(F, u, v, w, h, r=16, fill=WHITE, stroke=LINE, depth=0.6, alpha=0.018):
+    F.shadow(u, v, w, h, r, depth, alpha)
+    F.rr(u, v, w, h, r, fill=fill, stroke=stroke, lw=1)
 
 
-def _stat_band(c, y, items, h=23 * mm):
-    """Bande de chiffres sur fond encre, filets verticaux clairs."""
-    top = y
-    c.setFillColor(INK)
-    c.rect(M, top - h, CW, h, stroke=0, fill=1)
-    cell = CW / len(items)
-    wrapped = [_wrap_lines(c, lab, cell - 20, "Helvetica", 7.4) for _, lab in items]
-    if any(len(w) > 2 for w in wrapped):
-        raise SystemExit("bande de chiffres : libelle sur plus de 2 lignes")
-    # 29/10 — bloc (chiffre + libelle) centre verticalement dans la bande : hauteur
-    # = capitale du chiffre (11.6 pt) + ecart + lignes du libelle (capitale 5.4 pt).
-    n_max = max(len(w) for w in wrapped)
-    block = 11.6 + 7.5 + 5.4 + 9 * (n_max - 1)
-    num_y = top - (h - block) / 2 - 11.6
-    for i, ((num, _), lines) in enumerate(zip(items, wrapped)):
-        x = M + i * cell
-        if i:
-            c.setStrokeColor(colors.HexColor("#3A3A3A"))
-            c.setLineWidth(0.7)
-            c.line(x, top - h + 6 * mm, x, top - 6 * mm)
-        c.setFillColor(WHITE)
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(x + 10, num_y, num)
-        c.setFillColor(colors.HexColor("#B8B8B8"))
-        c.setFont("Helvetica", 7.4)
-        for j, ln in enumerate(lines):
-            c.drawString(x + 10, num_y - 7.5 - 5.4 - j * 9, ln)
-    return top - h - 5.5 * mm
+def micro(F, u, v, w, items, size=10.5):
+    """Les petites coches vertes du heros."""
+    px_, py_ = u, v
+    for it in items:
+        need = 16 + F.tw(it, "med", size) + 18
+        if px_ + need - 18 > u + w and px_ > u:
+            px_, py_ = u, py_ + size * 1.9
+        F.svg(CHECK, px_, py_ - 0.5, 12.5, GREEN, vb=16)
+        F.text(px_ + 16, py_, it, "med", size, MUTED)
+        px_ += need
+    return py_ + size * 1.3 - v
 
 
-TIER_HEAD = {"seed": ("SEED", "LAYER 1", INK), "venture": ("VENTURE", "LAYER 2", BLUE_DK),
-             "growth": ("GROWTH", "LAYER 3", BLUE)}
-
-
-def _tier_rows(layer):
-    x = LAYERS[layer]
-    moic = f"{_mult(x['moic']['target'])} MOIC"
-    entry = _rng(x["entry_post_min"], x["entry_post_max"])
-    if layer == "seed":
-        return [("STAGE", "Pre-seed / seed"), ("ROLE", "Lead or co-lead"), ("ENTRY POST", entry),
-                ("COMPANIES", str(x["companies"])), ("INVESTED", _eur(x["invested"])),
-                ("TARGET GROSS", moic)]
-    if layer == "venture":
-        return [("STAGE", "Seed+ / Series A"), ("ROLE", "Direct, at the inflection"), ("ENTRY POST", entry),
-                ("COMPANIES", f"{x['companies']} direct entries"), ("INVESTED", _eur(x["invested"])),
-                ("TARGET GROSS", moic)]
-    follow = x["positions"] - x["companies"]
-    return [("STAGE", "Series B and beyond"), ("ROLE", "Direct + our breakouts"), ("ENTRY POST", entry),
-            ("POSITIONS", f"{x['companies']} direct + {follow} follow-ons"), ("INVESTED", _eur(x["invested"])),
-            ("TARGET GROSS", moic)]
-
-
-def _tier_card(c, x, y, w, h, layer):
-    """Carte d'etage : bandeau plein, fourchette de ticket en grand, six mini-lignes."""
-    lay = LAYERS[layer]
-    name, tag, bg = TIER_HEAD[layer]
-    hh = 7.5 * mm
-    pad = 3.6 * mm
-    c.setStrokeColor(LINE)
-    c.setLineWidth(0.8)
-    c.rect(x, y - h, w, h, stroke=1, fill=0)
-    c.setFillColor(bg)
-    c.rect(x, y - hh, w, hh, stroke=0, fill=1)
-    c.setFillColor(WHITE)
-    c.setFont("Helvetica-Bold", 9.4)
-    c.drawString(x + pad, y - hh + 7.4, name)
-    c.setFont("Helvetica", 6.8)
-    c.drawRightString(x + w - pad, y - hh + 7.6, tag)
-
-    if layer == "growth":
-        big = _rng(lay["ticket_min"], FUND["company_cap"])
-        caption = f"from the fund, up to {_eur(FUND['company_max_with_spv'], 'tile')} with SPVs"
-    else:
-        big = _rng(lay["ticket_min"], lay["ticket_max"])
-        caption = "initial ticket, pro-rata reserved"
-    yy = y - hh - 7.4 * mm
-    c.setFillColor(INK)
-    c.setFont("Helvetica-Bold", 15)
-    c.drawString(x + pad, yy, big)
-    c.setFillColor(MID)
-    c.setFont("Helvetica", 7.2)
-    c.drawString(x + pad, yy - 10, caption)
-
-    ry = yy - 10 - 6.4 * mm
-    rows = _tier_rows(layer)
-    for i, (label, value) in enumerate(rows):
-        c.setFillColor(BLUE)
-        c.setFont("Helvetica-Bold", 6.4)
-        c.drawString(x + pad, ry, label)
-        c.setFillColor(SUB)
-        c.setFont("Helvetica", 8)
-        c.drawRightString(x + w - pad, ry, value)
-        lw = c.stringWidth(label, "Helvetica-Bold", 6.4) + c.stringWidth(value, "Helvetica", 8)
-        if lw > w - 2 * pad - 6:
-            raise SystemExit(f"carte {layer} : ligne trop longue : {label} {value}")
-        if i < len(rows) - 1:
-            _rule(c, ry - 3.6, x + pad, x + w - pad, LINE, 0.5)
-        ry -= 10.5
-    if ry + 10.5 - 3 < y - h:
-        raise SystemExit(f"carte {layer} : le contenu depasse la carte")
-
-
-def _kv(c, x, y, w, rows, head=None, head_color=INK, extra=14, last_rule=True, rule_off=12):
-    if head:
-        c.setFillColor(INK)
-        c.setFont("Helvetica-Bold", 9.2)
-        c.drawString(x, y, head.upper())
-        y -= 6
-        _rule(c, y, x, x + w, head_color, 1.4)
-        y -= 13
-    n_rows = len(rows)
-    for i, (k, v) in enumerate(rows):
-        vlines = _wrap_lines(c, v, w * 0.34, "Helvetica-Bold", 8.6)
-        klines = _wrap_lines(c, k, w * 0.62, "Helvetica", 8.6)
-        n = max(len(vlines), len(klines))
-        c.setFillColor(SUB)
-        c.setFont("Helvetica", 8.6)
-        for j, ln in enumerate(klines):
-            c.drawString(x, y - j * 10.5, ln)
-        c.setFillColor(INK)
-        c.setFont("Helvetica-Bold", 8.6)
-        for j, ln in enumerate(vlines):
-            c.drawRightString(x + w, y - j * 10.5, ln)
-        y -= n * 10.5 + extra
-        if i < n_rows - 1 or last_rule:
-            _rule(c, y + rule_off, x, x + w)
-    return y
-
-
-def _labeled(c, y, items, width, label_w=26 * mm, size=8.3, leading=11, gap=2.5 * mm):
-    """Label a gauche (capitales bleues), texte a droite — plus lisible qu'un mur."""
-    for lab, body in items:
-        c.setFillColor(BLUE)
-        c.setFont("Helvetica-Bold", 7)
-        c.drawString(M, y, lab.upper())
-        y = _para(c, M + label_w, y, body, width - label_w, size=size, leading=leading) - gap
-    return y
-
-
-def _accent_and_header(c, page):
-    c.setFillColor(BLUE)
-    c.rect(0, H - 3.2 * mm, W, 3.2 * mm, stroke=0, fill=1)
-    y = H - 15 * mm
-    if LOGO.exists():
-        c.drawImage(str(LOGO), M, y - 5 * mm, height=9 * mm, width=34 * mm,
-                    preserveAspectRatio=True, anchor="sw", mask="auto")
-    c.setFillColor(BLUE_DK)
-    c.setFont("Helvetica-Bold", 11)
-    c.drawRightString(W - M, y, "profund.vc")
-    c.setFillColor(MID)
-    c.setFont("Helvetica", 7.6)
-    c.drawRightString(W - M, y - 11, f"alexandre@profund.vc   .   {page} / 2")
-    return y - 13 * mm
-
-
-def _qr(c, x, y, size, url):
-    """Crisp QR (segno) on a white quiet zone. (x, y) is bottom-left of the pad."""
-    qr = segno.make(url, error="M")
-    buf = io.BytesIO()
-    qr.save(buf, kind="png", scale=8, border=2, dark="#0A0A0A", light="white")
-    buf.seek(0)
-    c.setFillColor(WHITE)
-    c.roundRect(x, y, size, size, 1.8, stroke=0, fill=1)
-    pad = 2.0 * mm
-    c.drawImage(ImageReader(buf), x + pad, y + pad,
-                width=size - 2 * pad, height=size - 2 * pad, mask="auto")
-    c.linkURL(url, (x, y, x + size, y + size), relative=0, thickness=0)
-
-
-def _pillars(c, y, items, head=None):
-    """Encadre deux colonnes (Investment | Operations), repris de l'accueil :
-    en-tete « Our edge » sur toute la largeur, puis par colonne chapeau, nom,
-    texte et ligne « Powers » calee en bas (alignee d'une colonne a l'autre)."""
-    pad = 5 * mm
-    hd_h = 8 * mm if head else 0
-    colw = CW / len(items)
-    tw = colw - 2 * pad
-    size, lead = 8.6, 11.4
-    n = max(len(_wrap_lines(c, t, tw, "Helvetica", size)) for _, _, t, _ in items)
-    h = hd_h + pad + 9.4 + 7 + n * lead + pad - 12 + 13 + 22
-    c.setStrokeColor(LINE)
-    c.setLineWidth(0.8)
-    c.rect(M, y - h, CW, h, stroke=1, fill=0)
-    if head:
-        kicker, sentence = head
-        hy = y - 5.2 * mm
-        c.setFillColor(BLUE)
-        c.rect(M + pad, hy + 2.2, 4.6 * mm, 1.5, stroke=0, fill=1)
-        c.setFillColor(BLUE_DK)
-        c.setFont("Helvetica-Bold", 7.2)
-        kx = M + pad + 4.6 * mm + 5
-        c.drawString(kx, hy, kicker.upper())
-        c.setFillColor(INK)
-        c.setFont("Helvetica-Bold", 9.4)
-        c.drawString(kx + c.stringWidth(kicker.upper(), "Helvetica-Bold", 7.2) + 4 * mm, hy, sentence)
-        c.line(M, y - hd_h, M + CW, y - hd_h)
-    for i, (kicker, title, text, powers) in enumerate(items):
-        x = M + i * colw
-        if i:
-            c.line(x, y - h, x, y - hd_h)
-        ty = y - hd_h - pad - 7
-        # chapeau = l'avantage (filet bleu + capitales), puis le nom = le modele
-        c.setFillColor(BLUE)
-        c.rect(x + pad, ty + 2.2, 4.6 * mm, 1.5, stroke=0, fill=1)
-        c.setFillColor(BLUE_DK)
-        c.setFont("Helvetica-Bold", 7.2)
-        c.drawString(x + pad + 4.6 * mm + 5, ty, kicker.upper())
-        c.setFillColor(INK)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(x + pad, ty - 14, title)
-        _para(c, x + pad, ty - 27, text, tw, size=size, leading=lead)
-        # « Powers » : qui tourne sur ce moteur — ProFund en bleu
-        py = y - h + pad - 1
-        c.setFillColor(MID)
-        c.setFont("Helvetica-Bold", 6.6)
-        c.drawString(x + pad, py, "POWERS")
-        px = x + pad + c.stringWidth("POWERS", "Helvetica-Bold", 6.6) + 2.5 * mm
-        for j, name in enumerate(powers):
-            sep = ", " if j else ""
-            c.setFillColor(SUB)
-            c.setFont("Helvetica", 8)
-            c.drawString(px, py, sep)
-            px += c.stringWidth(sep, "Helvetica", 8)
-            bold = name == "ProFund"
-            c.setFillColor(BLUE_DK if bold else SUB)
-            c.setFont("Helvetica-Bold" if bold else "Helvetica", 8)
-            c.drawString(px, py, name)
-            px += c.stringWidth(name, "Helvetica-Bold" if bold else "Helvetica", 8)
-    return y - h - 5 * mm
-
-
-def _grey_logo(path):
-    """Logo recadre sur son trace et passe en gris clair, transparence gardee —
-    l'equivalent de `filter: grayscale(1); opacity: .42` de l'accueil."""
-    from PIL import Image
+def grey_logo(path, darkness=0.6):
+    """Logo recadre sur son trace et passe en gris (transparence gardee) — comme
+    `filter: grayscale(1)` sur l'accueil. Niveaux normalises d'abord : le trace le
+    plus sombre de chaque logo tombe sur le meme gris, les trois pesent pareil."""
     im = Image.open(path).convert("RGBA")
     box = im.getchannel("A").getbbox()
     if box:
         im = im.crop(box)
-    g = im.convert("L").point(lambda v: int(255 - (255 - v) * 0.5))
+    lum = im.convert("L")
+    alpha = im.getchannel("A")
+    inked = [v for v, a in zip(lum.tobytes(), alpha.tobytes()) if a > 200]
+    lo = min(inked) if inked else 0
+    span = max(1, 255 - lo)
+    g = lum.point(lambda v: int(255 - (255 - max(0, (v - lo) * 255 // span)) * darkness))
     out = Image.merge("RGBA", (g, g, g, im.getchannel("A")))
     return ImageReader(out), out.size
 
 
-def _portfolio(c, y, items, logo_h=3.8 * mm, lead=10):
-    """Bandeau en colonnes : mini logo gris et accroche (2 lignes au plus).
-    Plus de statut « Operating » sous chaque societe (05/10 : plus propre)."""
-    cell = CW / len(items)
-    widths = [cell - (10 * mm if i else 5 * mm) for i in range(len(items))]
-    wraps = [_wrap_lines(c, t, w, "Helvetica", 8)[:2] for (_, t, _), w in zip(items, widths)]
-    extra = (max(len(w) for w in wraps) - 1) * lead
-    for i, (name, tagline, path) in enumerate(items):
-        x0 = M + i * cell
-        x = x0 + (5 * mm if i else 0)
-        maxw = widths[i]
-        if i:
-            c.setStrokeColor(LINE)
-            c.setLineWidth(0.7)
-            c.line(x0, y - 9.5 * mm - extra, x0, y + 1 * mm)
-        if path.exists():
-            ir, (iw, ih) = _grey_logo(path)
-            lw, lh = logo_h * iw / float(ih), logo_h
-            if lw > maxw:
-                lw, lh = maxw, maxw * ih / float(iw)
-            c.drawImage(ir, x, y - lh, width=lw, height=lh, mask="auto")
-        else:
-            c.setFillColor(LITE)
-            c.setFont("Helvetica-Bold", 9)
-            c.drawString(x, y - logo_h + 1, name)
-        c.setFillColor(SUB)
-        c.setFont("Helvetica", 8)
-        for j, ln in enumerate(wraps[i]):
-            c.drawString(x, y - logo_h - 4.6 * mm - j * lead, ln)
-    return y - 10.5 * mm - extra
+def browser(F, u, v, w, url="profund.vc/dealflow"):
+    """La capture du cockpit dans un cadre de navigateur ; rend la hauteur."""
+    ih = w * 900 / 1600
+    F.shadow(u, v, w, ih + 26, 14, 0.8, 0.025)
+    F.rr(u, v, w, ih + 26, 14, fill="#EEF0F3", stroke=LINE2, lw=1)
+    for j, col in enumerate(("#E0664B", "#DC9A2C", "#58B17A")):
+        F.circle(u + 14 + j * 11, v + 13, 3.6, fill=col)
+    F.rr(u + 56, v + 6, w - 112, 14, 7, fill=WHITE)
+    F.text(u + w / 2, v + 9, url, "reg", 7.8, MUTED, align="c")
+    F.clip(u + 1, v + 1, w - 2, ih + 24, 13)
+    F.image(COCKPIT, u + 1, v + 26, w - 2, ih - 1)
+    F.unclip()
+    F.link(u, v, w, ih + 26, DEALFLOW)
+    return ih + 26
 
 
-def _track(c, x, y, w, rows):
-    """Track record : tete en gras, multiple a droite, detail en petit dessous."""
-    for i, (head, detail, val) in enumerate(rows):
-        c.setFillColor(INK)
-        c.setFont("Helvetica-Bold", 8.6)
-        c.drawString(x, y, head)
-        c.drawRightString(x + w, y, val)
-        y = _para(c, x, y - 10.5, detail, w, size=7.4, color=MID, leading=9.2)
-        _rule(c, y + 4.5, x, x + w)
-        y -= 7
-    return y
+def fund_card(F, xx, yy, w, rot=-6.0):
+    """La carte « ProFund · Fund I » : la carte Pass des fiches Maximum, en bleu nuit.
+    Repere local : 100 unites = la largeur de la carte."""
+    hl = 100 / 1.586
+    with Frame(F.c, xx, yy, k=w / 100.0, rot=rot, w=100, h=hl, parent=F) as C:
+        for i in range(8):
+            sp, dy = 0.8 + i * 1.25, 1.6 + i * 1.15
+            C.rr(-sp / 2, dy - sp / 2, 100 + sp, hl + sp, 4.74 + sp / 2, fill=INK, alpha=0.035)
+        r = 4.74
+        C.grad(0, 0, 100, hl, r, [("#6F88A5", 0.0), ("#4A6080", 0.5), ("#26344A", 1.0)], 135)
+        C.glow(88, 6, 46, "#9FB6CF", 12, 0.035, (0, 0, 100, hl, r))
+        # le reflet (bande blanche diagonale)
+        C.clip(0, 0, 100, hl, r)
+        c = C.c
+        for j in range(10):
+            t = 0.30 + j * 0.03
+            peak = 1 - abs(t + 0.015 - 0.45) / 0.15
+            c.saveState()
+            c.setFillColorRGB(1, 1, 1)
+            c.setFillAlpha(max(0.0, 0.16 * peak))
+            pth = c.beginPath()
+            pts = [(t * 160 - 30, -5), ((t + 0.03) * 160 - 30, -5), ((t + 0.03) * 160 - 60, hl + 5), (t * 160 - 60, hl + 5)]
+            pth.moveTo(*C.pt(*pts[0]))
+            for pu, pv in pts[1:]:
+                pth.lineTo(*C.pt(pu, pv))
+            pth.close()
+            c.drawPath(pth, stroke=0, fill=1)
+            c.restoreState()
+        C.unclip()
+        u = 5.6
+        u += C.text(u, 5.2, "PROFUND", "xgras", 4.4, WHITE, 0.02) + 1.6
+        C.text(u, 5.2, "FUND I", "xgras", 4.4, GLOW, 0.02)
+        C.text(5.6, 11.2, "SEED · VENTURE · GROWTH", "semi", 2.3, WHITE, 0.1, alpha=0.82)
+        C.text(100 - 5.6, 5.6, "EUVECA · LUXEMBOURG", "xgras", 2.2, WHITE, 0.08, "r", alpha=0.85)
+        C.text(100 - 5.6, 9.0, f"CLOSED-ENDED · {FUND['term_years']} YEARS", "semi", 2.2, WHITE, 0.08, "r", alpha=0.7)
+        # la puce
+        C.grad(5.6, 22, 10.5, 7.6, 1.6, [("#E7EAEE", 0.0), ("#B9C0C9", 1.0)], 135)
+        C.rr(5.6 + 2.1, 22 + 1.58, 10.5 - 4.2, 7.6 - 3.16, 0.7, stroke="#8E97A3", lw=0.22)
+        C.text(5.6, hl - 21.5, FUND_SIZE, "gras", 11.5, WHITE, -0.01)
+        C.text(5.6, hl - 8.4, "TARGET FUND SIZE", "semi", 2.4, WHITE, 0.1, alpha=0.75)
+        q = 21.5
+        qu, qv = 100 - 4.2 - q, hl - 4.2 - q
+        C.rr(qu, qv, q, q, 2.4, fill=WHITE)
+        C.qr(DEALFLOW, qu + 1.4, qv + 1.4, q - 2.8, quiet=0)
+        C.link(qu, qv, q, q, DEALFLOW)
+    return hl * w / 100
 
 
-def _footer(c):
-    y = 9 * mm
-    _rule(c, y + 11)
-    line = ("EuVECA pre-marketing communication, eligible investors only. "
-            "Not an offer to subscribe. Contact: alexandre@profund.vc")
-    c.setFillColor(LITE)
-    c.setFont("Helvetica", 7)
-    c.drawString(M, y + 1.5, line)
-    mail = "alexandre@profund.vc"
-    x0 = M + c.stringWidth(line[: line.rfind(mail)], "Helvetica", 7)
-    c.linkURL("mailto:alexandre@profund.vc",
-              (x0, y - 1, x0 + c.stringWidth(mail, "Helvetica", 7), y + 9),
-              relative=0, thickness=0)
-    # version et date : trace de ce qui a ete envoye a qui (regle des 18 mois)
-    year, month, _ = DATA["model_date"].split("-")
-    c.drawRightString(W - M, y + 1.5, f"Fact sheet {DATA['version']} - {MONTHS[int(month) - 1]} {year}")
+# ── page 1 : la vision ──────────────────────────────────────────────────────
+LAWS = (
+    ("crown", "Sovereign Architects, Not Managers",
+     "We back obsessive, highly technical visionaries from Day 1. Founders who don't build org charts, but "
+     "iterate directly with AI until the machine mirrors their exact ambition."),
+    ("loop", "Self-Improving Systems",
+     "We look for closed-loop architectures. Products that don't just automate a task, but compound in "
+     "intelligence, precision, and autonomy with every single run."),
+    ("globe", "Colossal Utility. Minimum Headcount.",
+     "No gimmicks. We invest in integral systems solving massive, painful problems in the world's largest "
+     "markets—operated with near-zero marginal labor."),
+    ("trend", "Fund-Returning Physics",
+     "We enter at Pre-Seed/Seed and double down at the exact inflection point. Every check we write backs a "
+     f"company built to dominate its category globally and return our entire {FUND_SIZE} fund."),
+)
 
 
-# ── pages ───────────────────────────────────────────────────────────────────
-def page_one(c):
-    y = _accent_and_header(c, 1) - 3.5 * mm   # le titre est gros : il lui faut de l'air sous le logo
+def tier_rows(layer):
+    t = LAYERS[layer]
+    moic = f"{mult(t['moic']['target'])} MOIC"
+    entry = rng(t["entry_post_min"], t["entry_post_max"])
+    if layer == "seed":
+        return [("STAGE", "Pre-seed / seed"), ("ROLE", "Lead or co-lead"), ("ENTRY POST", entry),
+                ("COMPANIES", str(t["companies"])), ("INVESTED", eur(t["invested"])),
+                ("TARGET GROSS", moic)]
+    if layer == "venture":
+        return [("STAGE", "Seed+ / Series A"), ("ROLE", "Direct, at the inflection"), ("ENTRY POST", entry),
+                ("COMPANIES", f"{t['companies']} direct entries"), ("INVESTED", eur(t["invested"])),
+                ("TARGET GROSS", moic)]
+    follow = t["positions"] - t["companies"]
+    return [("STAGE", "Series B and beyond"), ("ROLE", "Direct + our breakouts"), ("ENTRY POST", entry),
+            ("POSITIONS", f"{t['companies']} direct + {follow} follow-ons"), ("INVESTED", eur(t["invested"])),
+            ("TARGET GROSS", moic)]
 
-    c.setFillColor(INK)
-    c.setFont("Helvetica-Bold", 25)
-    c.drawString(M, y, "Turning AI into")
-    y -= 27
-    c.drawString(M, y, "unfair leverage")
-    y -= 17
-    c.setFillColor(MID)
-    c.setFont("Helvetica", 11)
-    c.drawString(M, y, f"Seed to Growth. {_eur(FUND['commitments'], 'tile')} for the founders turning AI "
-                       "into unfair leverage.")
-    y -= 10
-    _rule(c, y, color=INK, w=2.2)
-    y -= 14
 
-    # Le cadre de pre-commercialisation, en tete de document.
-    box_h = 17 * mm
-    c.setFillColor(BG)
-    c.rect(M, y - box_h, CW, box_h, stroke=0, fill=1)
-    c.setStrokeColor(BLUE)
-    c.setLineWidth(2.4)
-    c.line(M, y - box_h, M, y)
-    c.setFillColor(BLUE_DK)
-    c.setFont("Helvetica-Bold", 9.2)
-    c.drawString(M + 12, y - 7.5 * mm, "PRE-MARKETING PHASE")
-    _para(c, M + 12, y - 11.5 * mm,
-          "This document is a pre-marketing communication within the meaning of Article 4a of "
-          "Regulation (EU) No 345/2013 (EuVECA). The fund is not yet established and no units may be "
-          "subscribed at this stage. For professional and eligible investors only.",
-          CW - 24, size=8, color=SUB, leading=10.5)
-    y -= box_h + 7 * mm
+def tier_card(F, u, v, w, h, layer, n):
+    t = LAYERS[layer]
+    card(F, u, v, w, h)
+    pad = 15.0
+    F.rr(u + pad, v + pad, 26, 26, 8, fill=BLUE_SOFT)
+    F.text(u + pad + 13, v + pad + 6.6, str(n), "gras", 12, BLUE_DK, align="c")
+    F.text(u + pad + 36, v + pad + 1.5, f"LAYER {n}", "xgras", 8.2, BLUE, 0.12)
+    F.text(u + pad + 36, v + pad + 12.5, layer.capitalize(), "gras", 12.5, INK)
+    if layer == "growth":
+        big = rng(t["ticket_min"], FUND["company_cap"])
+        cap = f"from the fund, up to {eur(FUND['company_max_with_spv'], 'tile')} with SPVs"
+    else:
+        big = rng(t["ticket_min"], t["ticket_max"])
+        cap = "initial ticket, pro-rata reserved"
+    F.text(u + pad, v + 50, big, "gras", 18, INK, -0.01)
+    F.text(u + pad, v + 72, cap, "reg", 8.6, MUTED)
+    ry = v + 91
+    rows = tier_rows(layer)
+    for i, (label, value) in enumerate(rows):
+        F.line(u + pad, ry - 5, u + w - pad, ry - 5, LINE, 1)
+        F.text(u + pad, ry + 0.8, label, "xgras", 7, SOFT, 0.08)
+        F.text(u + w - pad, ry, value, "semi", 9.2, INK, align="r")
+        if F.tw(label, "xgras", 7, 0.08) + F.tw(value, "semi", 9.2) > w - 2 * pad - 8:
+            raise SystemExit(f"carte {layer} : ligne trop longue : {label} {value}")
+        ry += 14.6
+    if ry - 2 > v + h:
+        raise SystemExit(f"carte {layer} : le contenu depasse la carte")
 
-    # Les deux plateformes maison — meme encadre, memes noms et meme texte que
-    # l'accueil (src/components/HomepageLite.tsx, PILLARS).
-    y = _pillars(c, y + 2 * mm, [
-        ("Investment", "Deal Engine",
-         "Reads every European seed round, every senior hire and every launch, around the "
-         "clock. It scores each founder against our thesis and flags the inflection point "
-         "before it becomes obvious.",
-         ["ProFund"]),
-        ("Operations", "Growth Engine",
-         "AI agents that run content, inbound and outbound, end to end. They operate the fund "
-         "and the GP's companies today, and they work for the founders we back.",
-         ["ProFund", "Proplace", "Maximum Insurance", "Sosuites"]),
-    ], head=("Our edge", "We run on what we back: two in-house AI engines, one GP and his agents."))
 
+def page_one(F):
+    kick(F, M, 84, "Venture capital · Seed to Growth · Europe")
+    tw = 360.0
+    y = 102 + title(F, M, 102, tw, "", 37, lead=1.04,
+                    markup=f'{x("Pure Vision.")}<br/><font color="{BLUE}">{x("Autonomous Scale.")}</font>')
+    y += 12 + F.para(M, y + 12, tw, x(f"Seed to Growth. {FUND_SIZE} for the architects turning AI into "
+                                      "self-improving systems."), 12.2, "reg", INK2, 1.5)
+    y += 6 + F.para(M, y + 6, tw, x("Stop managing armies. Start directing intelligence."), 12.2, "gras", INK, 1.4)
+    y += 12 + micro(F, M, y + 14, tw, ["One GP, zero analysts", "Two autonomous engines", "EuVECA fund, Luxembourg"])
+
+    # le visuel : la capture du cockpit, la carte du fonds posee devant
+    vw = 262.0
+    vx = M + W - vw
+    bh = browser(F, vx, 82, vw)
+    fund_card(F, vx - 54, 82 + bh - 67, 172, rot=-7)
+    y = max(y, 82 + bh + 46)
+
+    # l'encadre de pre-commercialisation, en tete de document
+    y += 14
+    bh2 = 58.0
+    F.rr(M, y, W, bh2, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
+    F.rr(M + 14, y + 14, 30, 30, 9, fill=BLUE_SOFT)
+    F.icon("shield", M + 20, y + 20, 18, BLUE_DK)
+    F.text(M + 56, y + 12, "PRE-MARKETING PHASE", "xgras", 8.4, BLUE_DK, 0.12)
+    F.para(M + 56, y + 25, W - 72, x(
+        "This document is a pre-marketing communication within the meaning of Article 4a of Regulation (EU) "
+        "No 345/2013 (EuVECA). The fund is not yet established and no units may be subscribed at this stage. "
+        "For professional and eligible investors only."), 9, "reg", INK2, 1.4)
+    y += bh2 + 22
+
+    # le manifeste
+    lw = 214.0
+    kick(F, M, y, "The manifesto")
+    title(F, M, y + 18, lw, "The end of human friction.", 21, lead=1.1)
+    rx = M + lw + 26
+    rw = W - lw - 26
+    h1 = F.para(rx, y + 2, rw, x("For two centuries, scaling a company meant scaling human labor—hiring thousands "
+                                 "of people to execute the vision of one. That era is over."), 11.2, "semi", INK, 1.45)
+    h2 = F.para(rx, y + 2 + h1 + 7, rw, x(
+        "Today, a single visionary who knows how to challenge, direct, and iterate with AI can architect an "
+        "integral, self-improving system in record time. AI frees humanity from mechanical execution, "
+        "returning creation to pure thought. We don't fund headcount. We back sovereign founders building "
+        "autonomous giants with colossal real-world utility."), 9.8, "reg", MUTED, 1.45)
+    y += max(2 + h1 + 7 + h2, 70) + 20
+
+    # les quatre lois
+    kick(F, M, y, "What we back")
+    title(F, M, y + 17, W, "Four laws drive our thesis—and our Deal Engine every morning.", 18)
+    y += 46
+    gap = 12.0
+    cw = (W - 3 * gap) / 4
+    pad = 13.0
+    hs = [pad + 28 + 10 + F.hpara(cw - 2 * pad, x(t), 11, "gras", 1.2) + 5
+          + F.hpara(cw - 2 * pad, x(d), 8.9, "reg", 1.42) + pad for _i, t, d in LAWS]
+    th = max(hs)
+    for i, (ic, t, d) in enumerate(LAWS):
+        cx = M + i * (cw + gap)
+        card(F, cx, y, cw, th)
+        F.tile(cx + pad, y + pad, 28, 9)
+        F.icon(ic, cx + pad + 6, y + pad + 6, 16, WHITE, sw=1.8)
+        F.text(cx + cw - pad, y + pad + 1, f"{i + 1:02d}", "xgras", 10, SOFT, 0.06, "r")
+        ht = F.para(cx + pad, y + pad + 38, cw - 2 * pad, x(t), 11, "gras", INK, 1.2)
+        F.para(cx + pad, y + pad + 38 + ht + 5, cw - 2 * pad, x(d), 8.9, "reg", MUTED, 1.42)
+    y += th + 20
+
+    # la construction : Seed + Venture + Growth = le fonds
+    kick(F, M, y, "Fund construction")
+    F.text(M + W, y, "Two ways in at every layer: direct entries in top rounds, and our own breakouts.",
+           "reg", 9.8, MUTED, align="r")
+    y += 22
+    opw = 22.0
+    tcw = (W - 2 * opw) / 3
+    tch = 178.0
+    for i, layer in enumerate(LAYER_IDS):
+        tier_card(F, M + i * (tcw + opw), y, tcw, tch, layer, i + 1)
+    for i in range(2):
+        F.text(M + tcw * (i + 1) + opw * i + opw / 2, y + tch / 2 - 13, "+", "reg", 22, SOFT, align="c")
+    y += tch + 12
+
+    # = le fonds : bande sombre, quatre chiffres (l'ancienne bande de chiffres)
     seed = LAYERS["seed"]
-    y = _stat_band(c, y, h=20 * mm, items=[
-        (_eur(FUND["commitments"], "tile"),
-         f"Target Fund I, closed-ended, closings over {FUND['closing_months']} months"),
-        ("3 layers", f"Seed, Venture, Growth: {_eur(seed['ticket_min'])} to "
-                     f"{_eur(FUND['company_max_with_spv'], 'tile')} per company"),
+    stats = [
+        (FUND_SIZE, f"Target Fund I, closed-ended, closings over {FUND['closing_months']} months"),
+        ("3 layers", f"Seed, Venture, Growth: {eur(seed['ticket_min'])} to "
+                     f"{eur(FUND['company_max_with_spv'], 'tile')} per company"),
         ("Every", "European seed round tracked by the Seed Radar, weekly"),
-        ("6-18mo", "Detection lead before announcement"),
-    ])
+        ("6–18mo", "Detection lead before announcement"),
+    ]
+    bh3 = 68.0
+    card(F, M, y, W, bh3, 18, fill=NIGHT, stroke=None, depth=0.8, alpha=0.03)
+    F.glow(M + W - 60, y + 6, 160, BLUE, 16, 0.03, (M, y, W, bh3, 18))
+    eq = 46.0
+    F.text(M + eq / 2 + 6, y + bh3 / 2 - 15, "=", "reg", 26, GLOW, align="c")
+    colw = (W - eq - 10) / 4
+    for i, (num, lab) in enumerate(stats):
+        sx = M + eq + 10 + i * colw
+        if i:
+            F.line(sx - 10, y + 16, sx - 10, y + bh3 - 16, NIGHT_LINE, 1)
+        F.text(sx, y + 13, num, "gras", 19 if i == 0 else 17, WHITE, -0.01)
+        F.para(sx, y + 38, colw - 22, x(lab), 8.4, "reg", NIGHT_TXT, 1.3)
+    return y + bh3
 
-    lab_y = y
-    y = _section(c, y, "Fund construction")
-    _section_note(c, lab_y, "Fund construction",
-                  "Two ways in at every layer: direct entries in top rounds, and our own ", "breakouts.")
-    y += 2 * mm
 
-    gap = 5 * mm
-    cw3 = (CW - 2 * gap) / 3
-    card_h = 46 * mm
-    for i, layer in enumerate(("seed", "venture", "growth")):
-        _tier_card(c, M + i * (cw3 + gap), y, cw3, card_h, layer)
-    y -= card_h + 5.5 * mm
+# ── page 2 : l'avantage, les termes, le GP, la preuve ───────────────────────
+KV_PAD, KV_ROW = 15.0, 17.0
 
-    # Allocation | termes : deux blocs cote a cote.
-    half = (CW - 8 * mm) / 2
-    x2 = M + half + 8 * mm
-    ys = _section(c, y, "Capital allocation")
-    _section(c, y, "Key terms", x=x2)
-    _rule(c, ys + 9, M, M + half, INK, 1.4)
-    _rule(c, ys + 9, x2, x2 + half, INK, 1.4)
+
+def kv_height(rows):
+    return KV_PAD + 26 + 8 + KV_ROW * len(rows) + KV_PAD - 6
+
+
+def kv_card(F, u, v, w, head, icon, rows, bold_last=False, h=None):
+    """Carte a lignes cle / valeur (termes, allocation) ; rend la hauteur."""
+    pad, rh = KV_PAD, KV_ROW
+    h = h or kv_height(rows)
+    card(F, u, v, w, h)
+    F.rr(u + pad, v + pad, 26, 26, 8, fill=BLUE_SOFT)
+    F.icon(icon, u + pad + 5, v + pad + 5, 16, BLUE_DK)
+    F.text(u + pad + 36, v + pad + 8.5, head.upper(), "xgras", 8.6, BLUE, 0.12)
+    ry = v + pad + 26 + 8
+    for i, (k, val) in enumerate(rows):
+        last = bold_last and i == len(rows) - 1
+        F.line(u + pad, ry, u + w - pad, ry, LINE2 if last else LINE, 1)
+        F.text(u + pad, ry + 3.9, k, "semi" if last else "reg", 9.6, INK if last else INK2)
+        F.text(u + w - pad, ry + 3.9, val, "gras", 9.6, INK, align="r")
+        if F.tw(k, "reg", 9.6) + F.tw(val, "gras", 9.6) > w - 2 * pad - 10:
+            raise SystemExit(f"carte {head} : ligne trop longue : {k} {val}")
+        ry += rh
+    return h
+
+
+def page_two(F):
+    kick(F, M, 84, "Our edge")
+    title(F, M, 102, W, "One GP. Zero Analysts. Two Autonomous Engines.", 27)
+    F.para(M, 136, W, x("We run on what we back."), 11.6, "reg", MUTED, 1.5)
+
+    # les deux moteurs, cote a cote (la capture du cockpit est dans le heros, page 1)
+    y = 164.0
+    engines = (
+        ("radar", "The Deal Engine",
+         "Reads every European seed round, key engineering move, and product launch in real time. It scores "
+         "every founder against our thesis and flags inflection points before they become consensus."),
+        ("bot", "The Growth Engine",
+         "Autonomous AI agents running content, inbound, and outbound end-to-end. They operate our fund and the "
+         "GP's companies today—and plug directly into the founders we back tomorrow."),
+    )
+    gap = 16.0
+    ew = (W - gap) / 2
+    pad = 16.0
+    eh = pad + 30 + 12 + max(F.hpara(ew - 2 * pad, x(t), 9.8, "reg", 1.48) for _i, _n, t in engines) + 12 + 22 + pad
+    for i, (ic, name, text) in enumerate(engines):
+        ex = M + i * (ew + gap)
+        card(F, ex, y, ew, eh)
+        F.tile(ex + pad, y + pad, 30, 9)
+        F.icon(ic, ex + pad + 6.5, y + pad + 6.5, 17, WHITE)
+        F.text(ex + pad + 42, y + pad + 7, name, "gras", 14, INK)
+        F.para(ex + pad, y + pad + 42, ew - 2 * pad, x(text), 9.8, "reg", MUTED, 1.48)
+        fy = y + eh - pad - 20
+        F.line(ex + pad, fy - 8, ex + ew - pad, fy - 8, LINE, 1)
+        if i == 0:
+            # le lien du deal flow en direct
+            F.circle(ex + pad + 4, fy + 9, 6, fill=GREEN, alpha=0.18)
+            F.circle(ex + pad + 4, fy + 9, 3.2, fill=GREEN)
+            wl = F.text(ex + pad + 16, fy + 3, "Follow live deal flow", "semi", 10.2, BLUE_DK)
+            F.svg(ARROW, ex + pad + 16 + wl + 5, fy + 3.5, 12, BLUE_DK)
+            F.link(ex + pad - 2, fy, wl + 40, 20, DEALFLOW)
+        else:
+            # qui tourne sur ce moteur (les « Powers » de l'ancienne fiche)
+            cx_ = ex + pad + F.text(ex + pad, fy + 4, "POWERS", "xgras", 7.4, SOFT, 0.1) + 8
+            for name_ in ("ProFund", "Proplace", "Maximum Insurance", "Sosuites"):
+                pf = name_ == "ProFund"
+                cw_ = F.tw(name_, "semi", 8.6) + 16
+                F.rr(cx_, fy + 1, cw_, 17, 8.5, fill=BLUE_SOFT if pf else WARM)
+                F.text(cx_ + cw_ / 2, fy + 5, name_, "semi", 8.6, BLUE_DK if pf else INK2, align="c")
+                cx_ += cw_ + 5
+    y += eh + 22
+
+    # termes | allocation
+    half = (W - 16) / 2
     growth = LAYERS["growth"]
-    y1 = _kv(c, M, ys, half, [
-        (f"Seed - {seed['companies']} companies", _eur(ALLOC["seed"])),
-        (f"Venture - {LAYERS['venture']['companies']} companies", _eur(ALLOC["venture"])),
-        (f"Growth - {growth['companies']} direct + {growth['positions'] - growth['companies']} follow-ons",
-         _eur(ALLOC["growth"])),
-        (f"Invested ({_pct(ALLOC['follow_on_pct'])} in follow-ons)", _eur(ALLOC["invested"])),
-        ("Management fees", _eur(ALLOC["mgmt_fees"])),
-        ("Fund expenses, incl. set-up", _eur(ALLOC["fund_expenses"])),
-        ("Contingency", _eur(ALLOC["contingency"])),
-        ("Total commitments", _eur(ALLOC["total"])),
-    ], extra=4, rule_off=9.5, last_rule=False)   # filet centre ; pas de double filet sur le pied
-    y2 = _kv(c, x2, ys, half, [
+    seed = LAYERS["seed"]
+    terms = [
         ("Closed-ended EuVECA fund (Lux.)", f"{FUND['term_years']} years"),
         ("Successive closings", f"{FUND['closing_months']} months"),
-        (f"Management fee, years 1-{FUND['investment_period_years']}", _pct(TERMS["fee_ip_pct"])),
-        ("Then, on invested capital", _pct(TERMS["fee_post_pct"], 1)),
-        ("Carried interest, European", _pct(TERMS["carry_pct"])),
-        ("Hurdle, with GP catch-up", _pct(TERMS["hurdle_pct"])),
+        (f"Management fee, years 1–{FUND['investment_period_years']}", pct(TERMS["fee_ip_pct"])),
+        ("Then, on invested capital", pct(TERMS["fee_post_pct"], 1)),
+        ("Carried interest, European", pct(TERMS["carry_pct"])),
+        ("Hurdle, with GP catch-up", pct(TERMS["hurdle_pct"])),
         ("Per company: fund / with SPVs",
-         f"{_eur(FUND['company_cap'], 'tile')} / {_short(FUND['company_max_with_spv'])}"),
-    ], extra=4, rule_off=9.5, last_rule=False)
+         f"{eur(FUND['company_cap'], 'tile')} / {eur(FUND['company_max_with_spv'], 'tile')}"),
+    ]
+    alloc = [
+        (f"Seed – {seed['companies']} companies", eur(ALLOC["seed"])),
+        (f"Venture – {LAYERS['venture']['companies']} companies", eur(ALLOC["venture"])),
+        (f"Growth – {growth['companies']} direct + {growth['positions'] - growth['companies']} follow-ons",
+         eur(ALLOC["growth"])),
+        (f"Invested ({pct(ALLOC['follow_on_pct'])} in follow-ons)", eur(ALLOC["invested"])),
+        ("Management fees", eur(ALLOC["mgmt_fees"])),
+        ("Fund expenses, incl. set-up", eur(ALLOC["fund_expenses"])),
+        ("Contingency", eur(ALLOC["contingency"])),
+        ("Total commitments", eur(ALLOC["total"])),
+    ]
+    kh = max(kv_height(terms), kv_height(alloc))
+    kv_card(F, M, y, half, "Key terms", "building", terms, h=kh)
+    kv_card(F, M + half + 16, y, half, "Capital allocation", "layers", alloc, bold_last=True, h=kh)
+    y += kh + 22
 
-    _footer(c)
-    return min(y1, y2)
-
-
-def page_two(c):
-    y = _accent_and_header(c, 2)
-
-    y = _section(c, y, "Target returns")
-    cols = (0.44, 0.62, 0.81)
-    c.setFillColor(MID)
-    c.setFont("Helvetica-Bold", 7.6)
-    for x, head in zip(cols, ("TARGET", "BASE", "STRESS")):
-        c.drawString(M + CW * x, y, head)
-    y -= 6
-    _rule(c, y, M, W - M, INK, 1.4)
-    y -= 13
-    cases = [CASES[k] for k in ("target", "base", "stress")]
-    keys = ("target", "base", "stress")
-    for label, values in (
-        (f"Gross exit value, {_eur(FUND['commitments'], 'tile')} fund",
-         [_eur(x["gross_exits"], "tile") for x in cases]),
-        ("Net TVPI", [_mult(x["net_tvpi"]) for x in cases]),
-        ("Net IRR", [_pct(x["net_irr"]) for x in cases]),
-        (f"Net DPI by year {SECONDARY['year']}", [_mult(x["dpi_year6"]) for x in cases]),
-        ("Gross MOIC - Seed / Venture / Growth",
-         [" / ".join(_mult(LAYERS[l]["moic"][k]) for l in ("seed", "venture", "growth")) for k in keys]),
-    ):
-        c.setFillColor(SUB)
-        c.setFont("Helvetica", 8.8)
-        c.drawString(M, y, label)
-        for i, (x, v) in enumerate(zip(cols, values)):
-            c.setFillColor(INK if i == 0 else SUB)
-            c.setFont("Helvetica-Bold" if i == 0 else "Helvetica", 8.8)
-            c.drawString(M + CW * x, y, v)
-        y -= 12.5
-        _rule(c, y + 9)
-    y = _para(c, M, y - 1, (
-        f"Net = after management fees, fund expenses and carried interest ({_pct(TERMS['carry_pct'])} over an "
-        f"{_pct(TERMS['hurdle_pct'])} hurdle, European waterfall), before tax. Base and Stress cap every exit "
-        f"at {_eur(CASES['base']['exit_cap'], 'tile')} and {_eur(CASES['stress']['exit_cap'], 'tile')}. Target: "
-        f"one fund returner and a year-{SECONDARY['year']} secondary sale of {_pct(SECONDARY['share'])} of the "
-        f"two largest winners at {_pct(SECONDARY['price_pct'])} of exit value. Model outputs, not a forecast."),
-        CW, size=6.8, color=LITE, leading=8.6) - 2.2 * mm
-
-    # 29/10 (Alexandre) — la vision, puis la these du fonds en clair (memes cinq
-    # criteres que l'accueil et /pitch, issus de theses/profund_vc/v2.json du monorepo).
-    y = _section(c, y, "Strategy")
-    y = _labeled(c, y, [
-        ("Vision",
-         "An age of abundance is starting. With AI, a handful of people can build what once took "
-         "thousands, and founders who direct AI agents will realise their ambitions in record time. "
-         "We believe AI will first free humanity from material needs, then give people time for "
-         "what matters most."),
-        ("One fund",
-         "AI-native companies go from seed to growth in months. One fund follows them from "
-         f"{_eur(LAYERS['seed']['ticket_min'])} to {_eur(FUND['company_max_with_spv'], 'tile')} per "
-         "company, ideally just before the exponential. It uses AI everywhere."),
-        ("We live it",
-         "One GP and a team of AI agents run the fund and three companies: we live what we back."),
-    ], CW, gap=1.4 * mm) - 0.6 * mm
-
-    y = _section(c, y, "What we back - our fund thesis")
-    y = _labeled(c, y, [
-        ("01 Founders",
-         "Exceptional, highly technical founders, found before their first round."),
-        ("02 Seed Radar",
-         "Every European seed round of the last 24 months, re-scored on dated growth signals."),
-        ("03 Inflection",
-         "We double down when the curve bends: ARR x3 in 12 months, record revenue per employee."),
-        ("04 Returners",
-         "Category leaders in Europe with global ambition, TAM above EUR 10B, winner-take-most."),
-        ("05 Autonomy",
-         "Self-improving AI loops at the core; small teams that pilot agents with maximum leverage."),
-    ], CW, gap=0.9 * mm) - 0.6 * mm
-
-    y = _section(c, y, "How we source")
-    y = _labeled(c, y, [
-        ("Deal Engine",
-         "25+ in-house engines read weak signals daily (GitHub, tier-1 departures, job posts, "
-         "alumni networks), plus warm introductions from top-tier founders and VCs. A memo and a "
-         "model for every match, human time for the top 1 percent. Third-party EuVECA manager."),
-    ], CW, gap=1.4 * mm) - 1.6 * mm
-
-    # The GP (photo + short CV) | prior track record
-    split = CW * 0.5
-    rx = M + split + 6 * mm
-    rw = CW - split - 6 * mm
-    c.setFillColor(BLUE)
-    c.setFont("Helvetica-Bold", 9.6)
-    c.drawString(M, y, "THE GP")
-    c.drawString(rx, y, "TRACK RECORD, PRIOR TO THE FUND")
-    y -= 16
-
-    # Full portrait, no zoom: box follows the photo's aspect ratio.
-    ir = ImageReader(str(PHOTO)) if PHOTO.exists() else None
-    iw, ih = ir.getSize() if ir else (1, 1)
-    pw = 28 * mm
-    ph = pw * (ih / float(iw))
-    if PHOTO.exists():
-        c.drawImage(str(PHOTO), M, y - ph, width=pw, height=ph,
-                    preserveAspectRatio=True, anchor="c", mask="auto")
-
-    tx = M + pw + 5 * mm
-    c.setFillColor(INK)
-    c.setFont("Helvetica-Bold", 11)
-    c.drawString(tx, y - 10, "Alexandre Busson")
-    c.setFillColor(MID)
-    c.setFont("Helvetica", 8)
-    c.drawString(tx, y - 21, "Founding Partner")
-    yy = y - 34
+    # le GP | le track record
+    kick(F, M, y, "The GP")
+    kick(F, M + half + 16, y, "Track record, prior to the fund")
+    y += 20
+    # Memes faits que le tableau Track Record de /pitch (ProFundPage.tsx) ; seul
+    # Deal-04 porte en plus la croissance depuis l'acquisition (05/10), et SANS
+    # multiple : un 2.5x cash-on-cash n'a pas de sens pour une acquisition a
+    # 100 % toujours detenue (decision d'Antoine, 05/10).
+    deals = (
+        ("Deal-01 – exited 2007", "Entry 2006, 100% owned. Full exit in 2007.", "10.0×"),
+        ("Deal-02 – exited 2014", "Entry 2008 at 100%. Sold down to 40%, then full exit in 2014.", "20.0×"),
+        ("Deal-03 – LBO exit 2025",
+         "Seed ticket €200K at €5.3M in 2014. LBO exit in Feb 2025 at €100M. "
+         "Sourced 14 months before public announcement.", "19.0×"),
+        ("Deal-04 – acquired 2016",
+         "100% acquisition, €45M buyout. Revenue growing ~20% YoY since acquisition.", ""),
+    )
+    track_h = 13 + sum(12.5 + F.hpara(half - 28, x(d), 8.4, "reg", 1.3) + 5.5 for _h, d, _v in deals) + 12
+    gh = max(146.0, track_h)
+    card(F, M, y, half, gh)
+    pw_ = 104.0
+    ph_ = pw_ * 468 / 429
+    F.image(PHOTO, M + 14, y + 14, pw_, ph_, 12)
+    tx = M + 14 + pw_ + 16
+    F.text(tx, y + 18, "Alexandre Busson", "gras", 14, INK)
+    F.text(tx, y + 37, "Founding Partner", "reg", 9.6, MUTED)
+    yy = y + 58
     # Memes intitules que /pitch (ProFundPage.tsx, GP) - confirmes par Alexandre le 29/10.
     for role in (
         "M&A Director, Leboncoin",
@@ -744,110 +630,295 @@ def page_two(c):
         "Founder / Investor, Dreamzer Games",
         "Owner and CEO, Fadparis.com",
     ):
-        c.setFillColor(SUB)
-        c.setFont("Helvetica", 8.2)
-        c.drawString(tx, yy, role)
-        yy -= 10.5
+        F.circle(tx + 2.5, yy + 5.6, 1.8, fill=BLUE)
+        F.text(tx + 10, yy, role, "reg", 9.2, INK2)
+        yy += 13.4
+    if max(yy, y + 14 + ph_) > y + gh:
+        raise SystemExit("carte du GP : le contenu depasse la carte")
 
-    # Memes faits que le tableau Track Record de /pitch (ProFundPage.tsx) ; seul
-    # Deal-04 porte en plus la croissance depuis l'acquisition (05/10), et SANS
-    # multiple : un 2.5x cash-on-cash n'a pas de sens pour une acquisition a
-    # 100 % toujours detenue (decision d'Antoine, 05/10).
-    y_kv = _track(c, rx, y, rw, [
-        ("Deal-01 - exited 2007",
-         "Entry 2006, 100% owned. Full exit in 2007.", "10.0x"),
-        ("Deal-02 - exited 2014",
-         "Entry 2008 at 100%. Sold down to 40%, then full exit in 2014.", "20.0x"),
-        ("Deal-03 - LBO exit 2025",
-         "Seed ticket EUR 200K at EUR 5.3M in 2014. LBO exit in Feb 2025 at EUR 100M. "
-         "Sourced 14 months before public announcement.", "19.0x"),
-        ("Deal-04 - acquired 2016",
-         "100% acquisition, EUR 45M buyout. Revenue growing ~20% YoY since "
-         "acquisition.", ""),
-    ])
-    c.setFillColor(LITE)
-    c.setFont("Helvetica", 6.8)
-    c.drawString(rx, y_kv + 1, "Companies anonymised. Names and references on request.")
-    y = min(y - ph, y_kv - 1 * mm) - 3.5 * mm
+    tx = M + half + 16
+    card(F, tx, y, half, gh)
+    ty = y + 13
+    for i, (head, detail, val) in enumerate(deals):
+        if i:
+            F.line(tx + 14, ty - 5, tx + half - 14, ty - 5, LINE, 1)
+        F.text(tx + 14, ty, head, "semi", 9.8, INK)
+        if val:
+            F.text(tx + half - 14, ty, val, "gras", 9.8, BLUE_DK, align="r")
+        ty += 12.5 + F.para(tx + 14, ty + 12.5, half - 28, x(detail), 8.4, "reg", MUTED, 1.3) + 5.5
+    F.text(tx + 14, ty - 1, "Companies anonymised. Names and references on request.", "reg", 7.8, SOFT)
+    if ty + 10 > y + gh:
+        raise SystemExit("carte du track record : le contenu depasse la carte")
+    y += gh + 22
 
-    lab_y = y
-    y = _section(c, y, "Operated by the GP")
-    # 29/10 — hors du fonds : detenues a 100 % par le GP, operees par ses agents IA
-    _section_note(c, lab_y, "Operated by the GP",
-                  "Outside the fund, 100% owned by the GP: run almost autonomously by ", "AI agents.")
-    y = _portfolio(c, y + 1.5 * mm, PORTFOLIO) - 6 * mm
+    # la preuve : les societes operees par le GP
+    kick(F, M, y, "Proof of work")
+    title(F, M, y + 17, W, "We live what we back.", 18)
+    note = "Outside the fund, 100% owned by the GP"
+    nw = F.tw(note, "semi", 8.8) + 22
+    F.rr(M + W - nw, y + 18, nw, 20, 10, fill=BLUE_SOFT)
+    F.text(M + W - nw / 2, y + 23, note, "semi", 8.8, BLUE_DK, align="c")
+    y += 44
+    y += F.para(M, y, W, x("Before funding autonomous companies, we built our own. The companies below are "
+                           "operated almost entirely by our in-house engines and agents:"), 10, "reg", MUTED, 1.45) + 10
+    gap = 12.0
+    pcw = (W - 2 * gap) / 3
+    pch = 60.0
+    for i, (name, tagline, path, href) in enumerate(PORTFOLIO):
+        px_ = M + i * (pcw + gap)
+        F.rr(px_, y, pcw, pch, 13, fill=WARM)
+        ir, (iw_, ih_) = grey_logo(path)
+        lh = 15.0
+        lwid = lh * iw_ / ih_
+        if lwid > pcw - 28:
+            lwid, lh = pcw - 28, (pcw - 28) * ih_ / iw_
+        F.image(ir, px_ + 14, y + 12 + (15 - lh) / 2, lwid, lh)
+        F.para(px_ + 14, y + 33, pcw - 28, x(tagline), 8.8, "reg", INK2, 1.3)
+        F.link(px_, y, pcw, pch, href)
+    y += pch + 14
+    return cta(F, y)
 
-    SITE = "https://profund.vc"
-    MAIL = "alexandre@profund.vc"
-    PHONE = "+33 6 83 10 72 86"
 
-    y = _section(c, y, "Live deal flow")
-    box_h = 33 * mm
-    c.setFillColor(BG)
-    c.rect(M, y - box_h, CW, box_h, stroke=0, fill=1)
-    c.setStrokeColor(BLUE)
-    c.setLineWidth(2.4)
-    c.line(M, y - box_h, M, y)
-
-    img_h = box_h - 7 * mm
-    img_w = img_h * (1280 / 720.0)
-    if COCKPIT.exists():
-        c.drawImage(str(COCKPIT), M + 4 * mm, y - box_h + 3.5 * mm,
-                    width=img_w, height=img_h, preserveAspectRatio=True, anchor="sw", mask="auto")
-        # filet autour de la capture : son fond blanc se fondait dans le gris
-        c.setStrokeColor(LINE)
-        c.setLineWidth(0.6)
-        c.rect(M + 4 * mm, y - box_h + 3.5 * mm, img_w, img_h, stroke=1, fill=0)
-        c.linkURL(SITE, (M + 4 * mm, y - box_h + 3.5 * mm,
-                         M + 4 * mm + img_w, y - 3.5 * mm), relative=0, thickness=0)
-
-    rx = M + 4 * mm + img_w + 6 * mm
-    qr_s = 22 * mm
-    qr_x = W - M - 5 * mm - qr_s
-    _qr(c, qr_x, y - 5 * mm - qr_s, qr_s, SITE)
-
-    c.setFillColor(INK)
-    c.setFont("Helvetica-Bold", 10.5)
-    c.drawString(rx, y - 8 * mm, "Follow our deal flow live")
-    c.linkURL(SITE, (rx, y - 11 * mm, qr_x - 3 * mm, y - 4 * mm), relative=0, thickness=0)
-    c.setFillColor(MID)
-    c.setFont("Helvetica", 7.4)
-    c.drawString(rx, y - 12.5 * mm, "Scan, or tap. The companies we detect, every evening.")
-
-    contacts = (
-        ("profund.vc", SITE),
-        (PHONE, "tel:+33683107286"),
-        (MAIL, "mailto:" + MAIL),
+def cta(F, ymin):
+    """« Follow our deal flow live » : trois gestes, un grand QR (bande sombre des fiches Maximum)."""
+    actions = (
+        ("radar", "Follow live deal flow", ("Every evening, the companies we reviewed",), DEALFLOW),
+        ("mail", "Request LP access", (MAIL, PHONE), "mailto:" + MAIL),
+        ("sheet", "Fund model (Excel)", ("On request",), "mailto:" + MAIL + "?subject=ProFund%20fund%20model"),
     )
-    cy = y - 18.5 * mm
-    for val, href in contacts:
-        c.setFillColor(BLUE_DK)
-        c.setFont("Helvetica-Bold", 8)
-        c.drawString(rx, cy, val)
-        tw = c.stringWidth(val, "Helvetica-Bold", 8)
-        c.linkURL(href, (rx, cy - 2, rx + tw + 2, cy + 8), relative=0, thickness=0)
-        cy -= 5.2 * mm
-    if cy + 5.2 * mm - 2 < y - box_h:
-        raise SystemExit("encadre deal flow : les contacts depassent le cadre")
+    qs, pad = 88.0, 24.0
+    inner = W - pad * 2 - qs - 30
+    col = inner / len(actions)
 
-    _footer(c)
-    return y - box_h
+    def small(lines):
+        return "<br/>".join(x(part) for part in lines)
+    hs = [F.hpara(col - 50, x(lab), 11, "semi", 1.25) + 2 + F.hpara(col - 50, small(sm), 9, "reg", 1.35)
+          for _ic, lab, sm, _u in actions]
+    h = max(60 + max(hs) + 22, pad + qs + 30)
+    v = max(ymin, BOTTOM - h)
+    card(F, M, v, W, h, 22, fill=NIGHT, stroke=None, depth=0.8, alpha=0.03)
+    F.glow(M + W - 80, v + 10, 190, BLUE, 16, 0.03, (M, v, W, h, 22))
+    F.text(M + pad, v + 22, "Follow our deal flow live", "gras", 20, WHITE, -0.01)
+    for i, (ic, lab, sm, url) in enumerate(actions):
+        ax = M + pad + i * col
+        F.tile(ax, v + 62, 34, 10)
+        F.icon(ic, ax + 8, v + 70, 18, WHITE)
+        hl = F.para(ax + 46, v + 62, col - 50, x(lab), 11, "semi", WHITE, 1.25)
+        F.para(ax + 46, v + 64 + hl, col - 50, small(sm), 9, "reg", NIGHT_TXT, 1.35)
+        F.link(ax, v + 58, col - 8, max(hs) + 10, url)
+    qu, qv = M + W - pad - qs, v + pad - 8
+    F.rr(qu - 6, qv - 6, qs + 12, qs + 12, 13, fill=WHITE)
+    F.qr(DEALFLOW, qu, qv, qs)
+    F.link(qu - 6, qv - 6, qs + 12, qs + 12, DEALFLOW)
+    F.text(qu + qs / 2, qv + qs + 12, "Scan to follow live", "semi", 8.8, NIGHT_TXT, align="c")
+    return v + h
+
+
+# ── page 3 : la simulation et la performance ────────────────────────────────
+SIM_COLS = (  # (titre, largeur relative, alignement)
+    (("DEAL ID",), 52, "l"), (("STATUS",), 116, "l"), (("INITIAL", "TICKET"), 56, "r"),
+    (("ENTRY VAL", "(POST)"), 62, "r"), (("ENTRY %",), 50, "r"), (("FOLLOW-ON",), 62, "r"),
+    (("EXIT %", "(DILUTED)"), 58, "r"), (("EXIT VAL",), 56, "r"), (("FUND", "RETURN"), 62, "r"),
+    (("MOIC",), 44, "r"),
+)
+SIM_TITLE = {"seed": ("Layer 1", "The Seed Layer", "companies"), "venture": ("Layer 2", "The Venture Layer", "companies"),
+             "growth": ("Layer 3", "The Growth Layer", "positions")}
+
+
+def sim_table(F, u, v, w):
+    pad = 12.0
+    scale = (w - 2 * pad) / sum(c[1] for c in SIM_COLS)
+    xs, cx = [], u + pad
+    for _t, cw, _a in SIM_COLS:
+        xs.append((cx, cw * scale))
+        cx += cw * scale
+    head, band, rh, sub = 32.0, 24.0, 17.6, 20.0
+    n_lines = sum(len(LAYERS[k]["lines"]) for k in LAYER_IDS)
+    total = head + 3 * (band + sub) + n_lines * rh + 4
+    card(F, u, v, w, total)
+    F.clip(u, v, w, total, 16)
+    F.rr(u, v, w, head, 0, fill="#FAFBFC")
+    F.unclip()
+    F.rr(u, v, w, total, 16, stroke=LINE2, lw=1)
+
+    def cell(i, yy, s, role="reg", size=8.8, color=INK2):
+        x0, cw = xs[i]
+        al = SIM_COLS[i][2]
+        if al == "r":
+            F.text(x0 + cw - 6, yy, s, role, size, color, align="r")
+        else:
+            F.text(x0 + 2, yy, s, role, size, color)
+
+    for i, (lines, _cw, _al) in enumerate(SIM_COLS):
+        top = v + (head - len(lines) * 9.4) / 2 + 0.6
+        for j, ln in enumerate(lines):
+            cell(i, top + j * 9.4, ln, "xgras", 7.1, MUTED)
+    y = v + head
+    secondary = set(SECONDARY["companies"])
+    for n, layer in enumerate(LAYER_IDS):
+        t = LAYERS[layer]
+        tag, name, unit = SIM_TITLE[layer]
+        count = t["positions"] if layer == "growth" else t["companies"]
+        F.rr(u + 1, y, w - 2, band, 0, fill=BLUE_TINT)
+        F.line(u, y, u + w, y, LINE, 1)
+        wt = F.text(u + pad + 2, y + 8.2, tag.upper(), "xgras", 7.6, BLUE, 0.12)
+        F.text(u + pad + 2 + wt + 10, y + 6.4, f"{name} · {count} {unit.capitalize()}", "gras", 10, INK)
+        y += band
+        for k, line in enumerate(t["lines"]):
+            if k:
+                F.line(u + pad, y, u + w - pad, y, LINE, 0.8)
+            label, tone = outcome_tag(line)
+            fg, bg = TONE[tone]
+            strong = tone in ("green", "blue")
+            ty = y + (rh - 8.8) / 2 + 0.4
+            cell(0, ty, row_id(line) + ("*" if line["company"] in secondary else ""), "semi", 8.8, INK)
+            pw_ = F.tw(label, "semi", 7.6) + 14
+            F.rr(xs[1][0] + 1, y + (rh - 13) / 2, pw_, 13, 6.5, fill=bg)
+            F.text(xs[1][0] + 1 + pw_ / 2, y + (rh - 13) / 2 + 2.8, label, "semi", 7.6, fg, align="c")
+            cell(2, ty, eur(line["initial"]))
+            cell(3, ty, eur(line["entry_post"], "val"))
+            cell(4, ty, pct(line["entry_pct"], 1))
+            cell(5, ty, eur(line["follow_on"]))
+            cell(6, ty, "—" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
+            cell(7, ty, "—" if line["exit_value"] is None else eur(line["exit_value"], "val"))
+            cell(8, ty, eur(line["proceeds"]), "gras" if strong else "reg", 8.8, TONE_TEXT[tone])
+            cell(9, ty, mult(line["moic"]), "gras", 8.8, BLUE_DK if strong else TONE_TEXT[tone])
+            y += rh
+        F.rr(u + 1, y, w - 2, sub, 0, fill=WARM)
+        F.line(u, y, u + w, y, LINE2, 1)
+        ty = y + (sub - 8.8) / 2 + 0.4
+        cell(0, ty, "SUB", "gras", 8.8, INK)
+        cell(1, ty, f"({layer.capitalize()})", "gras", 8.8, INK)
+        cell(2, ty, eur(t["initial"]), "gras", 8.8, INK)
+        for i in (3, 4, 6, 7):
+            cell(i, ty, "—", "reg", 8.8, SOFT)
+        cell(5, ty, eur(t["follow_on"]), "gras", 8.8, INK)
+        cell(8, ty, eur(t["proceeds"]["target"]), "gras", 8.8, BLUE_DK)
+        cell(9, ty, mult(t["moic"]["target"]), "gras", 8.8, BLUE_DK)
+        y += sub
+        if n < 2:
+            F.line(u, y, u + w, y, LINE2, 1)
+    return total
+
+
+def perf_table(F, u, v, w):
+    """La table Fund Performance de /pitch : la colonne Target mise en avant."""
+    cases = [CASES[k] for k in CASE_IDS]
+    c1 = w * 0.43
+    cw = (w - c1) / 3
+    head, rh = 34.0, 20.5
+    rows = [
+        ("Fund size", [FUND_SIZE] * 3),
+        ("Gross exit value", [eur(c["gross_exits"], "tile") for c in cases]),
+        (f"Year-{SECONDARY['year']} secondary discount", [f"−{eur(c['secondary_discount'])}" for c in cases]),
+        ("Net TVPI", [mult(c["net_tvpi"]) for c in cases]),
+        ("Net IRR", [pct(c["net_irr"]) for c in cases]),
+        (f"Net DPI by year {SECONDARY['year']}", [mult(c["dpi_year6"]) for c in cases]),
+    ] + [(f"Gross MOIC · {k.capitalize()}", [mult(LAYERS[k]["moic"][c]) for c in CASE_IDS]) for k in LAYER_IDS]
+    total = head + rh * len(rows)
+    card(F, u, v, w, total)
+    F.clip(u, v, w, total, 16)
+    F.rr(u + c1, v, cw, total, 0, fill=BLUE_TINT)
+    F.rr(u, v, c1, head, 0, fill="#FAFBFC")
+    F.rr(u + c1 + cw, v, 2 * cw, head, 0, fill="#FAFBFC")
+    F.rr(u + c1, v, cw, head, 0, fill=BLUE_SOFT)
+    F.rr(u + c1, v, cw, 3, 0, fill=BLUE)
+    F.unclip()
+    F.rr(u, v, w, total, 16, stroke=LINE2, lw=1)
+    F.text(u + 14, v + 13, "METRIC", "xgras", 7.6, MUTED, 0.1)
+    for j, name in enumerate(("Target", "Base", "Stress")):
+        F.text(u + c1 + cw * j + cw / 2, v + 12, name, "gras", 10.6, BLUE_DK if j == 0 else INK, align="c")
+    y = v + head
+    for lab, vals in rows:
+        F.line(u, y, u + w, y, LINE, 1)
+        F.text(u + 14, y + 5.6, lab, "semi", 9.4, INK)
+        for j, val in enumerate(vals):
+            F.text(u + c1 + cw * j + cw / 2, y + 5.6, val, "gras" if j == 0 else "semi", 9.6,
+                   BLUE_DK if j == 0 else INK2, align="c")
+        y += rh
+    return total
+
+
+def page_three(F):
+    kick(F, M, 84, "Fund simulation")
+    title(F, M, 102, W, "Line-by-line entry, follow-on & exit.", 25)
+    F.text(M + W, 110, "Target case · every position of the three layers", "reg", 9.8, MUTED, align="r")
+    y = 144.0
+    y += sim_table(F, M, y, W) + 8
+    sec = SECONDARY
+    y += F.para(M, y, W, x(
+        "Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are "
+        "made alongside leading growth funds, with a liquidation preference. "
+        f"* Fund Return shown at exit value. In the fund model, {pct(sec['share'])} of this position is sold in a "
+        f"year-{sec['year']} secondary at {pct(sec['price_pct'])} of its exit value (see Fund Performance)."),
+        7.8, "reg", SOFT, 1.4) + 20
+
+    kick(F, M, y, "Fund performance")
+    title(F, M, y + 17, W, "Target returns, built line by line.", 18)
+    F.text(M + W, y + 22, "Net of fees, expenses and carry", "reg", 9.8, MUTED, align="r")
+    y += 48
+    tw_ = 404.0
+    th = perf_table(F, M, y, tw_)
+    rx = M + tw_ + 16
+    rw = W - tw_ - 16
+    # les quatre chiffres de /pitch (FundPerformance, colonne de droite)
+    t, b, s = CASES["target"], CASES["base"], CASES["stress"]
+    fr = DATA["fund_returner"]
+    base_cap = eur(b["exit_cap"], "val")
+    stats = [
+        (pct(t["net_irr"]), "Target net IRR", f"Base case {pct(b['net_irr'])} with no exit above {base_cap}."),
+        (mult(t["net_tvpi"]), "Target net TVPI", f"Base case {mult(b['net_tvpi'])}, stress case {mult(s['net_tvpi'])}."),
+        (mult(t["dpi_year6"]), f"Net DPI by year {sec['year']}", "Partial secondaries on our winners return capital early."),
+        (mult(fr["multiple_of_fund"]), "One fund returner", f"{fr['company']} returns the fund across its Seed and Growth lines."),
+    ]
+    gap = 10.0
+    sw = (rw - gap) / 2
+    sh = 72.0
+    for i, (num, lab, det) in enumerate(stats):
+        sx = rx + (i % 2) * (sw + gap)
+        sy = y + (i // 2) * (sh + gap)
+        F.rr(sx, sy, sw, sh, 13, fill=WARM)
+        F.text(sx + 12, sy + 10, num, "gras", 18, BLUE_DK, -0.01)
+        F.text(sx + 12, sy + 33, lab, "semi", 9, INK)
+        F.para(sx + 12, sy + 45, sw - 22, x(det), 7.6, "reg", MUTED, 1.28)
+    # le modele Excel, sur demande
+    ey = y + 2 * sh + gap + 12
+    eh = y + th - ey
+    F.grad(rx, ey, rw, eh, 14, BLUE_GRAD, 120)
+    F.rr(rx + 14, ey + (eh - 34) / 2, 34, 34, 10, fill=WHITE, alpha=0.18)
+    F.icon("sheet", rx + 22, ey + (eh - 34) / 2 + 8, 18, WHITE)
+    F.text(rx + 60, ey + eh / 2 - 13, "Full fund model (Excel)", "gras", 11.5, WHITE)
+    F.text(rx + 60, ey + eh / 2 + 3, f"On request · {MAIL}", "reg", 8.8, "#E6EDF5")
+    F.link(rx, ey, rw, eh, "mailto:" + MAIL + "?subject=ProFund%20fund%20model")
+    y += th + 10
+
+    # Meme note que /pitch (ProFundPage.tsx, FundPerformance) : les memes faits.
+    y += F.para(M, y, W, x(
+        f"Net = after management fees ({pct(TERMS['fee_ip_pct'])} on commitments for "
+        f"{FUND['investment_period_years']} years, then {pct(TERMS['fee_post_pct'], 1)} on invested capital), "
+        f"fund expenses and carried interest ({pct(TERMS['carry_pct'])} over an {pct(TERMS['hurdle_pct'])} hurdle, "
+        "European whole-of-fund waterfall with GP catch-up), before tax. The target assumes one fund returner "
+        f"({fr['company']}, returning {mult(fr['multiple_of_fund'])} the fund across its Seed and Growth lines) and "
+        f"a year-{sec['year']} secondary sale of {pct(sec['share'])} of the two largest winners at "
+        f"{pct(sec['price_pct'])} of their exit value. Base caps every exit value at {base_cap}, Stress at "
+        f"{eur(s['exit_cap'], 'val')}; everything else is unchanged. Targets are model outputs, not a forecast or "
+        "a guarantee."), 7.8, "reg", SOFT, 1.4)
+    return y
 
 
 def main():
-    c = AsciiCanvas(str(OUT), pagesize=A4)
-    c.setTitle("ProFund - Fund Fact Sheet")
-    c.setAuthor("ProFund")
-    c.setSubject(f"Venture capital, seed to growth - {_eur(FUND['commitments'], 'tile')} target "
-                 f"Fund I - pre-marketing communication")
-    for n, page in enumerate((page_one, page_two), 1):
-        low = page(c)
-        spare = (low - FOOTER_RULE) / mm
+    doc = Doc()
+    lows = []
+    for page in (page_one, page_two, page_three):
+        F = doc.page()
+        lows.append(page(F))
+    pdf = doc.fin()
+    for n, low in enumerate(lows, 1):
+        spare = (FOOT_RULE - low) * PX / 72 * 25.4
         print(f"factsheet: page {n}, {spare:.1f} mm above the footer rule")
         if spare < 1.5:
             raise SystemExit(f"page {n} deborde sur le pied ({spare:.1f} mm)")
-        c.showPage()
-    c.save()
+    OUT.write_bytes(pdf)
     print(f"factsheet: {OUT} ({OUT.stat().st_size} octets)")
 
 

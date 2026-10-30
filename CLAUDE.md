@@ -10,21 +10,27 @@ sur le domaine `profund.vc`. **Pas de backend, aucun appel réseau côté app**
 src/
   main.tsx              montage React + ErrorBoundary
   App.tsx               les 4 routes + la route catch-all
-  index.css             TOUT le style du site (~450 lignes de CSS maison)
+  index.css             TOUT le style du site (CSS maison : jetons, système pv-, anciennes classes)
   components/
+    Thesis.tsx          LE TEXTE DE LA THÈSE (manifeste, 4 lois, 2 moteurs, proof of work),
+                        barre du haut, visuel du héros — rendus par / ET /pitch
     HomepageLite.tsx    route /
-    ProFundPage.tsx     route /pitch — 17 sections, un composant local par section
+    ProFundPage.tsx     route /pitch — un composant local par section
     LegalPage.tsx       route /legal — le texte vit dans le tableau CLAUSES
     PrivacyPage.tsx     route /privacy — le texte vit dans le tableau SECTIONS
     Footer.tsx          pied de page commun aux 4 routes
     CookieBanner.tsx    bandeau, monté globalement dans App.tsx
     ErrorBoundary.tsx   filet anti-page-blanche
   lib/fund.ts           types de fund.json + formateurs (€, ×, %) de /pitch
+  lib/links.ts          URL (avec ?v=) de la fiche PDF et du modèle Excel
   data/fund.json        CHIFFRES DU FONDS — généré, ne pas éditer à la main
 scripts/fund_model.py   modèle du fonds : la seule source des chiffres → fund.json
-scripts/factsheet.py    fiche PDF (reportlab), lit fund.json
+scripts/factsheet.py    fiche PDF 3 pages, lit fund.json
+scripts/sheet_engine.py moteur de dessin de la fiche (repris de Maximum fiches_v5.py)
+scripts/assets/fonts/   Archivo (OFL), embarquée dans la fiche
+scripts/fund_xlsx.py    modèle Excel vivant (formules + valeurs en cache) → public/
 scripts/prerender.mjs   post-build : un index.html par route + 404.html
-public/                 images, CNAME, robots.txt, sitemap.xml
+public/                 images, CNAME, robots.txt, sitemap.xml, fiche PDF, modèle Excel
 archive/v1/             fiche PDF de la V1 (hors public/ : jamais publiée)
 ```
 
@@ -47,14 +53,24 @@ qui dépend à la fois de `--border` dans le `:root` du CSS **et** de
 
 **Le contenu textuel est dans les composants**, en dur. Les pages Legal et
 Privacy sont l'exception : leur texte est dans un tableau en haut du fichier
-(`CLAUSES`, `SECTIONS`), c'est là qu'il faut le modifier.
+(`CLAUSES`, `SECTIONS`), c'est là qu'il faut le modifier. **Le texte de la
+thèse** (Antoine, 30/10 : « Pure Vision. Autonomous Scale. », manifeste, quatre
+lois, deux moteurs, proof of work) vit dans `Thesis.tsx`, rendu à l'identique
+par l'accueil et /pitch ; la fiche PDF en porte une copie (`factsheet.py`) :
+les changer ensemble.
 
-**L'accueil a sa propre grammaire visuelle, scopée `.pfh`** (bas de
-`src/index.css`) : gabarit 1120 px, sections à `padding: 104px 0` séparées par
-des filets 1 px, titres à interlettrage négatif, chapeaux à filet bleu — jamais
-de capitales espacées. Elle est reprise de la home de proplace.co. `/pitch`,
-`/legal` et `/privacy` gardent l'ancien jeu de classes (`.pf-wrap`, `.mod`,
-`.fund-table`…) : les deux cohabitent, ne pas les mélanger.
+**Le style reprend la grammaire de Maximum Insurance V5** (maximum-insurance.com,
+`landing_v5.py` du dépôt Maximum) dans les couleurs ProFund (30/10, Antoine) :
+police Archivo, titres 750 serrés, chapeaux en capitales espacées bleues,
+cartes arrondies à ombre douce, boutons en pilule, pastilles d'icône en dégradé
+gris-bleu, sections « de nuit », bandeau final sombre. Les jetons (couleurs,
+rayons, ombres) sont en tête de `src/index.css` et repris tels quels dans
+`scripts/sheet_engine.py` : les changer ensemble. Deux jeux de classes
+cohabitent : le système commun `pv-` (barre du haut, héros, sections de la
+thèse, bandeau, boutons — accueil ET /pitch) et l'ancien jeu (`.pf-wrap`,
+`.mod`, `.fund-table`…) des sections propres à /pitch, /legal et /privacy,
+redessiné avec les mêmes jetons. Dans les tableaux, la ligne de total porte la
+classe `sub`. /pitch n'est lié nulle part depuis l'accueil (deck, un à un).
 
 **Le popup d'abonnement appelle un vrai backend.** `DealFlowModal.tsx` POSTe
 `https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run/profund/subscribe`,
@@ -102,9 +118,10 @@ titre, pastilles avec le bouton « + » à droite, puis période/recherche/filtr
 Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 
 **UN SEUL MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08, assouplie par
-Alexandre le 29/10) : la taille du fonds dans la phrase du hero, lue dans
-`fund.json`. La construction, les tickets et les rendements cibles vivent **uniquement** dans
-la fiche PDF, qui porte la mention de pré-commercialisation EuVECA. L'accueil
+Alexandre le 29/10) : la taille du fonds, lue dans `fund.json` — dans la phrase
+du héros et, depuis le texte d'Antoine du 30/10, dans la loi 04 (« return our
+entire €100M fund »). La construction, les tickets et les rendements cibles vivent
+**uniquement** dans la fiche PDF, le modèle Excel et /pitch. L'accueil
 parle du passé, de ce qui est en cours, et du deal flow. `/pitch` garde ses
 chiffres : c'est le deck, pas la vitrine. La règle couvre aussi le shell
 `index.html` (meta description et `<noscript>`), servi sur TOUTES les routes et
@@ -125,20 +142,30 @@ ou dans la fiche : changer le modèle, puis
 ```bash
 python scripts/fund_model.py     # contrôles + écrit src/data/fund.json
 python scripts/factsheet.py      # régénère public/profund-factsheet.pdf
+python scripts/fund_xlsx.py      # régénère public/profund-fund-model.xlsx
 ```
 
-commiter le JSON **et** le PDF, et changer le `?v=` de `FACTSHEET_URL`
-(`HomepageLite.tsx`) pour que les navigateurs reprennent la nouvelle fiche.
-`npm run build` ne régénère NI le JSON NI le PDF (ils sont commités).
+commiter le JSON, le PDF **et** le xlsx, et changer les `?v=` de
+`FACTSHEET_URL` et `MODEL_XLSX_URL` (`src/lib/links.ts`) pour que les
+navigateurs reprennent les nouveaux fichiers.
+`npm run build` ne régénère NI le JSON NI le PDF NI le xlsx (ils sont commités).
 `python scripts/fund_model.py --check` échoue si le JSON n'est plus à jour ;
-`factsheet.py` refuse aussi de tourner dans ce cas. Les frais du fonds du modèle
-sont une estimation en attendant le devis du gestionnaire EuVECA.
+`factsheet.py` et `fund_xlsx.py` refusent aussi de tourner dans ce cas. Les frais
+du fonds du modèle sont une estimation en attendant le devis du gestionnaire EuVECA.
 
-**La fiche PDF est en ASCII pur** (« EUR », « - », « >= ») : les polices
-Helvetica de base de reportlab sont en WinAnsi et rendent un caractère de
-remplacement sur `€` ou `—`. `factsheet.py` le vérifie (`AsciiCanvas`) et
-échoue aussi si une page déborde sur le pied : la page 1 n'a que quelques
-millimètres de marge, tout ajout se paie ailleurs.
+**Le modèle Excel** (téléchargeable sur /pitch, « sur demande » dans la fiche)
+est vivant : chaque sortie est une formule, écrite avec sa valeur en cache pour
+les aperçus qui ne recalculent pas. `fund_xlsx.py` le recalcule avec pycel et
+échoue si une formule ne retombe pas sur sa valeur et sur `fund.json` (onglet
+Checks). Dépendance : `xlsxwriter` (`pip install --user xlsxwriter`).
+
+**La fiche PDF fait 3 pages** (1 : vision, manifeste, lois, construction ;
+2 : moteurs, termes, GP, track record, proof of work, appel avec QR vers
+`profund.vc/#dealflow` qui ouvre le popup ; 3 : simulation ligne à ligne et
+performance). Elle embarque Archivo (`scripts/assets/fonts/`) : `€`, `—`, `×`
+sont permis, mais `sheet_engine.check_glyphs` fait échouer la fiche sur tout
+caractère absent d'Archivo. Elle échoue aussi si une page déborde sur le pied :
+chaque page n'a que 6 à 8 mm de marge, tout ajout se paie ailleurs.
 
 **La V1 est sauvegardée** : tag git `v1` (le site à 35 M€, Scout + Core, avant
 la v2) et `archive/v1/profund-factsheet-v1.pdf`. Pour y revenir : partir du tag
@@ -199,11 +226,13 @@ npm run build                  # doit finir par "prerender: N routes ... écrits
 npm run preview                # puis ouvrir /, /pitch/, /legal/, /privacy/
 ```
 
-Après un changement de la fiche : rendre ses deux pages en PNG (PyMuPDF,
+Après un changement de la fiche : rendre ses trois pages en PNG (PyMuPDF,
 `python -c "import fitz; …"`, sans `-I` : fitz est installé dans le site-packages
 utilisateur) et les regarder.
 
-Contrôler le rendu à 390 px, 768 px et 1440 px : le CSS bascule à 768 px
-(`@media (max-width: 768px)`), où les grilles passent en une colonne, la grille
-`.hero-stats` de 4 à 2 colonnes et les tableaux de fonds passent en défilement
-horizontal (`.table-scroll`).
+Contrôler le rendu à 390 px, 768 px et 1440 px : les classes `pv-` basculent à
+1080, 900 et 600 px ; l'ancien jeu à 768 px (`@media (max-width: 768px)`), où
+les grilles passent en une colonne, la grille `.hero-stats` de 4 à 2 colonnes
+et les tableaux de fonds défilent horizontalement dans leur carte
+(`.table-scroll`). Le titre du héros tient sur 2 lignes au-delà de 600 px (taille
+en `cqw`) : le vérifier si on change son texte.

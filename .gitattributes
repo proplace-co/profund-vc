@@ -13,3 +13,5 @@ public/CNAME text eol=lf
 # reportlab écrit un PDF sans octet NUL : git le prendrait pour du texte et
 # pourrait en normaliser les fins de ligne, ce qui corromprait la fiche.
 *.pdf binary
+*.xlsx binary
+*.ttf binary
