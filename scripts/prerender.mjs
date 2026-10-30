@@ -27,8 +27,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
-const BASE_TITLE = 'ProFund — Pure Vision. Autonomous Scale.';
-const BASE_DESC = 'Seed to Growth. A venture fund for the architects turning AI into self-improving systems. Stop managing armies. Start directing intelligence. Follow our deal flow live.';
+const BASE_TITLE = 'ProFund · Pure Vision. Autonomous Scale.';
+const BASE_DESC = 'From Seed to Growth, a venture fund for visionary founders building self-improving AI systems across massive markets. Stop managing armies. Start directing intelligence. Follow our deal flow live.';
 
 // Le titre de /pitch porte la taille du fonds : lue dans le modèle
 // (scripts/fund_model.py → src/data/fund.json), jamais tapée ici.
@@ -44,17 +44,17 @@ const ROUTES = [
   },
   {
     path: 'pitch',
-    title: `ProFund — Seed to Growth · ${FUND_SIZE} target`,
-    desc: 'The thesis, the platform, the three-layer portfolio construction, the fund simulation and target returns of ProFund, a venture fund from seed to growth for the architects turning AI into self-improving systems.',
+    title: `ProFund · Seed to Growth · ${FUND_SIZE} target`,
+    desc: 'The thesis, the platform, the three-layer portfolio construction, the fund simulation and target returns of ProFund, a venture fund from seed to growth for visionary founders building self-improving AI systems across massive markets.',
   },
   {
     path: 'dealflow',
-    title: 'ProFund deal flow — private',
+    title: 'ProFund deal flow · private',
     desc: 'Private live deal flow for accepted ProFund investors.',
   },
   {
     path: 'legal',
-    title: 'Legal Notice — Pre-Marketing Communication | ProFund',
+    title: 'Legal notice · Pre-marketing communication | ProFund',
     desc: 'EuVECA pre-marketing communication. Professional and eligible investors only. Strictly confidential. Not an offer.',
   },
   {

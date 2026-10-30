@@ -49,25 +49,19 @@ export function SiteHeader({ links, children }: { links: { href: string; label: 
   );
 }
 
-// Le visuel du héros : la vraie capture du deal flow (profund.vc/dealflow) dans
-// une fenêtre, et la carte du fonds posée de biais, comme les Pass de Maximum.
-// `amount` : seulement sur /pitch — l'accueil n'a qu'un montant, dans sa phrase.
-export function HeroVisual({ amount }: { amount?: string }) {
+// Le visuel du héros : trois vraies captures du deal flow ProFund (la carte et
+// ses encadrés dans une fenêtre, le pipeline et la barre « Screen a target » en
+// cartes posées de biais). Captures de proplace.co/cibles/profund-vc, 30/10.
+export function HeroVisual() {
   return (
     <div className="pv-visual" aria-hidden="true">
       <div className="pv-shot">
         <div className="pv-shot-bar"><i /><i /><i /><span className="pv-shot-url">profund.vc/dealflow</span></div>
-        <img src="/dealflow-cockpit.jpg" alt="" width={1600} height={900} />
+        <img src="/dealflow-map.jpg" alt="" width={1800} height={919} />
         <span className="pv-live pv-shot-live"><span className="pv-dot" />Live deal flow</span>
       </div>
-      <div className="pv-fund">
-        <div className="pv-fund-top"><img src="/logo.png" alt="" /><span>Fund I</span></div>
-        <div className="pv-fund-mid">
-          {amount && <b>{amount}</b>}
-          <span>Seed → Venture → Growth</span>
-        </div>
-        <div className="pv-fund-bot"><span>EuVECA · Luxembourg</span><span className="pv-fund-live"><i />Deal Engine</span></div>
-      </div>
+      <div className="pv-snap pv-snap-pipe"><img src="/dealflow-pipeline.jpg" alt="" width={1040} height={1016} /></div>
+      <div className="pv-snap pv-snap-eval"><img src="/dealflow-evaluate.jpg" alt="" width={1400} height={205} /></div>
     </div>
   );
 }
@@ -82,14 +76,18 @@ export function Manifesto({ tint = false }: { tint?: boolean }) {
         </div>
         <div className="pv-mani-body">
           <p className="big">
-            For two centuries, scaling a company meant scaling human labor—hiring thousands of
+            For two centuries, scaling a company meant scaling human labor, hiring thousands of
             people to execute the vision of one. <b>That era is over.</b>
           </p>
           <p>
             Today, a single visionary who knows how to challenge, direct, and iterate with AI can
             architect an integral, self-improving system in record time. AI frees humanity from
-            mechanical execution, returning creation to pure thought. <b>We don’t fund headcount.</b> We
-            back sovereign founders building autonomous giants with colossal real-world utility.
+            mechanical execution, returning creation to pure thought.
+          </p>
+          <p>
+            <b>We don’t fund headcount.</b><br />
+            We back AI-native teams transforming a vision into an autonomous AI system having a
+            massive real-world utility.
           </p>
         </div>
       </div>
@@ -100,23 +98,23 @@ export function Manifesto({ tint = false }: { tint?: boolean }) {
 const LAWS: { icon: IconName; t: string; d: string }[] = [
   {
     icon: 'crown',
-    t: 'Sovereign Architects, Not Managers',
+    t: 'Sovereign architects, not managers',
     d: 'We back obsessive, highly technical visionaries from Day 1. Founders who don’t build org charts, but iterate directly with AI until the machine mirrors their exact ambition.',
   },
   {
     icon: 'loop',
-    t: 'Self-Improving Systems',
+    t: 'Self-improving systems',
     d: 'We look for closed-loop architectures. Products that don’t just automate a task, but compound in intelligence, precision, and autonomy with every single run.',
   },
   {
     icon: 'globe',
-    t: 'Colossal Utility. Minimum Headcount.',
-    d: 'No gimmicks. We invest in integral systems solving massive, painful problems in the world’s largest markets—operated with near-zero marginal labor.',
+    t: 'Colossal utility. Minimum headcount.',
+    d: 'We invest in integral systems solving massive, painful problems in the world’s largest markets, operated with near-zero marginal labor.',
   },
   {
     icon: 'trend',
-    t: 'Fund-Returning Physics',
-    d: `We enter at Pre-Seed/Seed and double down at the exact inflection point. Every check we write backs a company built to dominate its category globally and return our entire ${FUND_SIZE} fund.`,
+    t: 'Fund-returning physics',
+    d: `Every check we write backs a company built to dominate its category globally and return our entire ${FUND_SIZE} fund.`,
   },
 ];
 
@@ -126,7 +124,7 @@ export function FourLaws({ tint = true }: { tint?: boolean }) {
       <div className="pv-wrap">
         <div className="pv-head">
           <p className="pv-kick">What we back</p>
-          <h2 className="pv-h2">Four laws drive our thesis—and our Deal Engine every morning.</h2>
+          <h2 className="pv-h2">Four laws drive our thesis and our Deal Engine every morning.</h2>
         </div>
         <ol className="pv-laws">
           {LAWS.map((l, i) => (
@@ -149,7 +147,7 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
       <div className="pv-wrap">
         <div className="pv-head">
           <p className="pv-kick">Our edge</p>
-          <h2 className="pv-h2">One GP. Zero Analysts. Two Autonomous Engines.</h2>
+          <h2 className="pv-h2">Two autonomous AI engines.</h2>
           <p className="sub">We run on what we back.</p>
         </div>
         <div className="pv-edge">
@@ -157,9 +155,8 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
             <span className="pv-ic"><Icon name="radar" /></span>
             <h3>The Deal Engine</h3>
             <p>
-              Reads every European seed round, key engineering move, and product launch in real
-              time. It scores every founder against our thesis and flags inflection points before
-              they become consensus.
+              Scores every company against our thesis and flags inflection points before they
+              become consensus.
             </p>
             <button type="button" className="pv-btn light" onClick={onFollow}>
               Follow live deal flow <Icon name="arrow" />
@@ -170,7 +167,7 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
             <h3>The Growth Engine</h3>
             <p>
               Autonomous AI agents running content, inbound, and outbound end-to-end. They operate
-              our fund and the GP’s companies today—and plug directly into the founders we back
+              our fund and companies today and can be plugged directly into the founders we back
               tomorrow.
             </p>
             {/* qui tourne sur ce moteur — mêmes pastilles que la fiche PDF */}
@@ -187,8 +184,7 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
   );
 }
 
-// Hors du fonds, détenues à 100 % par le GP : la note le dit, pour qu'aucun LP
-// ne les prenne pour des lignes du portefeuille.
+// Sociétés du GP, hors du fonds (la note « Outside the fund » a été retirée le 30/10).
 const PROOF = [
   { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', wide: false,
     tagline: 'Autonomous AI operating system for corporate development & M&A.' },
@@ -206,8 +202,8 @@ export function ProofOfWork({ tint = false }: { tint?: boolean }) {
           <p className="pv-kick">Proof of work</p>
           <h2 className="pv-h2">We live what we back.</h2>
           <p className="sub">
-            Before funding autonomous companies, we built our own. The companies below are operated
-            almost entirely by our in-house engines and agents:
+            Before funding autonomous companies, we built our own. Profund and the companies below
+            are operated almost entirely by our in-house engines and agents:
           </p>
         </div>
         <div className="pv-proof">
@@ -219,7 +215,6 @@ export function ProofOfWork({ tint = false }: { tint?: boolean }) {
             </a>
           ))}
         </div>
-        <p className="pv-proof-note">Outside the fund, 100% owned by the GP.</p>
       </div>
     </section>
   );

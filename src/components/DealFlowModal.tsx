@@ -159,7 +159,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
             ) : pane === 'returning' ? (
               <p>
                 Your application is still under review. Nothing is sent until
-                we accept — then you will receive a private link.
+                we accept. Then you will receive a private link.
               </p>
             ) : (
               <p>

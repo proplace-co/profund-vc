@@ -57,7 +57,13 @@ Privacy sont l'exception : leur texte est dans un tableau en haut du fichier
 thèse** (Antoine, 30/10 : « Pure Vision. Autonomous Scale. », manifeste, quatre
 lois, deux moteurs, proof of work) vit dans `Thesis.tsx`, rendu à l'identique
 par l'accueil et /pitch ; la fiche PDF en porte une copie (`factsheet.py`) :
-les changer ensemble.
+les changer ensemble. **Ton de la copie (Antoine, 30/10)** : pas de tiret long
+« — » dans les textes visibles (accueil, /pitch, fiche, meta ; virgule, deux-points
+ou parenthèses à la place ; cellules vides des tableaux : « – »), et titres en
+casse de phrase, pas en Title Case (« Self-improving systems »). /legal et
+/privacy n'ont pas été retouchés (texte juridique). Le visuel du héros (site et
+fiche p. 1) : trois captures du deal flow (`public/dealflow-map.jpg`,
+`-pipeline.jpg`, `-evaluate.jpg`, prises sur proplace.co/cibles/profund-vc).
 
 **Le style reprend la grammaire de Maximum Insurance V5** (maximum-insurance.com,
 `landing_v5.py` du dépôt Maximum) dans les couleurs ProFund (30/10, Antoine) :

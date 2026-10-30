@@ -53,7 +53,10 @@ LOGO = ROOT / "public" / "logo.png"
 PHOTO = ROOT / "public" / "gp-photo-sheet.jpg"
 # Vraie capture de profund.vc/dealflow (vue LP marque blanche du cockpit), pas
 # une maquette. A refaire si l'ecran change.
-COCKPIT = ROOT / "public" / "dealflow-cockpit.jpg"
+# Captures du deal flow ProFund (proplace.co/cibles/profund-vc, 30/10) : (fichier, hauteur / largeur).
+MAP_SHOT = (ROOT / "public" / "dealflow-map.jpg", 919 / 1800)
+PIPE_SHOT = (ROOT / "public" / "dealflow-pipeline.jpg", 1016 / 1040)
+EVAL_SHOT = (ROOT / "public" / "dealflow-evaluate.jpg", 205 / 1400)
 OUT = ROOT / "public" / "profund-factsheet.pdf"
 FUND_JSON = ROOT / "src" / "data" / "fund.json"
 
@@ -163,9 +166,9 @@ class Doc:
     def __init__(self):
         self.buf = io.BytesIO()
         self.c = canvas.Canvas(self.buf, pagesize=(PW * PX, PH * PX), pageCompression=1)
-        self.c.setTitle("ProFund — Fund Fact Sheet")
+        self.c.setTitle("ProFund · Fund fact sheet")
         self.c.setAuthor("ProFund")
-        self.c.setSubject(f"Venture capital, seed to growth — {FUND_SIZE} target Fund I — "
+        self.c.setSubject(f"Venture capital, seed to growth · {FUND_SIZE} target Fund I · "
                           "pre-marketing communication")
         self.c.setCreator("ProFund · scripts/factsheet.py")
         self.num = 0
@@ -260,8 +263,8 @@ def grey_logo(path, darkness=0.6):
 
 
 def browser(F, u, v, w, url="profund.vc/dealflow"):
-    """La capture du cockpit dans un cadre de navigateur ; rend la hauteur."""
-    ih = w * 900 / 1600
+    """La capture de la carte du deal flow dans un cadre de navigateur ; rend la hauteur."""
+    ih = w * MAP_SHOT[1]
     F.shadow(u, v, w, ih + 26, 14, 0.8, 0.025)
     F.rr(u, v, w, ih + 26, 14, fill="#EEF0F3", stroke=LINE2, lw=1)
     for j, col in enumerate(("#E0664B", "#DC9A2C", "#58B17A")):
@@ -269,73 +272,36 @@ def browser(F, u, v, w, url="profund.vc/dealflow"):
     F.rr(u + 56, v + 6, w - 112, 14, 7, fill=WHITE)
     F.text(u + w / 2, v + 9, url, "reg", 7.8, MUTED, align="c")
     F.clip(u + 1, v + 1, w - 2, ih + 24, 13)
-    F.image(COCKPIT, u + 1, v + 26, w - 2, ih - 1)
+    F.image(MAP_SHOT[0], u + 1, v + 26, w - 2, ih - 1)
     F.unclip()
     F.link(u, v, w, ih + 26, DEALFLOW)
     return ih + 26
 
 
-def fund_card(F, xx, yy, w, rot=-6.0):
-    """La carte « ProFund · Fund I » : la carte Pass des fiches Maximum, en bleu nuit.
-    Repere local : 100 unites = la largeur de la carte."""
-    hl = 100 / 1.586
-    with Frame(F.c, xx, yy, k=w / 100.0, rot=rot, w=100, h=hl, parent=F) as C:
-        for i in range(8):
-            sp, dy = 0.8 + i * 1.25, 1.6 + i * 1.15
-            C.rr(-sp / 2, dy - sp / 2, 100 + sp, hl + sp, 4.74 + sp / 2, fill=INK, alpha=0.035)
-        r = 4.74
-        C.grad(0, 0, 100, hl, r, [("#6F88A5", 0.0), ("#4A6080", 0.5), ("#26344A", 1.0)], 135)
-        C.glow(88, 6, 46, "#9FB6CF", 12, 0.035, (0, 0, 100, hl, r))
-        # le reflet (bande blanche diagonale)
-        C.clip(0, 0, 100, hl, r)
-        c = C.c
-        for j in range(10):
-            t = 0.30 + j * 0.03
-            peak = 1 - abs(t + 0.015 - 0.45) / 0.15
-            c.saveState()
-            c.setFillColorRGB(1, 1, 1)
-            c.setFillAlpha(max(0.0, 0.16 * peak))
-            pth = c.beginPath()
-            pts = [(t * 160 - 30, -5), ((t + 0.03) * 160 - 30, -5), ((t + 0.03) * 160 - 60, hl + 5), (t * 160 - 60, hl + 5)]
-            pth.moveTo(*C.pt(*pts[0]))
-            for pu, pv in pts[1:]:
-                pth.lineTo(*C.pt(pu, pv))
-            pth.close()
-            c.drawPath(pth, stroke=0, fill=1)
-            c.restoreState()
-        C.unclip()
-        u = 5.6
-        u += C.text(u, 5.2, "PROFUND", "xgras", 4.4, WHITE, 0.02) + 1.6
-        C.text(u, 5.2, "FUND I", "xgras", 4.4, GLOW, 0.02)
-        C.text(5.6, 11.2, "SEED · VENTURE · GROWTH", "semi", 2.3, WHITE, 0.1, alpha=0.82)
-        C.text(100 - 5.6, 5.6, "EUVECA · LUXEMBOURG", "xgras", 2.2, WHITE, 0.08, "r", alpha=0.85)
-        C.text(100 - 5.6, 9.0, f"CLOSED-ENDED · {FUND['term_years']} YEARS", "semi", 2.2, WHITE, 0.08, "r", alpha=0.7)
-        # la puce
-        C.grad(5.6, 22, 10.5, 7.6, 1.6, [("#E7EAEE", 0.0), ("#B9C0C9", 1.0)], 135)
-        C.rr(5.6 + 2.1, 22 + 1.58, 10.5 - 4.2, 7.6 - 3.16, 0.7, stroke="#8E97A3", lw=0.22)
-        C.text(5.6, hl - 21.5, FUND_SIZE, "gras", 11.5, WHITE, -0.01)
-        C.text(5.6, hl - 8.4, "TARGET FUND SIZE", "semi", 2.4, WHITE, 0.1, alpha=0.75)
-        q = 21.5
-        qu, qv = 100 - 4.2 - q, hl - 4.2 - q
-        C.rr(qu, qv, q, q, 2.4, fill=WHITE)
-        C.qr(DEALFLOW, qu + 1.4, qv + 1.4, q - 2.8, quiet=0)
-        C.link(qu, qv, q, q, DEALFLOW)
-    return hl * w / 100
+def snap(F, u, v, w, h, shot, r=9.0):
+    """Une capture posee devant la fenetre, recadree en haut a gauche."""
+    path, ratio = shot
+    F.shadow(u, v, w, h, r, 0.8, 0.03)
+    F.rr(u, v, w, h, r, fill=WHITE, stroke=LINE2, lw=1)
+    F.clip(u + 0.5, v + 0.5, w - 1, h - 1, r - 0.5)
+    F.image(path, u + 0.5, v + 0.5, w - 1, (w - 1) * ratio)
+    F.unclip()
+    F.link(u, v, w, h, DEALFLOW)
 
 
 # ── page 1 : la vision ──────────────────────────────────────────────────────
 LAWS = (
-    ("crown", "Sovereign Architects, Not Managers",
+    ("crown", "Sovereign architects, not managers",
      "We back obsessive, highly technical visionaries from Day 1. Founders who don't build org charts, but "
      "iterate directly with AI until the machine mirrors their exact ambition."),
-    ("loop", "Self-Improving Systems",
+    ("loop", "Self-improving systems",
      "We look for closed-loop architectures. Products that don't just automate a task, but compound in "
      "intelligence, precision, and autonomy with every single run."),
-    ("globe", "Colossal Utility. Minimum Headcount.",
-     "No gimmicks. We invest in integral systems solving massive, painful problems in the world's largest "
-     "markets—operated with near-zero marginal labor."),
-    ("trend", "Fund-Returning Physics",
-     "We enter at Pre-Seed/Seed and double down at the exact inflection point. Every check we write backs a "
+    ("globe", "Colossal utility. Minimum headcount.",
+     "We invest in integral systems solving massive, painful problems in the world's largest "
+     "markets, operated with near-zero marginal labor."),
+    ("trend", "Fund-returning physics",
+     "Every check we write backs a "
      f"company built to dominate its category globally and return our entire {FUND_SIZE} fund."),
 )
 
@@ -392,17 +358,21 @@ def page_one(F):
     tw = 360.0
     y = 102 + title(F, M, 102, tw, "", 37, lead=1.04,
                     markup=f'{x("Pure Vision.")}<br/><font color="{BLUE}">{x("Autonomous Scale.")}</font>')
-    y += 12 + F.para(M, y + 12, tw, x(f"Seed to Growth. {FUND_SIZE} for the architects turning AI into "
-                                      "self-improving systems."), 12.2, "reg", INK2, 1.5)
+    y += 12 + F.para(M, y + 12, tw, x(f"{FUND_SIZE} from Seed to Growth for visionary founders building "
+                                      "self-improving AI systems across massive markets."), 12.2, "reg", INK2, 1.5)
     y += 6 + F.para(M, y + 6, tw, x("Stop managing armies. Start directing intelligence."), 12.2, "gras", INK, 1.4)
-    y += 12 + micro(F, M, y + 14, tw, ["One GP, zero analysts", "Two autonomous engines", "EuVECA fund, Luxembourg"])
+    y += 12 + micro(F, M, y + 14, tw, ["Two autonomous AI engines", "EuVECA fund, Luxembourg"])
 
-    # le visuel : la capture du cockpit, la carte du fonds posee devant
+    # le visuel : la carte du deal flow dans la fenetre, le pipeline et la barre
+    # d'evaluation poses devant (les memes captures que le heros du site)
     vw = 262.0
     vx = M + W - vw
     bh = browser(F, vx, 82, vw)
-    fund_card(F, vx - 54, 82 + bh - 67, 172, rot=-7)
-    y = max(y, 82 + bh + 46)
+    pw, ph = 112.0, 88.0
+    snap(F, vx - 40, 82 + bh - 64, pw, ph, PIPE_SHOT)
+    ew = 222.0
+    snap(F, vx + 52, 82 + bh - 4, ew, ew * EVAL_SHOT[1], EVAL_SHOT, 7)
+    y = max(y, 82 + bh + 36)
 
     # l'encadre de pre-commercialisation, en tete de document
     y += 14
@@ -423,18 +393,20 @@ def page_one(F):
     title(F, M, y + 18, lw, "The end of human friction.", 21, lead=1.1)
     rx = M + lw + 26
     rw = W - lw - 26
-    h1 = F.para(rx, y + 2, rw, x("For two centuries, scaling a company meant scaling human labor—hiring thousands "
+    h1 = F.para(rx, y + 2, rw, x("For two centuries, scaling a company meant scaling human labor, hiring thousands "
                                  "of people to execute the vision of one. That era is over."), 11.2, "semi", INK, 1.45)
     h2 = F.para(rx, y + 2 + h1 + 7, rw, x(
         "Today, a single visionary who knows how to challenge, direct, and iterate with AI can architect an "
         "integral, self-improving system in record time. AI frees humanity from mechanical execution, "
-        "returning creation to pure thought. We don't fund headcount. We back sovereign founders building "
-        "autonomous giants with colossal real-world utility."), 9.8, "reg", MUTED, 1.45)
-    y += max(2 + h1 + 7 + h2, 70) + 20
+        "returning creation to pure thought."), 9.8, "reg", MUTED, 1.45)
+    h3 = F.para(rx, y + 2 + h1 + 7 + h2 + 7, rw, x("We don't fund headcount.") + "<br/>" + x(
+        "We back AI-native teams transforming a vision into an autonomous AI system having a massive "
+        "real-world utility."), 9.8, "semi", INK, 1.45)
+    y += max(2 + h1 + 7 + h2 + 7 + h3, 70) + 20
 
     # les quatre lois
     kick(F, M, y, "What we back")
-    title(F, M, y + 17, W, "Four laws drive our thesis—and our Deal Engine every morning.", 18)
+    title(F, M, y + 17, W, "Four laws drive our thesis and our Deal Engine every morning.", 18)
     y += 46
     gap = 12.0
     cw = (W - 3 * gap) / 4
@@ -520,18 +492,17 @@ def kv_card(F, u, v, w, head, icon, rows, bold_last=False, h=None):
 
 def page_two(F):
     kick(F, M, 84, "Our edge")
-    title(F, M, 102, W, "One GP. Zero Analysts. Two Autonomous Engines.", 27)
+    title(F, M, 102, W, "Two autonomous AI engines.", 27)
     F.para(M, 136, W, x("We run on what we back."), 11.6, "reg", MUTED, 1.5)
 
     # les deux moteurs, cote a cote (la capture du cockpit est dans le heros, page 1)
     y = 164.0
     engines = (
         ("radar", "The Deal Engine",
-         "Reads every European seed round, key engineering move, and product launch in real time. It scores "
-         "every founder against our thesis and flags inflection points before they become consensus."),
+         "Scores every company against our thesis and flags inflection points before they become consensus."),
         ("bot", "The Growth Engine",
-         "Autonomous AI agents running content, inbound, and outbound end-to-end. They operate our fund and the "
-         "GP's companies today—and plug directly into the founders we back tomorrow."),
+         "Autonomous AI agents running content, inbound, and outbound end-to-end. They operate our fund and "
+         "companies today and can be plugged directly into the founders we back tomorrow."),
     )
     gap = 16.0
     ew = (W - gap) / 2
@@ -654,12 +625,8 @@ def page_two(F):
     # la preuve : les societes operees par le GP
     kick(F, M, y, "Proof of work")
     title(F, M, y + 17, W, "We live what we back.", 18)
-    note = "Outside the fund, 100% owned by the GP"
-    nw = F.tw(note, "semi", 8.8) + 22
-    F.rr(M + W - nw, y + 18, nw, 20, 10, fill=BLUE_SOFT)
-    F.text(M + W - nw / 2, y + 23, note, "semi", 8.8, BLUE_DK, align="c")
     y += 44
-    y += F.para(M, y, W, x("Before funding autonomous companies, we built our own. The companies below are "
+    y += F.para(M, y, W, x("Before funding autonomous companies, we built our own. Profund and the companies below are "
                            "operated almost entirely by our in-house engines and agents:"), 10, "reg", MUTED, 1.45) + 10
     gap = 12.0
     pcw = (W - 2 * gap) / 3
@@ -721,8 +688,8 @@ SIM_COLS = (  # (titre, largeur relative, alignement)
     (("EXIT %", "(DILUTED)"), 58, "r"), (("EXIT VAL",), 56, "r"), (("FUND", "RETURN"), 62, "r"),
     (("MOIC",), 44, "r"),
 )
-SIM_TITLE = {"seed": ("Layer 1", "The Seed Layer", "companies"), "venture": ("Layer 2", "The Venture Layer", "companies"),
-             "growth": ("Layer 3", "The Growth Layer", "positions")}
+SIM_TITLE = {"seed": ("Layer 1", "The Seed layer", "companies"), "venture": ("Layer 2", "The Venture layer", "companies"),
+             "growth": ("Layer 3", "The Growth layer", "positions")}
 
 
 def sim_table(F, u, v, w):
@@ -762,7 +729,7 @@ def sim_table(F, u, v, w):
         F.rr(u + 1, y, w - 2, band, 0, fill=BLUE_TINT)
         F.line(u, y, u + w, y, LINE, 1)
         wt = F.text(u + pad + 2, y + 8.2, tag.upper(), "xgras", 7.6, BLUE, 0.12)
-        F.text(u + pad + 2 + wt + 10, y + 6.4, f"{name} · {count} {unit.capitalize()}", "gras", 10, INK)
+        F.text(u + pad + 2 + wt + 10, y + 6.4, f"{name} · {count} {unit}", "gras", 10, INK)
         y += band
         for k, line in enumerate(t["lines"]):
             if k:
@@ -779,8 +746,8 @@ def sim_table(F, u, v, w):
             cell(3, ty, eur(line["entry_post"], "val"))
             cell(4, ty, pct(line["entry_pct"], 1))
             cell(5, ty, eur(line["follow_on"]))
-            cell(6, ty, "—" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
-            cell(7, ty, "—" if line["exit_value"] is None else eur(line["exit_value"], "val"))
+            cell(6, ty, "–" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
+            cell(7, ty, "–" if line["exit_value"] is None else eur(line["exit_value"], "val"))
             cell(8, ty, eur(line["proceeds"]), "gras" if strong else "reg", 8.8, TONE_TEXT[tone])
             cell(9, ty, mult(line["moic"]), "gras", 8.8, BLUE_DK if strong else TONE_TEXT[tone])
             y += rh
@@ -791,7 +758,7 @@ def sim_table(F, u, v, w):
         cell(1, ty, f"({layer.capitalize()})", "gras", 8.8, INK)
         cell(2, ty, eur(t["initial"]), "gras", 8.8, INK)
         for i in (3, 4, 6, 7):
-            cell(i, ty, "—", "reg", 8.8, SOFT)
+            cell(i, ty, "–", "reg", 8.8, SOFT)
         cell(5, ty, eur(t["follow_on"]), "gras", 8.8, INK)
         cell(8, ty, eur(t["proceeds"]["target"]), "gras", 8.8, BLUE_DK)
         cell(9, ty, mult(t["moic"]["target"]), "gras", 8.8, BLUE_DK)
@@ -849,7 +816,7 @@ def page_three(F):
     y += F.para(M, y, W, x(
         "Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are "
         "made alongside leading growth funds, with a liquidation preference. "
-        f"* Fund Return shown at exit value. In the fund model, {pct(sec['share'])} of this position is sold in a "
+        f"* Fund return shown at exit value. In the fund model, {pct(sec['share'])} of this position is sold in a "
         f"year-{sec['year']} secondary at {pct(sec['price_pct'])} of its exit value (see Fund Performance)."),
         7.8, "reg", SOFT, 1.4) + 20
 

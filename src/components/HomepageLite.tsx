@@ -58,7 +58,7 @@ export default function HomepageLite() {
             <span className="pv-eyebrow"><b />AI-native venture fund · Europe</span>
             <h1 className="pv-h1">Pure Vision.<span>Autonomous Scale.</span></h1>
             <p className="pv-lead">
-              Seed to Growth. {FUND_SIZE} for the architects turning AI into <span className="nw">self-improving</span> systems.
+              {FUND_SIZE} from Seed to Growth for visionary founders building <span className="nw">self-improving</span> AI systems across massive markets.
             </p>
             <p className="pv-tagline">Stop managing armies. Start directing intelligence.</p>
             <div className="pv-ctas">
@@ -70,8 +70,7 @@ export default function HomepageLite() {
               </a>
             </div>
             <ul className="pv-micro">
-              <li><Icon name="check" />One GP, zero analysts</li>
-              <li><Icon name="check" />Two autonomous engines</li>
+              <li><Icon name="check" />Two autonomous AI engines</li>
               <li><Icon name="check" />Live deal flow, every evening</li>
             </ul>
           </div>
