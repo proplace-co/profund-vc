@@ -161,11 +161,12 @@
   box-shadow: 0 0 0 4px rgba(98, 124, 153, .18); }
 /* Deux lignes, jamais trois : « Autonomous Scale. » mesure 8,93 em en Archivo 750,
    la taille suit donc la largeur de la colonne (cqw), plafonnée à 76 px. */
-.pv-h1 { margin: 0; font-size: clamp(44px, 4.4vw, 66px); font-size: min(76px, 10.9cqw); line-height: 1;
+.pv-h1 { margin: 0; font-size: clamp(44px, 4.4vw, 66px); font-size: min(72px, 10.3cqw); line-height: 1;
   letter-spacing: -.036em; font-weight: 750; color: var(--ink); white-space: nowrap; }
 .pv-h1 span { display: block; color: var(--blue); }
 .nw { white-space: nowrap; }
 .pv-lead { margin: 0; max-width: 34em; font-size: clamp(17px, 1.35vw, 20px); line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
+.pv-lead-k { margin-bottom: -10px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
 .pv-hero-note { margin: 0; max-width: 38em; font-size: 15.5px; line-height: 1.65; color: var(--muted); }
 .pv-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
 .pv-micro { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none;

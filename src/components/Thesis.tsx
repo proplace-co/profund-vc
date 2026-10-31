@@ -79,13 +79,13 @@ export function Manifesto({ tint = false }: { tint?: boolean }) {
             people to execute the vision of one. <b>That era is over.</b>
           </p>
           <p>
-            Today, a single visionary who knows how to challenge, direct, and iterate with AI can
+            Today, a tight-knit team that knows how to challenge, direct, and iterate with AI can
             architect an integral, self-improving system in record time. AI frees humanity from
             mechanical execution, returning creation to pure thought.
           </p>
           <p>
-            <b>We don’t fund headcount.</b> We back tight-knit AI-native teams building
-            self-improving systems with massive real-world utility.
+            <b>The future doesn’t belong to the largest organizations.</b> It belongs to the clearest
+            minds directing the most autonomous machines.
           </p>
         </div>
       </div>
@@ -106,7 +106,7 @@ const LAWS: { icon: IconName; t: string; d: string }[] = [
   },
   {
     icon: 'globe',
-    t: 'Colossal utility. Minimum headcount.',
+    t: 'Maximum impact. Minimum headcount.',
     d: 'We invest in integral systems solving massive, painful problems in the world’s largest markets, operated with near-zero marginal labor.',
   },
   {
@@ -205,7 +205,7 @@ export function ProofOfWork({ tint = false }: { tint?: boolean }) {
           <p className="pv-kick">Proof of work</p>
           <h2 className="pv-h2">We live what we back.</h2>
           <p className="sub">
-            Profund and the companies below are operated almost entirely by our in-house engines
+            ProFund and the companies below are operated almost entirely by our in-house engines
             and agents:
           </p>
         </div>

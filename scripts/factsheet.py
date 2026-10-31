@@ -316,7 +316,7 @@ LAWS = (
     ("loop", "Self-improving systems",
      "We look for closed-loop architectures. Products that don't just automate a task, but compound in "
      "intelligence, precision, and autonomy with every single run."),
-    ("globe", "Colossal utility. Minimum headcount.",
+    ("globe", "Maximum impact. Minimum headcount.",
      "We invest in integral systems solving massive, painful problems in the world's largest "
      "markets, operated with near-zero marginal labor."),
     ("trend", "Fund-returning physics",
@@ -375,11 +375,12 @@ def tier_card(F, u, v, w, h, layer, n):
 def page_one(F):
     kick(F, M, 84, "Venture capital · Seed to Growth · Europe")
     tw = 360.0
-    y = 102 + title(F, M, 102, tw, "", 37, lead=1.04,
-                    markup=f'{x("Pure Vision.")}<br/><font color="{BLUE}">{x("Autonomous Scale.")}</font>')
-    y += 12 + F.para(M, y + 12, tw, x(f"{FUND_SIZE} from Seed to Growth for visionary founders building "
-                                      "self-improving AI systems across massive markets."), 12.2, "reg", INK2, 1.5)
-    y += 12 + micro(F, M, y + 14, tw, ["Live deal flow", "Growth & Deal AI engines", "EuVECA fund, Luxembourg"])
+    y = 102 + title(F, M, 102, tw, "", 33, lead=1.04,
+                    markup=f'{x("Where Pure Vision")}<br/><font color="{BLUE}">{x("Directs Recursive AI.")}</font>')
+    y += 12 + F.para(M, y + 12, tw, x(f"Seed to Growth. {FUND_SIZE}."), 13, "gras", INK, 1.4)
+    y += 6 + F.para(M, y + 6, tw, x("We don't fund headcount. We back tight-knit, AI-native teams building "
+                                    "self-improving systems with massive real-world utility."), 11.6, "reg", INK2, 1.5)
+    y += 12 + micro(F, M, y + 14, tw, ["EuVECA fund, Luxembourg"])
 
     # le visuel : la carte du deal flow dans la fenetre, le pipeline pose devant
     # (les memes captures que le heros du site)
@@ -411,12 +412,12 @@ def page_one(F):
     h1 = F.para(rx, y + 2, rw, x("For two centuries, scaling a company meant scaling human labor, hiring thousands "
                                  "of people to execute the vision of one. That era is over."), 11.2, "semi", INK, 1.45)
     h2 = F.para(rx, y + 2 + h1 + 7, rw, x(
-        "Today, a single visionary who knows how to challenge, direct, and iterate with AI can architect an "
+        "Today, a tight-knit team that knows how to challenge, direct, and iterate with AI can architect an "
         "integral, self-improving system in record time. AI frees humanity from mechanical execution, "
         "returning creation to pure thought."), 9.8, "reg", MUTED, 1.45)
     h3 = F.para(rx, y + 2 + h1 + 7 + h2 + 7, rw, x(
-        "We don't fund headcount. We back tight-knit AI-native teams building self-improving systems with "
-        "massive real-world utility."), 9.8, "semi", INK, 1.45)
+        "The future doesn't belong to the largest organizations. It belongs to the clearest minds directing "
+        "the most autonomous machines."), 9.8, "semi", INK, 1.45)
     y += max(2 + h1 + 7 + h2 + 7 + h3, 70) + 20
 
     # les quatre lois
@@ -640,7 +641,7 @@ def page_two(F):
     kick(F, M, y, "Proof of work")
     title(F, M, y + 17, W, "We live what we back.", 18)
     y += 44
-    y += F.para(M, y, W, x("Profund and the companies below are "
+    y += F.para(M, y, W, x("ProFund and the companies below are "
                            "operated almost entirely by our in-house engines and agents:"), 10, "reg", MUTED, 1.45) + 10
     gap = 12.0
     pcw = (W - 2 * gap) / 3

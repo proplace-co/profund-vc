@@ -3,6 +3,7 @@ import DealFlowModal from './DealFlowModal';
 import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
 import { eur, fund } from '../lib/fund';
 import { FACTSHEET_URL } from '../lib/links';
+import { savedAccess } from '../lib/access';
 
 const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
 
@@ -39,6 +40,13 @@ export default function HomepageLite() {
     }
   }
 
+  // « Follow live deal flow » : le deal flow directement si ce navigateur en a
+  // déjà l'accès (lib/access.ts), sinon la boîte de candidature / lien.
+  function follow() {
+    if (savedAccess()) window.location.href = '/dealflow/';
+    else openModal();
+  }
+
   function closeModal() {
     setOpen(false);
     if (hashWantsDealflow()) {
@@ -49,29 +57,27 @@ export default function HomepageLite() {
   return (
     <div className="pfh">
       <SiteHeader links={LINKS}>
-        <button type="button" className="pv-btn" onClick={openModal}>Follow live deal flow</button>
+        <button type="button" className="pv-btn" onClick={follow}>Follow live deal flow</button>
       </SiteHeader>
 
       <header className="pv-hero">
         <div className="pv-wrap pv-hero-grid">
           <div className="pv-hero-copy">
             <span className="pv-eyebrow"><b />AI-native venture fund · Europe</span>
-            <h1 className="pv-h1">Pure Vision.<span>Autonomous Scale.</span></h1>
+            <h1 className="pv-h1">Where Pure Vision<span>Directs Recursive AI.</span></h1>
+            <p className="pv-lead pv-lead-k">Seed to Growth. {FUND_SIZE}.</p>
             <p className="pv-lead">
-              {FUND_SIZE} from Seed to Growth for visionary founders building <span className="nw">self-improving</span> AI systems across massive markets.
+              We don’t fund headcount. We back tight-knit, AI-native teams building <span className="nw">self-improving</span> systems
+              with massive real-world utility.
             </p>
             <div className="pv-ctas">
-              <button type="button" className="pv-btn" onClick={openModal}>
+              <button type="button" className="pv-btn" onClick={follow}>
                 Follow live deal flow <Icon name="arrow" />
               </button>
               <a href={FACTSHEET_URL} className="pv-btn line" download>
                 <Icon name="file" />Download the fact sheet
               </a>
             </div>
-            <ul className="pv-micro">
-              <li><Icon name="check" />Live deal flow</li>
-              <li><Icon name="check" />Growth &amp; Deal AI engines</li>
-            </ul>
           </div>
           <HeroVisual />
         </div>
@@ -79,7 +85,7 @@ export default function HomepageLite() {
 
       <Manifesto />
       <FourLaws />
-      <OurEdge onFollow={openModal} />
+      <OurEdge onFollow={follow} />
       <ProofOfWork />
 
       <section className="pv-sec pv-sec-end" id="factsheet">

@@ -27,9 +27,11 @@ function HeroSection() {
       <div className="pv-wrap pv-hero-grid">
         <div className="pv-hero-copy">
           <span className="pv-eyebrow"><b />Pre-Marketing Phase · EuVECA</span>
-          <h1 className="pv-h1">Pure Vision.<span>Autonomous Scale.</span></h1>
+          <h1 className="pv-h1">Where Pure Vision<span>Directs Recursive AI.</span></h1>
+          <p className="pv-lead pv-lead-k">Seed to Growth. {eur(F.commitments, 'tile')}.</p>
           <p className="pv-lead">
-            {eur(F.commitments, 'tile')} from Seed to Growth for visionary founders building <span className="nw">self-improving</span> AI systems across massive markets.
+            We don’t fund headcount. We back tight-knit, AI-native teams building <span className="nw">self-improving</span> systems
+            with massive real-world utility.
           </p>
           <p className="pv-hero-note">A {eur(F.commitments, 'tile')} European venture fund, seed to growth. We lead at seed, enter at the inflection point in Series A (in our own companies or directly in the best external rounds) and double down at growth, up to {eur(F.company_max_with_spv, 'tile')} per company with co-investment SPVs.</p>
           <div className="pv-ctas">
