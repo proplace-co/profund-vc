@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { dealFlowPreview } from '../lib/dealFlowPreview';
+import { forgetAccess, rememberAccess, savedAccess } from '../lib/access';
 
 const PROXY =
   'https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run';
@@ -26,7 +27,9 @@ type State = 'check' | 'ok' | 'bad' | 'none' | 'down';
 
 export default function DealFlowPage() {
   const [params] = useSearchParams();
-  const k = (params.get('k') || '').trim();
+  // Le lien de l'email, sinon l'accès déjà retenu par ce navigateur (lib/access.ts).
+  const [saved, setSaved] = useState(() => savedAccess());
+  const k = (params.get('k') || '').trim() || saved;
   const [state, setState] = useState<State>(k ? 'check' : 'none');
   const [slow, setSlow] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -74,9 +77,11 @@ export default function DealFlowPage() {
             setSrc(dealFlowPreview(d.preview_src));
             setFrameH(null);
             setState('ok');
+            rememberAccess(k);
             return;
           }
           if (r.status === 401 || r.ok) {
+            forgetAccess();
             setState('bad');
             return;
           }
@@ -97,6 +102,13 @@ export default function DealFlowPage() {
     };
   }, [k, attempt]);
 
+  // Oublie l'accès de ce navigateur ; le lien de l'email reste valable.
+  function signOut() {
+    forgetAccess();
+    setSaved('');
+    window.location.replace('/dealflow/');
+  }
+
   return (
     <div className="pfd">
       <header className="pfd-bar">
@@ -104,7 +116,10 @@ export default function DealFlowPage() {
           <img src={LOGO} alt="ProFund" />
         </a>
         {state === 'ok' && (
-          <span className="pfd-who">Deal flow{first ? ` · ${first}` : ''}</span>
+          <span className="pfd-who">
+            Deal flow{first ? ` · ${first}` : ''}
+            <button type="button" className="pfd-out" onClick={signOut}>Sign out</button>
+          </span>
         )}
       </header>
 

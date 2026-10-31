@@ -605,7 +605,12 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pfd-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;
   height: 56px; padding: 0 20px; border-bottom: 1px solid var(--line); background: #fff; }
 .pfd-brand img { display: block; height: 22px; width: auto; }
-.pfd-who { font-size: 13px; color: var(--muted); }
+.pfd-who { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--muted); }
+.pfd-out { padding: 0; border: 0; background: none; font: inherit; color: var(--blue-dk); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.pfm-open { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  margin: 0 0 22px; padding: 14px 16px; border-radius: 16px; background: var(--blue-tint); box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 14px; color: var(--ink-2); }
+.pfm-open .pv-btn { height: 40px; padding: 0 18px; font-size: 14px; }
 /* 31/10 (Antoine) : de l'air entre la barre et les onglets des continents du cockpit */
 .pfd-frame { flex: 1; width: 100%; min-height: calc(100vh - 76px); margin-top: 20px; border: 0; background: #fff; }
 .pfd:has(.pfd-frame) { background: #fff; }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { savedAccess } from '../lib/access';
 
 // Le site est statique (GitHub Pages) : le formulaire POSTe directement le proxy
 // Modal, dont le middleware CORS est ouvert (allow_origins=["*"]). La route est
@@ -34,6 +35,16 @@ function splitName(full: string): [string, string] {
   return [parts[0] || '', parts.slice(1).join(' ')];
 }
 
+// En tête de la boîte quand ce navigateur a déjà l'accès : un clic, pas d'email.
+function OpenDealFlow() {
+  return (
+    <div className="pfm-open">
+      <span><b>Welcome back.</b> This browser already has your access.</span>
+      <a className="pv-btn" href="/dealflow/">Open my deal flow</a>
+    </div>
+  );
+}
+
 export default function DealFlowModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -43,6 +54,8 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
   const [pane, setPane] = useState<'apply' | 'returning'>('apply');
   const [doneKind, setDoneKind] = useState<'pending' | 'resent'>('pending');
   const firstRef = useRef<HTMLInputElement>(null);
+  // 31/10 — ce navigateur a déjà ouvert le deal flow : on l'ouvre sans email.
+  const hasAccess = open && !!savedAccess();
   const [first] = splitName(name);
 
   // Échap ferme, et on bloque le défilement du fond tant que la boîte est ouverte.
@@ -172,6 +185,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
           </div>
         ) : pane === 'returning' ? (
           <form onSubmit={resend}>
+            {hasAccess && <OpenDealFlow />}
             <h3 className="pfm-h">Get your access link.</h3>
             <p className="pfm-sub">We email a private link to the live deal flow.</p>
             <div className="pfm-fld">
@@ -190,6 +204,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
           </form>
         ) : (
           <form onSubmit={submit}>
+            {hasAccess && <OpenDealFlow />}
             <h3 className="pfm-h">Follow our deal flow.</h3>
             <p className="pfm-sub">
               Every evening at {HOUR}:00 Paris time: the companies we reviewed that day,
@@ -235,7 +250,10 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
               <br />EuVECA pre-marketing communication, eligible investors only. Not an offer to subscribe.
             </p>
             <p className="pfm-fine">
-              Already following? <button type="button" className="pfm-alt" onClick={() => switchPane('returning')}>Get my access link</button>
+              Already following?{' '}
+              {hasAccess
+                ? <a className="pfm-alt" href="/dealflow/">Open my deal flow</a>
+                : <button type="button" className="pfm-alt" onClick={() => switchPane('returning')}>Get my access link</button>}
             </p>
           </form>
         )}
