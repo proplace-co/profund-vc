@@ -376,10 +376,10 @@ def page_one(F):
     kick(F, M, 84, "Venture capital · Seed to Growth · Europe")
     tw = 360.0
     y = 102 + title(F, M, 102, tw, "", 33, lead=1.04,
-                    markup=f'{x("Where Pure Vision")}<br/><font color="{BLUE}">{x("Directs Recursive AI.")}</font>')
+                    markup=x("Where pure vision directs recursive AI."))
     y += 12 + F.para(M, y + 12, tw, x(f"Seed to Growth. {FUND_SIZE}."), 13, "gras", INK, 1.4)
     y += 6 + F.para(M, y + 6, tw, x("We don't fund headcount. We back tight-knit, AI-native teams building "
-                                    "self-improving systems with massive real-world utility."), 11.6, "reg", INK2, 1.5)
+                                    "self-improving systems across the world's largest markets."), 11.6, "reg", INK2, 1.5)
     y += 12 + micro(F, M, y + 14, tw, ["EuVECA fund, Luxembourg"])
 
     # le visuel : la carte du deal flow dans la fenetre, le pipeline pose devant

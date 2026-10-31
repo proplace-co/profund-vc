@@ -164,6 +164,8 @@
 .pv-h1 { margin: 0; font-size: clamp(44px, 4.4vw, 66px); font-size: min(72px, 10.3cqw); line-height: 1;
   letter-spacing: -.036em; font-weight: 750; color: var(--ink); white-space: nowrap; }
 .pv-h1 span { display: block; color: var(--blue); }
+/* 31/10 — le titre en une seule phrase : il passe à la ligne de lui-même, lignes équilibrées */
+.pv-h1.pv-h1-one { white-space: normal; text-wrap: balance; }
 .nw { white-space: nowrap; }
 .pv-lead { margin: 0; max-width: 34em; font-size: clamp(17px, 1.35vw, 20px); line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
 .pv-lead-k { margin-bottom: -10px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }

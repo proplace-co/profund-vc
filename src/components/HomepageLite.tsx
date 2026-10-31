@@ -64,11 +64,11 @@ export default function HomepageLite() {
         <div className="pv-wrap pv-hero-grid">
           <div className="pv-hero-copy">
             <span className="pv-eyebrow"><b />AI-native venture fund · Europe</span>
-            <h1 className="pv-h1">Where Pure Vision<span>Directs Recursive AI.</span></h1>
+            <h1 className="pv-h1 pv-h1-one">Where pure vision directs recursive AI.</h1>
             <p className="pv-lead pv-lead-k">Seed to Growth. {FUND_SIZE}.</p>
             <p className="pv-lead">
               We don’t fund headcount. We back tight-knit, AI-native teams building <span className="nw">self-improving</span> systems
-              with massive real-world utility.
+              across the world’s largest markets.
             </p>
             <div className="pv-ctas">
               <button type="button" className="pv-btn" onClick={follow}>

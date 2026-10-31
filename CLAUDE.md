@@ -54,7 +54,7 @@ qui dépend à la fois de `--border` dans le `:root` du CSS **et** de
 **Le contenu textuel est dans les composants**, en dur. Les pages Legal et
 Privacy sont l'exception : leur texte est dans un tableau en haut du fichier
 (`CLAUSES`, `SECTIONS`), c'est là qu'il faut le modifier. **Le texte de la
-thèse** (Antoine, 31/10 : « Where Pure Vision Directs Recursive AI. », manifeste, quatre
+thèse** (Antoine, 31/10 : « Where pure vision directs recursive AI. », manifeste, quatre
 lois, deux moteurs, proof of work) vit dans `Thesis.tsx`, rendu à l'identique
 par l'accueil et /pitch ; la fiche PDF en porte une copie (`factsheet.py`) :
 les changer ensemble. **Ton de la copie (Antoine, 30/10)** : pas de tiret long
