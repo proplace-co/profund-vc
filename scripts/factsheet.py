@@ -74,7 +74,7 @@ MONTHS = ("January", "February", "March", "April", "May", "June", "July",
 PORTFOLIO = (
     ("Proplace", "Autonomous AI operating system for corporate development & M&A.",
      ROOT / "public" / "portfolio-proplace.png", "https://proplace.co"),
-    ("Maximum Insurance", "Travel Insurtech.",
+    ("Maximum Insurance", "Travel insurance and duty of care for companies and their teams abroad.",
      ROOT / "scripts" / "assets" / "portfolio-maximum-insurance.png", "https://maximum-insurance.com"),
     ("Sosuites", "AI-assisted personalised art prints to share.",
      ROOT / "public" / "portfolio-sosuites.png", "https://www.sosuites.com"),
@@ -459,7 +459,7 @@ def page_one(F):
     stats = [
         (FUND_SIZE, f"Target Fund I, closed-ended, closings over {FUND['closing_months']} months"),
         ("3 layers", f"Seed, Venture, Growth: {eur(seed['ticket_min'])} to "
-                     f"{eur(FUND['company_max_with_spv'], 'tile')} per company"),
+                     f"{eur(FUND['company_cap'], 'tile')} per company"),
         ("Every", "European seed round tracked by the Seed Radar, weekly"),
         ("6–18mo", "Detection lead before announcement"),
     ]

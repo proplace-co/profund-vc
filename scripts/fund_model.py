@@ -71,7 +71,7 @@ CASES = (("target", None), ("base", 500 * M), ("stress", 250 * M))
 
 LAYERS = ("seed", "venture", "growth")
 BOUNDS = {
-    "seed": {"ticket": (150_000, 1_500_000), "post": (5 * M, 20 * M),
+    "seed": {"ticket": (100_000, 1_500_000), "post": (5 * M, 20 * M),
              "own": (0.05, 0.125), "companies": 18},
     "venture": {"ticket": (1_500_000, 5 * M), "post": (25 * M, 80 * M),
                 "own": (0.05, 0.08), "companies": 8},

@@ -58,7 +58,7 @@
   },
   "layers": {
     "seed": {
-      "ticket_min": 150000,
+      "ticket_min": 100000,
       "ticket_max": 1500000,
       "entry_post_min": 5000000,
       "entry_post_max": 20000000,

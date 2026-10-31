@@ -444,18 +444,17 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 
 /* ── Founding Partner ── */
 .gp-grid { display: grid; grid-template-columns: 180px 1fr; gap: 44px; align-items: start; }
-.gp-grid img { border-radius: var(--r-lg); box-shadow: var(--sh-2); }
+.gp-grid > div:first-child img { border-radius: var(--r-lg); box-shadow: var(--sh-2); }
 .gp-name { margin-bottom: 4px; font-size: 24px; font-weight: 750; letter-spacing: -.02em; }
 .gp-role { margin-bottom: 20px; font-size: 14.5px; color: var(--muted); }
+.gp-logos { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 30px; margin: -6px 0 22px; }
+.gp-logos img { display: block; width: auto; filter: grayscale(1); opacity: .62; }
 .f-rows { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
 .f-row { display: grid; grid-template-columns: 230px 1fr; gap: 16px; padding: 15px 22px; border-bottom: 1px solid var(--line); }
 .f-row:last-child { border-bottom: none; }
 .f-co { font-size: 14px; font-weight: 600; color: var(--ink); }
 .f-desc { font-size: 14px; line-height: 1.6; color: var(--muted); }
 .f-kpi { font-weight: 700; color: var(--blue-dk); }
-.gp-quote { margin-top: 16px; padding: 20px 24px; border-radius: var(--r-md); background: var(--blue-tint);
-  box-shadow: inset 0 0 0 1px #dfe6ef; font-size: 16px; font-style: italic; line-height: 1.65; color: var(--ink-2); }
-
 /* ── Cartes ── */
 .serve-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .sc { padding: 28px; border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
@@ -555,7 +554,7 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   .perf-table { min-width: 420px; }
   .perf-table th, .perf-table td { padding: 11px 12px; font-size: 13px; }
 
-  .gp-grid img { width: 140px !important; height: 175px !important; }
+  .gp-grid > div:first-child img { width: 140px !important; height: 175px !important; }
   .pf-footer { flex-wrap: wrap; justify-content: center; padding: 20px; }
   .foot-links { justify-content: center; gap: 16px 20px; }
 }

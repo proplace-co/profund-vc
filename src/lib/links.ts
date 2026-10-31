@@ -1,5 +1,5 @@
 // Les deux fichiers téléchargeables du site. Changer le ?v= à chaque
 // régénération (fiche : scripts/factsheet.py ; modèle : scripts/fund_xlsx.py),
 // sinon navigateurs et CDN resservent l'ancienne version.
-export const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-31-v11';
-export const MODEL_XLSX_URL = '/profund-fund-model.xlsx?v=2026-10-30-v1';
+export const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-10-31-v12';
+export const MODEL_XLSX_URL = '/profund-fund-model.xlsx?v=2026-10-31-v2';

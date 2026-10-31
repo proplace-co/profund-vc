@@ -192,7 +192,7 @@ const PROOF = [
   { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', wide: false,
     tagline: 'Autonomous AI operating system for corporate development & M&A.' },
   { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', wide: true,
-    tagline: 'Travel Insurtech.' },
+    tagline: 'Travel insurance and duty of care for companies and their teams abroad.' },
   { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', wide: true,
     tagline: 'AI-assisted personalised art prints to share.' },
 ];

@@ -5,6 +5,12 @@ import { fund, eur, eurRange, mult, pct, rowId, outcomeTag, type CaseId, type La
 import { FACTSHEET_URL, MODEL_XLSX_URL } from '../lib/links';
 
 const GP_PHOTO_URL = '/gp-photo.jpg';
+// Parcours du GP, en logos (tirés de public/track-record.png ; Google et Mirakl retirés le 31/10).
+const CV_LOGOS = [
+  { name: 'Partech', src: '/cv-partech.png', h: 24 },
+  { name: 'Ardian', src: '/cv-ardian.png', h: 20 },
+  { name: 'leboncoin', src: '/cv-leboncoin.png', h: 20 },
+];
 
 // Chiffres du fonds : src/data/fund.json, généré par scripts/fund_model.py.
 // Ne jamais taper un montant, un multiple ou un TRI du fonds dans ce fichier.
@@ -40,14 +46,6 @@ function HeroSection() {
           </div>
         </div>
         <HeroVisual />
-      </div>
-      <div className="pv-wrap">
-        <div className="hero-stats pv-stats">
-          <div className="sg"><span className="sg-n">{eur(F.commitments, 'tile')}</span><span className="sg-l">Target Fund I · closed-ended · closings over {F.closing_months} months</span></div>
-          <div className="sg"><span className="sg-n">3 layers</span><span className="sg-l">{L.seed.companies} Seed · {L.venture.companies} Venture · {L.growth.companies} direct Growth entries, plus follow-ons in our breakouts</span></div>
-          <div className="sg"><span className="sg-n">Weekly</span><span className="sg-l">Seed Radar: every European seed round re-scored on growth signals</span></div>
-          <div className="sg"><span className="sg-n">6–18mo</span><span className="sg-l">Average detection lead before public announcement</span></div>
-        </div>
       </div>
     </header>
   );
@@ -92,7 +90,7 @@ function WhyOneFund() {
             <h2 className="h2">The stage ladder has collapsed.<br /><em>We position ideally just before the exponential.</em></h2>
             <p className="fw-body">AI-native companies no longer climb one stage every eighteen months. The best of them go from first revenue to growth-stage metrics in a few months, with a fraction of the team a SaaS company needed. A fund split by stage arrives either too early or too late.</p>
             <p className="fw-body">The value created by AI growth has nothing in common with classic software growth: it compounds faster, with far fewer resources. What these companies still need capital for is people: a small number of exceptional profiles, with a culture of excellence and radical execution, the Revolut standard. <strong>Our tickets fund that talent density.</strong></p>
-            <p className="fw-body">So ProFund is one fund, organised in three layers. We lead at seed when we detect the team before the round, we enter at the inflection point when the curve bends, and we double down at growth, from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_max_with_spv, 'tile')} in the same company, without changing vehicle.</p>
+            <p className="fw-body">So ProFund is one fund, organised in three layers. We lead at seed when we detect the team before the round, we enter at the inflection point when the curve bends, and we double down at growth, from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_cap, 'tile')} in the same company, without changing vehicle.</p>
             <p className="fw-body"><strong>The Seed Radar.</strong> Every European seed round is tracked, company by company, and re-scored every week on growth signals: exceptional hires, hiring velocity, traffic, product releases, revenue proxies, back-to-back rounds. Our objective: never miss a European company entering exponential growth.</p>
           </div>
           <div>
@@ -507,6 +505,10 @@ function FoundingPartner() {
           <div>
             <div className="gp-name">Alexandre Busson</div>
             <div className="gp-role">Founding Partner &amp; GP · ProFund · ESSEC · Ardian · Partech · Leboncoin · Google</div>
+            {/* 31/10 (Antoine) — les maisons où le GP a investi et déployé du capital */}
+            <div className="gp-logos" aria-label="Partech · Ardian · leboncoin">
+              {CV_LOGOS.map((l) => <img key={l.name} src={l.src} alt={l.name} style={{ height: l.h }} />)}
+            </div>
             <div className="f-rows">
               <div className="f-row"><span className="f-co">Ardian · LBO analyst</span><span className="f-desc">Financial analysis, due diligence and portfolio monitoring across European mid-market companies. The work these products automate, done manually, at institutional standard.</span></div>
               <div className="f-row"><span className="f-co">Partech Ventures · Senior associate</span><span className="f-desc">Sourcing and qualification of European pre-seed to Series B startups. Hundreds of founding teams evaluated. The conviction the platform encodes today was built here, manually, before it was an algorithm.</span></div>
@@ -517,7 +519,6 @@ function FoundingPartner() {
               <div className="f-row"><span className="f-co">Deal-03 · 19×</span><span className="f-desc">Seed ticket €200K at €5.3M. LBO exit at €100M. Sourced 14 months before public announcement, via the same weak signal methodology the platform now runs at scale every morning. <span className="f-kpi">19× return.</span></span></div>
               <div className="f-row"><span className="f-co">Deal-04 · Acquired 2016</span><span className="f-desc">100% acquisition, €45M buyout. Revenue growing ~20% YoY since acquisition.</span></div>
             </div>
-            <div className="gp-quote">"Our investment thesis isn't a PDF. It's an algorithm. Every deal we make, every rejection we issue, every founder we back makes the platform more precise."</div>
           </div>
         </div>
       </div>
@@ -591,7 +592,7 @@ function CTASection({ onFollow }: { onFollow: () => void }) {
           <div>
             <span className="eyebrow">Get in Touch</span>
             <h2 className="cta-h">Invest in the future<br />of <em>European AI.</em></h2>
-            <p className="cta-p">We are selectively building our LP base. A {eur(F.commitments, 'tile')} European venture fund, seed to growth: one fund that follows AI-native companies from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_max_with_spv, 'tile')}, powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals before they become obvious to the category.</p>
+            <p className="cta-p">We are selectively building our LP base. A {eur(F.commitments, 'tile')} European venture fund, seed to growth: one fund that follows AI-native companies from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_cap, 'tile')}, powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals before they become obvious to the category.</p>
             <p className="cta-note">Contact: <a href="mailto:alexandre@profund.vc">alexandre@profund.vc</a></p>
           </div>
           {/* 29/10 — le même formulaire que l'accueil (DealFlowModal), plus l'ancien iframe Brevo */}
