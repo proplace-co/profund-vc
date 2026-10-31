@@ -606,7 +606,9 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   height: 56px; padding: 0 20px; border-bottom: 1px solid var(--line); background: #fff; }
 .pfd-brand img { display: block; height: 22px; width: auto; }
 .pfd-who { font-size: 13px; color: var(--muted); }
-.pfd-frame { flex: 1; width: 100%; min-height: calc(100vh - 56px); border: 0; background: #fff; }
+/* 31/10 (Antoine) : de l'air entre la barre et les onglets des continents du cockpit */
+.pfd-frame { flex: 1; width: 100%; min-height: calc(100vh - 76px); margin-top: 20px; border: 0; background: #fff; }
+.pfd:has(.pfd-frame) { background: #fff; }
 .pfd-gate { max-width: 440px; margin: 12vh auto; padding: 0 24px; text-align: center; }
 .pfd-gate h1 { margin: 0 0 10px; font-size: 28px; font-weight: 750; letter-spacing: -.03em; }
 .pfd-gate p { margin: 0 0 22px; line-height: 1.6; color: var(--ink-2); }
