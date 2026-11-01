@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "version": "v2",
-  "model_date": "2026-10-29",
+  "model_date": "2026-11-01",
   "fund": {
     "commitments": 100000000,
     "term_years": 10,
@@ -12,7 +12,7 @@
     "europe_min_pct": 0.85,
     "euveca_qualifying_min_pct": 0.7,
     "company_cap": 10000000,
-    "companies": 29
+    "companies": 61
   },
   "terms": {
     "fee_ip_pct": 0.02,
@@ -39,10 +39,10 @@
     "seed": {
       "graduation_pct": 0.4,
       "next_round": 15000000,
-      "pro_rata_pct": 0.06,
+      "pro_rata_pct": 0.017,
       "bridges": 1000000,
-      "companies": 18,
-      "expected": 7500000
+      "companies": 50,
+      "expected": 6100000
     },
     "venture": {
       "graduation_pct": 0.5,
@@ -62,22 +62,22 @@
       "ticket_max": 1500000,
       "entry_post_min": 5000000,
       "entry_post_max": 20000000,
-      "ownership_min": 0.05,
+      "ownership_min": 0.01,
       "ownership_max": 0.125,
-      "companies": 18,
-      "positions": 8,
-      "initial": 9000000,
-      "follow_on": 7500000,
+      "companies": 50,
+      "positions": 12,
+      "initial": 10300000,
+      "follow_on": 6200000,
       "invested": 16500000,
       "proceeds": {
-        "target": 110200000,
-        "base": 61700000,
-        "stress": 40300000
+        "target": 112500000,
+        "base": 64000000,
+        "stress": 42600000
       },
       "moic": {
-        "target": 6.7,
-        "base": 3.7,
-        "stress": 2.4
+        "target": 6.8,
+        "base": 3.9,
+        "stress": 2.6
       },
       "lines": [
         {
@@ -97,7 +97,8 @@
           "moic": 22.5,
           "invest_year": 1,
           "follow_on_year": 2,
-          "exit_year": 8
+          "exit_year": 8,
+          "track": "lead"
         },
         {
           "id": "S-02",
@@ -116,7 +117,8 @@
           "moic": 9.3,
           "invest_year": 1,
           "follow_on_year": 2,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": "lead"
         },
         {
           "id": "S-03",
@@ -135,7 +137,8 @@
           "moic": 5.1,
           "invest_year": 1,
           "follow_on_year": 3,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": "lead"
         },
         {
           "id": "S-04",
@@ -154,7 +157,8 @@
           "moic": 7.5,
           "invest_year": 2,
           "follow_on_year": 3,
-          "exit_year": 5
+          "exit_year": 5,
+          "track": "lead"
         },
         {
           "id": "S-05",
@@ -173,56 +177,39 @@
           "moic": 2.7,
           "invest_year": 1,
           "follow_on_year": 2,
-          "exit_year": 4
+          "exit_year": 4,
+          "track": "lead"
         },
         {
           "id": "S-06",
           "company": "S-06",
-          "n": 1,
-          "outcome": "early_exit",
-          "kind": "new",
-          "initial": 300000,
-          "entry_post": 6000000,
-          "entry_pct": 0.05,
-          "follow_on": 0,
-          "exit_pct": 0.04,
-          "exit_value": 40000000,
-          "recovery": null,
-          "proceeds": 1600000,
-          "moic": 5.3,
-          "invest_year": 2,
-          "follow_on_year": null,
-          "exit_year": 4
-        },
-        {
-          "id": "S-07",
-          "company": "S-07",
-          "n": 3,
+          "n": 2,
           "outcome": "zombie",
           "kind": "new",
-          "initial": 1200000,
+          "initial": 1000000,
           "entry_post": 8000000,
-          "entry_pct": 0.05,
-          "follow_on": 600000,
+          "entry_pct": 0.063,
+          "follow_on": 200000,
           "exit_pct": null,
           "exit_value": null,
           "recovery": 0.5,
-          "proceeds": 900000,
+          "proceeds": 600000,
           "moic": 0.5,
           "invest_year": 2,
           "follow_on_year": 3,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": "lead"
         },
         {
-          "id": "S-10",
-          "company": "S-10",
-          "n": 9,
+          "id": "S-08",
+          "company": "S-08",
+          "n": 3,
           "outcome": "loss",
           "kind": "new",
-          "initial": 4000000,
+          "initial": 1500000,
           "entry_post": 8000000,
-          "entry_pct": 0.056,
-          "follow_on": 1400000,
+          "entry_pct": 0.063,
+          "follow_on": 100000,
           "exit_pct": null,
           "exit_value": null,
           "recovery": 0.0,
@@ -230,9 +217,134 @@
           "moic": 0.0,
           "invest_year": 2,
           "follow_on_year": 3,
-          "exit_year": 5
+          "exit_year": 5,
+          "track": "lead"
+        },
+        {
+          "id": "S-11",
+          "company": "S-11",
+          "n": 1,
+          "outcome": "strategic_exit",
+          "kind": "new",
+          "initial": 150000,
+          "entry_post": 8000000,
+          "entry_pct": 0.019,
+          "follow_on": 200000,
+          "exit_pct": 0.016,
+          "exit_value": 150000000,
+          "recovery": null,
+          "proceeds": 2400000,
+          "moic": 6.9,
+          "invest_year": 2,
+          "follow_on_year": 3,
+          "exit_year": 6,
+          "track": "radar"
+        },
+        {
+          "id": "S-12",
+          "company": "S-12",
+          "n": 1,
+          "outcome": "early_exit",
+          "kind": "new",
+          "initial": 150000,
+          "entry_post": 8000000,
+          "entry_pct": 0.019,
+          "follow_on": 100000,
+          "exit_pct": 0.013,
+          "exit_value": 60000000,
+          "recovery": null,
+          "proceeds": 780000,
+          "moic": 3.1,
+          "invest_year": 1,
+          "follow_on_year": 2,
+          "exit_year": 5,
+          "track": "radar"
+        },
+        {
+          "id": "S-13",
+          "company": "S-13",
+          "n": 1,
+          "outcome": "early_exit",
+          "kind": "new",
+          "initial": 100000,
+          "entry_post": 6000000,
+          "entry_pct": 0.017,
+          "follow_on": 0,
+          "exit_pct": 0.013,
+          "exit_value": 40000000,
+          "recovery": null,
+          "proceeds": 520000,
+          "moic": 5.2,
+          "invest_year": 2,
+          "follow_on_year": null,
+          "exit_year": 4,
+          "track": "radar"
+        },
+        {
+          "id": "S-14",
+          "company": "S-14",
+          "n": 8,
+          "outcome": "zombie",
+          "kind": "new",
+          "initial": 900000,
+          "entry_post": 8000000,
+          "entry_pct": 0.014,
+          "follow_on": 100000,
+          "exit_pct": null,
+          "exit_value": null,
+          "recovery": 0.5,
+          "proceeds": 500000,
+          "moic": 0.5,
+          "invest_year": 2,
+          "follow_on_year": 3,
+          "exit_year": 7,
+          "track": "radar"
+        },
+        {
+          "id": "S-22",
+          "company": "S-22",
+          "n": 29,
+          "outcome": "loss",
+          "kind": "new",
+          "initial": 3000000,
+          "entry_post": 8000000,
+          "entry_pct": 0.013,
+          "follow_on": 0,
+          "exit_pct": null,
+          "exit_value": null,
+          "recovery": 0.0,
+          "proceeds": 0,
+          "moic": 0.0,
+          "invest_year": 2,
+          "follow_on_year": null,
+          "exit_year": 5,
+          "track": "radar"
         }
-      ]
+      ],
+      "tracks": {
+        "lead": {
+          "companies": 10,
+          "ticket_min": 500000,
+          "ticket_max": 1500000,
+          "first": "S-01",
+          "last": "S-10",
+          "initial": 6000000,
+          "invested": 11800000,
+          "proceeds": 108300000,
+          "moic": 9.2
+        },
+        "radar": {
+          "companies": 40,
+          "ticket_min": 100000,
+          "ticket_max": 150000,
+          "first": "S-11",
+          "last": "S-50",
+          "initial": 4300000,
+          "invested": 4700000,
+          "proceeds": 4200000,
+          "moic": 0.9
+        }
+      }
     },
     "venture": {
       "ticket_min": 1500000,
@@ -274,7 +386,8 @@
           "moic": 10.8,
           "invest_year": 1,
           "follow_on_year": 3,
-          "exit_year": 8
+          "exit_year": 8,
+          "track": null
         },
         {
           "id": "V-02",
@@ -293,7 +406,8 @@
           "moic": 5.4,
           "invest_year": 1,
           "follow_on_year": 3,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": null
         },
         {
           "id": "V-03",
@@ -312,7 +426,8 @@
           "moic": 4.0,
           "invest_year": 2,
           "follow_on_year": 4,
-          "exit_year": 6
+          "exit_year": 6,
+          "track": null
         },
         {
           "id": "V-04",
@@ -331,7 +446,8 @@
           "moic": 2.5,
           "invest_year": 2,
           "follow_on_year": 4,
-          "exit_year": 6
+          "exit_year": 6,
+          "track": null
         },
         {
           "id": "V-05",
@@ -350,7 +466,8 @@
           "moic": 0.4,
           "invest_year": 3,
           "follow_on_year": 4,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": null
         },
         {
           "id": "V-07",
@@ -369,7 +486,8 @@
           "moic": 0.0,
           "invest_year": 3,
           "follow_on_year": 4,
-          "exit_year": 6
+          "exit_year": 6,
+          "track": null
         }
       ]
     },
@@ -413,7 +531,8 @@
           "moic": 4.7,
           "invest_year": 3,
           "follow_on_year": null,
-          "exit_year": 8
+          "exit_year": 8,
+          "track": null
         },
         {
           "id": "G-02",
@@ -432,7 +551,8 @@
           "moic": 2.4,
           "invest_year": 4,
           "follow_on_year": null,
-          "exit_year": 8
+          "exit_year": 8,
+          "track": null
         },
         {
           "id": "G-03",
@@ -451,7 +571,8 @@
           "moic": 3.4,
           "invest_year": 3,
           "follow_on_year": null,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": null
         },
         {
           "id": "G-07",
@@ -470,7 +591,8 @@
           "moic": 3.5,
           "invest_year": 2,
           "follow_on_year": null,
-          "exit_year": 6
+          "exit_year": 6,
+          "track": null
         },
         {
           "id": "G-08",
@@ -489,7 +611,8 @@
           "moic": 3.1,
           "invest_year": 3,
           "follow_on_year": null,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": null
         },
         {
           "id": "G-09",
@@ -508,7 +631,8 @@
           "moic": 0.8,
           "invest_year": 3,
           "follow_on_year": null,
-          "exit_year": 7
+          "exit_year": 7,
+          "track": null
         }
       ],
       "internal": 17000000,
@@ -523,9 +647,9 @@
     "venture": 34400000,
     "growth": 33000000,
     "invested": 83900000,
-    "initial": 49000000,
-    "follow_on": 34900000,
-    "follow_on_pct": 0.42,
+    "initial": 50300000,
+    "follow_on": 33600000,
+    "follow_on_pct": 0.4,
     "mgmt_fees": 12100000,
     "fund_expenses": 3900000,
     "contingency": 100000,
@@ -575,24 +699,24 @@
   "cases": {
     "target": {
       "exit_cap": null,
-      "gross_exits": 324300000,
+      "gross_exits": 326600000,
       "secondary_discount": 16600000,
-      "realised": 307700000,
+      "realised": 310000000,
       "paid_in": 99200000,
       "mgmt_fees": 12100000,
       "fund_expenses": 3900000,
-      "lp_distributions": 265400000,
-      "carry": 41600000,
+      "lp_distributions": 267300000,
+      "carry": 42000000,
       "net_tvpi": 2.7,
       "net_irr": 0.26,
-      "gross_irr": 0.34,
+      "gross_irr": 0.35,
       "dpi_year6": 0.9,
       "horizon_years": 8,
       "cashflows": {
         "calls": [
-          11800000,
-          24400000,
-          43900000,
+          11900000,
+          25600000,
+          42500000,
           13800000,
           2400000,
           1500000,
@@ -603,20 +727,20 @@
           0,
           0,
           0,
-          4300000,
-          7500000,
-          74000000,
-          97000000,
+          3200000,
+          8300000,
+          76400000,
+          97200000,
           124200000
         ],
         "lp": [
           0,
           0,
           0,
-          4300000,
-          7500000,
-          74000000,
-          80200000,
+          3200000,
+          8300000,
+          76400000,
+          79900000,
           99500000
         ],
         "gp": [
@@ -626,21 +750,21 @@
           0,
           0,
           0,
-          16800000,
+          17300000,
           24700000
         ]
       }
     },
     "base": {
       "exit_cap": 500000000,
-      "gross_exits": 190700000,
+      "gross_exits": 193000000,
       "secondary_discount": 5800000,
-      "realised": 184900000,
+      "realised": 187200000,
       "paid_in": 99200000,
       "mgmt_fees": 12100000,
       "fund_expenses": 3900000,
-      "lp_distributions": 167200000,
-      "carry": 17000000,
+      "lp_distributions": 169000000,
+      "carry": 17400000,
       "net_tvpi": 1.7,
       "net_irr": 0.14,
       "gross_irr": 0.21,
@@ -648,9 +772,9 @@
       "horizon_years": 8,
       "cashflows": {
         "calls": [
-          11800000,
-          24400000,
-          43900000,
+          11900000,
+          25600000,
+          42500000,
           13800000,
           2400000,
           1500000,
@@ -661,20 +785,20 @@
           0,
           0,
           0,
-          4300000,
-          7500000,
-          47800000,
-          79400000,
+          3200000,
+          8300000,
+          50200000,
+          79600000,
           45200000
         ],
         "lp": [
           0,
           0,
           0,
-          4300000,
-          7500000,
-          47800000,
-          71300000,
+          3200000,
+          8300000,
+          50200000,
+          71100000,
           36300000
         ],
         "gp": [
@@ -684,31 +808,31 @@
           0,
           0,
           0,
-          8100000,
+          8500000,
           8900000
         ]
       }
     },
     "stress": {
       "exit_cap": 250000000,
-      "gross_exits": 115800000,
+      "gross_exits": 118100000,
       "secondary_discount": 3000000,
-      "realised": 112800000,
+      "realised": 115100000,
       "paid_in": 99200000,
       "mgmt_fees": 12100000,
       "fund_expenses": 3900000,
-      "lp_distributions": 112100000,
+      "lp_distributions": 114400000,
       "carry": 0,
-      "net_tvpi": 1.1,
-      "net_irr": 0.03,
+      "net_tvpi": 1.2,
+      "net_irr": 0.04,
       "gross_irr": 0.08,
-      "dpi_year6": 0.4,
+      "dpi_year6": 0.5,
       "horizon_years": 8,
       "cashflows": {
         "calls": [
-          11800000,
-          24400000,
-          43900000,
+          11900000,
+          25600000,
+          42500000,
           13800000,
           2400000,
           1500000,
@@ -719,20 +843,20 @@
           0,
           0,
           0,
-          4300000,
-          7500000,
-          31200000,
-          46800000,
+          3200000,
+          8300000,
+          33600000,
+          47000000,
           22300000
         ],
         "lp": [
           0,
           0,
           0,
-          4300000,
-          7500000,
-          31200000,
-          46800000,
+          3200000,
+          8300000,
+          33600000,
+          47000000,
           22300000
         ],
         "gp": [

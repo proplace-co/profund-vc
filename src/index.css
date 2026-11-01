@@ -419,6 +419,13 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .fund-table.sim td { white-space: nowrap; }
 .fund-table tbody tr:last-child td { border-bottom: none; }
 .fund-table tr.sub td { font-weight: 700; color: var(--ink); background: var(--blue-tint); }
+/* Seed : frontiere entre les leads (S-01..S-10) et les tickets radar */
+.fund-table tr.track-end td { border-bottom: 1.5px solid var(--line-2); }
+.fund-table td.track.lead { color: var(--blue-dk); font-weight: 600; }
+/* la colonne Track ajoute une colonne au tableau Seed : marges internes resserrees pour tenir en 1200 px */
+.fund-table.sim.tracked th, .fund-table.sim.tracked td { padding-left: 12px; padding-right: 12px; }
+.fund-table.sim.tracked th:first-child, .fund-table.sim.tracked td:first-child { padding-left: 24px; }
+.fund-table.sim.tracked th:last-child, .fund-table.sim.tracked td:last-child { padding-right: 24px; }
 .tag { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px;
   font-size: 12px; font-weight: 600; white-space: nowrap; }
 .tag.green { background: var(--green-soft); color: #1f6b43; }

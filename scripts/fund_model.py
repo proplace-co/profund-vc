@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
 VERSION = "v2"
-MODEL_DATE = "2026-10-29"   # fixe : --check doit rester stable d'un jour a l'autre
+MODEL_DATE = "2026-11-01"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
 
@@ -70,9 +70,18 @@ SECONDARY = {"share": 0.25, "year": 6, "price_pct": 0.60, "companies": ("S-01", 
 CASES = (("target", None), ("base", 500 * M), ("stress", 250 * M))
 
 LAYERS = ("seed", "venture", "growth")
+# 01/11 (Alexandre) : Seed en haltere, 50 societes. Environ 1 % des societes financees en
+# seed deviennent des licornes (CB Insights, cohorte US 2008-2010 ; Dealroom, Europe 2020),
+# 2,5 a 2,6 % pour les meilleurs (AngelList 2013-2019 ; PitchBook, 14 premiers fonds
+# 2000-2015) : il faut 40 a 50 tirages pour en attendre une. 10 leads de conviction portent la
+# propriete, 40 tickets radar multiplient les tirages au meme budget.
+SEED_TRACKS = {
+    "lead": {"ticket": (500_000, 1_500_000), "companies": 10},
+    "radar": {"ticket": (100_000, 150_000), "companies": 40},
+}
 BOUNDS = {
     "seed": {"ticket": (100_000, 1_500_000), "post": (5 * M, 20 * M),
-             "own": (0.05, 0.125), "companies": 18},
+             "own": (0.01, 0.125), "companies": 50},
     "venture": {"ticket": (1_500_000, 5 * M), "post": (25 * M, 80 * M),
                 "own": (0.05, 0.08), "companies": 8},
     # 29/10 (Alexandre) : pas seulement une filiere Seed -> Venture -> Growth. Chaque etage
@@ -84,7 +93,8 @@ BOUNDS = {
 }
 # Politique de reserves, en esperance : les lignes de suivi doivent la retrouver.
 RESERVES = {
-    "seed": {"graduation_pct": 0.40, "next_round": 15 * M, "pro_rata_pct": 0.06,
+    # pro-rata moyen sur 50 societes : ~6 % pour les leads, presque rien pour le radar
+    "seed": {"graduation_pct": 0.40, "next_round": 15 * M, "pro_rata_pct": 0.017,
              "bridges": 1 * M},
     "venture": {"graduation_pct": 0.50, "next_round": 40 * M, "pro_rata_pct": 0.065,
                 "bridges": 0},
@@ -110,27 +120,39 @@ class Line:
     exit_pct: float | None = None    # part diluee a la sortie
     exit_value: int | None = None    # valorisation de sortie (100 %)
     recovery: float | None = None    # sinon : multiple recupere sur le montant investi
+    track: str | None = None         # Seed seulement : "lead" ou "radar" (SEED_TRACKS)
 
 
 L = Line
 LINES = (
-    # Seed : 18 societes, pre-seed / seed, lead ou co-lead, detection avant le tour
+    # Seed : 50 societes, pre-seed / seed. S-01 a S-10 : leads ou co-leads de conviction,
+    # equipe detectee avant le tour. Une ligne de sortie porte UNE societe (n = 1).
     L("S-01", "seed", "S-01", 1, "fund_returner", "new", 1_000_000, 8 * M, 2 * M, 1, 2, 8,
-      exit_pct=0.045, exit_value=1500 * M),
+      exit_pct=0.045, exit_value=1500 * M, track="lead"),
     L("S-02", "seed", "S-02", 1, "breakout", "new", 750_000, 8 * M, 1_500_000, 1, 2, 7,
-      exit_pct=0.035, exit_value=600 * M),
+      exit_pct=0.035, exit_value=600 * M, track="lead"),
     L("S-03", "seed", "S-03", 1, "breakout", "new", 750_000, 10 * M, 1 * M, 1, 3, 7,
-      exit_pct=0.03, exit_value=300 * M),
+      exit_pct=0.03, exit_value=300 * M, track="lead"),
     L("S-04", "seed", "S-04", 1, "strategic_exit", "new", 500_000, 8 * M, 500_000, 2, 3, 5,
-      exit_pct=0.05, exit_value=150 * M),
+      exit_pct=0.05, exit_value=150 * M, track="lead"),
     L("S-05", "seed", "S-05", 1, "early_exit", "new", 500_000, 8 * M, 500_000, 1, 2, 4,
-      exit_pct=0.045, exit_value=60 * M),
-    L("S-06", "seed", "S-06", 1, "early_exit", "new", 300_000, 6 * M, 0, 2, None, 4,
-      exit_pct=0.04, exit_value=40 * M),
-    L("S-07", "seed", "S-07", 3, "zombie", "new", 1_200_000, 8 * M, 600_000, 2, 3, 7,
-      recovery=0.5),
-    L("S-10", "seed", "S-10", 9, "loss", "new", 4 * M, 8 * M, 1_400_000, 2, 3, 5,
-      recovery=0.0),
+      exit_pct=0.045, exit_value=60 * M, track="lead"),
+    L("S-06", "seed", "S-06", 2, "zombie", "new", 1 * M, 8 * M, 200_000, 2, 3, 7,
+      recovery=0.5, track="lead"),
+    L("S-08", "seed", "S-08", 3, "loss", "new", 1_500_000, 8 * M, 100_000, 2, 3, 5,
+      recovery=0.0, track="lead"),
+    # S-11 a S-50 : tickets radar de 100 a 150 K, sans siege, sur chaque equipe credible du
+    # Seed Radar ; le pro-rata ne va qu'aux societes qui decollent.
+    L("S-11", "seed", "S-11", 1, "strategic_exit", "new", 150_000, 8 * M, 200_000, 2, 3, 6,
+      exit_pct=0.016, exit_value=150 * M, track="radar"),
+    L("S-12", "seed", "S-12", 1, "early_exit", "new", 150_000, 8 * M, 100_000, 1, 2, 5,
+      exit_pct=0.013, exit_value=60 * M, track="radar"),
+    L("S-13", "seed", "S-13", 1, "early_exit", "new", 100_000, 6 * M, 0, 2, None, 4,
+      exit_pct=0.013, exit_value=40 * M, track="radar"),
+    L("S-14", "seed", "S-14", 8, "zombie", "new", 900_000, 8 * M, 100_000, 2, 3, 7,
+      recovery=0.5, track="radar"),
+    L("S-22", "seed", "S-22", 29, "loss", "new", 3 * M, 8 * M, 0, 2, None, 5,
+      recovery=0.0, track="radar"),
     # Venture : 8 societes, seed+ / Serie A, entree au point d'inflexion (Seed Radar)
     L("V-01", "venture", "V-01", 1, "anchor", "new", 3 * M, 45 * M, 2 * M, 1, 3, 8,
       exit_pct=0.045, exit_value=1200 * M),
@@ -385,6 +407,26 @@ def validate(data: dict) -> Checks:
         for v in (line.initial, line.follow_on, line.entry_post):
             c.need(on_grain(v), f"{line.id} : {v} hors maille d'affichage")
         c.need(line.id.isascii() and line.outcome.isascii(), f"{line.id} : libelle non ASCII")
+        if line.layer == "seed":
+            track = SEED_TRACKS.get(line.track)
+            c.need(track is not None, f"{line.id} : voie Seed inconnue ({line.track})")
+            if track:
+                lo, hi = track["ticket"]
+                c.need(lo <= per_initial <= hi,
+                       f"{line.id} : ticket {per_initial:.0f} hors bornes {line.track} {lo}-{hi}")
+        else:
+            c.need(line.track is None, f"{line.id} : voie reservee au Seed")
+        # proceeds() lit la part d'UNE societe : une ligne de sortie ne regroupe rien
+        c.need(line.exit_value is None or line.n == 1, f"{line.id} : sortie sur une ligne groupee")
+    # voies Seed : comptes, puis leads d'abord et numerotation continue (S-01..S-10, S-11..S-50)
+    tracks = data["layers"]["seed"]["tracks"]
+    nxt = 1
+    for name, spec in SEED_TRACKS.items():
+        t = tracks[name]
+        c.need(t["companies"] == spec["companies"], f"seed {name} : {t['companies']} societes")
+        for line in (x for x in LINES if x.track == name):
+            c.need(int(line.id.split("-")[1]) == nxt, f"{line.id} : numerotation Seed discontinue")
+            nxt += line.n
     # meme societe -> meme sortie
     seen: dict[str, tuple] = {}
     for line in LINES:
@@ -439,7 +481,31 @@ def line_json(line: Line) -> dict:
         "invest_year": line.invest_year,
         "follow_on_year": line.follow_on_year,
         "exit_year": line.exit_year,
+        "track": line.track,
     }
+
+
+def last_id(line: Line) -> str:
+    """Identifiant de la derniere societe d'une ligne : S-22 + 29 societes -> S-50."""
+    prefix, num = line.id.split("-")
+    return f"{prefix}-{int(num) + line.n - 1:0{len(num)}d}"
+
+
+def seed_tracks() -> dict:
+    out = {}
+    for name, spec in SEED_TRACKS.items():
+        lines = [x for x in LINES if x.track == name]
+        initial = sum(x.initial for x in lines)
+        inv = sum(invested(x) for x in lines)
+        got = sum(proceeds(x, None) for x in lines)
+        out[name] = {
+            "companies": sum(x.n for x in lines),
+            "ticket_min": spec["ticket"][0], "ticket_max": spec["ticket"][1],
+            "first": lines[0].id, "last": last_id(lines[-1]),
+            "initial": initial, "invested": inv, "proceeds": got,
+            "moic": ratio(got / inv, 1),
+        }
+    return out
 
 
 def build() -> dict:
@@ -469,6 +535,8 @@ def build() -> dict:
             entry["internal_pct"] = ratio(internal / inv, 2)
             entry["direct_pct"] = ratio((inv - internal) / inv, 2)
             entry["direct_min_pct"] = b["direct_min_pct"]
+        if layer == "seed":
+            entry["tracks"] = seed_tracks()
         for name, cap in CASES:
             got = sum(proceeds(x, cap) for x in lines)
             entry["proceeds"][name] = got
@@ -545,6 +613,10 @@ def summary(data: dict) -> str:
                    f"follow-on {x['follow_on'] / M:5.1f}  invested {x['invested'] / M:5.1f}  "
                    f"-> target {x['proceeds']['target'] / M:6.1f} ({x['moic']['target']}x)  "
                    f"base {x['moic']['base']}x  stress {x['moic']['stress']}x")
+        for name, t in x.get("tracks", {}).items():
+            out.append(f"    {name:6s} {t['companies']:2d} cos {t['first']}..{t['last']}  initial "
+                       f"{t['initial'] / M:5.2f}  invested {t['invested'] / M:5.2f}  -> target "
+                       f"{t['proceeds'] / M:6.2f} ({t['moic']}x)")
     a = data["allocation"]
     out.append(f"  invested {a['invested'] / M:.1f} + fees {a['mgmt_fees'] / M:.1f} + expenses "
                f"{a['fund_expenses'] / M:.1f} + contingency {a['contingency'] / M:.1f} = {a['total'] / M:.1f}"

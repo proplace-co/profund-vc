@@ -32,6 +32,22 @@ export interface FundLine {
   invest_year: number;
   follow_on_year: number | null;
   exit_year: number;
+  track: SeedTrackId | null;  // Seed seulement
+}
+
+export type SeedTrackId = 'lead' | 'radar';
+
+/** Une voie du Seed : leads de conviction ou tickets radar (S-01..S-10, S-11..S-50). */
+export interface SeedTrack {
+  companies: number;
+  ticket_min: number;
+  ticket_max: number;
+  first: string;
+  last: string;
+  initial: number;
+  invested: number;
+  proceeds: number;
+  moic: number;
 }
 
 export interface FundLayer {
@@ -55,6 +71,7 @@ export interface FundLayer {
   internal_min_pct?: number;
   direct_pct?: number;
   direct_min_pct?: number;
+  tracks?: Record<SeedTrackId, SeedTrack>;
 }
 
 export interface FundCase {

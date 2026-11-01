@@ -88,6 +88,7 @@ def _load_fund():
 
 
 DATA = _load_fund()
+SEED_TR = DATA["layers"]["seed"]["tracks"]   # leads S-01..S-10, radar S-11..S-50
 
 
 # ── formules ────────────────────────────────────────────────────────────────
@@ -306,14 +307,21 @@ def sheet_assumptions(bk: Book) -> None:
 
 
 # ── Lines ───────────────────────────────────────────────────────────────────
-INPUT_COLS = ("id", "layer", "company", "n", "outcome", "kind", "initial", "entry_post", "follow_on",
+INPUT_COLS = ("id", "layer", "company", "n", "outcome", "kind", "track", "initial", "entry_post", "follow_on",
               "invest_year", "follow_on_year", "exit_year", "exit_pct", "exit_value", "recovery")
 CALC_COLS = ("invested", "perco", "entry_pct") + tuple(f"p_{c}" for c in CASE_IDS) + tuple(f"m_{c}" for c in CASE_IDS)
 HELP_COLS = tuple(f"{k}_{c}" for c in CASE_IDS for k in ("sp", "ep", "sc", "ec"))
 COL = {k: i for i, k in enumerate(INPUT_COLS + CALC_COLS + HELP_COLS)}
+
+
+def lc(key: str) -> str:
+    """Lettre de colonne de l'onglet Lines : les formules ne citent jamais une lettre en dur."""
+    return xl_col_to_name(COL[key])
+
+
 HEAD = {
     "id": "Deal ID", "layer": "Layer", "company": "Company (exit key)", "n": "Companies on the line",
-    "outcome": "Outcome", "kind": "Kind", "initial": "Initial tickets (line total)",
+    "outcome": "Outcome", "kind": "Kind", "track": "Seed track (lead / radar)", "initial": "Initial tickets (line total)",
     "entry_post": "Entry post-money (per company)", "follow_on": "Follow-on (line total)",
     "invest_year": "Entry year", "follow_on_year": "Follow-on year", "exit_year": "Exit year",
     "exit_pct": "Exit stake (diluted)", "exit_value": "Exit value (100%)",
@@ -352,18 +360,13 @@ def sheet_lines(bk: Book) -> None:
     bk.title(ws, "Fund simulation — line by line",
              "Seed (S-), Venture (V-) and Growth (G-) lines. A line may group several companies (n): "
              "initial and follow-on are line totals. Blue = input, black = formula.")
-    ws.set_column(0, 0, 10)
-    ws.set_column(1, 2, 11)
-    ws.set_column(3, 3, 11)
-    ws.set_column(4, 4, 22)
-    ws.set_column(5, 5, 10)
-    ws.set_column(6, 8, 15)
-    ws.set_column(9, 11, 10)
-    ws.set_column(12, 12, 11)
-    ws.set_column(13, 13, 15)
-    ws.set_column(14, 14, 12)
-    ws.set_column(15, 23, 14)
-    ws.set_column(24, 24 + len(HELP_COLS) - 1, 15, None, {"level": 1})
+    widths = {"id": 10, "layer": 11, "company": 11, "n": 11, "outcome": 22, "kind": 10, "track": 12,
+              "initial": 15, "entry_post": 15, "follow_on": 15, "invest_year": 10, "follow_on_year": 10,
+              "exit_year": 10, "exit_pct": 11, "exit_value": 15, "recovery": 12}
+    for key, width in widths.items():
+        ws.set_column(COL[key], COL[key], width)
+    ws.set_column(COL["invested"], COL["m_stress"], 14)
+    ws.set_column(COL["sp_target"], len(COL) - 1, 15, None, {"level": 1})
 
     groups = (("INPUTS", 0, len(INPUT_COLS) - 1, BLUE_DK), ("FORMULAS", COL["invested"], COL["m_stress"], BLUE),
               ("CASH-FLOW HELPERS (used by the Cash flows tab)", COL["sp_target"], len(COL) - 1, MUTED))
@@ -378,6 +381,7 @@ def sheet_lines(bk: Book) -> None:
         "id": bk.f(font_color=INPUT, bold=True), "layer": bk.f(font_color=INPUT),
         "company": bk.f(font_color=INPUT), "n": bk.f(font_color=INPUT, num_format=INT, align="center"),
         "outcome": bk.f(font_color=INPUT), "kind": bk.f(font_color=INPUT),
+        "track": bk.f(font_color=INPUT, bold=True),
         "initial": bk.f(font_color=INPUT, num_format=EUR), "entry_post": bk.f(font_color=INPUT, num_format=EUR),
         "follow_on": bk.f(font_color=INPUT, num_format=EUR),
         "invest_year": bk.f(font_color=INPUT, num_format=YEAR, align="center"),
@@ -402,13 +406,14 @@ def sheet_lines(bk: Book) -> None:
     LinesLayout.last = r - 1
     LinesLayout.total = r
 
-    sec_test = "OR(" + ",".join(f"$C{{r}}=SecCo{i}" for i in range(1, len(SEC["companies"]) + 1)) + ")"
+    sec_test = "OR(" + ",".join(f"${lc('company')}{{r}}=SecCo{i}" for i in range(1, len(SEC["companies"]) + 1)) + ")"
     for line in fm.LINES:
         r = LinesLayout.rows[line.id]
         x = r + 1                                    # numero de ligne Excel
         values = {
             "id": row_id(line), "layer": LAYER_NAME[line.layer], "company": line.company, "n": line.n,
             "outcome": OUTCOME[line.outcome].format(n=line.n, company=line.company), "kind": line.kind,
+            "track": line.track.capitalize() if line.track else None,
             "initial": line.initial, "entry_post": line.entry_post, "follow_on": line.follow_on,
             "invest_year": line.invest_year, "follow_on_year": line.follow_on_year, "exit_year": line.exit_year,
             "exit_pct": line.exit_pct, "exit_value": line.exit_value, "recovery": line.recovery,
@@ -420,28 +425,29 @@ def sheet_lines(bk: Book) -> None:
             else:
                 ws.write(r, COL[key], v, fmts[key])
         inv = fm.invested(line)
-        bk.formula(ws, r, COL["invested"], f"G{x}+I{x}", inv, eur)
-        bk.formula(ws, r, COL["perco"], f"P{x}/D{x}", inv / line.n, eur)
-        bk.formula(ws, r, COL["entry_pct"], f"ROUND(G{x}/D{x}/H{x},3)", ratio(line.initial / line.n / line.entry_post, 3),
+        rc, ic = lc("recovery"), lc("invested")
+        bk.formula(ws, r, COL["invested"], f"{lc('initial')}{x}+{lc('follow_on')}{x}", inv, eur)
+        bk.formula(ws, r, COL["perco"], f"{ic}{x}/{lc('n')}{x}", inv / line.n, eur)
+        bk.formula(ws, r, COL["entry_pct"], f"ROUND({lc('initial')}{x}/{lc('n')}{x}/{lc('entry_post')}{x},3)", ratio(line.initial / line.n / line.entry_post, 3),
                    pct1)
         for case in CASE_IDS:
-            capped = _cap_expr(case).format(v=f"$N{x}")
+            capped = _cap_expr(case).format(v=f"${lc('exit_value')}{x}")
             value = fm.proceeds(line, CASE_CAPS[case])
             pc = xl_col_to_name(COL[f"p_{case}"])
-            bk.formula(ws, r, COL[f"p_{case}"], f"IF(ISNUMBER($O{x}),{xmoney(f'$O{x}*$P{x}')},{xmoney(f'$M{x}*{capped}')})",
+            bk.formula(ws, r, COL[f"p_{case}"], f"IF(ISNUMBER(${rc}{x}),{xmoney(f'${rc}{x}*${ic}{x}')},{xmoney(f'${lc("exit_pct")}{x}*{capped}')})",
                        value, eur)
-            bk.formula(ws, r, COL[f"m_{case}"], f"ROUND({pc}{x}/$P{x},1)", ratio(value / inv, 1), mult)
+            bk.formula(ws, r, COL[f"m_{case}"], f"ROUND({pc}{x}/${ic}{x},1)", ratio(value / inv, 1), mult)
             # secondaire partiel : fund_model.split_secondary
             parts, share = fm.split_secondary(line, value)
             sp = parts[0][1] if share else 0
             ep = parts[-1][1]
             sc = share * inv
-            flag = f"AND({sec_test.format(r=x)},$L{x}>SecYear,{pc}{x}<>0)"
+            flag = f"AND({sec_test.format(r=x)},${lc('exit_year')}{x}>SecYear,{pc}{x}<>0)"
             spc, scc = xl_col_to_name(COL[f"sp_{case}"]), xl_col_to_name(COL[f"sc_{case}"])
             bk.formula(ws, r, COL[f"sp_{case}"], f"IF({flag},{xmoney(f'SecShare*SecPrice*{pc}{x}')},0)", sp, helper)
             bk.formula(ws, r, COL[f"ep_{case}"], f"IF({flag},{xmoney(f'(1-SecShare)*{pc}{x}')},{pc}{x})", ep, helper)
-            bk.formula(ws, r, COL[f"sc_{case}"], f"IF({flag},SecShare*$P{x},0)", sc, helper)
-            bk.formula(ws, r, COL[f"ec_{case}"], f"$P{x}-{scc}{x}", inv - sc, helper)
+            bk.formula(ws, r, COL[f"sc_{case}"], f"IF({flag},SecShare*${ic}{x},0)", sc, helper)
+            bk.formula(ws, r, COL[f"ec_{case}"], f"${ic}{x}-{scc}{x}", inv - sc, helper)
 
     for layer in fm.LAYERS:
         r = LinesLayout.sub[layer]
@@ -458,7 +464,7 @@ def sheet_lines(bk: Book) -> None:
         for case in CASE_IDS:
             cl = xl_col_to_name(COL[f"p_{case}"])
             bk.formula(ws, r, COL[f"p_{case}"], f"SUM({cl}{r0}:{cl}{r1})", lay["proceeds"][case], sub_eur)
-            bk.formula(ws, r, COL[f"m_{case}"], f"ROUND({cl}{r + 1}/P{r + 1},1)", lay["moic"][case], sub_mult)
+            bk.formula(ws, r, COL[f"m_{case}"], f"ROUND({cl}{r + 1}/{lc('invested')}{r + 1},1)", lay["moic"][case], sub_mult)
 
     r = LinesLayout.total
     tot_txt = bk.f(bold=True, top=2, top_color=INK)
@@ -479,7 +485,7 @@ def sheet_lines(bk: Book) -> None:
         bk.formula(ws, r, COL[f"p_{case}"], "+".join(f"{cl}{s}" for s in subs), DATA["cases"][case]["gross_exits"],
                    tot_eur)
         inv_total = a["invested"]
-        bk.formula(ws, r, COL[f"m_{case}"], f"ROUND({cl}{r + 1}/P{r + 1},1)",
+        bk.formula(ws, r, COL[f"m_{case}"], f"ROUND({cl}{r + 1}/{lc('invested')}{r + 1},1)",
                    ratio(DATA["cases"][case]["gross_exits"] / inv_total, 1), tot_mult)
     ws.write(r + 2, 0, "Proceeds = exit stake × exit value (capped in Base and Stress), or recovery multiple × "
                        "invested; rounded to EUR 10K below EUR 1M and EUR 100K above, before any sum. "
@@ -1173,7 +1179,10 @@ def sheet_readme(bk: Book) -> None:
         ("Assumptions", "Fund size, terms and fees, the partial secondary sale, the cap of each case, layer bounds "
                         "and the follow-on reserve policy."),
         ("Lines", "The simulation lines (Seed S-, Venture V-, Growth G-): entry, follow-on and exit inputs, then "
-                  "proceeds and MOIC per case, with layer subtotals."),
+                  "proceeds and MOIC per case, with layer subtotals. Seed lines carry their track: Lead "
+                  f"({SEED_TR['lead']['first']} to {SEED_TR['lead']['last']}, conviction tickets we lead or co-lead) "
+                  f"or Radar ({SEED_TR['radar']['first']} to {SEED_TR['radar']['last']}, small tickets that "
+                  "multiply the shots on goal)."),
         ("Construction", "Portfolio by layer, capital allocation, reserves vs policy, exposure per company and the "
                          "fund returner."),
         ("Cash flows", "Yearly flows per case: investments, exits incl. the year-6 secondary, fees, expenses, capital "

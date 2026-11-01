@@ -19,6 +19,8 @@ const T = fund.terms;
 const L = fund.layers;
 const A = fund.allocation;
 const R = fund.reserve_policy;
+const LEAD = L.seed.tracks!.lead;    // S-01..S-10 : leads de conviction
+const RADAR = L.seed.tracks!.radar;  // S-11..S-50 : tickets radar
 const TARGET = fund.cases.target;
 const BASE = fund.cases.base;
 const STRESS = fund.cases.stress;
@@ -261,11 +263,11 @@ function tierRows(id: LayerId): [string, string][] {
   const entry = `${eurRange(x.entry_post_min, x.entry_post_max)} post`;
   const invested = `${eur(x.invested)} · ${eur(x.initial)} initial + ${eur(x.follow_on)} follow-on`;
   if (id === 'seed') return [
-    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)} initial · pro-rata reserved`],
-    ['Stage', 'Pre-seed / seed · we lead or co-lead'],
+    ['Ticket', `${eurRange(LEAD.ticket_min, LEAD.ticket_max)} lead · ${eurRange(RADAR.ticket_min, RADAR.ticket_max)} radar · pro-rata reserved`],
+    ['Stage', `Pre-seed / seed · ${LEAD.companies} leads or co-leads, ${RADAR.companies} radar tickets`],
     ['Entry valuation', entry],
     ['Ownership', `${pct(x.ownership_min)} – ${pct(x.ownership_max, 1)} at entry`],
-    ['Edge', 'Team detected before the round'],
+    ['Edge', 'Leads: team detected before the round · radar: the strongest Seed Radar signals'],
     ['Invested', invested],
   ];
   if (id === 'venture') return [
@@ -306,7 +308,7 @@ function PortfolioArch() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Portfolio Architecture</span>
         <h2 className="h2">The conviction funnel.<br /><em>One fund, from Seed to Growth.</em></h2>
-        <p className="pf-intro">A {eur(F.commitments, 'tile')} European venture fund in three layers. Every layer has two ways in: direct entries into the best external rounds, and follow-ons in our own companies that take off. Seed is {L.seed.companies} companies where we lead or co-lead before the round. Venture is {L.venture.companies} direct entries at the inflection point, next to a Tier 1 lead; our own Seed graduates are funded from Seed reserves. Growth is {L.growth.companies} direct entries alongside leading growth funds ({pct(L.growth.direct_pct ?? 0)} of the layer), and the rest doubles down on our breakouts.</p>
+        <p className="pf-intro">A {eur(F.commitments, 'tile')} European venture fund in three layers. Every layer has two ways in: direct entries into the best external rounds, and follow-ons in our own companies that take off. Seed is {L.seed.companies} companies: {LEAD.companies} where we lead or co-lead before the round, and {RADAR.companies} radar tickets of {eurRange(RADAR.ticket_min, RADAR.ticket_max)} that multiply our shots on goal. Venture is {L.venture.companies} direct entries at the inflection point, next to a Tier 1 lead; our own Seed graduates are funded from Seed reserves. Growth is {L.growth.companies} direct entries alongside leading growth funds ({pct(L.growth.direct_pct ?? 0)} of the layer), and the rest doubles down on our breakouts.</p>
         <div className="funnel-grid">
           <div>
             {(['seed', 'venture', 'growth'] as LayerId[]).map((id) => <TierCard key={id} id={id} />)}
@@ -350,8 +352,10 @@ const SIM_TITLE: Record<LayerId, string> = {
 // Une table de simulation par étage, même markup que les tables V1 ; la ligne
 // SUB porte la classe `sub` (gras, fond teinté). Mêmes colonnes en page 3 de
 // la fiche PDF (scripts/factsheet.py) et dans l'onglet Lines du modèle Excel.
+// La colonne Track (lead / radar) n'existe que pour le Seed.
 function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
   const x = L[id];
+  const tracked = id === 'seed';
   const secondary = new Set(fund.secondary.companies);
   const marked = x.lines.some((l) => secondary.has(l.company));
   return (
@@ -359,20 +363,23 @@ function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Fund Simulation</span>
         <h2 className="h2">{SIM_TITLE[id]}<br /><em>Line-by-line entry, follow-on &amp; exit.</em></h2>
-        <div className="table-scroll"><table className="fund-table sim">
+        <div className="table-scroll"><table className={`fund-table sim${tracked ? ' tracked' : ''}`}>
           <thead>
             <tr>
-              <th>Deal ID</th><th>Status</th><th>Initial Tkt</th><th>Entry Val (Post)</th><th>Entry %</th><th>Follow-On</th><th>Exit % (Diluted)</th><th>Exit Val</th><th>Fund Return</th><th>MOIC</th>
+              <th>Deal ID</th>{tracked && <th>Track</th>}<th>Status</th><th>Initial Tkt</th><th>Entry Val (Post)</th><th>Entry %</th><th>Follow-On</th><th>Exit % (Diluted)</th><th>Exit Val</th><th>Fund Return</th><th>MOIC</th>
             </tr>
           </thead>
           <tbody>
-            {x.lines.map((l) => {
+            {x.lines.map((l, i) => {
               const tag = outcomeTag(l);
+              const next = x.lines[i + 1];
+              const trackEnd = next !== undefined && next.track !== l.track;  // leads -> radar
               const color = TONE_COLOR[tag.tone];
               const strong = tag.tone === 'green' || tag.tone === 'blue';
               return (
-                <tr key={l.id}>
+                <tr key={l.id} className={trackEnd ? 'track-end' : undefined}>
                   <td>{rowId(l)}{secondary.has(l.company) ? '*' : ''}</td>
+                  {tracked && <td className={`track ${l.track ?? ''}`}>{l.track === 'lead' ? 'Lead' : l.track === 'radar' ? 'Radar' : '–'}</td>}
                   <td><span className={`tag ${tag.tone}`}>{tag.label}</span></td>
                   <td>{eur(l.initial)}</td>
                   <td>{eur(l.entry_post, 'val')}</td>
@@ -385,11 +392,12 @@ function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
                 </tr>
               );
             })}
-            <tr className="sub"><td><strong>SUB</strong></td><td><strong>({LAYER_NAME[id]})</strong></td><td><strong>{eur(x.initial)}</strong></td><td>–</td><td>–</td><td><strong>{eur(x.follow_on)}</strong></td><td>–</td><td>–</td><td style={{ color: 'var(--blue-dk)', fontWeight: 700 }}>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
+            <tr className="sub"><td><strong>SUB</strong></td>{tracked && <td>–</td>}<td><strong>({LAYER_NAME[id]})</strong></td><td><strong>{eur(x.initial)}</strong></td><td>–</td><td>–</td><td><strong>{eur(x.follow_on)}</strong></td><td>–</td><td>–</td><td style={{ color: 'var(--blue-dk)', fontWeight: 700 }}>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
           </tbody>
         </table></div>
-        {(marked || id === 'growth') && (
+        {(marked || id === 'growth' || id === 'seed') && (
           <p className="pf-fine">
+            {id === 'seed' && <>{LEAD.first} to {LEAD.last}: lead or co-lead tickets ({eurRange(LEAD.ticket_min, LEAD.ticket_max)}). {RADAR.first} to {RADAR.last}: radar tickets ({eurRange(RADAR.ticket_min, RADAR.ticket_max)}), with pro-rata only in the companies that take off.<br /></>}
             {id === 'growth' && <>Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are made alongside leading growth funds, with a liquidation preference.<br /></>}
             {marked && <>* Fund return shown at exit value. In the fund model, {pct(fund.secondary.share)} of this position is sold in a year-{fund.secondary.year} secondary at {pct(fund.secondary.price_pct)} of its exit value (see Fund Performance).</>}
           </p>

@@ -330,8 +330,10 @@ def tier_rows(layer):
     moic = f"{mult(t['moic']['target'])} MOIC"
     entry = rng(t["entry_post_min"], t["entry_post_max"])
     if layer == "seed":
-        return [("STAGE", "Pre-seed / seed"), ("ROLE", "Lead or co-lead"), ("ENTRY POST", entry),
-                ("COMPANIES", str(t["companies"])), ("INVESTED", eur(t["invested"])),
+        st = t["tracks"]
+        return [("STAGE", "Pre-seed / seed"), ("ROLE", "Lead + radar tickets"), ("ENTRY POST", entry),
+                ("COMPANIES", f"{st['lead']['companies']} leads + {st['radar']['companies']} radar"),
+                ("INVESTED", eur(t["invested"])),
                 ("TARGET GROSS", moic)]
     if layer == "venture":
         return [("STAGE", "Seed+ / Series A"), ("ROLE", "Direct, at the inflection"), ("ENTRY POST", entry),
@@ -697,12 +699,13 @@ def cta(F, ymin):
 
 
 # ── page 3 : la simulation et la performance ────────────────────────────────
-SIM_COLS = (  # (titre, largeur relative, alignement)
-    (("DEAL ID",), 52, "l"), (("STATUS",), 116, "l"), (("INITIAL", "TICKET"), 56, "r"),
-    (("ENTRY VAL", "(POST)"), 62, "r"), (("ENTRY %",), 50, "r"), (("FOLLOW-ON",), 62, "r"),
-    (("EXIT %", "(DILUTED)"), 58, "r"), (("EXIT VAL",), 56, "r"), (("FUND", "RETURN"), 62, "r"),
-    (("MOIC",), 44, "r"),
+SIM_COLS = (  # (titre, largeur relative, alignement) ; TRACK : voie Seed, lead ou radar
+    (("DEAL ID",), 52, "l"), (("TRACK",), 40, "l"), (("STATUS",), 104, "l"), (("INITIAL", "TICKET"), 54, "r"),
+    (("ENTRY VAL", "(POST)"), 58, "r"), (("ENTRY %",), 48, "r"), (("FOLLOW-ON",), 58, "r"),
+    (("EXIT %", "(DILUTED)"), 56, "r"), (("EXIT VAL",), 52, "r"), (("FUND", "RETURN"), 58, "r"),
+    (("MOIC",), 42, "r"),
 )
+TRACK_LABEL = {"lead": ("Lead", "semi", BLUE_DK), "radar": ("Radar", "reg", INK2)}
 SIM_TITLE = {"seed": ("Layer 1", "The Seed layer", "companies"), "venture": ("Layer 2", "The Venture layer", "companies"),
              "growth": ("Layer 3", "The Growth layer", "positions")}
 
@@ -714,7 +717,7 @@ def sim_table(F, u, v, w):
     for _t, cw, _a in SIM_COLS:
         xs.append((cx, cw * scale))
         cx += cw * scale
-    head, band, rh, sub = 32.0, 24.0, 17.6, 20.0
+    head, band, rh, sub = 30.0, 22.0, 15.8, 18.0   # 50 societes en Seed : 24 lignes a loger
     n_lines = sum(len(LAYERS[k]["lines"]) for k in LAYER_IDS)
     total = head + 3 * (band + sub) + n_lines * rh + 4
     card(F, u, v, w, total)
@@ -743,40 +746,49 @@ def sim_table(F, u, v, w):
         count = t["positions"] if layer == "growth" else t["companies"]
         F.rr(u + 1, y, w - 2, band, 0, fill=BLUE_TINT)
         F.line(u, y, u + w, y, LINE, 1)
-        wt = F.text(u + pad + 2, y + 8.2, tag.upper(), "xgras", 7.6, BLUE, 0.12)
-        F.text(u + pad + 2 + wt + 10, y + 6.4, f"{name} · {count} {unit}", "gras", 10, INK)
+        wt = F.text(u + pad + 2, y + 7.2, tag.upper(), "xgras", 7.6, BLUE, 0.12)
+        wn = F.text(u + pad + 2 + wt + 10, y + 5.4, f"{name} · {count} {unit}", "gras", 10, INK)
+        if layer == "seed":
+            lead, radar = t["tracks"]["lead"], t["tracks"]["radar"]
+            F.text(u + pad + 2 + wt + 10 + wn + 8, y + 6.2,
+                   f"{lead['companies']} leads ({lead['first']} to {lead['last']}) + "
+                   f"{radar['companies']} radar tickets ({radar['first']} to {radar['last']})",
+                   "reg", 8.8, MUTED)
         y += band
         for k, line in enumerate(t["lines"]):
             if k:
-                F.line(u + pad, y, u + w - pad, y, LINE, 0.8)
+                edge = line["track"] != t["lines"][k - 1]["track"]   # leads -> radar
+                F.line(u + pad, y, u + w - pad, y, LINE2 if edge else LINE, 1.2 if edge else 0.8)
             label, tone = outcome_tag(line)
             fg, bg = TONE[tone]
             strong = tone in ("green", "blue")
             ty = y + (rh - 8.8) / 2 + 0.4
             cell(0, ty, row_id(line) + ("*" if line["company"] in secondary else ""), "semi", 8.8, INK)
+            track, role, color = TRACK_LABEL.get(line["track"], ("–", "reg", SOFT))
+            cell(1, ty, track, role, 8.8, color)
             pw_ = F.tw(label, "semi", 7.6) + 14
-            F.rr(xs[1][0] + 1, y + (rh - 13) / 2, pw_, 13, 6.5, fill=bg)
-            F.text(xs[1][0] + 1 + pw_ / 2, y + (rh - 13) / 2 + 2.8, label, "semi", 7.6, fg, align="c")
-            cell(2, ty, eur(line["initial"]))
-            cell(3, ty, eur(line["entry_post"], "val"))
-            cell(4, ty, pct(line["entry_pct"], 1))
-            cell(5, ty, eur(line["follow_on"]))
-            cell(6, ty, "–" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
-            cell(7, ty, "–" if line["exit_value"] is None else eur(line["exit_value"], "val"))
-            cell(8, ty, eur(line["proceeds"]), "gras" if strong else "reg", 8.8, TONE_TEXT[tone])
-            cell(9, ty, mult(line["moic"]), "gras", 8.8, BLUE_DK if strong else TONE_TEXT[tone])
+            F.rr(xs[2][0] + 1, y + (rh - 12) / 2, pw_, 12, 6, fill=bg)
+            F.text(xs[2][0] + 1 + pw_ / 2, y + (rh - 12) / 2 + 2.3, label, "semi", 7.6, fg, align="c")
+            cell(3, ty, eur(line["initial"]))
+            cell(4, ty, eur(line["entry_post"], "val"))
+            cell(5, ty, pct(line["entry_pct"], 1))
+            cell(6, ty, eur(line["follow_on"]))
+            cell(7, ty, "–" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
+            cell(8, ty, "–" if line["exit_value"] is None else eur(line["exit_value"], "val"))
+            cell(9, ty, eur(line["proceeds"]), "gras" if strong else "reg", 8.8, TONE_TEXT[tone])
+            cell(10, ty, mult(line["moic"]), "gras", 8.8, BLUE_DK if strong else TONE_TEXT[tone])
             y += rh
         F.rr(u + 1, y, w - 2, sub, 0, fill=WARM)
         F.line(u, y, u + w, y, LINE2, 1)
         ty = y + (sub - 8.8) / 2 + 0.4
         cell(0, ty, "SUB", "gras", 8.8, INK)
-        cell(1, ty, f"({layer.capitalize()})", "gras", 8.8, INK)
-        cell(2, ty, eur(t["initial"]), "gras", 8.8, INK)
-        for i in (3, 4, 6, 7):
+        cell(2, ty, f"({layer.capitalize()})", "gras", 8.8, INK)
+        cell(3, ty, eur(t["initial"]), "gras", 8.8, INK)
+        for i in (1, 4, 5, 7, 8):
             cell(i, ty, "–", "reg", 8.8, SOFT)
-        cell(5, ty, eur(t["follow_on"]), "gras", 8.8, INK)
-        cell(8, ty, eur(t["proceeds"]["target"]), "gras", 8.8, BLUE_DK)
-        cell(9, ty, mult(t["moic"]["target"]), "gras", 8.8, BLUE_DK)
+        cell(6, ty, eur(t["follow_on"]), "gras", 8.8, INK)
+        cell(9, ty, eur(t["proceeds"]["target"]), "gras", 8.8, BLUE_DK)
+        cell(10, ty, mult(t["moic"]["target"]), "gras", 8.8, BLUE_DK)
         y += sub
         if n < 2:
             F.line(u, y, u + w, y, LINE2, 1)
@@ -828,12 +840,16 @@ def page_three(F):
     y = 144.0
     y += sim_table(F, M, y, W) + 8
     sec = SECONDARY
+    lead, radar = LAYERS["seed"]["tracks"]["lead"], LAYERS["seed"]["tracks"]["radar"]
     y += F.para(M, y, W, x(
+        f"Seed: {lead['first']} to {lead['last']} are lead or co-lead tickets "
+        f"({rng(lead['ticket_min'], lead['ticket_max'])}), {radar['first']} to {radar['last']} radar tickets "
+        f"({rng(radar['ticket_min'], radar['ticket_max'])}) with pro-rata only in the companies that take off. "
         "Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are "
         "made alongside leading growth funds, with a liquidation preference. "
         f"* Fund return shown at exit value. In the fund model, {pct(sec['share'])} of this position is sold in a "
         f"year-{sec['year']} secondary at {pct(sec['price_pct'])} of its exit value (see Fund Performance)."),
-        7.8, "reg", SOFT, 1.4) + 20
+        7.8, "reg", SOFT, 1.4) + 14
 
     kick(F, M, y, "Fund performance")
     title(F, M, y + 17, W, "Target returns, built line by line.", 18)

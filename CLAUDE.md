@@ -160,6 +160,17 @@ navigateurs reprennent les nouveaux fichiers.
 `factsheet.py` et `fund_xlsx.py` refusent aussi de tourner dans ce cas. Les frais
 du fonds du modèle sont une estimation en attendant le devis du gestionnaire EuVECA.
 
+**Le Seed est en haltère** (01/11, Alexandre) : 50 sociétés pour viser une licorne
+(≈ 1 % des sociétés seed en deviennent une, 2,5 % pour les meilleurs fonds), au même
+budget : 10 leads de conviction S-01..S-10 et 40 tickets radar de 100 à 150 K€ S-11..S-50
+(`SEED_TRACKS`, champ `track` des lignes, exporté dans `layers.seed.tracks`). Le modèle
+refuse un ticket hors de sa voie, une numérotation discontinue et une ligne de sortie
+groupée (`proceeds()` lit la part d'UNE société). La voie se lit dans la colonne Track :
+onglet Lines de l'Excel, page 3 de la fiche, tableau Seed de /pitch (seul tableau qui l'a ;
+classe `tracked`, marges resserrées pour tenir en 1200 px). Dans `fund_xlsx.py`, les
+formules de Lines prennent leurs lettres de colonne via `lc()`, jamais en dur. La page 3
+de la fiche n'a plus que 3,4 mm de marge : une ligne de plus en Seed se paie ailleurs.
+
 **Le modèle Excel** (téléchargeable sur /pitch, « sur demande » dans la fiche)
 est vivant : chaque sortie est une formule, écrite avec sa valeur en cache pour
 les aperçus qui ne recalculent pas. `fund_xlsx.py` le recalcule avec pycel et
