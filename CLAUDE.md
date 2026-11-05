@@ -14,8 +14,8 @@ src/
   components/
     Thesis.tsx          LE TEXTE DE LA THÈSE (manifeste, 4 lois, 2 moteurs, proof of work),
                         barre du haut, visuel du héros — rendus par / ET /pitch
-    Founders.tsx        LA PROPOSITION FONDATEURS v3 (how we back, the math, every stage,
-                        the pact, team, Reserve your round) — rendus par /, /calculator, /pitch
+    Founders.tsx        LA PROPOSITION FONDATEURS v3 (how we back + lien vers le pacte, the math,
+                        every stage, team, Reserve your round) — rendus par /, /calculator, /pitch
     HomepageLite.tsx    route /
     TermsPage.tsx       route /terms — le pacte des fondateurs, 10 clauses (tableau CLAUSES)
     CalculatorPage.tsx  route /calculator — « Run your numbers »
@@ -152,7 +152,7 @@ Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 remplace la règle « un seul montant » du 30/08) : l'accueil et les pages fondateurs
 (/terms, /calculator, /sell, /lp) parlent aux fondateurs. Montants permis, tous lus
 dans `fund.json` : la taille du fonds (héros, loi 04), les tickets des étages (Every
-stage) et le tableau fondateurs, illustratif (`founder_math`). Frais, carry,
+stage, sans les SPV : ils sont hors du fonds, documents LP seulement) et le tableau fondateurs, illustratif (`founder_math`). Frais, carry,
 construction détaillée et rendements cibles vivent **uniquement** derrière /lp :
 fiche PDF, modèle Excel, /pitch. La règle couvre aussi le shell `index.html` (meta
 description et `<noscript>`), servi sur TOUTES les routes et sur `404.html` :
@@ -162,8 +162,8 @@ fourchettes de souscription des LPs de `DealFlowModal.tsx` (contrat avec
 doivent dire la même chose : `prerender.mjs` fait échouer le build sinon.
 
 **Les chiffres du fonds ont UNE source : `scripts/fund_model.py`** (v3.4, 05/11 :
-un fonds de 100 M€, trois étages Seed / Venture / Growth, nommés Ignite / Relute /
-Compound dans le classeur ; UN tour en actions par société, puis des rachats de
+un fonds de 100 M€, trois étages Seed / Venture / Growth (un seul vocabulaire,
+classeur compris, depuis la v3.6) ; UN tour en actions par société, puis des rachats de
 titres existants avec décote, des prêts (plafond EuVECA de 30 % des engagements) et
 des annulations ; suivi en actions nouvelles seulement si le fondateur lève ailleurs ;
 clause 9 du pacte (liquidité partielle à partir de l'année 6) : option de la société, hors du cas cible depuis la v3.5, testée en résistance (`CLAUSE9_LINES`) ; aucune sortie
@@ -233,7 +233,9 @@ chaque page n'a que 6 à 8 mm de marge, tout ajout se paie ailleurs.
 **Les versions sont taguées** : `v1` (le site à 35 M€, Scout + Core ; fiche dans
 `archive/v1/profund-factsheet-v1.pdf`), `v2` (100 M€, Seed à 50 sociétés pour une
 licorne, fiche 3 pages, avant la proposition fondateurs), `v3.3` (le classeur
-d'Antoine du 05/11 tel quel), `v3.4` (prêts au taux, radar à 40) et `v3.5` (clause 9 hors du cas cible). Pour revenir à une version : partir du tag
+d'Antoine du 05/11 tel quel), `v3.4` (prêts au taux, radar à 40), `v3.5` (clause 9 hors du cas cible) et `v3.6`
+(S-01 en chemin pur, S-02 lève ailleurs et sort à 250 M€, Seed / Venture / Growth
+partout, accueil à 10 sections, page 4 de la fiche allégée, SPV hors de l'accueil). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`

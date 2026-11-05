@@ -630,9 +630,7 @@ def page_two(F):
         F.text(cx + 35, y + 20.5, LAYER_NAME[layer], "gras", 12, INK)
         cx += cols[n][0] * (W - 24) / tot
     y += th + 7
-    names = ", ".join(LAYERS[k]["model_name"] for k in LAYER_IDS[:-1]) + " and " + LAYERS["growth"]["model_name"]
-    F.text(M + 2, y, f"In the fund model, the three layers are named {names}.", "reg", 8, SOFT)
-    y += 26
+    y += 14
 
     # termes | allocation
     half = (W - 16) / 2
@@ -1028,7 +1026,7 @@ def perf_table(F, u, v, w):
         [f"Net DPI by year {sec['year'] + 1}"] + [mult(c["dpi_year7"]) for c in cases],
         ["Loans: repaid ÷ lent"] + [mult(c["loans_multiple"], 2) for c in cases],
         ["Largest exit"] + [eur(c["largest_exit"], "val") for c in cases],
-    ] + [[f"Gross MOIC · {LAYER_NAME[k]}"] + [mult(LAYERS[k]["moic"][c]) for c in CASE_IDS] for k in LAYER_IDS]
+    ]
     return grid(F, u, v, w, [(2.05, "l"), (1, "c"), (1, "c"), (1, "c")], ["Metric", "Target", "Base", "Stress"],
                 rows, size=8.5, hsize=6.9, pad_y=2.5, hl=1, lead=1.2)
 
@@ -1036,7 +1034,6 @@ def perf_table(F, u, v, w):
 def stress_table(F, u, v, w, height=None):
     rows = [[(s["label"], "reg", INK2 if k else INK), mult(s["net_tvpi"]), pct(s["net_irr"])]
             for k, s in enumerate(STRESS)]
-    rows[0] = [(STRESS[0]["label"], "semi", INK)] + rows[0][1:]
     cols = [(3.0, "l"), (0.8, "c"), (0.8, "c")]
     head = ["Stress test, Target case", "Net TVPI", "Net IRR"]
     pad_y = 2.5

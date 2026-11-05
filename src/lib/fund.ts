@@ -62,7 +62,7 @@ export interface SeedTrack {
 }
 
 export interface FundLayer {
-  model_name: string;       // Ignite / Relute / Compound dans le classeur
+  model_name: string;       // Seed / Venture / Growth, aussi dans le classeur
   stage: string;
   ticket_min: number;
   ticket_max: number;

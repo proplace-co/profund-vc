@@ -54,7 +54,7 @@ FUND, TERMS, SEC = fm.FUND, fm.TERMS, fm.SECONDARY
 CASES = {c.id: c for c in fm.CASES}
 CASE_IDS = fm.CASE_IDS
 CASE_NAME = {"target": "Target", "base": "Base", "stress": "Stress"}
-LAYER_NAME = dict(fm.MODEL_NAMES)          # Ignite / Relute / Compound, comme dans le classeur livre
+LAYER_NAME = dict(fm.MODEL_NAMES)          # Seed / Venture / Growth, comme le site et la fiche
 SITE_NAME = {"seed": "Seed", "venture": "Venture", "growth": "Growth"}
 HORIZON = max(x.exit_year for x in fm.LINES)
 SHEETS = ("Read me", "Assumptions", "Lines", "Construction", "Cash flows", "Performance", "Checks")
@@ -307,12 +307,12 @@ def sheet_assumptions(bk: Book) -> None:
     ws.write_row(r, 1, [LAYER_NAME[x] for x in fm.LAYERS], bk.f(bold=True, align="right"))
     r += 1
     for label, key, i, kind in (
-        ("First ticket, minimum (first cheque, or buyback in Compound)", "ticket", 0, "eur"),
-        ("First ticket, maximum (first cheque, or buyback in Compound)", "ticket", 1, "eur"),
-        ("Entry valuation, minimum (post-money; at buyback in Compound)", "post", 0, "eur"),
-        ("Entry valuation, maximum (post-money; at buyback in Compound)", "post", 1, "eur"),
+        ("First ticket, minimum (first cheque, or buyback in Growth)", "ticket", 0, "eur"),
+        ("First ticket, maximum (first cheque, or buyback in Growth)", "ticket", 1, "eur"),
+        ("Entry valuation, minimum (post-money; at buyback in Growth)", "post", 0, "eur"),
+        ("Entry valuation, maximum (post-money; at buyback in Growth)", "post", 1, "eur"),
         ("Entry stake, minimum", "own", 0, "pct1"),
-        ("Entry stake, maximum (Compound: first cheque or stake bought back)", "own", 1, "pct1"),
+        ("Entry stake, maximum (Growth: first cheque or stake bought back)", "own", 1, "pct1"),
     ):
         ws.write(r, 0, label)
         for j, layer in enumerate(fm.LAYERS):
@@ -387,9 +387,9 @@ def lc(key: str) -> str:
 
 HEAD = {
     "id": "Deal ID", "layer": "Layer", "company": "Company (exit key)", "n": "Companies on the line",
-    "status": "Outcome", "kind": "Kind", "track": "Ignite track (lead / radar)",
+    "status": "Outcome", "kind": "Kind", "track": "Seed track (lead / radar)",
     "first": "First cheque, new shares (line total)",
-    "entry_post": "Entry valuation: post-money, or at buyback in Compound (per company)",
+    "entry_post": "Entry valuation: post-money, or at buyback in Growth (per company)",
     "buyback": "Buybacks of existing shares (line total)", "entry_year": "Entry year", "buyback_year": "Buyback year",
     "exit_year": "Exit year",
     "exit_pct": "Exit stake (formula: entry + buybacks, after cancellations and outside rounds)",
@@ -475,7 +475,7 @@ def line_values(line) -> dict:
 def sheet_lines(bk: Book) -> None:
     ws = bk.sheet("Lines", grid=True)
     bk.title(ws, "Fund simulation — line by line",
-             "Ignite (S-), Relute (V-) and Compound (G-) lines. A line may group several companies (n): amounts are "
+             "Seed (S-), Venture (V-) and Growth (G-) lines. A line may group several companies (n): amounts are "
              "line totals. Blue = input, black = formula. While the founder grows with ProFund: no new shares after "
              "the first cheque, exposure grows by buybacks, growth is financed by loans. If the founder raises "
              f"elsewhere, ProFund follows or leads in new shares (columns {lc('follow')} to {lc('follow_post')}).")

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "v3.5",
+  "version": "v3.6",
   "model_date": "2026-11-05",
   "fund": {
     "commitments": 100000000,
@@ -55,7 +55,7 @@
   },
   "layers": {
     "seed": {
-      "model_name": "Ignite",
+      "model_name": "Seed",
       "stage": "Pre-seed / seed",
       "ticket_min": 100000,
       "ticket_max": 1500000,
@@ -77,26 +77,26 @@
       ],
       "position_range": [
         150000,
-        5000000
+        4000000
       ],
       "entry_years": [
         1,
         3
       ],
       "proceeds": {
-        "target": 138910000,
-        "base": 84680000,
-        "stress": 57090000
+        "target": 164010000,
+        "base": 99680000,
+        "stress": 67190000
       },
       "moic": {
-        "target": 6.5,
-        "base": 3.9,
-        "stress": 2.7
+        "target": 7.6,
+        "base": 4.6,
+        "stress": 3.1
       },
       "gross_irr": {
-        "target": 0.41,
-        "base": 0.29,
-        "stress": 0.2
+        "target": 0.45,
+        "base": 0.32,
+        "stress": 0.23
       },
       "lines": [
         {
@@ -104,32 +104,32 @@
           "last": "S-01",
           "company": "S-01",
           "n": 1,
-          "status": "Breakout, raised elsewhere once, we followed",
+          "status": "Breakout",
           "tone": "green",
           "kind": "new",
           "track": "lead",
           "first": 1500000,
           "buyback": 1500000,
-          "follow": 1000000,
+          "follow": 0,
           "loan": 1000000,
-          "invested": 5000000,
+          "invested": 4000000,
           "entry_post": 7500000,
           "entry_pct": 0.2,
-          "exit_pct": 0.237,
+          "exit_pct": 0.263,
           "exit_value": 300000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 72300000,
-          "moic": 14.5,
+          "proceeds": 80100000,
+          "moic": 20.0,
           "entry_year": 1,
           "exit_year": 9,
           "buyback_year": 3,
           "buyback_value": 40000000,
           "discount": 0.1,
           "cancel": 0.08,
-          "dilution": 0.15,
-          "follow_year": 4,
-          "follow_post": 80000000,
+          "dilution": 0.0,
+          "follow_year": null,
+          "follow_post": null,
           "loan_year": 3,
           "loan_repay_year": 5,
           "loan_mult": 1.25
@@ -139,32 +139,32 @@
           "last": "S-02",
           "company": "S-02",
           "n": 1,
-          "status": "Breakout",
+          "status": "Breakout, raised elsewhere once, we followed",
           "tone": "green",
           "kind": "new",
           "track": "lead",
           "first": 1000000,
           "buyback": 1000000,
-          "follow": 0,
+          "follow": 1000000,
           "loan": 500000,
-          "invested": 2500000,
+          "invested": 3500000,
           "entry_post": 6000000,
           "entry_pct": 0.167,
-          "exit_pct": 0.211,
-          "exit_value": 150000000,
+          "exit_pct": 0.196,
+          "exit_value": 250000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 32290000,
-          "moic": 12.9,
+          "proceeds": 49590000,
+          "moic": 14.2,
           "entry_year": 1,
           "exit_year": 8,
           "buyback_year": 3,
           "buyback_value": 25000000,
           "discount": 0.1,
           "cancel": 0.0,
-          "dilution": 0.0,
-          "follow_year": null,
-          "follow_post": null,
+          "dilution": 0.15,
+          "follow_year": 4,
+          "follow_post": 60000000,
           "loan_year": 3,
           "loan_repay_year": 5,
           "loan_mult": 1.25
@@ -563,8 +563,8 @@
           "first": "S-01",
           "last": "S-10",
           "invested": 14700000,
-          "proceeds": 126530000,
-          "moic": 8.6
+          "proceeds": 151630000,
+          "moic": 10.3
         },
         "radar": {
           "companies": 40,
@@ -580,7 +580,7 @@
       "loans_pct": 0.09
     },
     "venture": {
-      "model_name": "Relute",
+      "model_name": "Venture",
       "stage": "Seed+ / Series A",
       "ticket_min": 1500000,
       "ticket_max": 5000000,
@@ -838,7 +838,7 @@
       "loans_pct": 0.2
     },
     "growth": {
-      "model_name": "Compound",
+      "model_name": "Growth",
       "stage": "Series B and beyond",
       "ticket_min": 5000000,
       "ticket_max": 10000000,
@@ -1114,8 +1114,8 @@
   "spv": [
     {
       "company": "S-01",
-      "fund": 10000000,
-      "spv": 5000000
+      "fund": 9000000,
+      "spv": 6000000
     },
     {
       "company": "V-01",
@@ -1128,31 +1128,31 @@
       "spv": 8000000
     }
   ],
-  "spv_total": 20500000,
+  "spv_total": 21500000,
   "fund_returner": {
     "company": "S-01",
-    "proceeds": 87300000,
-    "multiple_of_fund": 0.9,
-    "stake_at_exit": 0.287,
-    "fund_returning_exit": 345000000
+    "proceeds": 95100000,
+    "multiple_of_fund": 1.0,
+    "stake_at_exit": 0.313,
+    "fund_returning_exit": 320000000
   },
   "cases": {
     "target": {
       "exit_mult": 1.0,
       "exit_cap": null,
       "loan_repaid": 0.95,
-      "gross_proceeds": 288500000,
-      "gross_moic": 3.4,
-      "realised": 288500000,
+      "gross_proceeds": 313600000,
+      "gross_moic": 3.7,
+      "realised": 313600000,
       "secondary_discount": 0,
       "paid_in": 99500000,
       "mgmt_fees": 11900000,
       "fund_expenses": 3900000,
-      "lp_distributions": 250400000,
-      "carry": 37700000,
-      "net_tvpi": 2.5,
-      "net_irr": 0.25,
-      "gross_irr": 0.33,
+      "lp_distributions": 270500000,
+      "carry": 42800000,
+      "net_tvpi": 2.7,
+      "net_irr": 0.27,
+      "gross_irr": 0.35,
       "dpi_year6": 0.6,
       "dpi_year7": 1.0,
       "loans_repaid": 11770000,
@@ -1181,7 +1181,7 @@
           1400000,
           1000000,
           830000,
-          570000,
+          550000,
           0
         ],
         "distributions": [
@@ -1192,8 +1192,8 @@
           15800000,
           46800000,
           32800000,
-          69200000,
-          123600000,
+          86500000,
+          131400000,
           0
         ],
         "lp": [
@@ -1204,8 +1204,8 @@
           15800000,
           46800000,
           32800000,
-          56100000,
-          99000000,
+          69900000,
+          105200000,
           0
         ],
         "gp": [
@@ -1216,8 +1216,8 @@
           0,
           0,
           0,
-          13100000,
-          24600000,
+          16600000,
+          26200000,
           0
         ]
       }
@@ -1226,18 +1226,18 @@
       "exit_mult": 0.6,
       "exit_cap": null,
       "loan_repaid": 0.85,
-      "gross_proceeds": 180340000,
-      "gross_moic": 2.1,
-      "realised": 180300000,
+      "gross_proceeds": 195340000,
+      "gross_moic": 2.3,
+      "realised": 195300000,
       "secondary_discount": 40000,
       "paid_in": 99500000,
       "mgmt_fees": 11900000,
       "fund_expenses": 3900000,
-      "lp_distributions": 163900000,
-      "carry": 16100000,
-      "net_tvpi": 1.6,
-      "net_irr": 0.13,
-      "gross_irr": 0.19,
+      "lp_distributions": 175900000,
+      "carry": 19100000,
+      "net_tvpi": 1.8,
+      "net_irr": 0.15,
+      "gross_irr": 0.21,
       "dpi_year6": 0.4,
       "dpi_year7": 0.6,
       "loans_repaid": 10520000,
@@ -1266,7 +1266,7 @@
           1400000,
           1000000,
           830000,
-          570000,
+          550000,
           0
         ],
         "distributions": [
@@ -1277,8 +1277,8 @@
           10400000,
           30400000,
           22400000,
-          42700000,
-          74100000,
+          53100000,
+          78700000,
           0
         ],
         "lp": [
@@ -1289,8 +1289,8 @@
           10400000,
           30400000,
           22400000,
-          42700000,
-          58000000,
+          53100000,
+          59500000,
           0
         ],
         "gp": [
@@ -1302,7 +1302,7 @@
           0,
           0,
           0,
-          16100000,
+          19100000,
           0
         ]
       }
@@ -1311,18 +1311,18 @@
       "exit_mult": 0.4,
       "exit_cap": null,
       "loan_repaid": 0.65,
-      "gross_proceeds": 126680000,
-      "gross_moic": 1.5,
-      "realised": 126700000,
+      "gross_proceeds": 136780000,
+      "gross_moic": 1.6,
+      "realised": 136800000,
       "secondary_discount": -20000,
       "paid_in": 99500000,
       "mgmt_fees": 11900000,
       "fund_expenses": 3900000,
-      "lp_distributions": 126300000,
+      "lp_distributions": 136400000,
       "carry": 0,
-      "net_tvpi": 1.3,
-      "net_irr": 0.06,
-      "gross_irr": 0.1,
+      "net_tvpi": 1.4,
+      "net_irr": 0.08,
+      "gross_irr": 0.12,
       "dpi_year6": 0.3,
       "dpi_year7": 0.5,
       "loans_repaid": 7920000,
@@ -1351,7 +1351,7 @@
           1400000,
           1000000,
           830000,
-          570000,
+          550000,
           0
         ],
         "distributions": [
@@ -1362,8 +1362,8 @@
           7700000,
           22800000,
           17200000,
-          29500000,
-          49200000,
+          36400000,
+          52400000,
           0
         ],
         "lp": [
@@ -1374,8 +1374,8 @@
           7700000,
           22800000,
           17200000,
-          29500000,
-          49200000,
+          36400000,
+          52400000,
           0
         ],
         "gp": [
@@ -1395,52 +1395,38 @@
   },
   "stress_tests": [
     {
-      "id": "as_published",
-      "label": "As published",
-      "net_tvpi": 2.5,
-      "net_irr": 0.25,
-      "dpi_year7": 1.0
-    },
-    {
       "id": "exits_plus_1",
       "label": "Every exit one year later",
-      "net_tvpi": 2.5,
-      "net_irr": 0.2,
+      "net_tvpi": 2.7,
+      "net_irr": 0.21,
       "dpi_year7": 0.6
-    },
-    {
-      "id": "exits_plus_2",
-      "label": "Every exit two years later, by year 10 at the latest",
-      "net_tvpi": 2.5,
-      "net_irr": 0.17,
-      "dpi_year7": 0.2
     },
     {
       "id": "best_zombie",
       "label": "Best company (S-01, both lines) becomes a zombie",
-      "net_tvpi": 1.9,
-      "net_irr": 0.18,
+      "net_tvpi": 2.0,
+      "net_irr": 0.2,
       "dpi_year7": 1.0
     },
     {
       "id": "loan_losses",
       "label": "30% more losses on every loan",
-      "net_tvpi": 2.5,
-      "net_irr": 0.24,
+      "net_tvpi": 2.7,
+      "net_irr": 0.26,
       "dpi_year7": 0.9
     },
     {
       "id": "with_partial",
       "label": "With partial liquidity: five winners sell 25% in year 6 (clause 9)",
-      "net_tvpi": 2.4,
-      "net_irr": 0.25,
+      "net_tvpi": 2.6,
+      "net_irr": 0.27,
       "dpi_year7": 1.2
     },
     {
       "id": "unicorn",
       "label": "One unicorn: S-01 sold for \u20ac1B",
-      "net_tvpi": 4.1,
-      "net_irr": 0.35,
+      "net_tvpi": 4.5,
+      "net_irr": 0.37,
       "dpi_year7": 1.0
     }
   ],
