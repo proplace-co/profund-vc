@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "v3.4",
+  "version": "v3.5",
   "model_date": "2026-11-05",
   "fund": {
     "commitments": 100000000,
@@ -36,7 +36,8 @@
     "share": 0.25,
     "year": 6,
     "price_pct": 0.6,
-    "lines": [
+    "lines": [],
+    "clause9_lines": [
       "S-01",
       "S-02",
       "S-11",
@@ -93,9 +94,9 @@
         "stress": 2.7
       },
       "gross_irr": {
-        "target": 0.43,
+        "target": 0.41,
         "base": 0.29,
-        "stress": 0.19
+        "stress": 0.2
       },
       "lines": [
         {
@@ -117,7 +118,7 @@
           "exit_pct": 0.237,
           "exit_value": 300000000,
           "recovery": null,
-          "partial": true,
+          "partial": false,
           "proceeds": 72300000,
           "moic": 14.5,
           "entry_year": 1,
@@ -152,7 +153,7 @@
           "exit_pct": 0.211,
           "exit_value": 150000000,
           "recovery": null,
-          "partial": true,
+          "partial": false,
           "proceeds": 32290000,
           "moic": 12.9,
           "entry_year": 1,
@@ -362,7 +363,7 @@
           "exit_pct": 0.063,
           "exit_value": 150000000,
           "recovery": null,
-          "partial": true,
+          "partial": false,
           "proceeds": 9500000,
           "moic": 10.0,
           "entry_year": 2,
@@ -618,9 +619,9 @@
         "stress": 1.3
       },
       "gross_irr": {
-        "target": 0.27,
-        "base": 0.14,
-        "stress": 0.05
+        "target": 0.26,
+        "base": 0.15,
+        "stress": 0.06
       },
       "lines": [
         {
@@ -642,7 +643,7 @@
           "exit_pct": 0.126,
           "exit_value": 300000000,
           "recovery": null,
-          "partial": true,
+          "partial": false,
           "proceeds": 40500000,
           "moic": 5.4,
           "entry_year": 2,
@@ -677,7 +678,7 @@
           "exit_pct": 0.1,
           "exit_value": 250000000,
           "recovery": null,
-          "partial": true,
+          "partial": false,
           "proceeds": 26800000,
           "moic": 3.8,
           "entry_year": 2,
@@ -1105,9 +1106,9 @@
     "loans": 10000000,
     "after_first_pct": 0.46,
     "loans_pct": 0.12,
-    "mgmt_fees": 11800000,
+    "mgmt_fees": 11900000,
     "fund_expenses": 3900000,
-    "contingency": 300000,
+    "contingency": 200000,
     "total": 100000000
   },
   "spv": [
@@ -1142,18 +1143,18 @@
       "loan_repaid": 0.95,
       "gross_proceeds": 288500000,
       "gross_moic": 3.4,
-      "realised": 271200000,
-      "secondary_discount": 17300000,
-      "paid_in": 99300000,
-      "mgmt_fees": 11800000,
+      "realised": 288500000,
+      "secondary_discount": 0,
+      "paid_in": 99500000,
+      "mgmt_fees": 11900000,
       "fund_expenses": 3900000,
-      "lp_distributions": 236500000,
-      "carry": 34300000,
-      "net_tvpi": 2.4,
+      "lp_distributions": 250400000,
+      "carry": 37700000,
+      "net_tvpi": 2.5,
       "net_irr": 0.25,
-      "gross_irr": 0.34,
-      "dpi_year6": 0.9,
-      "dpi_year7": 1.2,
+      "gross_irr": 0.33,
+      "dpi_year6": 0.6,
+      "dpi_year7": 1.0,
       "loans_repaid": 11770000,
       "loans_multiple": 1.18,
       "largest_exit": 300000000,
@@ -1178,9 +1179,9 @@
           30600000,
           14800000,
           1400000,
-          970000,
-          760000,
-          530000,
+          1000000,
+          830000,
+          570000,
           0
         ],
         "distributions": [
@@ -1189,10 +1190,10 @@
           0,
           0,
           15800000,
-          73200000,
+          46800000,
           32800000,
-          52700000,
-          96400000,
+          69200000,
+          123600000,
           0
         ],
         "lp": [
@@ -1201,10 +1202,10 @@
           0,
           0,
           15800000,
-          73200000,
-          32100000,
-          38200000,
-          77200000,
+          46800000,
+          32800000,
+          56100000,
+          99000000,
           0
         ],
         "gp": [
@@ -1214,9 +1215,9 @@
           0,
           0,
           0,
-          660000,
-          14500000,
-          19200000,
+          0,
+          13100000,
+          24600000,
           0
         ]
       }
@@ -1227,18 +1228,18 @@
       "loan_repaid": 0.85,
       "gross_proceeds": 180340000,
       "gross_moic": 2.1,
-      "realised": 170000000,
-      "secondary_discount": 10340000,
-      "paid_in": 99300000,
-      "mgmt_fees": 11800000,
+      "realised": 180300000,
+      "secondary_discount": 40000,
+      "paid_in": 99500000,
+      "mgmt_fees": 11900000,
       "fund_expenses": 3900000,
-      "lp_distributions": 155600000,
-      "carry": 14100000,
+      "lp_distributions": 163900000,
+      "carry": 16100000,
       "net_tvpi": 1.6,
-      "net_irr": 0.12,
+      "net_irr": 0.13,
       "gross_irr": 0.19,
-      "dpi_year6": 0.6,
-      "dpi_year7": 0.8,
+      "dpi_year6": 0.4,
+      "dpi_year7": 0.6,
       "loans_repaid": 10520000,
       "loans_multiple": 1.05,
       "largest_exit": 180000000,
@@ -1263,9 +1264,9 @@
           30600000,
           14800000,
           1400000,
-          970000,
-          760000,
-          530000,
+          1000000,
+          830000,
+          570000,
           0
         ],
         "distributions": [
@@ -1274,10 +1275,10 @@
           0,
           0,
           10400000,
-          46300000,
+          30400000,
           22400000,
-          32900000,
-          57700000,
+          42700000,
+          74100000,
           0
         ],
         "lp": [
@@ -1286,10 +1287,10 @@
           0,
           0,
           10400000,
-          46300000,
+          30400000,
           22400000,
-          32900000,
-          43600000,
+          42700000,
+          58000000,
           0
         ],
         "gp": [
@@ -1301,7 +1302,7 @@
           0,
           0,
           0,
-          14100000,
+          16100000,
           0
         ]
       }
@@ -1312,18 +1313,18 @@
       "loan_repaid": 0.65,
       "gross_proceeds": 126680000,
       "gross_moic": 1.5,
-      "realised": 119800000,
-      "secondary_discount": 6880000,
-      "paid_in": 99300000,
-      "mgmt_fees": 11800000,
+      "realised": 126700000,
+      "secondary_discount": -20000,
+      "paid_in": 99500000,
+      "mgmt_fees": 11900000,
       "fund_expenses": 3900000,
-      "lp_distributions": 119400000,
+      "lp_distributions": 126300000,
       "carry": 0,
-      "net_tvpi": 1.2,
-      "net_irr": 0.05,
-      "gross_irr": 0.09,
-      "dpi_year6": 0.4,
-      "dpi_year7": 0.6,
+      "net_tvpi": 1.3,
+      "net_irr": 0.06,
+      "gross_irr": 0.1,
+      "dpi_year6": 0.3,
+      "dpi_year7": 0.5,
       "loans_repaid": 7920000,
       "loans_multiple": 0.79,
       "largest_exit": 120000000,
@@ -1348,9 +1349,9 @@
           30600000,
           14800000,
           1400000,
-          970000,
-          760000,
-          530000,
+          1000000,
+          830000,
+          570000,
           0
         ],
         "distributions": [
@@ -1359,10 +1360,10 @@
           0,
           0,
           7700000,
-          33400000,
+          22800000,
           17200000,
-          22900000,
-          38300000,
+          29500000,
+          49200000,
           0
         ],
         "lp": [
@@ -1371,10 +1372,10 @@
           0,
           0,
           7700000,
-          33400000,
+          22800000,
           17200000,
-          22900000,
-          38300000,
+          29500000,
+          49200000,
           0
         ],
         "gp": [
@@ -1396,44 +1397,51 @@
     {
       "id": "as_published",
       "label": "As published",
-      "net_tvpi": 2.4,
-      "net_irr": 0.25
+      "net_tvpi": 2.5,
+      "net_irr": 0.25,
+      "dpi_year7": 1.0
     },
     {
       "id": "exits_plus_1",
       "label": "Every exit one year later",
-      "net_tvpi": 2.4,
-      "net_irr": 0.2
+      "net_tvpi": 2.5,
+      "net_irr": 0.2,
+      "dpi_year7": 0.6
     },
     {
       "id": "exits_plus_2",
       "label": "Every exit two years later, by year 10 at the latest",
-      "net_tvpi": 2.3,
-      "net_irr": 0.18
+      "net_tvpi": 2.5,
+      "net_irr": 0.17,
+      "dpi_year7": 0.2
     },
     {
       "id": "best_zombie",
       "label": "Best company (S-01, both lines) becomes a zombie",
-      "net_tvpi": 1.8,
-      "net_irr": 0.18
+      "net_tvpi": 1.9,
+      "net_irr": 0.18,
+      "dpi_year7": 1.0
     },
     {
       "id": "loan_losses",
       "label": "30% more losses on every loan",
-      "net_tvpi": 2.4,
-      "net_irr": 0.25
+      "net_tvpi": 2.5,
+      "net_irr": 0.24,
+      "dpi_year7": 0.9
     },
     {
-      "id": "no_partial",
-      "label": "No partial liquidity",
-      "net_tvpi": 2.5,
-      "net_irr": 0.25
+      "id": "with_partial",
+      "label": "With partial liquidity: five winners sell 25% in year 6 (clause 9)",
+      "net_tvpi": 2.4,
+      "net_irr": 0.25,
+      "dpi_year7": 1.2
     },
     {
       "id": "unicorn",
       "label": "One unicorn: S-01 sold for \u20ac1B",
-      "net_tvpi": 3.9,
-      "net_irr": 0.37
+      "net_tvpi": 4.1,
+      "net_irr": 0.35,
+      "dpi_year7": 1.0
     }
   ],
   "founder_math": {

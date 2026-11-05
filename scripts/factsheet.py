@@ -1022,7 +1022,6 @@ def perf_table(F, u, v, w):
     rows = [
         ["Fund size"] + [FUND_SIZE] * 3,
         ["Gross proceeds, exits and loans"] + [eur(c["gross_proceeds"]) for c in cases],
-        [f"Partial liquidity discount (clause 9)"] + [f"−{eur(c['secondary_discount'])}" for c in cases],
         ["Net TVPI"] + [mult(c["net_tvpi"]) for c in cases],
         ["Net IRR"] + [pct(c["net_irr"]) for c in cases],
         [f"Net DPI by year {sec['year']}"] + [mult(c["dpi_year6"]) for c in cases],
@@ -1111,10 +1110,10 @@ def page_four(F):
     y += sim_table(F, M, y, W) + 5
     sec = SECONDARY
     y += F.para(M, y, W, x(
-        "Fund return at exit value, equity plus loan repayment. "
-        f"* Partial liquidity (pact clause 9): {lst(sec['lines'])} sell {pct(sec['share'])} of their stake to the "
-        f"company in year {sec['year']} at {pct(sec['price_pct'])} of exit value; the cash flows and the "
-        "performance below include it."), 7.3, "reg", SOFT, 1.35) + 9
+        "Fund return at exit value, equity plus loan repayment. Pact clause 9 (from year "
+        f"{sec['year']}, the company can buy back up to a quarter of our stake, at a discount) is the company's "
+        "option: it is not used in the target case. With it, the stress test below shows earlier cash."),
+        7.3, "reg", SOFT, 1.35) + 9
 
     # la performance
     kick(F, M, y, "Fund performance")
@@ -1129,7 +1128,7 @@ def page_four(F):
         (mult(t["net_tvpi"]), "Target net TVPI",
          f"Base case {mult(b['net_tvpi'])}, stress case {mult(s['net_tvpi'])}"),
         (mult(t["dpi_year7"]), f"Net DPI by year {sec['year'] + 1}",
-         "Loans, partial liquidity and Growth exits return capital early"),
+         "LPs get their capital back: loans and Growth exits return cash early"),
         (eur(t["largest_exit"], "val"), "Largest exit",
          f"No unicorn needed: {fr['company']} returns the whole fund at {eur(fr['fund_returning_exit'], 'val')}; "
          f"at €1B, {mult(uni['net_tvpi'])} and {pct(uni['net_irr'])}"),

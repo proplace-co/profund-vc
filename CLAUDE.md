@@ -166,7 +166,7 @@ un fonds de 100 M€, trois étages Seed / Venture / Growth, nommés Ignite / Re
 Compound dans le classeur ; UN tour en actions par société, puis des rachats de
 titres existants avec décote, des prêts (plafond EuVECA de 30 % des engagements) et
 des annulations ; suivi en actions nouvelles seulement si le fondateur lève ailleurs ;
-liquidité partielle des gagnants en année 6, clause 9 du pacte ; aucune sortie
+clause 9 du pacte (liquidité partielle à partir de l'année 6) : option de la société, hors du cas cible depuis la v3.5, testée en résistance (`CLAUSE9_LINES`) ; aucune sortie
 au-dessus de 300 M€ ; SPV de co-investissement au-delà de 10 M€ par société). Le
 portage v3.3 reproduisait à l'euro près le classeur livré le 05/11 (1 532 valeurs,
 tag git `v3.3`). **v3.4** (Antoine, 05/11) : prêts sains à 12 % par an composés sur
@@ -233,7 +233,7 @@ chaque page n'a que 6 à 8 mm de marge, tout ajout se paie ailleurs.
 **Les versions sont taguées** : `v1` (le site à 35 M€, Scout + Core ; fiche dans
 `archive/v1/profund-factsheet-v1.pdf`), `v2` (100 M€, Seed à 50 sociétés pour une
 licorne, fiche 3 pages, avant la proposition fondateurs), `v3.3` (le classeur
-d'Antoine du 05/11 tel quel) et `v3.4` (prêts au taux, radar à 40). Pour revenir à une version : partir du tag
+d'Antoine du 05/11 tel quel), `v3.4` (prêts au taux, radar à 40) et `v3.5` (clause 9 hors du cas cible). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`

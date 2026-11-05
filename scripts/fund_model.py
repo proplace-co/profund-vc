@@ -25,6 +25,9 @@ v3.3). v3.4 (05/11, Antoine) : prets sains a 12 % par an composes sur leur duree
 (au lieu de 1,4x quelle que soit la duree) ; Seed a 50 societes, 40 tickets radar
 de 150 K EUR comme en v2, finances par 3 M EUR pris sur les cheques Venture ; la
 loi 04 chiffree (la sortie a laquelle la meilleure societe rend tout le fonds).
+v3.5 (05/11, Antoine) : la clause 9 (liquidite partielle en annee 6) reste dans le
+pacte mais sort du cas cible : c'est une option de la societe, pas une hypothese du
+fonds. Elle devient un test de resistance (CLAUSE9_LINES).
 scripts/fund_xlsx.py regenere le classeur en formules vivantes.
 
 Conventions :
@@ -56,7 +59,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.4"
+VERSION = "v3.5"
 MODEL_DATE = "2026-11-05"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
@@ -87,9 +90,12 @@ TERMS = {
     "catch_up_pct": 1.0,
     "gp_commit_min_pct": 0.01,
 }
-# Clause 9 du pacte : a partir de l'annee 6, la societe peut racheter jusqu'a un
-# quart de notre ligne, avec decote, et l'annuler. Lignes marquees `partial`.
+# Clause 9 du pacte : a partir de l'annee 6, la societe peut racheter jusqu'au
+# quart de notre ligne, avec decote, et l'annuler. v3.5 : c'est une OPTION de la
+# societe, absente du cas cible (aucune ligne `partial`) ; le test de resistance
+# « with partial liquidity » l'applique aux cinq gagnants de CLAUSE9_LINES.
 SECONDARY = {"share": 0.25, "year": 6, "price_pct": 0.60}
+CLAUSE9_LINES = ("S-01", "S-02", "S-11", "V-01", "V-02")
 # Rachats de titres existants : decote par defaut sur la valorisation du moment
 # (chaque ligne peut fixer la sienne : 5-10 % sur les gagnants et angels, 30 %
 # sur les vendeurs structurels, fonds en fin de vie).
@@ -188,12 +194,10 @@ LINES = (
     L("S-01", "seed", "S-01", 1, "Breakout, raised elsewhere once, we followed", "green", "new",
       1_500_000, 7_500_000, 1, 9, buyback=1_500_000, buyback_year=3, buyback_value=40 * M,
       discount=0.10, cancel=0.08, dilution=0.15, follow=1 * M, follow_year=4, follow_post=80 * M,
-      loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=300 * M,
-      partial=True, track="lead"),
+      loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=300 * M, track="lead"),
     L("S-02", "seed", "S-02", 1, "Breakout", "green", "new",
       1 * M, 6 * M, 1, 8, buyback=1 * M, buyback_year=3, buyback_value=25 * M, discount=0.10,
-      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=150 * M,
-      partial=True, track="lead"),
+      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=150 * M, track="lead"),
     L("S-03", "seed", "S-03", 1, "Strategic exit, angels bought back", "blue", "new",
       1 * M, 7 * M, 2, 7, buyback=500_000, buyback_year=4, buyback_value=20 * M, discount=0.10,
       loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=80 * M,
@@ -208,7 +212,7 @@ LINES = (
       2_250_000, 8 * M, 2, 5, recovery=0.0, track="lead"),
     L("S-11", "seed", "S-11", 1, "Radar breakout", "green", "new",
       150_000, 8 * M, 2, 8, buyback=800_000, buyback_year=4, buyback_value=20 * M, discount=0.10,
-      exit_value=150 * M, partial=True, track="radar"),
+      exit_value=150 * M, track="radar"),
     L("S-12", "seed", "S-12", 1, "Radar, early exit", "blue", "new",
       150_000, 8 * M, 2, 5, exit_value=50 * M, track="radar"),
     L("S-13", "seed", "S-13", 1, "Radar, early exit", "blue", "new",
@@ -225,12 +229,11 @@ LINES = (
     L("V-01", "venture", "V-01", 1, "Breakout", "green", "new",
       4 * M, 40 * M, 2, 9, buyback=1_500_000, buyback_year=4, buyback_value=100 * M,
       discount=0.05, cancel=0.08, loan=2 * M, loan_year=3, loan_repay_year=6, loan_mult="rate",
-      exit_value=300 * M, partial=True),
+      exit_value=300 * M),
     L("V-02", "venture", "V-02", 1, "Raised elsewhere once, we followed", "green", "new",
       3_500_000, 35 * M, 2, 8, buyback=500_000, buyback_year=4, buyback_value=60 * M, discount=0.10,
       dilution=0.20, follow=1_500_000, follow_year=5, follow_post=120 * M,
-      loan=1_500_000, loan_year=4, loan_repay_year=6, loan_mult="rate", exit_value=250 * M,
-      partial=True),
+      loan=1_500_000, loan_year=4, loan_repay_year=6, loan_mult="rate", exit_value=250 * M),
     L("V-03", "venture", "V-03", 1, "Strategic exit, angels bought back", "blue", "new",
       3 * M, 35 * M, 3, 7, buyback=500_000, buyback_year=4, buyback_value=40 * M,
       discount=0.10, loan=1 * M, loan_year=4, loan_repay_year=6, loan_mult="rate",
@@ -318,9 +321,9 @@ REFERENCE_V2 = {"commit": "2f3b590", "net_tvpi": 2.7, "capped_exit": 300 * M, "c
 # Valeurs publiees de la v3.4 (fiche, /pitch) que le modele doit retrouver : un
 # changement d'hypothese qui les deplace doit etre voulu, et les textes relus.
 PUBLISHED = {
-    "target": {"net_tvpi": 2.4, "net_irr": 0.25, "dpi_year7": 1.2},
-    "base": {"net_tvpi": 1.6, "net_irr": 0.12},
-    "stress": {"net_tvpi": 1.2, "net_irr": 0.05},
+    "target": {"net_tvpi": 2.5, "net_irr": 0.25, "dpi_year7": 1.0},
+    "base": {"net_tvpi": 1.6, "net_irr": 0.13},
+    "stress": {"net_tvpi": 1.3, "net_irr": 0.06},
 }
 
 
@@ -630,13 +633,15 @@ def stress_tests() -> list[dict]:
         ("best_zombie", "Best company (S-01, both lines) becomes a zombie", _zombie_best(LINES), target),
         ("loan_losses", "30% more losses on every loan", LINES,
          replace(target, loan_repaid=ratio(target.loan_repaid - 0.30, 2))),
-        ("no_partial", "No partial liquidity", tuple(replace(x, partial=False) for x in LINES), target),
+        ("with_partial", "With partial liquidity: five winners sell 25% in year 6 (clause 9)",
+         tuple(replace(x, partial=x.id in CLAUSE9_LINES) for x in LINES), target),
         ("unicorn", "One unicorn: S-01 sold for €1B", _unicorn(LINES), target),
     ]
     out = []
     for key, label, lines, case in rows:
         r = run_case(case, lines)
-        out.append({"id": key, "label": label, "net_tvpi": r["net_tvpi"], "net_irr": r["net_irr"]})
+        out.append({"id": key, "label": label, "net_tvpi": r["net_tvpi"], "net_irr": r["net_irr"],
+                    "dpi_year7": r["dpi_year7"]})
     return out
 
 
@@ -973,7 +978,7 @@ def build() -> dict:
                  "companies": sum(layers[x]["companies"] for x in LAYERS),
                  "positions": len(LINES)},
         "terms": {**TERMS, "gp_commit_min": money(TERMS["gp_commit_min_pct"] * FUND["commitments"])},
-        "secondary": {**SECONDARY, "lines": lines_partial},
+        "secondary": {**SECONDARY, "lines": lines_partial, "clause9_lines": list(CLAUSE9_LINES)},
         "buyback_discount": BUYBACK_DISCOUNT,
         "loan_rate": LOAN_RATE,
         "loan_multiples": {**LOAN_MULTIPLES,

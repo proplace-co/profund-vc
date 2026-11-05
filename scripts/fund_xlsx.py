@@ -1210,8 +1210,9 @@ def sheet_performance(bk: Book, outs: dict) -> None:
                    "whole-of-fund waterfall with a hurdle and GP catch-up), before tax. Investments over "
                    f"{FUND['investment_period_years']} years, exits from year {min(x.exit_year for x in fm.LINES)} to "
                    f"year {HORIZON}. One portfolio in every case: Base and Stress multiply every exit value and lose "
-                   f"more of the loans (Assumptions). Flagged winners sell part of their stake to the company in year "
-                   f"{SEC['year']} (pact clause 9). No exit above {eur_txt(largest)} in the Target case. Targets are "
+                   f"more of the loans (Assumptions). Pact clause 9 (partial liquidity from year {SEC['year']}) is the "
+                   "company's option and is not used in the target case: set Lines column " + lc("partial") +
+                   " to 'yes' to test it. No exit above {eur_txt(largest)} in the Target case. Targets are "
                    "model outputs, not a forecast or a guarantee.", note)
     ws.merge_range(r + 7, 0, r + 9, 3, PROJECTIONS, note)
 

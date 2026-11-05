@@ -171,7 +171,7 @@ export interface FundData {
     gp_commit_min_pct: number;
     gp_commit_min: number;
   };
-  secondary: { share: number; year: number; price_pct: number; lines: string[] };
+  secondary: { share: number; year: number; price_pct: number; lines: string[]; clause9_lines: string[] };
   buyback_discount: number;
   loan_rate: number;
   loan_multiples: { zombie: number; loss: number; performing_min: number; performing_max: number };
@@ -199,7 +199,7 @@ export interface FundData {
     fund_returning_exit: number;    // la sortie à laquelle elle rend tout le fonds (loi 04)
   };
   cases: Record<CaseId, FundCase>;
-  stress_tests: { id: string; label: string; net_tvpi: number; net_irr: number }[];
+  stress_tests: { id: string; label: string; net_tvpi: number; net_irr: number; dpi_year7: number }[];
   founder_math: FounderMath;
   reference_v2: { commit: string; net_tvpi: number; capped_exit: number; capped_net_tvpi: number };
 }

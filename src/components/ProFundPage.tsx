@@ -29,6 +29,7 @@ const GROWTH_HOLDS = L.growth.lines.map((l) => l.exit_year - l.entry_year);
 const AT_250 = FM.rows.find((r) => r.exit === 250e6) ?? FM.rows[1];
 const RAISED_VC = FM.raised_before + FM.vc_equity;
 const DELAY_1 = fund.stress_tests.find((s) => s.id === 'exits_plus_1')!;
+const WITH_PARTIAL = fund.stress_tests.find((s) => s.id === 'with_partial')!;
 const V2 = fund.reference_v2;
 const FR = fund.fund_returner;   // la loi 04 chiffrée : la sortie qui rend tout le fonds
 const loanLoss = (id: 'target' | 'base' | 'stress') => pct(1 - C[id].loan_repaid);
@@ -283,7 +284,7 @@ function TermsAndTargets() {
       <div className="impact-grid">
         <div className="imp"><span className="imp-n">{pct(TARGET.net_irr)}</span><span className="imp-h">Target net IRR</span><p className="imp-p">Base case {pct(C.base.net_irr)}, stress case {pct(C.stress.net_irr)}</p></div>
         <div className="imp"><span className="imp-n">{mult(TARGET.net_tvpi)}</span><span className="imp-h">Target net TVPI</span><p className="imp-p">Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}</p></div>
-        <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">With loan losses in every case</p></div>
+        <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">LPs get their capital back by year 7, with loan losses in every case</p></div>
         <div className="imp"><span className="imp-n">{eur(TARGET.largest_exit, 'val')}</span><span className="imp-h">Largest exit</span><p className="imp-p">No unicorn needed: {FR.company} returns the whole fund at {eur(FR.fund_returning_exit, 'val')}</p></div>
       </div>
       <div className="pv-terms-grid">
@@ -320,7 +321,8 @@ function TermsAndTargets() {
           year {EXIT_YEARS[1]}. The IRR rests on large stakes in the winners and cash that comes back early: loans
           at {pct(fund.loan_rate)} a year, repaid from year {LOANS_FROM},
           growth positions bought at a {pct(STRUCT_DISC)} discount and sold
-          after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years, partial liquidity of the winners in year {SEC.year}.
+          after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years. Pact clause 9 (partial liquidity from year {SEC.year}) is left
+          out: with it, {pct(WITH_PARTIAL.net_irr)} and {mult(WITH_PARTIAL.dpi_year7)} DPI by year 7.
           One year of delay on every exit: {pct(DELAY_1.net_irr)}. No exit above {eur(TARGET.largest_exit, 'val')}; with the same
           exits, the v2 model would make {mult(V2.capped_net_tvpi)}. Law 04 in numbers: with {pct(FR.stake_at_exit, 1)} of {FR.company} at
           exit, a {eur(FR.fund_returning_exit, 'val')} sale returns the entire fund on its own.
@@ -450,8 +452,6 @@ function SimTable({ id }: { id: LayerId }) {
 }
 
 function Simulation() {
-  const partial = ALL_LINES.filter((l) => l.partial).map((l) => l.id);
-  const lastTwo = partial.slice(-1)[0];
   return (
     <div className="pf-section" id="simulation" style={{ background: 'var(--bg)' }}>
       <div className="pf-wrap-wide">
@@ -465,8 +465,8 @@ function Simulation() {
           </tbody>
         </table></div>
         <p className="pf-fine">
-          Fund return at exit value, equity plus loan repayment. * Partial liquidity (pact clause 9): {partial.slice(0, -1).join(', ')} and {lastTwo} sell {pct(SEC.share)} of
-          their stake to the company in year {SEC.year} at {pct(SEC.price_pct)} of exit value; the cash flows and the performance below include it.
+          Fund return at exit value, equity plus loan repayment. Pact clause 9 (from year {SEC.year}, the company can buy back up to a quarter of
+          our stake, at a discount) is the company’s option: it is not used in the target case; the stress test shows it.
         </p>
       </div>
     </div>
@@ -478,7 +478,6 @@ function Performance() {
   const rows: [string, (id: 'target' | 'base' | 'stress') => string][] = [
     ['Fund size', () => FUND_SIZE],
     ['Gross proceeds, exits and loans', (id) => eur(C[id].gross_proceeds)],
-    [`Partial liquidity discount (clause 9)`, (id) => `−${eur(C[id].secondary_discount)}`],
     ['Net TVPI', (id) => mult(C[id].net_tvpi)],
     ['Net IRR', (id) => pct(C[id].net_irr)],
     ['Net DPI by year 6', (id) => mult(C[id].dpi_year6)],
