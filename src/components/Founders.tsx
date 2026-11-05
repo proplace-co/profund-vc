@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Icon, type IconName } from './Thesis';
-import LeadForm, { type Field } from './LeadForm';
 import { eur, eurRange, fund, mult } from '../lib/fund';
 
 // LA PROPOSITION FONDATEURS (v3, Antoine, 05/11) : un seul tour en actions, puis des
@@ -19,7 +18,7 @@ const BLOCKS: { icon: IconName; t: string; d: string }[] = [
   { icon: 'target', t: 'One round. That’s it.',
     d: 'We invest once in new shares. After that, we never create a new share while you grow with us.' },
   { icon: 'banknote', t: 'No more fundraising.',
-    d: 'A reserved loan line covers what comes next: hiring, go-to-market, working capital, acquisitions. Only compute-heavy model training is out: raise for it wherever you want.' },
+    d: 'A reserved loan line covers what comes next: hiring, go-to-market, working capital, acquisitions.' },
   // 05/11 : « Every cancellation lifts your stake » (la copie disait « buyback ») :
   // quand ProFund rachète un angel, la part du fondateur ne bouge pas ; c'est
   // l'annulation par la société qui la relève.
@@ -31,12 +30,12 @@ const BLOCKS: { icon: IconName; t: string; d: string }[] = [
     d: 'No veto on a sale. Ever.' },
 ];
 
-export function HowWeBack() {
+export function HowWeBack({ forFounders = true }: { forFounders?: boolean }) {
   return (
     <section className="pv-sec" id="how">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">How we back them</p>
+          <p className="pv-kick">{forFounders ? 'For founders · How we back them' : 'How we back them'}</p>
           <h2 className="pv-h2">Built for founders who own what they build.</h2>
           <p className="sub">Same terms for every founder. In public.</p>
         </div>
@@ -49,6 +48,11 @@ export function HowWeBack() {
             </li>
           ))}
         </ol>
+        {/* v3.7 : au-delà de la dette, de l'equity aux mêmes conditions, et des SPV */}
+        <div className="pv-callout pv-pact-row">
+          <span className="pv-tick soft"><Icon name="banknote" /></span>
+          <p>Need more than debt, or lenders can’t take the full line? Your call: we lead the extra equity ourselves, on the same pact terms, with SPVs alongside the fund, at the level of the largest funds.</p>
+        </div>
         {/* 05/11 (v3.6) : « The pact » fusionnée ici, la promesse ne se répète plus */}
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="scale" /></span>
@@ -102,7 +106,7 @@ export function TheMath() {
     <section className="pv-sec tint" id="math">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">The math</p>
+          <p className="pv-kick">For founders · The math</p>
           <h2 className="pv-h2">Same company. Same exit. Twice the payout.</h2>
         </div>
         <FounderTable />
@@ -127,12 +131,12 @@ const STAGES = [
     what: 'Fresh growth rounds, buybacks of early funds, growth loans, acquisition financing' },
 ];
 
-export function EveryStage() {
+export function EveryStage({ forFounders = true }: { forFounders?: boolean }) {
   return (
     <section className="pv-sec" id="stages">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">Every stage</p>
+          <p className="pv-kick">{forFounders ? 'For founders · Every stage' : 'Every stage'}</p>
           <h2 className="pv-h2">Pre-seed to growth. One equity round, wherever you are.</h2>
           <p className="sub">Two ways in at every layer: a first equity cheque, or a buyback of existing shares. Then loans, never new shares.</p>
         </div>
@@ -167,10 +171,10 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
       <div className="pv-wrap pv-team">
         <img className="pv-team-photo" src="/gp-photo.jpg" alt="Alexandre Busson" width={240} height={300} />
         <div>
-          <p className="pv-kick">The team</p>
-          <h2 className="pv-h2">Built for this model: M&amp;A, LBO, VC.</h2>
+          <p className="pv-kick">Founding Partner</p>
+          <h2 className="pv-h2">Alexandre Busson</h2>
           <p className="pv-team-txt">
-            <b>Alexandre Busson, Founding Partner.</b> M&amp;A Director at Leboncoin, LBO at Ardian (ex-AXA PE),
+            M&amp;A Director at Leboncoin, LBO at Ardian (ex-AXA PE),
             Senior Associate at Partech Ventures, Google. Founder of Dreamzer Games, owner and CEO of
             Fadparis.com. Three exits at 10×, 20× and 19× before the fund.
           </p>
@@ -190,44 +194,48 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
   );
 }
 
-// Le formulaire « Reserve your round » : les champs de la copie, plus l'email (sans
-// lui, on ne peut pas répondre sous 24 heures).
-const RESERVE_FIELDS: Field[] = [
-  { name: 'name', label: 'Name', required: true },
-  { name: 'email', label: 'Email', type: 'email', required: true },
-  { name: 'company', label: 'Company', required: true },
-  { name: 'website', label: 'Website', type: 'url', placeholder: 'https://' },
-  { name: 'linkedin', label: 'LinkedIn', type: 'url', placeholder: 'https://linkedin.com/in/' },
-  { name: 'stage', label: 'Stage', type: 'select', options: ['Pre-seed', 'Seed', 'Seed+', 'Series A', 'Series B and beyond'] },
-  { name: 'revenue', label: 'Annual revenue', placeholder: '€' },
-  { name: 'growth', label: 'Growth over 12 months', placeholder: '%' },
-  { name: 'raised', label: 'Amount raised and investors', full: true },
-  { name: 'stake', label: 'Founders’ stake', placeholder: '%' },
-  { name: 'angels', label: 'Angels or former employees on the cap table', type: 'select',
-    options: ['Yes', 'No'] },
-  { name: 'needs', label: 'Funding needs over 12 months', type: 'textarea', full: true },
-];
-
-export function ReserveForm({ extra }: { extra?: string }) {
-  return <LeadForm subject="Reserve your round" fields={RESERVE_FIELDS} submit="Reserve your round" extra={extra} />;
+// Les deux portes, sous le héros : fondateurs d'un côté, LPs de l'autre (v3.7).
+export function Doors({ onFollow }: { onFollow: () => void }) {
+  return (
+    <section className="pv-doors-sec" aria-label="Founders and LPs">
+      <div className="pv-wrap pv-doors">
+        <div className="pv-door">
+          <p className="pv-kick">For founders</p>
+          <h2>One equity round. Then never diluted again.</h2>
+          <p>Loans and buybacks instead of new rounds. Your control, by contract. We back a handful of teams a year.</p>
+          <div className="pv-door-act">
+            <Link to="/calculator" className="pv-btn">Run your numbers <Icon name="arrow" /></Link>
+            <Link to="/terms" className="pv-link">Read the pact <Icon name="arrow" /></Link>
+          </div>
+        </div>
+        <div className="pv-door dark">
+          <p className="pv-kick">For LPs</p>
+          <h2>ProFund Fund I. {eur(F.commitments, 'tile')}, EuVECA, Luxembourg.</h2>
+          <p>Fact sheet, fund model and data room on request, for professional and eligible investors only.</p>
+          <div className="pv-door-act">
+            <Link to="/lp" className="pv-btn light">Request LP access <Icon name="arrow" /></Link>
+            <button type="button" className="pv-link" onClick={onFollow}>Follow our deal flow live <Icon name="arrow" /></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
-export function ReserveSection({ onFollow }: { onFollow: () => void }) {
+// La fin de l'accueil : pas de formulaire. Peu d'élus ; on commence par les chiffres.
+export function FinalCall() {
   return (
-    <section className="pv-sec pv-reserve-sec" id="reserve">
+    <section className="pv-sec pv-reserve-sec" id="final">
       <div className="pv-wrap">
-        <div className="pv-reserve">
-          <div className="pv-reserve-copy">
-            <p className="pv-kick">Final call</p>
-            <h2>Reserve your round.</h2>
-            <p>We lead a handful of rounds a year. Tell us where you are, we answer within 24 hours.</p>
-            <ul className="pv-reserve-links">
-              <li><Link to="/sell">Selling shares in an AI company? <Icon name="arrow" /></Link></li>
-              <li><button type="button" onClick={onFollow}>Follow our deal flow live <Icon name="arrow" /></button></li>
-              <li><Link to="/lp">LP access on request <Icon name="arrow" /></Link></li>
-            </ul>
+        <div className="pv-band">
+          <div>
+            <p className="pv-kick">By introduction</p>
+            <h2>A handful of founders a year.</h2>
+            <p>We say yes to very few teams, then we stay with them from pre-seed to growth, on the same terms. Start with your numbers.</p>
           </div>
-          <ReserveForm />
+          <div className="pv-band-ctas">
+            <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
+          </div>
         </div>
       </div>
     </section>

@@ -8,7 +8,6 @@ import PrivacyPage from './components/PrivacyPage';
 import CookieBanner from './components/CookieBanner';
 import TermsPage from './components/TermsPage';
 import CalculatorPage from './components/CalculatorPage';
-import SellPage from './components/SellPage';
 import LpPage from './components/LpPage';
 
 export default function App() {
@@ -22,7 +21,6 @@ export default function App() {
             dans ROUTES de scripts/prerender.mjs (sinon HTTP 404) et dans public/sitemap.xml. */}
         <Route path="/terms" element={<><TermsPage /><Footer /></>} />
         <Route path="/calculator" element={<><CalculatorPage /><Footer /></>} />
-        <Route path="/sell" element={<><SellPage /><Footer /></>} />
         <Route path="/lp" element={<><LpPage /><Footer /></>} />
         <Route path="/legal" element={<><LegalPage /><Footer /></>} />
         <Route path="/privacy" element={<><PrivacyPage /><Footer /></>} />

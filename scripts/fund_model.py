@@ -32,6 +32,8 @@ v3.6 (05/11, Antoine) : S-01, la vitrine, suit le chemin ProFund pur (aucune
 dilution) ; S-02 devient la societe qui leve ailleurs, que l'on suit en actions
 nouvelles et qui sort a 250 M EUR (V-02 reste l'autre exemple) ; un seul
 vocabulaire, Seed / Venture / Growth ; cinq tests de resistance.
+v3.7 (05/11) : une licorne dans le tableau des fondateurs (sortie a 1 Md EUR) et un
+scenario « grosse licorne » (S-01 vendue 2 Md EUR) ; le cas cible reste sans licorne.
 scripts/fund_xlsx.py regenere le classeur en formules vivantes.
 
 Conventions :
@@ -63,7 +65,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.6"
+VERSION = "v3.7"
 MODEL_DATE = "2026-11-05"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
@@ -287,7 +289,7 @@ SPV_COMPANIES = ("S-01", "V-01", "G-01")
 # calculateur du site (src/lib/founderMath.js) fait le meme calcul et le build
 # du site echoue s'il diverge (scripts/prerender.mjs).
 FOUNDER_MATH = {
-    "exits": [100 * M, 250 * M, 500 * M],
+    "exits": [100 * M, 250 * M, 500 * M, 1000 * M],
     # Cap table apres seed et Serie A (identique sur les deux chemins) :
     # seed 2 M EUR a 10 M post, pool de 10 %, Serie A 10 M EUR a 40 M post.
     "founders": 0.54,
@@ -313,10 +315,10 @@ FOUNDER_MATH = {
 FOUNDER_MATH["loan_rate"] = LOAN_RATE
 FOUNDER_MATH["loan_multiple"] = loan_price(0, FOUNDER_MATH["loan_life"])
 PUBLISHED_FOUNDER_MATH = {
-    "founders_vc": [0, 62 * M, 153 * M],
-    "founders_profund": [38 * M, 119 * M, 254 * M],
-    "series_a_vc": [0.7, 2.9, 7.1],
-    "series_a_profund": [1.8, 5.5, 11.8],
+    "founders_vc": [0, 62 * M, 153 * M, 307 * M],
+    "founders_profund": [38 * M, 119 * M, 254 * M, 524 * M],
+    "series_a_vc": [0.7, 2.9, 7.1, 14.2],
+    "series_a_profund": [1.8, 5.5, 11.8, 24.3],
 }
 
 # La v2 (commit 2f3b590, scripts/fund_model.py) avec les memes sorties que la v3,
@@ -627,8 +629,8 @@ def _zombie_best(lines):
     return tuple(out)
 
 
-def _unicorn(lines):
-    return tuple(replace(x, exit_value=1000 * M) if x.company == "S-01" else x for x in lines)
+def _unicorn(lines, value=1000 * M):
+    return tuple(replace(x, exit_value=value) if x.company == "S-01" else x for x in lines)
 
 
 def stress_tests() -> list[dict]:
@@ -641,6 +643,7 @@ def stress_tests() -> list[dict]:
         ("with_partial", "With partial liquidity: five winners sell 25% in year 6 (clause 9)",
          tuple(replace(x, partial=x.id in CLAUSE9_LINES) for x in LINES), target),
         ("unicorn", "One unicorn: S-01 sold for €1B", _unicorn(LINES), target),
+        ("big_unicorn", "A big unicorn: S-01 sold for €2B", _unicorn(LINES, 2000 * M), target),
     ]
     out = []
     for key, label, lines, case in rows:

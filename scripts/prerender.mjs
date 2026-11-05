@@ -89,11 +89,6 @@ const ROUTES = [
     desc: 'Your stake today, the rounds you plan, your expected exit: what you take home on the VC path and on the ProFund path, and your stake after every round.',
   },
   {
-    path: 'sell',
-    title: 'Selling shares in an AI company? We buy. | ProFund',
-    desc: 'Angels, former employees, early funds: ProFund buys all or part of your stake in an AI company, in one go, with the founder’s agreement.',
-  },
-  {
     path: 'lp',
     title: 'LP access | ProFund',
     desc: 'ProFund Fund I, closed-ended EuVECA fund, Luxembourg. Fact sheet, fund model and data room on request, for professional and eligible investors.',

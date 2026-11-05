@@ -124,7 +124,7 @@ function TheInversion() {
     <Slide id="inversion" n={4} kick="The inversion" title="One equity round, then loans and buybacks.">
       <div className="pv-flow">
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="target" /></span><h3>One equity round</h3><p>A first cheque in new shares, from seed to Series A, or a buyback of existing shares.</p></div>
-        <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>A reserved loan line</h3><p>Covers every future need except compute-heavy model training.</p></div>
+        <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>A reserved loan line</h3><p>Hiring, go-to-market, working capital, acquisitions. Need more? Equity on the same terms, with SPVs alongside the fund.</p></div>
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="trend" /></span><h3>Buybacks and cancellations</h3><p>Angels, leavers and early funds bought out; the company cancels shares every year.</p></div>
       </div>
       <div className="pv-callout">
@@ -224,8 +224,7 @@ function Team() {
     <section className="pv-sec" id="team">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick"><span className="pv-slide-n">10</span>The team</p>
-          <h2 className="pv-h2">Built for this model: M&amp;A, LBO, VC.</h2>
+          <p className="pv-kick"><span className="pv-slide-n">10</span>Founding Partner</p>
         </div>
         <div className="gp-grid">
           <div><img src="/gp-photo.jpg" alt="Alexandre Busson" style={{ width: '160px', height: '200px', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} /></div>
@@ -589,8 +588,8 @@ export default function ProFundPage() {
       <FourLaws tint={false} />
       <TheProblem />
       <TheInversion />
-      <HowWeBack />
-      <EveryStage />
+      <HowWeBack forFounders={false} />
+      <EveryStage forFounders={false} />
       <FounderMathSlide />
       <EveryoneWins />
       <Alignment />

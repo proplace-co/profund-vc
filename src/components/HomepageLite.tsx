@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
-import { EveryStage, HowWeBack, ReserveSection, TheMath, TheTeam } from './Founders';
+import { Doors, EveryStage, FinalCall, HowWeBack, TheMath, TheTeam } from './Founders';
 import { eur, fund } from '../lib/fund';
 import { savedAccess } from '../lib/access';
 
@@ -21,18 +21,18 @@ function hashWantsDealflow() {
 const FUND_SIZE = eur(fund.fund.commitments, 'tile');
 
 const LINKS = [
-  { href: '#how', label: 'How we back' },
+  { href: '#how', label: 'For founders' },
   { href: '#math', label: 'The math' },
   { href: '/terms', label: 'The pact' },
   { href: '#edge', label: 'Our edge' },
-  { href: '#team', label: 'Team' },
+  { href: '#team', label: 'Founding Partner' },
 ];
 
 export default function HomepageLite() {
   const [open, setOpen] = useState(() => hashWantsDealflow());
   const { hash } = useLocation();
 
-  // Arrivée depuis une autre page sur « /#reserve », « /#how »… : le routeur ne
+  // Arrivée depuis une autre page sur « /#how », « /#math »… : le routeur ne
   // défile pas vers l'ancre, on le fait une fois la page rendue.
   useEffect(() => {
     if (!hash || DEALFLOW_HASHES.has(hash.toLowerCase())) return;
@@ -70,8 +70,8 @@ export default function HomepageLite() {
   return (
     <div className="pfh">
       <SiteHeader links={LINKS}>
-        <Link to="/calculator" className="pv-btn line pv-hide-sm">Run your numbers</Link>
-        <a href="#reserve" className="pv-btn">Reserve your round</a>
+        <Link to="/lp" className="pv-btn line pv-hide-sm">For LPs</Link>
+        <Link to="/calculator" className="pv-btn">Run your numbers</Link>
       </SiteHeader>
 
       <header className="pv-hero">
@@ -89,8 +89,8 @@ export default function HomepageLite() {
               down. You keep control. By contract.
             </p>
             <div className="pv-ctas">
-              <a href="#reserve" className="pv-btn">Reserve your round <Icon name="arrow" /></a>
-              <Link to="/calculator" className="pv-btn line"><Icon name="calc" />Run your numbers</Link>
+              <Link to="/calculator" className="pv-btn"><Icon name="calc" />Run your numbers <Icon name="arrow" /></Link>
+              <Link to="/lp" className="pv-btn line">For LPs</Link>
             </div>
             <div className="pv-hero-foot">
               <button type="button" className="pv-link" onClick={follow}>
@@ -103,6 +103,7 @@ export default function HomepageLite() {
         </div>
       </header>
 
+      <Doors onFollow={follow} />
       <Manifesto />
       <FourLaws />
       <HowWeBack />
@@ -111,7 +112,7 @@ export default function HomepageLite() {
       <OurEdge onFollow={follow} />
       <ProofOfWork />
       <TheTeam />
-      <ReserveSection onFollow={follow} />
+      <FinalCall />
       <div className="pv-wrap">
         <p className="pv-note pv-note-end">
           EuVECA pre-marketing communication, professional and eligible investors only. Not an offer to subscribe.

@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "v3.6",
+  "version": "v3.7",
   "model_date": "2026-11-05",
   "fund": {
     "commitments": 100000000,
@@ -1428,13 +1428,21 @@
       "net_tvpi": 4.5,
       "net_irr": 0.37,
       "dpi_year7": 1.0
+    },
+    {
+      "id": "big_unicorn",
+      "label": "A big unicorn: S-01 sold for \u20ac2B",
+      "net_tvpi": 7.0,
+      "net_irr": 0.47,
+      "dpi_year7": 1.0
     }
   ],
   "founder_math": {
     "exits": [
       100000000,
       250000000,
-      500000000
+      500000000,
+      1000000000
     ],
     "founders": 0.54,
     "holders": [
@@ -1516,6 +1524,13 @@
         "founders_profund": 254000000,
         "series_a_vc": 7.1,
         "series_a_profund": 11.8
+      },
+      {
+        "exit": 1000000000,
+        "founders_vc": 307000000,
+        "founders_profund": 524000000,
+        "series_a_vc": 14.2,
+        "series_a_profund": 24.3
       }
     ]
   },

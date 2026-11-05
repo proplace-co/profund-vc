@@ -335,7 +335,7 @@
 .pfh { background: #fff; color: var(--ink); }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   v3 (05/11) — LA PROPOSITION FONDATEURS : accueil, /terms, /calculator, /sell,
+   v3 (05/11) — LA PROPOSITION FONDATEURS : accueil, /terms, /calculator,
    /lp, et les slides de /pitch. Même grammaire que le système pv- ci-dessus.
    ══════════════════════════════════════════════════════════════════════════ */
 .pv-eyebrow.caps { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
@@ -414,6 +414,27 @@
 .pv-tick svg { width: 16px; height: 16px; stroke-width: 2.4; }
 .pv-tick.soft { background: var(--blue-soft); color: var(--blue-dk); }
 .pv-tick.soft svg { stroke-width: 2; }
+/* v3.7 : les deux portes sous le héros, fondateurs | LPs */
+.pv-doors-sec { position: relative; z-index: 2; margin-top: -56px; }
+.pv-doors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.pv-door { display: flex; flex-direction: column; gap: 12px; padding: clamp(26px, 3vw, 40px); border-radius: var(--r-xl);
+  background: #fff; box-shadow: var(--sh-3); }
+.pv-door h2 { margin: 0; font-size: clamp(22px, 2vw, 28px); font-weight: 750; line-height: 1.15; letter-spacing: -.025em; color: var(--ink); }
+.pv-door p:not(.pv-kick) { margin: 0; max-width: 34em; font-size: 16px; line-height: 1.6; color: var(--muted); }
+.pv-door-act { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: auto; padding-top: 10px; }
+.pv-door.dark { position: relative; overflow: hidden; background: var(--night); }
+.pv-door.dark::after { content: ""; position: absolute; right: -20%; bottom: -60%; width: 70%; height: 140%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(98, 124, 153, .35), rgba(98, 124, 153, 0)); pointer-events: none; }
+.pv-door.dark > * { position: relative; z-index: 1; }
+.pv-door.dark .pv-kick { color: var(--blue-glow); }
+.pv-door.dark h2 { color: #fff; }
+.pv-door.dark p:not(.pv-kick) { color: var(--night-txt); }
+.pv-door.dark .pv-link { color: #fff; }
+.pv-band .pv-kick { margin-bottom: 12px; color: var(--blue-glow); }
+@media (max-width: 900px) {
+  .pv-doors { grid-template-columns: minmax(0, 1fr); }
+  .pv-doors-sec { margin-top: -36px; }
+}
 .pv-pact-row { flex-wrap: wrap; margin-top: 20px; }
 .pv-pact-row p { flex: 1 1 280px; }
 .pv-pact-fair { display: flex; align-items: center; gap: 14px; margin: 18px 0 20px; font-size: 16.5px; line-height: 1.55; color: var(--ink-2); }

@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import SubPage from './SubPage';
 import { Icon } from './Thesis';
-import { ReserveForm } from './Founders';
 import { founderPaths } from '../lib/founderMath.js';
 import { eur, fund, pct } from '../lib/fund';
 
@@ -156,7 +154,8 @@ export default function CalculatorPage() {
                   <tr className="sub"><td>Equity raised after today</td><td>{money(r.vc.equityRaised)}</td><td>€0, {money(n(s.loans) * 1e6)} of loans</td></tr>
                 </tbody>
               </table>
-              <Link to="/#reserve" className="pv-btn pv-res-go">Reserve your round <Icon name="arrow" /></Link>
+              <a href={`mailto:alexandre@profund.vc?subject=${encodeURIComponent('My numbers')}&body=${encodeURIComponent(summary)}`}
+                 className="pv-btn line pv-res-go">Send these numbers to the partner <Icon name="arrow" /></a>
             </div>
             <p className="pv-fine">
               VC path: 1× non-participating preferences, pari passu; each investor converts when it pays more.
@@ -164,16 +163,6 @@ export default function CalculatorPage() {
               never goes down (the annual cancellations that lift it are not counted here). Illustrative, not a forecast or an offer.
             </p>
           </div>
-        </div>
-      </section>
-      <section className="pv-sec tint pv-sec-tight" id="reserve">
-        <div className="pv-wrap pv-split">
-          <div className="pv-head">
-            <p className="pv-kick">Next step</p>
-            <h2 className="pv-h2">Reserve your round.</h2>
-            <p className="sub">Your numbers go with your request. We answer within 24 hours.</p>
-          </div>
-          <ReserveForm extra={summary} />
         </div>
       </section>
     </SubPage>

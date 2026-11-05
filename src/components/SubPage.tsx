@@ -2,20 +2,19 @@ import { useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { SiteHeader } from './Thesis';
 
-// La coquille des pages fondateurs et LP (/terms, /calculator, /sell, /lp) :
+// La coquille des pages fondateurs et LP (/terms, /calculator, /lp) :
 // même barre du haut, un héros court, puis le contenu.
 const LINKS = [
-  { href: '/#how', label: 'How we back' },
+  { href: '/#how', label: 'For founders' },
   { href: '/terms', label: 'The pact' },
   { href: '/calculator', label: 'Run your numbers' },
-  { href: '/sell', label: 'Sell your shares' },
-  { href: '/lp', label: 'LP access' },
 ];
 
 export function SubHeader() {
   return (
     <SiteHeader links={LINKS}>
-      <Link to="/#reserve" className="pv-btn">Reserve your round</Link>
+      <Link to="/lp" className="pv-btn line pv-hide-sm">For LPs</Link>
+      <Link to="/calculator" className="pv-btn">Run your numbers</Link>
     </SiteHeader>
   );
 }

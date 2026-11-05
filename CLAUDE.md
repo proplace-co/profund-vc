@@ -9,20 +9,19 @@ sur le domaine `profund.vc`. **Pas de backend, aucun appel réseau côté app**
 ```
 src/
   main.tsx              montage React + ErrorBoundary
-  App.tsx               les 8 routes + la route catch-all
+  App.tsx               les 7 routes + la route catch-all
   index.css             TOUT le style du site (CSS maison : jetons, système pv-, anciennes classes)
   components/
     Thesis.tsx          LE TEXTE DE LA THÈSE (manifeste, 4 lois, 2 moteurs, proof of work),
                         barre du haut, visuel du héros — rendus par / ET /pitch
-    Founders.tsx        LA PROPOSITION FONDATEURS v3 (how we back + lien vers le pacte, the math,
-                        every stage, team, Reserve your round) — rendus par /, /calculator, /pitch
+    Founders.tsx        LA PROPOSITION FONDATEURS v3 (les deux portes Founders | LPs, how we back +
+                        lien vers le pacte, the math, every stage, Founding Partner, final call) — rendus par /, /calculator, /pitch
     HomepageLite.tsx    route /
     TermsPage.tsx       route /terms — le pacte des fondateurs, 10 clauses (tableau CLAUSES)
     CalculatorPage.tsx  route /calculator — « Run your numbers »
-    SellPage.tsx        route /sell — les vendeurs de titres (angels, leavers, fonds early)
     LpPage.tsx          route /lp — l'accès LP (mention de pré-commercialisation)
-    SubPage.tsx         coquille de /terms, /calculator, /sell, /lp
-    LeadForm.tsx        formulaires (réserver un tour, vendre, accès LP) → email préparé
+    SubPage.tsx         coquille de /terms, /calculator, /lp
+    LeadForm.tsx        le formulaire de /lp → email préparé
     ProFundPage.tsx     route /pitch — le deck LP, une section par slide + annexe
     LegalPage.tsx       route /legal — le texte vit dans le tableau CLAUSES
     PrivacyPage.tsx     route /privacy — le texte vit dans le tableau SECTIONS
@@ -97,11 +96,14 @@ redessiné avec les mêmes jetons. Dans les tableaux, la ligne de total porte la
 classe `sub`. /pitch n'est lié nulle part sur le site (deck LP, remis via /lp) ;
 il est hors sitemap et en `noindex` (comme /dealflow, `noindex: true` dans ROUTES).
 
-**Les formulaires fondateurs et LP n'ont PAS de backend.** « Reserve your round »
-(accueil, /calculator), /sell et /lp passent par `LeadForm.tsx`, qui ouvre un email
-pré-rempli vers alexandre@profund.vc (mailto). Le jour où une route existe côté proxy
-(`modal_proxy/proxy.py`, monorepo), seul `submit()` change. Le calculateur joint ses
-chiffres à la demande ; il ne les stocke nulle part.
+**Fondateurs d'un côté, LPs de l'autre ; le site est élitiste** (Antoine, 05/11, v3.7) :
+sous le héros, deux portes (« For founders » → /calculator et le pacte ; « For LPs » →
+/lp et le deal flow). Plus de formulaire « Reserve your round » ni de page /sell : le
+parcours fondateur s'arrête au calculateur (« Send these numbers to the partner », un
+mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
+/lp (`LeadForm.tsx`) n'a PAS de backend : il ouvre un email pré-rempli (mailto). Au-delà
+de la dette, la copie dit qu'on apporte de l'equity aux mêmes conditions, avec des SPV
+(« Your call », pour rester cohérent avec « never create a new share »).
 
 **Le popup d'abonnement appelle un vrai backend.** `DealFlowModal.tsx` POSTe
 `https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run/profund/subscribe`,
@@ -150,7 +152,7 @@ Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 
 **PAS DE FRAIS, DE CARRY NI DE RENDEMENT CIBLE EN ACCÈS LIBRE** (Antoine, 05/11,
 remplace la règle « un seul montant » du 30/08) : l'accueil et les pages fondateurs
-(/terms, /calculator, /sell, /lp) parlent aux fondateurs. Montants permis, tous lus
+(/terms, /calculator) parlent aux fondateurs, /lp aux LPs. Montants permis, tous lus
 dans `fund.json` : la taille du fonds (héros, loi 04), les tickets des étages (Every
 stage, sans les SPV : ils sont hors du fonds, documents LP seulement) et le tableau fondateurs, illustratif (`founder_math`). Frais, carry,
 construction détaillée et rendements cibles vivent **uniquement** derrière /lp :
@@ -233,9 +235,11 @@ chaque page n'a que 6 à 8 mm de marge, tout ajout se paie ailleurs.
 **Les versions sont taguées** : `v1` (le site à 35 M€, Scout + Core ; fiche dans
 `archive/v1/profund-factsheet-v1.pdf`), `v2` (100 M€, Seed à 50 sociétés pour une
 licorne, fiche 3 pages, avant la proposition fondateurs), `v3.3` (le classeur
-d'Antoine du 05/11 tel quel), `v3.4` (prêts au taux, radar à 40), `v3.5` (clause 9 hors du cas cible) et `v3.6`
+d'Antoine du 05/11 tel quel), `v3.4` (prêts au taux, radar à 40), `v3.5` (clause 9 hors du cas cible), `v3.6`
 (S-01 en chemin pur, S-02 lève ailleurs et sort à 250 M€, Seed / Venture / Growth
-partout, accueil à 10 sections, page 4 de la fiche allégée, SPV hors de l'accueil). Pour revenir à une version : partir du tag
+partout, accueil à 10 sections, page 4 de la fiche allégée, SPV hors de l'accueil) et
+`v3.7` (portes Founders | LPs, plus de Reserve ni de /sell, licorne à 1 Md€ dans le
+tableau fondateurs, scénario grosse licorne à 2 Md€). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`
@@ -293,7 +297,7 @@ branche de travail, ce serait la mettre en ligne.
 python scripts/fund_model.py --check   # fund.json à jour et invariants du modèle
 npm run typecheck              # doit sortir 0 erreur
 npm run build                  # doit finir par "prerender: N routes ... écrits"
-npm run preview                # puis ouvrir /, /terms/, /calculator/, /sell/, /lp/, /pitch/, /legal/, /privacy/
+npm run preview                # puis ouvrir /, /terms/, /calculator/, /lp/, /pitch/, /legal/, /privacy/
 ```
 
 Après un changement de la fiche : rendre ses quatre pages en PNG (PyMuPDF,

@@ -419,7 +419,7 @@ PACT = (
     ("One round.", "We invest once in new shares, then never create a new share while the founder "
                    "grows with us."),
     ("A reserved loan line.", "Hiring, go-to-market, working capital, acquisitions, drawn in tranches. "
-                              "No more fundraising."),
+                              "No more fundraising. Need more? Equity on the same terms, with SPVs."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
                                     "agreement, and the company cancels shares every year. Founder and "
                                     "fund own more at every stage."),
@@ -747,9 +747,8 @@ def page_three(F):
 
     # l'equipe | le track record
     half = (W - 16) / 2
-    kick(F, M, y, "The team")
-    title(F, M, y + 17, W, "Built for this model: M&A, LBO, VC.", 18)
-    y += 46
+    kick(F, M, y, "The GP")
+    y += 20
     # Memes faits que le tableau Track Record de /pitch ; Deal-04 SANS multiple :
     # un cash-on-cash n'a pas de sens pour une acquisition a 100 % toujours detenue.
     deals = (

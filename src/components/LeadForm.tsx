@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Icon } from './Thesis';
 
-// Les formulaires de l'accueil (« Reserve your round »), de /sell et de /lp.
+// Le formulaire de /lp (v3.7 : « Reserve your round » et /sell retirés).
 // Le site est statique et ces demandes n'ont PAS de route côté proxy (seul
 // /profund/subscribe existe, pour le deal flow : DealFlowModal.tsx) : le
 // formulaire prépare donc un email structuré vers le GP, que la personne envoie
