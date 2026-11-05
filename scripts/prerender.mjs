@@ -80,8 +80,8 @@ const ROUTES = [
   },
   {
     path: 'terms',
-    title: 'The founders’ pact · 10 clauses | ProFund',
-    desc: 'One equity round, a reserved loan line, buybacks only with you, your votes, no board seat, no veto, your exit. The 10 clauses ProFund signs with every company it backs.',
+    title: 'The founders’ pact · 9 clauses | ProFund',
+    desc: 'One equity round, a reserved loan line, buybacks only with you, your votes, no board seat, no veto, your exit. The 9 clauses ProFund signs with every company it backs.',
   },
   {
     path: 'calculator',

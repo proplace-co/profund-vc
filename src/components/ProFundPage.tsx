@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
 import { CV_LOGOS, EveryStage, FounderTable, HowWeBack, founderNote } from './Founders';
+import { N_CLAUSES } from './Pact';
 import { CASE_IDS, LAYER_IDS, eur, eurRange, fund, mult, pct, rowId, type FundLayer, type LayerId } from '../lib/fund';
 import pipeline from '../data/pipeline.json';
 import { FACTSHEET_URL, MODEL_XLSX_URL } from '../lib/links';
@@ -29,7 +30,6 @@ const GROWTH_HOLDS = L.growth.lines.map((l) => l.exit_year - l.entry_year);
 const AT_250 = FM.rows.find((r) => r.exit === 250e6) ?? FM.rows[1];
 const RAISED_VC = FM.raised_before + FM.vc_equity;
 const DELAY_1 = fund.stress_tests.find((s) => s.id === 'exits_plus_1')!;
-const WITH_PARTIAL = fund.stress_tests.find((s) => s.id === 'with_partial')!;
 const V2 = fund.reference_v2;
 const FR = fund.fund_returner;   // la loi 04 chiffrée : la sortie qui rend tout le fonds
 const loanLoss = (id: 'target' | 'base' | 'stress') => pct(1 - C[id].loan_repaid);
@@ -185,10 +185,10 @@ function Alignment() {
         </div>
         <div className="pv-card">
           <h3>Conflicts policy</h3>
-          <p>Buybacks priced by an independent valuer, our votes excluded from decisions involving ProFund, LP advisory committee approval.</p>
+          <p>Buybacks priced by an independent valuer. When a decision involves ProFund itself, our shares don’t vote. Conflicts of interest go to the LP advisory committee.</p>
         </div>
       </div>
-      <div className="pv-ctas"><Link to="/terms" className="pv-link">Read the founders’ pact, 10 clauses <Icon name="arrow" /></Link></div>
+      <div className="pv-ctas"><Link to="/terms" className="pv-link">Read the founders’ pact, {N_CLAUSES} clauses <Icon name="arrow" /></Link></div>
     </Slide>
   );
 }
@@ -320,8 +320,7 @@ function TermsAndTargets() {
           year {EXIT_YEARS[1]}. The IRR rests on large stakes in the winners and cash that comes back early: loans
           at {pct(fund.loan_rate)} a year, repaid from year {LOANS_FROM},
           growth positions bought at a {pct(STRUCT_DISC)} discount and sold
-          after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years. Pact clause 9 (partial liquidity from year {SEC.year}) is left
-          out: with it, {pct(WITH_PARTIAL.net_irr)} and {mult(WITH_PARTIAL.dpi_year7)} DPI by year 7.
+          after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years.
           One year of delay on every exit: {pct(DELAY_1.net_irr)}. No exit above {eur(TARGET.largest_exit, 'val')}; with the same
           exits, the v2 model would make {mult(V2.capped_net_tvpi)}. Law 04 in numbers: with {pct(FR.stake_at_exit, 1)} of {FR.company} at
           exit, a {eur(FR.fund_returning_exit, 'val')} sale returns the entire fund on its own.
@@ -463,8 +462,7 @@ function Simulation() {
           </tbody>
         </table></div>
         <p className="pf-fine">
-          Fund return at exit value, equity plus loan repayment. Pact clause 9 (from year {SEC.year}, the company can buy back up to a quarter of
-          our stake, at a discount) is the company’s option: it is not used in the target case; the stress test shows it.
+          Fund return at exit value, equity plus loan repayment.
         </p>
       </div>
     </div>

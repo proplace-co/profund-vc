@@ -71,7 +71,9 @@ la fiche PDF en porte une copie (`factsheet.py`, chute en variante LP « …we l
 we buy ») : les changer ensemble. **La proposition fondateurs v3** (Antoine, 05/11 :
 « One round. Then never diluted again. ») vit dans `Founders.tsx` et `TermsPage.tsx`
 (le pacte, 10 clauses, dans `Pact.tsx` : texte contractuel public, ne pas le reformuler ;
-v3.11 : clauses 1 et 2, l'equity complémentaire dite en clair, « Every option stays open ») ; la fiche
+v3.11 : clauses 1 et 2, l'equity complémentaire dite en clair, « Every option stays open » ;
+v3.12 : 9 clauses, la liquidité partielle supprimée, « Their votes move to your side » sur les
+rachats ; le nombre de clauses se lit dans `N_CLAUSES`, jamais en dur) ; la fiche
 p. 1 et 2 en porte une copie. Deux écarts volontaires à la copie du 05/11 :
 « Every cancellation lifts your stake » (et non « buyback » : quand ProFund rachète
 un angel, la part du fondateur ne bouge pas) et « A partner from venture debt will run
@@ -189,7 +191,7 @@ un fonds de 100 M€, trois étages Seed / Venture / Growth (un seul vocabulaire
 classeur compris, depuis la v3.6) ; UN tour en actions par société, puis des rachats de
 titres existants avec décote, des prêts (plafond EuVECA de 30 % des engagements) et
 des annulations ; suivi en actions nouvelles seulement si le fondateur lève ailleurs ;
-clause 9 du pacte (liquidité partielle à partir de l'année 6) : option de la société, hors du cas cible depuis la v3.5, testée en résistance (`CLAUSE9_LINES`) ; aucune sortie
+la liquidité partielle de l'année 6 (ancienne clause 9) est supprimée du pacte en v3.12 : le moteur et le classeur la gardent comme levier « what if », aucune ligne marquée ; aucune sortie
 au-dessus de 300 M€ ; SPV de co-investissement au-delà de 10 M€ par société). Le
 portage v3.3 reproduisait à l'euro près le classeur livré le 05/11 (1 532 valeurs,
 tag git `v3.3`). **v3.4** (Antoine, 05/11) : prêts sains à 12 % par an composés sur
@@ -263,7 +265,8 @@ partout, accueil à 10 sections, page 4 de la fiche allégée, SPV hors de l'acc
 grosse licorne à 2 Md€) `v3.8` (accueil 100 % fondateurs) et `v3.9` (les règles en ouverture, le capital
 optimisé, le tableau recadré, la thèse et la capture du deal flow sur /lp, l'equity
 complémentaire à préférence 1×) `v3.10` (accueil sans barre du haut, /lp réécrite pour
-les LPs) et `v3.11` (le pacte sur l'accueil, l'equity complémentaire dans les clauses 1-2). Pour revenir à une version : partir du tag
+les LPs), `v3.11` (le pacte sur l'accueil, l'equity complémentaire dans les clauses 1-2) et
+`v3.12` (clause 9 supprimée, conflits et rachats en clair). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`

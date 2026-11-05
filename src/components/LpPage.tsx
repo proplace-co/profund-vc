@@ -64,7 +64,7 @@ const PROTECTION: { icon: IconName; t: string; d: string }[] = [
   { icon: 'shield', t: '1× preference', d: 'Every first cheque, and any extra equity a founder asks for, carries a 1× non-participating preference.' },
   { icon: 'banknote', t: 'Loans before equity', d: 'Loans are repaid before any equity, from the company’s growth.' },
   { icon: 'scale', t: 'Independent pricing', d: 'Every buyback is priced by an independent valuer.' },
-  { icon: 'lock', t: 'Conflicts', d: 'Our votes are excluded from any decision that involves ProFund. Conflicts go to the LP advisory committee.' },
+  { icon: 'lock', t: 'Conflicts', d: 'When a decision involves ProFund itself (a loan, a buyback, the price of our shares), our shares don’t vote. Conflicts of interest on the fund side go to the LP advisory committee.' },
   { icon: 'check', t: 'Fallback', d: 'In case of fraud or gross misconduct, the voting agreement ends.' },
   { icon: 'file', t: 'Information, not control', d: 'Information rights and a right of first offer in every company. An investment committee and a key-person clause in the fund.' },
 ];

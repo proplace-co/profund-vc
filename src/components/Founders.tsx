@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, type IconName } from './Thesis';
+import { N_CLAUSES } from './Pact';
 import { eur, eurRange, fund, mult, pct } from '../lib/fund';
 
 // LA PROPOSITION FONDATEURS (v3, Antoine, 05/11) : un seul tour en actions, puis des
@@ -43,7 +44,8 @@ const RULES: { old: string; now: string }[] = [
   // (v3.10 : la ligne « No new preference on top of you » est retirée : l'equity
   // complémentaire, au choix du fondateur, porte une préférence 1×.)
   { old: 'Their exit, on their timing', now: 'Your exit. No veto. Ever.' },
-  { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Your stake goes up.' },
+  // ProFund rachète : ce sont nos titres qui montent ; les votes passent du côté du fondateur.
+  { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Their votes move to your side.' },
 ];
 
 /** Les règles. `hero` : en ouverture de l'accueil (titre h1, bouton) ; sinon une section (/lp). */
@@ -75,8 +77,8 @@ export function TheRules({ hero = false }: { hero?: boolean }) {
         <div className="pv-rules-foot">
           <span>Written into the pact. The same for every founder. Raise elsewhere whenever you want: we follow or lead.</span>
           {hero
-            ? <a href="#pact" className="pv-link">Read the 10 clauses <Icon name="arrow" /></a>
-            : <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>}
+            ? <a href="#pact" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></a>
+            : <Link to="/terms" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></Link>}
         </div>
       </div>
     </section>
@@ -167,7 +169,7 @@ export function HowWeBack() {
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="scale" /></span>
           <p>If you raise elsewhere, we can follow or lead the round. Fair both ways.</p>
-          <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>
+          <Link to="/terms" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></Link>
         </div>
       </div>
     </section>

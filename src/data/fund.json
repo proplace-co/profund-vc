@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "v3.7",
+  "version": "v3.8",
   "model_date": "2026-11-05",
   "fund": {
     "commitments": 100000000,
@@ -36,14 +36,7 @@
     "share": 0.25,
     "year": 6,
     "price_pct": 0.6,
-    "lines": [],
-    "clause9_lines": [
-      "S-01",
-      "S-02",
-      "S-11",
-      "V-01",
-      "V-02"
-    ]
+    "lines": []
   },
   "buyback_discount": 0.2,
   "loan_rate": 0.12,
@@ -1414,13 +1407,6 @@
       "net_tvpi": 2.7,
       "net_irr": 0.26,
       "dpi_year7": 0.9
-    },
-    {
-      "id": "with_partial",
-      "label": "With partial liquidity: five winners sell 25% in year 6 (clause 9)",
-      "net_tvpi": 2.6,
-      "net_irr": 0.27,
-      "dpi_year7": 1.2
     },
     {
       "id": "unicorn",

@@ -690,9 +690,9 @@ def page_two(F):
 
     # conflits et filet de securite
     txt = (f"<b>{x('Conflicts and fallback.')}</b> " + x(
-        "Every buyback is priced by an independent valuer. ProFund's votes are excluded from any decision that "
-        "involves ProFund, and conflicts go to the LP advisory committee. In case of fraud or gross misconduct, "
-        "the voting agreement ends."))
+        "Every buyback is priced by an independent valuer. When a decision involves ProFund itself (a loan, a "
+        "buyback, the price of our shares), our shares don't vote. Conflicts of interest on the fund side go to "
+        "the LP advisory committee. In case of fraud or gross misconduct, the voting agreement ends."))
     hb = F.hpara(W - 72, txt, 9.6, "reg", 1.5) + 30
     F.rr(M, y, W, hb, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
     F.rr(M + 14, y + (hb - 30) / 2, 30, 30, 9, fill=BLUE_SOFT)
@@ -1106,9 +1106,7 @@ def page_four(F):
     y += sim_table(F, M, y, W) + 5
     sec = SECONDARY
     y += F.para(M, y, W, x(
-        "Fund return at exit value, equity plus loan repayment. Pact clause 9 (from year "
-        f"{sec['year']}, the company can buy back up to a quarter of our stake, at a discount) is the company's "
-        "option: it is not used in the target case. With it, the stress test below shows earlier cash."),
+        "Fund return at exit value, equity plus loan repayment."),
         7.3, "reg", SOFT, 1.35) + 9
 
     # la performance

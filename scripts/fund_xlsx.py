@@ -268,7 +268,7 @@ def sheet_assumptions(bk: Book) -> None:
          DATA["terms"]["gp_commit_min"], "eur")
     put("Management fee on the loan sleeve, during the investment period", "FeeLoan", TERMS["fee_loan_pct"], "pct1",
         "Applied to the loans deployed (Construction); the rest of commitments pays the standard fee")
-    ws.write(r, 0, "Partial liquidity of the winners (pact clause 9): the company buys back part of ProFund's stake",
+    ws.write(r, 0, "What if: partial secondary sale of a position (not in the pact; no line flagged)",
              bk.f(bold=True))
     r += 1
     put("Share of the position sold", "SecShare", SEC["share"], "pct0")
@@ -405,7 +405,7 @@ HEAD = {
     "follow": "Follow-on in new shares when the founder raises elsewhere (line total)",
     "follow_year": "Follow-on year", "follow_post": "Outside round, post-money (per company)",
     "follow_stake": "Stake from the follow-on (per company)",
-    "partial": "Partial liquidity (pact clause 9): yes / no",
+    "partial": "What if: partial secondary sale (yes / no)",
 }
 for _c in CASE_IDS:
     _n = CASE_NAME[_c]
@@ -618,8 +618,8 @@ def sheet_lines(bk: Book) -> None:
                        "(entry stake + stake bought back at the line's discount) ÷ (1 − cancellations) × (1 − outside "
                        "dilution) + stake from the follow-on in the outside round. Loan repayment = loan × repayment "
                        "multiple × share repaid in the case, received in the repayment year. Amounts rounded to EUR "
-                       "10K below EUR 1M and EUR 100K above, before any sum. The partial liquidity of the flagged "
-                       "winners (pact clause 9) is in the helpers and the Cash flows tab. Kind 'breakout' = a block "
+                       "10K below EUR 1M and EUR 100K above, before any sum. A what-if partial secondary sale "
+                       "(not in the pact) is in the helpers and the Cash flows tab, unused. Kind 'breakout' = a block "
                        "bought at growth stage in a company already in the portfolio (same exit key): not a new "
                        "company.", bk.f(font_color=MUTED, italic=True))
     ws.freeze_panes(5, 1)
@@ -1210,9 +1210,8 @@ def sheet_performance(bk: Book, outs: dict) -> None:
                    "whole-of-fund waterfall with a hurdle and GP catch-up), before tax. Investments over "
                    f"{FUND['investment_period_years']} years, exits from year {min(x.exit_year for x in fm.LINES)} to "
                    f"year {HORIZON}. One portfolio in every case: Base and Stress multiply every exit value and lose "
-                   f"more of the loans (Assumptions). Pact clause 9 (partial liquidity from year {SEC['year']}) is the "
-                   "company's option and is not used in the target case: set Lines column " + lc("partial") +
-                   " to 'yes' to test it. No exit above {eur_txt(largest)} in the Target case. Targets are "
+                   "more of the loans (Assumptions). No partial secondary sale (set Lines column " + lc("partial") +
+                   f" to 'yes' to test one). No exit above {eur_txt(largest)} in the Target case. Targets are "
                    "model outputs, not a forecast or a guarantee.", note)
     ws.merge_range(r + 7, 0, r + 9, 3, PROJECTIONS, note)
 
@@ -1457,7 +1456,7 @@ def sheet_readme(bk: Book) -> None:
                          f"within the EuVECA cap of {pct_txt(FUND['loan_cap_pct'])} of commitments, with a "
                          f"{pct_txt(TERMS['fee_loan_pct'])} fee.  v3.2: realistic timing (investments over "
                          f"{FUND['investment_period_years']} years, exits years {min(x.exit_year for x in fm.LINES)} "
-                         f"to {HORIZON}), partial liquidity of the winners (pact clause 9), loans at "
+                         f"to {HORIZON}), loans at "
                          f"{round(fm.LOAN_RATE * 100)}% a year in tranches (v3.4; v3.3 priced every loan at "
                          f"1.4×), {n['growth']} bought from structural "
                          f"sellers. v3.3: real {n['venture']} and {n['growth']} tickets ({eur_txt(vr[0])}–"

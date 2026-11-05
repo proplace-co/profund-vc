@@ -34,6 +34,9 @@ nouvelles et qui sort a 250 M EUR (V-02 reste l'autre exemple) ; un seul
 vocabulaire, Seed / Venture / Growth ; cinq tests de resistance.
 v3.7 (05/11) : une licorne dans le tableau des fondateurs (sortie a 1 Md EUR) et un
 scenario « grosse licorne » (S-01 vendue 2 Md EUR) ; le cas cible reste sans licorne.
+v3.8 (05/11, Antoine) : la clause 9 (liquidite partielle) est supprimee du pacte ; son
+test de resistance disparait. Le mecanisme reste dans le moteur et le classeur comme un
+levier « what if » (vente secondaire partielle), sans aucune ligne marquee.
 scripts/fund_xlsx.py regenere le classeur en formules vivantes.
 
 Conventions :
@@ -65,7 +68,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.7"
+VERSION = "v3.8"
 MODEL_DATE = "2026-11-05"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
@@ -101,7 +104,7 @@ TERMS = {
 # societe, absente du cas cible (aucune ligne `partial`) ; le test de resistance
 # « with partial liquidity » l'applique aux cinq gagnants de CLAUSE9_LINES.
 SECONDARY = {"share": 0.25, "year": 6, "price_pct": 0.60}
-CLAUSE9_LINES = ("S-01", "S-02", "S-11", "V-01", "V-02")
+# v3.8 : plus dans le pacte ; aucune ligne `partial` (verifie par validate()).
 # Rachats de titres existants : decote par defaut sur la valorisation du moment
 # (chaque ligne peut fixer la sienne : 5-10 % sur les gagnants et angels, 30 %
 # sur les vendeurs structurels, fonds en fin de vie).
@@ -640,8 +643,6 @@ def stress_tests() -> list[dict]:
         ("best_zombie", "Best company (S-01, both lines) becomes a zombie", _zombie_best(LINES), target),
         ("loan_losses", "30% more losses on every loan", LINES,
          replace(target, loan_repaid=ratio(target.loan_repaid - 0.30, 2))),
-        ("with_partial", "With partial liquidity: five winners sell 25% in year 6 (clause 9)",
-         tuple(replace(x, partial=x.id in CLAUSE9_LINES) for x in LINES), target),
         ("unicorn", "One unicorn: S-01 sold for €1B", _unicorn(LINES), target),
         ("big_unicorn", "A big unicorn: S-01 sold for €2B", _unicorn(LINES, 2000 * M), target),
     ]
@@ -799,6 +800,7 @@ def validate(data: dict) -> Checks:
             c.need(st >= shown_entry(x), f"{x.id} : detention de sortie {st} < entree")
         c.need((x.exit_value is None) != (x.recovery is None), f"{x.id} : sortie ambigue")
         c.need(x.exit_value is None or x.n == 1, f"{x.id} : sortie sur une ligne groupee")
+        c.need(not x.partial, f"{x.id} : vente secondaire partielle, retiree du pacte (v3.8)")
         c.need(not x.partial or (x.exit_value and x.exit_year > SECONDARY["year"]),
                f"{x.id} : liquidite partielle sans sortie apres l'annee {SECONDARY['year']}")
         # par societe : une ligne groupee peut porter 2,25 M EUR (3 x 750 K)
@@ -986,7 +988,7 @@ def build() -> dict:
                  "companies": sum(layers[x]["companies"] for x in LAYERS),
                  "positions": len(LINES)},
         "terms": {**TERMS, "gp_commit_min": money(TERMS["gp_commit_min_pct"] * FUND["commitments"])},
-        "secondary": {**SECONDARY, "lines": lines_partial, "clause9_lines": list(CLAUSE9_LINES)},
+        "secondary": {**SECONDARY, "lines": lines_partial},
         "buyback_discount": BUYBACK_DISCOUNT,
         "loan_rate": LOAN_RATE,
         "loan_multiples": {**LOAN_MULTIPLES,

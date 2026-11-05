@@ -32,7 +32,7 @@ export interface FundLine {
   exit_pct: number | null;
   exit_value: number | null;
   recovery: number | null;
-  partial: boolean;         // liquidité partielle en année 6 (clause 9)
+  partial: boolean;         // vente secondaire partielle en année 6 (hors pacte depuis la v3.12 ; toujours false)
   proceeds: number;         // cas cible, fonds propres + prêt, à la valeur de sortie
   moic: number;
   entry_year: number;
@@ -171,7 +171,7 @@ export interface FundData {
     gp_commit_min_pct: number;
     gp_commit_min: number;
   };
-  secondary: { share: number; year: number; price_pct: number; lines: string[]; clause9_lines: string[] };
+  secondary: { share: number; year: number; price_pct: number; lines: string[] };
   buyback_discount: number;
   loan_rate: number;
   loan_multiples: { zombie: number; loss: number; performing_min: number; performing_max: number };
