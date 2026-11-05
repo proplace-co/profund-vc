@@ -6,7 +6,7 @@ export function payout(value: number, holders: Holder[]): Record<string, number>
 export function founderPaths(input: {
   founders: number;
   holders: Holder[];
-  rounds: { amount: number; post: number }[];
+  rounds: { amount: number; post: number; pool?: number }[];
   loans: number;
   loanMultiple: number;
   extra?: { amount: number; post: number }[];

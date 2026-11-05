@@ -228,6 +228,12 @@ navigateurs reprennent les nouveaux fichiers.
 `factsheet.py` et `fund_xlsx.py` refusent aussi de tourner dans ce cas. Les frais
 du fonds du modèle sont une estimation en attendant le devis du gestionnaire EuVECA.
 
+**Le tableau des fondateurs est calé sur les médianes Carta** (v3.13, `FOUNDER_MATH`) :
+fondateurs à 37,5 % après la série A (Founder Ownership Report 2026, sociétés « digital »),
+séries B à D à la dilution médiane par tour, recharge du pool avant chaque tour ; côté
+ProFund, le pool se recharge avec des titres rachetés (pacte, clause 4). Ne pas revenir à
+des hypothèses plus flatteuses sans source.
+
 **Le Seed est en haltère** (01/11, Alexandre ; v3.4 du 05/11) : 50 sociétés, 10 leads
 de conviction S-01..S-10 et 40 tickets radar de 150 K€ S-11..S-50 (`SEED_TRACKS`,
 champ `track` des lignes, exporté dans `layers.seed.tracks`). En v3, un ticket radar est
@@ -266,7 +272,9 @@ grosse licorne à 2 Md€) `v3.8` (accueil 100 % fondateurs) et `v3.9` (les règ
 optimisé, le tableau recadré, la thèse et la capture du deal flow sur /lp, l'equity
 complémentaire à préférence 1×) `v3.10` (accueil sans barre du haut, /lp réécrite pour
 les LPs), `v3.11` (le pacte sur l'accueil, l'equity complémentaire dans les clauses 1-2) et
-`v3.12` (clause 9 supprimée, conflits et rachats en clair). Pour revenir à une version : partir du tag
+`v3.12` (clause 9 supprimée, conflits et rachats en clair) et `v3.13` (le tableau fondateurs
+sur les médianes Carta : 37,5 % après la série A, dilution médiane B-D, recharges du pool ;
+clause 4 : le pool se recharge avec des titres rachetés). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`

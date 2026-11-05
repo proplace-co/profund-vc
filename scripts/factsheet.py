@@ -1089,10 +1089,11 @@ def page_four(F):
     fw = 446.0
     fh = founder_table(F, M, 98, fw)
     F.para(M + fw + 16, 98, W - fw - 16, x(
-        f"Typical European path: {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} Series A, then "
-        f"{eur(fm['vc_equity'], 'tile')} of equity across Series B to D, with 1× non-participating preferences. "
-        f"ProFund path: same seed and Series A, then {eur(fm['loans'], 'tile')} of loans. "
-        "Illustrative, not a forecast."), 8.2, "reg", MUTED, 1.42)
+        f"Typical European path, on Carta medians: {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} Series A, "
+        f"founders at {fm['founders'] * 100:.1f}% after the Series A, then {eur(fm['vc_equity'], 'tile')} of equity "
+        "across Series B to D at median dilution, with option pool top-ups and 1× non-participating preferences. "
+        f"ProFund path: same seed and Series A, then {eur(fm['loans'], 'tile')} of loans; the pool is refilled "
+        "with bought-back shares. Illustrative, not a forecast. Source: Carta."), 7.6, "reg", MUTED, 1.38)
     y = 98 + fh + 12
 
     # la simulation ligne a ligne

@@ -179,7 +179,7 @@ export function HowWeBack() {
 // ── The math ─────────────────────────────────────────────────────────────────
 /** La note sous le tableau : chaque montant lu dans fund.json. */
 export function founderNote() {
-  return `Typical European path: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, then ${eur(FM.vc_equity, 'tile')} of equity across Series B to D, with 1× non-participating preferences. ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital. Illustrative, not a forecast.`;
+  return `Typical European path, on Carta medians: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A, then ${eur(FM.vc_equity, 'tile')} of equity across Series B to D at median dilution, with option pool top-ups and 1× non-participating preferences. ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Carta, dilution by round.`;
 }
 
 /** La part des fondateurs, tour après tour : VC (elle fond) contre ProFund (elle tient). */

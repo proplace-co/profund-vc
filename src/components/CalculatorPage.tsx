@@ -14,7 +14,7 @@ const DEFAULT = {
   founders: FM.founders * 100,
   investors: INVESTORS.reduce((s, h) => s + h.stake, 0) * 100,
   raised: FM.raised_before / 1e6,
-  rounds: FM.vc_rounds.map((r) => ({ amount: r.amount / 1e6, post: r.post / 1e6 })),
+  rounds: FM.vc_rounds.map((r) => ({ amount: r.amount / 1e6, post: r.post / 1e6, pool: r.pool * 100 })),
   loans: FM.loans / 1e6,
   extra: 0,          // equity complémentaire si la dette ne suffit pas (pacte, préférence 1×)
   extraPost: 250,
@@ -56,9 +56,9 @@ export default function CalculatorPage() {
     founders,
     holders: [
       { id: 'investors', stake: investors, pref: n(s.raised) * 1e6 },
-      { id: 'others', stake: Math.max(0, 1 - founders - investors), pref: 0 },
+      { id: 'pool', stake: Math.max(0, 1 - founders - investors), pref: 0 },
     ],
-    rounds: s.rounds.map((x) => ({ amount: n(x.amount) * 1e6, post: n(x.post) * 1e6 })),
+    rounds: s.rounds.map((x) => ({ amount: n(x.amount) * 1e6, post: n(x.post) * 1e6, pool: n(x.pool) / 100 })),
     loans: n(s.loans) * 1e6,
     loanMultiple: FM.loan_multiple,
     extra: [{ amount: n(s.extra) * 1e6, post: n(s.extraPost) * 1e6 }],
@@ -71,7 +71,7 @@ export default function CalculatorPage() {
   const ratio = vc > 0 ? pf / vc : null;
   const roundErr = s.rounds.some((x) => n(x.post) > 0 && n(x.amount) >= n(x.post));
 
-  function setRound(i: number, k: 'amount' | 'post', v: number) {
+  function setRound(i: number, k: 'amount' | 'post' | 'pool', v: number) {
     set('rounds', s.rounds.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
   }
 
@@ -87,7 +87,7 @@ export default function CalculatorPage() {
                 <Num label="Your stake today" unit="%" value={s.founders} step={0.5} onChange={(v) => set('founders', v)}
                      hint="Founders together" />
                 <Num label="Investors’ stake" unit="%" value={s.investors} step={0.5} onChange={(v) => set('investors', v)}
-                     hint="With 1× preferences; the rest is pool and others" />
+                     hint="With 1× preferences; the rest is the option pool" />
                 <Num label="Raised so far" unit="€M" value={s.raised} step={0.5} onChange={(v) => set('raised', v)} />
                 <Num label="Your expected exit" unit="€M" value={s.exit} step={10} onChange={(v) => set('exit', v)} />
               </div>
@@ -99,6 +99,7 @@ export default function CalculatorPage() {
                   <span className="pv-round-n">Series {ROUND_NAMES[i]}</span>
                   <Num label="Amount" unit="€M" value={x.amount} onChange={(v) => setRound(i, 'amount', v)} />
                   <Num label="Valuation, post-money" unit="€M" value={x.post} step={10} onChange={(v) => setRound(i, 'post', v)} />
+                  <Num label="Pool top-up" unit="%" value={x.pool} step={0.5} onChange={(v) => setRound(i, 'pool', v)} />
                   <button type="button" className="pv-round-x" aria-label={`Remove Series ${ROUND_NAMES[i]}`}
                           onClick={() => set('rounds', s.rounds.filter((_, j) => j !== i))}>×</button>
                 </div>
@@ -106,7 +107,7 @@ export default function CalculatorPage() {
               {roundErr && <p className="pfm-err">A round cannot be larger than its post-money valuation.</p>}
               <div className="pv-round-act">
                 {s.rounds.length < ROUND_NAMES.length && (
-                  <button type="button" className="pv-link" onClick={() => set('rounds', [...s.rounds, { amount: 20, post: 200 }])}>
+                  <button type="button" className="pv-link" onClick={() => set('rounds', [...s.rounds, { amount: 20, post: 200, pool: 2 }])}>
                     + Add a round
                   </button>
                 )}
@@ -158,9 +159,11 @@ export default function CalculatorPage() {
               </table>
             </div>
             <p className="pv-fine">
-              VC path: 1× non-participating preferences, pari passu; each investor converts when it pays more.
-              ProFund path: no new share after today unless you ask for extra equity (1× preference, like our
-              first cheque); loans repaid at exit, before equity. The annual cancellations that lift your stake are not counted here. Illustrative, not a forecast or an offer.
+              VC path: 1× non-participating preferences, pari passu; each investor converts when it pays more; the option
+              pool is topped up before each round. Defaults: Carta medians (founders at 37.5% after the Series A, median
+              dilution per round). ProFund path: no new share after today unless you ask for extra equity (1× preference, like
+              our first cheque); the pool is refilled with bought-back shares; loans repaid at exit, before equity. The annual
+              cancellations that lift your stake are not counted here. Illustrative, not a forecast or an offer.
             </p>
           </div>
         </div>

@@ -48,7 +48,7 @@ export function payout(value, holders) {
  * @param {{
  *   founders: number,            // part des fondateurs aujourd'hui (0..1)
  *   holders: {id: string, stake: number, pref: number}[],  // les autres porteurs aujourd'hui
- *   rounds: {amount: number, post: number}[],              // tours prévus, chemin VC
+ *   rounds: {amount: number, post: number, pool?: number}[], // tours prévus, chemin VC (pool : recharge avant le tour)
  *   loans: number, loanMultiple: number,                   // chemin ProFund
  *   extra?: {amount: number, post: number}[],              // ProFund : equity si la dette ne suffit pas
  *   exit: number,
@@ -66,8 +66,15 @@ export function founderPaths({ founders, holders, rounds, loans, loanMultiple, e
     pf.push({ id: `extra${i}`, stake: k, pref: r.amount });
   });
   const vc = base.map((h) => ({ ...h }));
+  if (!vc.some((h) => h.id === 'pool')) vc.push({ id: 'pool', stake: 0, pref: 0 });
   const stakes = [];
   rounds.forEach((r, i) => {
+    // la recharge du pool d'options, avant l'argent frais (actions ordinaires nouvelles)
+    const p = r.pool > 0 ? Math.min(0.5, r.pool) : 0;
+    if (p) {
+      for (const h of vc) h.stake *= 1 - p;
+      vc.find((h) => h.id === 'pool').stake += p;
+    }
     const k = r.post > 0 ? Math.min(1, r.amount / r.post) : 0;
     for (const h of vc) h.stake *= 1 - k;
     vc.push({ id: `round${i}`, stake: k, pref: r.amount });

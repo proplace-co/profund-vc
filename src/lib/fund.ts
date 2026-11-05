@@ -125,7 +125,7 @@ export interface FounderMath {
   exits: number[];
   founders: number;
   holders: { id: string; label: string; stake: number; pref: number }[];
-  vc_rounds: { id: string; amount: number; post: number }[];
+  vc_rounds: { id: string; amount: number; post: number; pool: number }[];
   loans: number;
   loan_rate: number;
   loan_life: number;

@@ -46,7 +46,7 @@ const FUND_SIZE = `€${FUND.fund.commitments / 1e6}M`;
   // la cap table du calculateur : une classe d'investisseurs, le reste en ordinaires
   const holders = [
     { id: 'investors', stake: inv.reduce((s, h) => s + h.stake, 0), pref: inv.reduce((s, h) => s + h.pref, 0) },
-    { id: 'others', stake: others.reduce((s, h) => s + h.stake, 0), pref: 0 },
+    { id: 'pool', stake: others.reduce((s, h) => s + h.stake, 0), pref: 0 },
   ];
   for (const row of fm.rows) {
     const p = founderPaths({ founders: fm.founders, holders, rounds: fm.vc_rounds, loans: fm.loans,

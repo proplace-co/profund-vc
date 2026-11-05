@@ -37,6 +37,8 @@ scenario « grosse licorne » (S-01 vendue 2 Md EUR) ; le cas cible reste sans l
 v3.8 (05/11, Antoine) : la clause 9 (liquidite partielle) est supprimee du pacte ; son
 test de resistance disparait. Le mecanisme reste dans le moteur et le classeur comme un
 levier « what if » (vente secondaire partielle), sans aucune ligne marquee.
+v3.9 (05/11) : le tableau des fondateurs est recale sur les medianes Carta (fondateurs a
+37,5 % apres la Serie A ; dilution mediane par tour de B a D ; recharges du pool).
 scripts/fund_xlsx.py regenere le classeur en formules vivantes.
 
 Conventions :
@@ -68,7 +70,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.8"
+VERSION = "v3.9"
 MODEL_DATE = "2026-11-05"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
@@ -293,21 +295,27 @@ SPV_COMPANIES = ("S-01", "V-01", "G-01")
 # du site echoue s'il diverge (scripts/prerender.mjs).
 FOUNDER_MATH = {
     "exits": [100 * M, 250 * M, 500 * M, 1000 * M],
-    # Cap table apres seed et Serie A (identique sur les deux chemins) :
-    # seed 2 M EUR a 10 M post, pool de 10 %, Serie A 10 M EUR a 40 M post.
-    "founders": 0.54,
+    # Cap table apres seed et Serie A (identique sur les deux chemins), sur les medianes
+    # Carta (Founder Ownership Report 2026 : 37,5 % pour les fondateurs « digital »
+    # apres la Serie A ; dilution mediane d'une Serie A ~20 %) : Serie A 10 M EUR a
+    # 50 M post, seed et pre-seed 26 % (2 M EUR de preference), pool 16,5 %.
+    "founders": 0.375,
     "holders": [
-        {"id": "seed", "label": "Seed investors", "stake": 0.135, "pref": 2 * M},
-        {"id": "pool", "label": "Option pool", "stake": 0.075, "pref": 0},
-        {"id": "series_a", "label": "Series A investor", "stake": 0.25, "pref": 10 * M},
+        {"id": "seed", "label": "Seed investors", "stake": 0.26, "pref": 2 * M},
+        {"id": "pool", "label": "Option pool", "stake": 0.165, "pref": 0},
+        {"id": "series_a", "label": "Series A investor", "stake": 0.20, "pref": 10 * M},
     ],
-    # Chemin VC : 135 M EUR de fonds propres de la Serie B a la D, preferences 1x
-    # non participantes, pari passu.
+    # Chemin VC : 135 M EUR de fonds propres de la Serie B a la D, a la dilution mediane
+    # Carta par tour (B 16,7 %, C 14,6 %, D 10 %, T1 2024), plus une recharge du pool
+    # avant chaque tour (4 %, 3 %, 2 %, estimations de marche). Preferences 1x non
+    # participantes, pari passu.
     "vc_rounds": [
-        {"id": "B", "amount": 30 * M, "post": 150 * M},
-        {"id": "C", "amount": 35 * M, "post": 250 * M},
-        {"id": "D", "amount": 70 * M, "post": 400 * M},
+        {"id": "B", "amount": 25 * M, "post": 150 * M, "pool": 0.04},
+        {"id": "C", "amount": 40 * M, "post": 275 * M, "pool": 0.03},
+        {"id": "D", "amount": 70 * M, "post": 700 * M, "pool": 0.02},
     ],
+    # Chemin ProFund : le pool se recharge avec des titres rachetes (pacte, clause 4),
+    # sans action nouvelle.
     # Chemin ProFund : aucune action nouvelle ; 25 M EUR de prets au meme taux que
     # le fonds (LOAN_RATE), tires par tranches et rembourses en ~1,6 an en moyenne
     # (les prets du modele durent 1 a 3 ans) : 1,12^1,6 = 1,2x, deduits a la sortie
@@ -318,10 +326,10 @@ FOUNDER_MATH = {
 FOUNDER_MATH["loan_rate"] = LOAN_RATE
 FOUNDER_MATH["loan_multiple"] = loan_price(0, FOUNDER_MATH["loan_life"])
 PUBLISHED_FOUNDER_MATH = {
-    "founders_vc": [0, 62 * M, 153 * M, 307 * M],
-    "founders_profund": [38 * M, 119 * M, 254 * M, 524 * M],
-    "series_a_vc": [0.7, 2.9, 7.1, 14.2],
-    "series_a_profund": [1.8, 5.5, 11.8, 24.3],
+    "founders_vc": [0, 39 * M, 105 * M, 219 * M],
+    "founders_profund": [26 * M, 83 * M, 176 * M, 364 * M],
+    "series_a_vc": [0.7, 2.1, 5.6, 11.7],
+    "series_a_profund": [1.4, 4.4, 9.4, 19.4],
 }
 
 # La v2 (commit 2f3b590, scripts/fund_model.py) avec les memes sorties que la v3,
@@ -692,6 +700,10 @@ def founder_math() -> dict:
     vc = [dict(h) for h in base]
     stakes = []
     for r in fm["vc_rounds"]:
+        pool = r.get("pool", 0.0)          # recharge du pool, avant l'argent frais
+        for h in vc:
+            h["stake"] *= 1 - pool
+        next(h for h in vc if h["id"] == "pool")["stake"] += pool
         k = r["amount"] / r["post"]
         for h in vc:
             h["stake"] *= 1 - k

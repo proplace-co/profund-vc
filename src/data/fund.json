@@ -1,6 +1,6 @@
 {
   "schema": 3,
-  "version": "v3.8",
+  "version": "v3.9",
   "model_date": "2026-11-05",
   "fund": {
     "commitments": 100000000,
@@ -1430,42 +1430,45 @@
       500000000,
       1000000000
     ],
-    "founders": 0.54,
+    "founders": 0.375,
     "holders": [
       {
         "id": "seed",
         "label": "Seed investors",
-        "stake": 0.135,
+        "stake": 0.26,
         "pref": 2000000
       },
       {
         "id": "pool",
         "label": "Option pool",
-        "stake": 0.075,
+        "stake": 0.165,
         "pref": 0
       },
       {
         "id": "series_a",
         "label": "Series A investor",
-        "stake": 0.25,
+        "stake": 0.2,
         "pref": 10000000
       }
     ],
     "vc_rounds": [
       {
         "id": "B",
-        "amount": 30000000,
-        "post": 150000000
+        "amount": 25000000,
+        "post": 150000000,
+        "pool": 0.04
       },
       {
         "id": "C",
-        "amount": 35000000,
-        "post": 250000000
+        "amount": 40000000,
+        "post": 275000000,
+        "pool": 0.03
       },
       {
         "id": "D",
         "amount": 70000000,
-        "post": 400000000
+        "post": 700000000,
+        "pool": 0.02
       }
     ],
     "loans": 25000000,
@@ -1474,49 +1477,49 @@
     "loan_multiple": 1.2,
     "vc_equity": 135000000,
     "raised_before": 12000000,
-    "founders_after_vc": 0.307,
+    "founders_after_vc": 0.219,
     "vc_stakes": [
       {
         "round": "B",
-        "founders": 0.432
+        "founders": 0.3
       },
       {
         "round": "C",
-        "founders": 0.372
+        "founders": 0.249
       },
       {
         "round": "D",
-        "founders": 0.307
+        "founders": 0.219
       }
     ],
     "rows": [
       {
         "exit": 100000000,
         "founders_vc": 0,
-        "founders_profund": 38000000,
+        "founders_profund": 26000000,
         "series_a_vc": 0.7,
-        "series_a_profund": 1.8
+        "series_a_profund": 1.4
       },
       {
         "exit": 250000000,
-        "founders_vc": 62000000,
-        "founders_profund": 119000000,
-        "series_a_vc": 2.9,
-        "series_a_profund": 5.5
+        "founders_vc": 39000000,
+        "founders_profund": 83000000,
+        "series_a_vc": 2.1,
+        "series_a_profund": 4.4
       },
       {
         "exit": 500000000,
-        "founders_vc": 153000000,
-        "founders_profund": 254000000,
-        "series_a_vc": 7.1,
-        "series_a_profund": 11.8
+        "founders_vc": 105000000,
+        "founders_profund": 176000000,
+        "series_a_vc": 5.6,
+        "series_a_profund": 9.4
       },
       {
         "exit": 1000000000,
-        "founders_vc": 307000000,
-        "founders_profund": 524000000,
-        "series_a_vc": 14.2,
-        "series_a_profund": 24.3
+        "founders_vc": 219000000,
+        "founders_profund": 364000000,
+        "series_a_vc": 11.7,
+        "series_a_profund": 19.4
       }
     ]
   },

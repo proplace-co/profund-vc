@@ -12,7 +12,7 @@ export const CLAUSES: { t: string; d: string }[] = [
   { t: 'One equity round.', d: 'We invest once in new shares. After that, we never create a new share while you grow with us, unless you ask for more equity.' },
   { t: 'A reserved loan line, then equity if you need it.', d: 'Reserved from day one with our fund and partner lenders, drawn in tranches when you need it: hiring, go-to-market, working capital, acquisitions. If debt is not enough, or lenders cannot take the full line, we go and get the equity: we lead it ourselves, on these same terms (with the same 1× preference as our first cheque), with SPVs and co-investors alongside the fund. Every option stays open. It is always your call.' },
   { t: 'Buybacks, only with you.', d: 'We buy shares from your angels, leavers and early funds, never without your agreement. Their votes move to your side. Every buyback is priced by an independent valuer.' },
-  { t: 'Annual cancellation.', d: 'Each year, the company can buy back and cancel shares. Every cancellation lifts your stake.' },
+  { t: 'Annual buyback.', d: 'Each year, the company can buy back shares. It cancels them, which lifts your stake, or uses them to refill your option pool, without creating new shares.' },
   { t: 'Your votes.', d: 'Our shares vote with you under a voting agreement. Where the law allows, you hold multiple voting rights.' },
   { t: 'No board seat, no veto.', d: 'We get information, not control.' },
   { t: 'Raise elsewhere, freely.', d: 'You can raise from anyone, at any time. We have a right of first offer, and we can follow or lead the round in new shares.' },
