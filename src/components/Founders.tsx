@@ -1,9 +1,12 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, type IconName } from './Thesis';
-import { eur, eurRange, fund, mult } from '../lib/fund';
+import { eur, eurRange, fund, mult, pct } from '../lib/fund';
 
 // LA PROPOSITION FONDATEURS (v3, Antoine, 05/11) : un seul tour en actions, puis des
-// prêts et des rachats. Sections communes à l'accueil, /terms, /calculator et /pitch.
+// prêts et des rachats. v3.8 : l'accueil ne parle qu'aux fondateurs et se construit
+// autour d'une idée, le contrôle revient au fondateur. L'exigence ne se dit pas, elle
+// se lit : peu de mots, des chiffres, un seul bouton (« Run your numbers »).
 // Tous les montants viennent de src/data/fund.json : tickets des étages
 // (layers.*) et tableau des fondateurs (founder_math, même calcul que
 // src/lib/founderMath.js). Pas de frais, de carry ni de rendement cible ici :
@@ -14,6 +17,60 @@ const FM = fund.founder_math;
 const SEED = FM.holders.find((h) => h.id === 'seed')!;
 const SERIES_A = FM.holders.find((h) => h.id === 'series_a')!;
 
+/** Vrai une fois l'élément entré à l'écran : déclenche les animations (une seule fois). */
+function useInView<T extends Element>() {
+  const ref = useRef<T>(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') { setSeen(true); return; }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setSeen(true); io.disconnect(); }
+    }, { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return [ref, seen] as const;
+}
+
+// ── Les règles : ce que le VC prenait, ce que le pacte rend ──────────────────
+// Chaque ligne nouvelle est une clause du pacte (/terms) : ne rien promettre de plus.
+const RULES: { old: string; now: string }[] = [
+  { old: 'A new round every 18 months', now: 'One round. Then never again.' },
+  { old: 'A slice of your company at every round', now: 'Your stake never goes down.' },
+  { old: 'A board seat and a veto', now: 'Our shares vote with you.' },
+  { old: 'Preferences stacked round after round', now: 'No new preference on top of you.' },
+  { old: 'Their exit, on their timing', now: 'Your exit. No veto. Ever.' },
+];
+
+export function TheRules() {
+  const [ref, seen] = useInView<HTMLDivElement>();
+  return (
+    <section className="pv-sec night pv-rules-sec" id="rules">
+      <div ref={ref} className={`pv-wrap pv-rules${seen ? ' in' : ''}`}>
+        <p className="pv-kick">The rules</p>
+        <h2 className="pv-rules-h">Control was always yours.</h2>
+        <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Not anymore.</p>
+        <ol className="pv-rules-list">
+          {RULES.map((r, i) => (
+            <li key={r.old} className="pv-rule" style={{ ['--d' as string]: `${0.15 + i * 0.18}s` }}>
+              <span className="old"><span>{r.old}</span></span>
+              <span className="arrow" aria-hidden="true"><Icon name="arrow" /></span>
+              <span className="now">{r.now}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="pv-rules-foot">
+          <span>Written into the pact. The same for every founder.</span>
+          <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── How we back them ─────────────────────────────────────────────────────────
 const BLOCKS: { icon: IconName; t: string; d: string }[] = [
   { icon: 'target', t: 'One round. That’s it.',
     d: 'We invest once in new shares. After that, we never create a new share while you grow with us.' },
@@ -30,12 +87,12 @@ const BLOCKS: { icon: IconName; t: string; d: string }[] = [
     d: 'No veto on a sale. Ever.' },
 ];
 
-export function HowWeBack({ forFounders = true }: { forFounders?: boolean }) {
+export function HowWeBack() {
   return (
     <section className="pv-sec" id="how">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">{forFounders ? 'For founders · How we back them' : 'How we back them'}</p>
+          <p className="pv-kick">How we back them</p>
           <h2 className="pv-h2">Built for founders who own what they build.</h2>
           <p className="sub">Same terms for every founder. In public.</p>
         </div>
@@ -53,7 +110,6 @@ export function HowWeBack({ forFounders = true }: { forFounders?: boolean }) {
           <span className="pv-tick soft"><Icon name="banknote" /></span>
           <p>Need more than debt, or lenders can’t take the full line? Your call: we lead the extra equity ourselves, on the same pact terms, with SPVs alongside the fund, at the level of the largest funds.</p>
         </div>
-        {/* 05/11 (v3.6) : « The pact » fusionnée ici, la promesse ne se répète plus */}
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="scale" /></span>
           <p>If you raise elsewhere, we can follow or lead the round. Fair both ways.</p>
@@ -64,17 +120,48 @@ export function HowWeBack({ forFounders = true }: { forFounders?: boolean }) {
   );
 }
 
+// ── The math ─────────────────────────────────────────────────────────────────
 /** La note sous le tableau : chaque montant lu dans fund.json. */
 export function founderNote() {
   return `Typical European path: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, then ${eur(FM.vc_equity, 'tile')} of equity across Series B to D, with 1× non-participating preferences. ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital. Illustrative, not a forecast.`;
 }
 
+/** La part des fondateurs, tour après tour : VC (elle fond) contre ProFund (elle tient). */
+function StakeChart() {
+  const [ref, seen] = useInView<HTMLDivElement>();
+  const cols = [
+    { label: 'Today', vc: FM.founders },
+    ...FM.vc_stakes.map((s) => ({ label: `After Series ${s.round}`, vc: s.founders })),
+  ];
+  const h = (v: number) => `${(v / FM.founders) * 100}%`;
+  return (
+    <div ref={ref} className={`pv-card pv-stake${seen ? ' in' : ''}`}>
+      <div className="pv-stake-top">
+        <h3 className="pv-h3">Your stake, round after round</h3>
+        <div className="pv-legend"><span className="vc">VC path</span><span className="pf">ProFund path</span></div>
+      </div>
+      <div className="pv-stake-grid">
+        {cols.map((c, i) => (
+          <div key={c.label} className="pv-stake-col" style={{ ['--d' as string]: `${i * 0.12}s` }}>
+            <div className="pv-stake-bars">
+              <i className="vc" style={{ ['--h' as string]: h(c.vc) }}><b>{pct(c.vc, 1)}</b></i>
+              <i className="pf" style={{ ['--h' as string]: h(FM.founders) }}><b>{pct(FM.founders, 1)}</b></i>
+            </div>
+            <span className="pv-stake-l">{c.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Le tableau « Same company. Same exit. » ; `investor` ajoute la colonne Series A (deck). */
 export function FounderTable({ investor = false }: { investor?: boolean }) {
+  const [ref, seen] = useInView<HTMLDivElement>();
   const top = Math.max(...FM.rows.map((r) => r.founders_profund));
-  const bar = (v: number) => ({ width: `${Math.max(1.5, (v / top) * 100)}%` });
+  const bar = (v: number) => ({ ['--w' as string]: `${Math.max(1.5, (v / top) * 100)}%` });
   return (
-    <div className="pv-math">
+    <div ref={ref} className={`pv-math${seen ? ' in' : ''}`}>
       <div className="pv-math-head" aria-hidden="true">
         <span>Exit</span><span>Founders, VC path</span><span>Founders, ProFund path</span>
         {investor && <span>Series A investor, VC path</span>}
@@ -106,9 +193,11 @@ export function TheMath() {
     <section className="pv-sec tint" id="math">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">For founders · The math</p>
+          <p className="pv-kick">The math</p>
           <h2 className="pv-h2">Same company. Same exit. Twice the payout.</h2>
         </div>
+        <StakeChart />
+        <h3 className="pv-h3 pv-math-t">What you take home</h3>
         <FounderTable />
         <p className="pv-fine">{founderNote()}</p>
         <div className="pv-ctas">
@@ -119,6 +208,7 @@ export function TheMath() {
   );
 }
 
+// ── Every stage ──────────────────────────────────────────────────────────────
 // Les tickets sont ceux des bornes du modèle (fund_model.BOUNDS). Les SPV (au-delà
 // du plafond par société) sont hors du fonds : documents LP seulement.
 const STAGES = [
@@ -131,12 +221,12 @@ const STAGES = [
     what: 'Fresh growth rounds, buybacks of early funds, growth loans, acquisition financing' },
 ];
 
-export function EveryStage({ forFounders = true }: { forFounders?: boolean }) {
+export function EveryStage({ tint = false }: { tint?: boolean }) {
   return (
-    <section className="pv-sec" id="stages">
+    <section className={`pv-sec${tint ? ' tint' : ''}`} id="stages">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">{forFounders ? 'For founders · Every stage' : 'Every stage'}</p>
+          <p className="pv-kick">Every stage</p>
           <h2 className="pv-h2">Pre-seed to growth. One equity round, wherever you are.</h2>
           <p className="sub">Two ways in at every layer: a first equity cheque, or a buyback of existing shares. Then loans, never new shares.</p>
         </div>
@@ -158,6 +248,7 @@ export function EveryStage({ forFounders = true }: { forFounders?: boolean }) {
   );
 }
 
+// ── Founding Partner ─────────────────────────────────────────────────────────
 // Parcours du GP, en logos (tirés de public/track-record.png ; Google et Mirakl retirés le 31/10).
 export const CV_LOGOS = [
   { name: 'Partech', src: '/cv-partech.png', h: 24 },
@@ -194,44 +285,15 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
   );
 }
 
-// Les deux portes, sous le héros : fondateurs d'un côté, LPs de l'autre (v3.7).
-export function Doors({ onFollow }: { onFollow: () => void }) {
-  return (
-    <section className="pv-doors-sec" aria-label="Founders and LPs">
-      <div className="pv-wrap pv-doors">
-        <div className="pv-door">
-          <p className="pv-kick">For founders</p>
-          <h2>One equity round. Then never diluted again.</h2>
-          <p>Loans and buybacks instead of new rounds. Your control, by contract. We back a handful of teams a year.</p>
-          <div className="pv-door-act">
-            <Link to="/calculator" className="pv-btn">Run your numbers <Icon name="arrow" /></Link>
-            <Link to="/terms" className="pv-link">Read the pact <Icon name="arrow" /></Link>
-          </div>
-        </div>
-        <div className="pv-door dark">
-          <p className="pv-kick">For LPs</p>
-          <h2>ProFund Fund I. {eur(F.commitments, 'tile')}, EuVECA, Luxembourg.</h2>
-          <p>Fact sheet, fund model and data room on request, for professional and eligible investors only.</p>
-          <div className="pv-door-act">
-            <Link to="/lp" className="pv-btn light">Request LP access <Icon name="arrow" /></Link>
-            <button type="button" className="pv-link" onClick={onFollow}>Follow our deal flow live <Icon name="arrow" /></button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// La fin de l'accueil : pas de formulaire. Peu d'élus ; on commence par les chiffres.
+// ── La fin : une phrase, un bouton ───────────────────────────────────────────
 export function FinalCall() {
   return (
     <section className="pv-sec pv-reserve-sec" id="final">
       <div className="pv-wrap">
-        <div className="pv-band">
+        <div className="pv-band pv-final">
           <div>
-            <p className="pv-kick">By introduction</p>
-            <h2>A handful of founders a year.</h2>
-            <p>We say yes to very few teams, then we stay with them from pre-seed to growth, on the same terms. Start with your numbers.</p>
+            <h2>Exceptional numbers deserve exceptional terms.</h2>
+            <p>See what you keep, round after round.</p>
           </div>
           <div className="pv-band-ctas">
             <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>

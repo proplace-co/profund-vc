@@ -588,8 +588,8 @@ export default function ProFundPage() {
       <FourLaws tint={false} />
       <TheProblem />
       <TheInversion />
-      <HowWeBack forFounders={false} />
-      <EveryStage forFounders={false} />
+      <HowWeBack />
+      <EveryStage />
       <FounderMathSlide />
       <EveryoneWins />
       <Alignment />

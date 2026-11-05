@@ -167,7 +167,7 @@ function Powers({ names }: { names: string[] }) {
   );
 }
 
-export function OurEdge({ onFollow }: { onFollow: () => void }) {
+export function OurEdge({ onFollow }: { onFollow?: () => void }) {
   return (
     <section className="pv-sec night" id="edge">
       <div className="pv-wrap">
@@ -185,9 +185,11 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
               and the angels, leavers and early funds ready to sell.
             </p>
             <Powers names={['ProFund', 'Proplace', 'Portfolio companies']} />
-            <button type="button" className="pv-btn light" onClick={onFollow}>
-              Follow live deal flow <Icon name="arrow" />
-            </button>
+            {onFollow && (
+              <button type="button" className="pv-btn light" onClick={onFollow}>
+                Follow live deal flow <Icon name="arrow" />
+              </button>
+            )}
           </div>
           <div className="pv-eng">
             <span className="pv-ic"><Icon name="bot" /></span>

@@ -5,22 +5,22 @@ import { SiteHeader } from './Thesis';
 // La coquille des pages fondateurs et LP (/terms, /calculator, /lp) :
 // même barre du haut, un héros court, puis le contenu.
 const LINKS = [
-  { href: '/#how', label: 'For founders' },
+  { href: '/#rules', label: 'The rules' },
+  { href: '/#math', label: 'The math' },
   { href: '/terms', label: 'The pact' },
-  { href: '/calculator', label: 'Run your numbers' },
 ];
 
-export function SubHeader() {
+export function SubHeader({ action }: { action?: ReactNode }) {
   return (
     <SiteHeader links={LINKS}>
-      <Link to="/lp" className="pv-btn line pv-hide-sm">For LPs</Link>
-      <Link to="/calculator" className="pv-btn">Run your numbers</Link>
+      {action ?? <Link to="/calculator" className="pv-btn">Run your numbers</Link>}
     </SiteHeader>
   );
 }
 
-export default function SubPage({ kick, title, intro, children }: {
+export default function SubPage({ kick, title, intro, action, children }: {
   kick: string;
+  action?: ReactNode;          // le bouton de la barre du haut (LPs : Request LP access)
   title: ReactNode;
   intro?: ReactNode;
   children: ReactNode;
@@ -29,7 +29,7 @@ export default function SubPage({ kick, title, intro, children }: {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <div className="pfh">
-      <SubHeader />
+      <SubHeader action={action} />
       <header className="pv-hero pv-page-hero">
         <div className="pv-wrap">
           <p className="pv-kick">{kick}</p>

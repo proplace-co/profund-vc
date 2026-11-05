@@ -214,7 +214,7 @@ export const CASE_IDS: CaseId[] = ['target', 'base', 'stress'];
 export function eur(v: number, mode: 'table' | 'val' | 'tile' = 'table'): string {
   if (v === 0) return '€0';
   if (mode === 'val') {
-    if (v >= 1e9) return `€${(v / 1e9).toFixed(1)}B`;
+    if (v >= 1e9) return v % 1e9 === 0 ? `€${v / 1e9}B` : `€${(v / 1e9).toFixed(1)}B`;
     if (v >= 1e7) return `€${(v / 1e6).toFixed(0)}M`;
   }
   if (mode === 'tile' && v >= 1e6 && v % 1e6 === 0) return `€${v / 1e6}M`;

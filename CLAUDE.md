@@ -14,8 +14,8 @@ src/
   components/
     Thesis.tsx          LE TEXTE DE LA THÈSE (manifeste, 4 lois, 2 moteurs, proof of work),
                         barre du haut, visuel du héros — rendus par / ET /pitch
-    Founders.tsx        LA PROPOSITION FONDATEURS v3 (les deux portes Founders | LPs, how we back +
-                        lien vers le pacte, the math, every stage, Founding Partner, final call) — rendus par /, /calculator, /pitch
+    Founders.tsx        LA PROPOSITION FONDATEURS v3 (the rules, the math et la part animée, how we
+                        back + lien vers le pacte, every stage, Founding Partner, final call) — rendus par /, /calculator, /pitch
     HomepageLite.tsx    route /
     TermsPage.tsx       route /terms — le pacte des fondateurs, 10 clauses (tableau CLAUSES)
     CalculatorPage.tsx  route /calculator — « Run your numbers »
@@ -96,9 +96,13 @@ redessiné avec les mêmes jetons. Dans les tableaux, la ligne de total porte la
 classe `sub`. /pitch n'est lié nulle part sur le site (deck LP, remis via /lp) ;
 il est hors sitemap et en `noindex` (comme /dealflow, `noindex: true` dans ROUTES).
 
-**Fondateurs d'un côté, LPs de l'autre ; le site est élitiste** (Antoine, 05/11, v3.7) :
-sous le héros, deux portes (« For founders » → /calculator et le pacte ; « For LPs » →
-/lp et le deal flow). Plus de formulaire « Reserve your round » ni de page /sell : le
+**L'accueil ne parle qu'aux fondateurs** (Antoine, 05/11, v3.8 ; comme Sequoia ou Index) :
+le contrôle revient au fondateur (section « The rules », les anciennes règles barrées à
+l'écran ; la part du fondateur tour après tour, animée). L'exigence ne se dit pas, elle se
+lit : peu de mots, des chiffres, un seul bouton, « Run your numbers ». Les LPs n'ont qu'un
+lien « LPs » en pied de page vers /lp, qui reprend toute la thèse de l'accueil, le deal
+flow live et la demande d'accès. Le popup du deal flow reste monté sur l'accueil pour
+`profund.vc/#dealflow` (le QR de la fiche), sans bouton visible. Plus de formulaire « Reserve your round » ni de page /sell : le
 parcours fondateur s'arrête au calculateur (« Send these numbers to the partner », un
 mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
 /lp (`LeadForm.tsx`) n'a PAS de backend : il ouvre un email pré-rempli (mailto). Au-delà
@@ -238,8 +242,9 @@ licorne, fiche 3 pages, avant la proposition fondateurs), `v3.3` (le classeur
 d'Antoine du 05/11 tel quel), `v3.4` (prêts au taux, radar à 40), `v3.5` (clause 9 hors du cas cible), `v3.6`
 (S-01 en chemin pur, S-02 lève ailleurs et sort à 250 M€, Seed / Venture / Growth
 partout, accueil à 10 sections, page 4 de la fiche allégée, SPV hors de l'accueil) et
-`v3.7` (portes Founders | LPs, plus de Reserve ni de /sell, licorne à 1 Md€ dans le
-tableau fondateurs, scénario grosse licorne à 2 Md€). Pour revenir à une version : partir du tag
+`v3.7` (plus de Reserve ni de /sell, licorne à 1 Md€ dans le tableau fondateurs, scénario
+grosse licorne à 2 Md€) et `v3.8` (accueil 100 % fondateurs, « Control was always
+yours. », /lp porte toute la thèse pour les LPs). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`
