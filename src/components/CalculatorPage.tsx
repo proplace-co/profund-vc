@@ -125,7 +125,7 @@ export default function CalculatorPage() {
               <h2 className="pv-h3">Instead, with ProFund <small>ProFund path</small></h2>
               <div className="pv-form-grid">
                 <Num label="Loans instead of these rounds" unit="€M" value={s.loans} onChange={(v) => set('loans', v)}
-                     hint={`Repaid at exit, before equity, at ${FM.loan_multiple.toFixed(1)}×`} />
+                     hint={`${pct(FM.loan_rate)} a year, about ${FM.loan_life} years on average: ${FM.loan_multiple.toFixed(1)}×, repaid before equity`} />
               </div>
             </div>
           </div>

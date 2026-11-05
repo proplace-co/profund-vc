@@ -127,6 +127,8 @@ export interface FounderMath {
   holders: { id: string; label: string; stake: number; pref: number }[];
   vc_rounds: { id: string; amount: number; post: number }[];
   loans: number;
+  loan_rate: number;
+  loan_life: number;
   loan_multiple: number;
   vc_equity: number;
   raised_before: number;
@@ -171,7 +173,8 @@ export interface FundData {
   };
   secondary: { share: number; year: number; price_pct: number; lines: string[] };
   buyback_discount: number;
-  loan_multiples: { performing: number; zombie: number; loss: number };
+  loan_rate: number;
+  loan_multiples: { zombie: number; loss: number; performing_min: number; performing_max: number };
   layers: Record<LayerId, FundLayer>;
   allocation: {
     seed: number;
@@ -190,7 +193,11 @@ export interface FundData {
   };
   spv: { company: string; fund: number; spv: number }[];
   spv_total: number;
-  fund_returner: { company: string; proceeds: number; multiple_of_fund: number };
+  fund_returner: {
+    company: string; proceeds: number; multiple_of_fund: number;
+    stake_at_exit: number;          // toutes ses lignes
+    fund_returning_exit: number;    // la sortie à laquelle elle rend tout le fonds (loi 04)
+  };
   cases: Record<CaseId, FundCase>;
   stress_tests: { id: string; label: string; net_tvpi: number; net_irr: number }[];
   founder_math: FounderMath;

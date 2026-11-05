@@ -20,8 +20,12 @@ v3.2 : calendrier realiste (investissements sur 5 ans, sorties annees 5 a 9),
 liquidite partielle des gagnants en annee 6 (clause 9 du pacte), prets a 1,4x
 tires par tranches, Growth achete a des vendeurs structurels. v3.3 : vrais
 tickets Venture et Growth, dont un bloc rachete dans notre propre breakout.
-Ce modele reproduit a l'euro pres le classeur v3.3 livre le 05/11 (onglet
-Checks, 267 valeurs) ; scripts/fund_xlsx.py le regenere en formules vivantes.
+Le portage v3.3 reproduisait a l'euro pres le classeur livre le 05/11 (tag git
+v3.3). v3.4 (05/11, Antoine) : prets sains a 12 % par an composes sur leur duree
+(au lieu de 1,4x quelle que soit la duree) ; Seed a 50 societes, 40 tickets radar
+de 150 K EUR comme en v2, finances par 3 M EUR pris sur les cheques Venture ; la
+loi 04 chiffree (la sortie a laquelle la meilleure societe rend tout le fonds).
+scripts/fund_xlsx.py regenere le classeur en formules vivantes.
 
 Conventions :
 - montants en euros entiers ; une ligne qui regroupe n societes porte des
@@ -52,7 +56,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.3"
+VERSION = "v3.4"
 MODEL_DATE = "2026-11-05"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
@@ -90,8 +94,20 @@ SECONDARY = {"share": 0.25, "year": 6, "price_pct": 0.60}
 # (chaque ligne peut fixer la sienne : 5-10 % sur les gagnants et angels, 30 %
 # sur les vendeurs structurels, fonds en fin de vie).
 BUYBACK_DISCOUNT = 0.20
-# Multiples de remboursement de reference (chaque ligne porte le sien).
-LOAN_MULTIPLES = {"performing": 1.4, "zombie": 0.8, "loss": 0.2}
+# Prets sains : 12 % par an, composes sur la duree du pret (tirage -> remboursement),
+# frais compris, sans BSA (un BSA creerait des actions nouvelles : le pacte l'exclut).
+# Le marche europeen de la venture debt : 10 a 13 % d'interets, 1 a 2 % de frais et
+# des BSA, soit 15 a 20 % de rendement pour le preteur ; 12 % sans BSA est prudent
+# pour le fonds et moins cher que le marche pour le fondateur.
+LOAN_RATE = 0.12
+# Prets en difficulte : multiples de remboursement explicites par ligne.
+LOAN_MULTIPLES = {"zombie": 0.8, "loss": 0.2}
+
+
+def loan_price(draw: float, repay: float) -> float:
+    """Multiple de remboursement d'un pret sain, au centieme (defini avant ratio())."""
+    v = Decimal(str((1 + LOAN_RATE) ** (repay - draw)))
+    return float(v.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 
 @dataclass(frozen=True)
@@ -114,17 +130,18 @@ CASE_IDS = tuple(c.id for c in CASES)
 LAYERS = ("seed", "venture", "growth")
 # Noms des etages dans le classeur (onglets Lines, Construction) : la fiche le dit.
 MODEL_NAMES = {"seed": "Ignite", "venture": "Relute", "growth": "Compound"}
-# Seed en haltere : 10 leads de conviction portent la propriete, 20 tickets
-# radar multiplient les tirages. La v3 n'a plus besoin d'une licorne (plus
-# aucune sortie au-dessus de 300 M EUR) : 30 societes au lieu de 50.
+# Seed en haltere : 10 leads de conviction portent la propriete, 40 tickets radar
+# de 150 K EUR multiplient les tirages (v3.4, comme en v2). En v3, un ticket radar est
+# aussi une option sur un rachat : quand la societe decolle, on rachete ses angels
+# (S-11). Les 3 M EUR de plus viennent des cheques Venture, la ou l'on paie le plus cher.
 SEED_TRACKS = {
     "lead": {"ticket": (500_000, 1_500_000), "companies": 10},
-    "radar": {"ticket": (100_000, 150_000), "companies": 20},
+    "radar": {"ticket": (100_000, 150_000), "companies": 40},
 }
 # Bornes de construction. Premier ticket = premier cheque, ou rachat en Growth.
 BOUNDS = {
     "seed": {"ticket": (100_000, 1_500_000), "post": (5 * M, 20 * M),
-             "own": (0.01, 0.20), "companies": 30, "stage": "Pre-seed / seed"},
+             "own": (0.01, 0.20), "companies": 50, "stage": "Pre-seed / seed"},
     "venture": {"ticket": (1_500_000, 5 * M), "post": (25 * M, 80 * M),
                 "own": (0.05, 0.12), "companies": 7, "stage": "Seed+ / Series A"},
     "growth": {"ticket": (5 * M, 10 * M), "post": (80 * M, 400 * M),
@@ -171,15 +188,15 @@ LINES = (
     L("S-01", "seed", "S-01", 1, "Breakout, raised elsewhere once, we followed", "green", "new",
       1_500_000, 7_500_000, 1, 9, buyback=1_500_000, buyback_year=3, buyback_value=40 * M,
       discount=0.10, cancel=0.08, dilution=0.15, follow=1 * M, follow_year=4, follow_post=80 * M,
-      loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult=1.4, exit_value=300 * M,
+      loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=300 * M,
       partial=True, track="lead"),
     L("S-02", "seed", "S-02", 1, "Breakout", "green", "new",
       1 * M, 6 * M, 1, 8, buyback=1 * M, buyback_year=3, buyback_value=25 * M, discount=0.10,
-      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult=1.4, exit_value=150 * M,
+      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=150 * M,
       partial=True, track="lead"),
     L("S-03", "seed", "S-03", 1, "Strategic exit, angels bought back", "blue", "new",
       1 * M, 7 * M, 2, 7, buyback=500_000, buyback_year=4, buyback_value=20 * M, discount=0.10,
-      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult=1.4, exit_value=80 * M,
+      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=80 * M,
       track="lead"),
     L("S-04", "seed", "S-04", 1, "Early exit (M&A)", "blue", "new",
       750_000, 7 * M, 2, 5, exit_value=40 * M, track="lead"),
@@ -196,30 +213,33 @@ LINES = (
       150_000, 8 * M, 2, 5, exit_value=50 * M, track="radar"),
     L("S-13", "seed", "S-13", 1, "Radar, early exit", "blue", "new",
       150_000, 8 * M, 3, 6, exit_value=30 * M, track="radar"),
-    L("S-14", "seed", "S-14", 5, "Zombies (×5)", "grey", "new",
-      750_000, 8 * M, 3, 7, recovery=0.5, track="radar"),
-    L("S-19", "seed", "S-19", 12, "Losses (×12)", "red", "new",
-      1_800_000, 8 * M, 3, 5, recovery=0.0, track="radar"),
-    # Venture (Relute) : 7 societes, premiers cheques de 2,5 a 4,5 M EUR en seed+ ou
-    # Serie A, entrees annees 2-4.
+    L("S-14", "seed", "S-14", 1, "Radar, early exit", "blue", "new",
+      150_000, 8 * M, 3, 6, exit_value=40 * M, track="radar"),
+    L("S-15", "seed", "S-15", 8, "Zombies (×8)", "grey", "new",
+      1_200_000, 8 * M, 3, 7, recovery=0.5, track="radar"),
+    L("S-23", "seed", "S-23", 28, "Losses (×28)", "red", "new",
+      4_200_000, 8 * M, 3, 5, recovery=0.0, track="radar"),
+    # Venture (Relute) : 7 societes, premiers cheques de 2 a 4 M EUR en seed+ ou
+    # Serie A, entrees annees 2-4 (v3.4 : 3 M EUR de moins qu'en v3.3 sur les lignes qui
+    # vivent, passes au radar ; la perte V-07 garde son montant).
     L("V-01", "venture", "V-01", 1, "Breakout", "green", "new",
-      4_500_000, 40 * M, 2, 9, buyback=1_500_000, buyback_year=4, buyback_value=100 * M,
-      discount=0.05, cancel=0.08, loan=2 * M, loan_year=3, loan_repay_year=6, loan_mult=1.4,
+      4 * M, 40 * M, 2, 9, buyback=1_500_000, buyback_year=4, buyback_value=100 * M,
+      discount=0.05, cancel=0.08, loan=2 * M, loan_year=3, loan_repay_year=6, loan_mult="rate",
       exit_value=300 * M, partial=True),
     L("V-02", "venture", "V-02", 1, "Raised elsewhere once, we followed", "green", "new",
-      4 * M, 35 * M, 2, 8, buyback=500_000, buyback_year=4, buyback_value=60 * M, discount=0.10,
+      3_500_000, 35 * M, 2, 8, buyback=500_000, buyback_year=4, buyback_value=60 * M, discount=0.10,
       dilution=0.20, follow=1_500_000, follow_year=5, follow_post=120 * M,
-      loan=1_500_000, loan_year=4, loan_repay_year=6, loan_mult=1.4, exit_value=250 * M,
+      loan=1_500_000, loan_year=4, loan_repay_year=6, loan_mult="rate", exit_value=250 * M,
       partial=True),
     L("V-03", "venture", "V-03", 1, "Strategic exit, angels bought back", "blue", "new",
-      3_500_000, 35 * M, 3, 7, buyback=500_000, buyback_year=4, buyback_value=40 * M,
-      discount=0.10, loan=1 * M, loan_year=4, loan_repay_year=6, loan_mult=1.4,
+      3 * M, 35 * M, 3, 7, buyback=500_000, buyback_year=4, buyback_value=40 * M,
+      discount=0.10, loan=1 * M, loan_year=4, loan_repay_year=6, loan_mult="rate",
       exit_value=120 * M),
     L("V-04", "venture", "V-04", 1, "Early exit (M&A)", "blue", "new",
-      3 * M, 30 * M, 3, 5, loan=500_000, loan_year=4, loan_repay_year=5, loan_mult=1.4,
+      2_500_000, 30 * M, 3, 5, loan=500_000, loan_year=4, loan_repay_year=5, loan_mult="rate",
       exit_value=60 * M),
     L("V-05", "venture", "V-05", 2, "Zombies (×2)", "grey", "new",
-      5 * M, 25 * M, 3, 8, loan=1 * M, loan_year=5, loan_repay_year=7, loan_mult=0.8,
+      4 * M, 25 * M, 3, 8, loan=1 * M, loan_year=5, loan_repay_year=7, loan_mult=0.8,
       recovery=0.5),
     L("V-07", "venture", "V-07", 1, "Loss", "red", "new",
       2_500_000, 25 * M, 4, 6, recovery=0.0),
@@ -228,7 +248,7 @@ LINES = (
     # dans notre propre breakout ; entrees annees 3-5, sorties 2 a 4 ans plus tard.
     L("G-01", "growth", "G-01", 1, "Strategic exit, block bought from an end-of-life fund", "blue",
       "new", 0, 150 * M, 3, 6, buyback=5 * M, buyback_year=3, buyback_value=150 * M,
-      discount=0.30, loan=2 * M, loan_year=4, loan_repay_year=6, loan_mult=1.4,
+      discount=0.30, loan=2 * M, loan_year=4, loan_repay_year=6, loan_mult="rate",
       exit_value=300 * M),
     L("G-02", "growth", "G-02", 1, "Fresh growth round (new shares)", "blue", "new",
       6 * M, 175 * M, 4, 6, exit_value=300 * M),
@@ -244,6 +264,10 @@ LINES = (
       "breakout", 0, 150 * M, 5, 9, buyback=5 * M, buyback_year=5, buyback_value=150 * M,
       discount=0.30, cancel=0.04, exit_value=300 * M),
 )
+# Prets sains : le prix suit la duree (LOAN_RATE) ; les zombies gardent leur multiple.
+LINES = tuple(replace(x, loan_mult=loan_price(x.loan_year, x.loan_repay_year))
+              if x.loan and x.loan_mult == "rate" else x for x in LINES)
+
 # Complement par SPV (hors fonds) jusqu'a company_max_with_spv, a titre indicatif.
 SPV_COMPANIES = ("S-01", "V-01", "G-01")
 
@@ -269,11 +293,15 @@ FOUNDER_MATH = {
         {"id": "C", "amount": 35 * M, "post": 250 * M},
         {"id": "D", "amount": 70 * M, "post": 400 * M},
     ],
-    # Chemin ProFund : aucune action nouvelle ; 25 M EUR de prets, rembourses a la
-    # sortie avant les fonds propres, a 1,2x.
+    # Chemin ProFund : aucune action nouvelle ; 25 M EUR de prets au meme taux que
+    # le fonds (LOAN_RATE), tires par tranches et rembourses en ~1,6 an en moyenne
+    # (les prets du modele durent 1 a 3 ans) : 1,12^1,6 = 1,2x, deduits a la sortie
+    # avant les fonds propres.
     "loans": 25 * M,
-    "loan_multiple": 1.2,
+    "loan_life": 1.6,
 }
+FOUNDER_MATH["loan_rate"] = LOAN_RATE
+FOUNDER_MATH["loan_multiple"] = loan_price(0, FOUNDER_MATH["loan_life"])
 PUBLISHED_FOUNDER_MATH = {
     "founders_vc": [0, 62 * M, 153 * M],
     "founders_profund": [38 * M, 119 * M, 254 * M],
@@ -287,11 +315,12 @@ PUBLISHED_FOUNDER_MATH = {
 # au-dessus de 1 Md EUR (S-01 a 1,5 Md, V-01 a 1,2 Md). Cite sur /pitch.
 REFERENCE_V2 = {"commit": "2f3b590", "net_tvpi": 2.7, "capped_exit": 300 * M, "capped_net_tvpi": 1.3}
 
-# Valeurs publiees de la v3.3 (fiche v3, /pitch) que le modele doit retrouver.
+# Valeurs publiees de la v3.4 (fiche, /pitch) que le modele doit retrouver : un
+# changement d'hypothese qui les deplace doit etre voulu, et les textes relus.
 PUBLISHED = {
-    "target": {"net_tvpi": 2.5, "net_irr": 0.26, "dpi_year7": 1.2},
-    "base": {"net_tvpi": 1.6, "net_irr": 0.13},
-    "stress": {"net_tvpi": 1.2, "net_irr": 0.06},
+    "target": {"net_tvpi": 2.4, "net_irr": 0.25, "dpi_year7": 1.2},
+    "base": {"net_tvpi": 1.6, "net_irr": 0.12},
+    "stress": {"net_tvpi": 1.2, "net_irr": 0.05},
 }
 
 
@@ -549,6 +578,26 @@ def layer_gross_irr(layer: str, case: Case) -> float:
     return ratio(irr(flows[1:]), 2)
 
 
+# ── la loi 04 chiffree ───────────────────────────────────────────────────────
+def fund_returning_exit(company: str) -> dict:
+    """La valeur de sortie a laquelle `company` (toutes ses lignes, cas cible, a la
+    valeur de sortie) rend a elle seule les engagements du fonds."""
+    lines = [x for x in LINES if x.company == company]
+    target = CASES[0]
+
+    def got(v):
+        return sum(proceeds(replace(x, exit_value=v), target) for x in lines if x.exit_value)
+    lo, hi = 1.0, 100_000 * M
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if got(mid) < FUND["commitments"] else (lo, mid)
+    return {
+        "stake_at_exit": ratio(sum(exit_stake(x) for x in lines if x.exit_value), 3),
+        # arrondi au multiple de 5 M EUR superieur : le chiffre publie est atteint
+        "fund_returning_exit": int(-(-hi // (5 * M))) * 5 * M,
+    }
+
+
 # ── tests de resistance (cas cible, une hypothese a la fois) ────────────────
 def _shift(lines, years: int):
     """Chaque sortie decalee, au plus tard en annee 10 ; les prets gardent leur
@@ -563,7 +612,7 @@ def _zombie_best(lines):
     for x in lines:
         if x.company == best:
             x = replace(x, exit_value=None, recovery=0.5, partial=False,
-                        loan_mult=None if x.loan_mult is None else LOAN_MULTIPLES["zombie"])
+                        loan_mult=LOAN_MULTIPLES["zombie"] if x.loan else x.loan_mult)
         out.append(x)
     return tuple(out)
 
@@ -720,6 +769,9 @@ def validate(data: dict) -> Checks:
         if x.follow:
             c.need(x.follow_year is not None and x.entry_year <= x.follow_year <= ip
                    and x.follow_post, f"{x.id} : suivi")
+        if x.loan and x.loan_mult >= 1:
+            c.need(x.loan_mult == loan_price(x.loan_year, x.loan_repay_year),
+                   f"{x.id} : pret sain hors du taux ({x.loan_mult})")
         if x.loan:
             c.need(x.loan_year is not None and x.loan_repay_year is not None and x.loan_mult
                    and x.entry_year <= x.loan_year <= ip
@@ -909,6 +961,7 @@ def build() -> dict:
     for x in LINES:
         by_company[x.company] = by_company.get(x.company, 0) + proceeds(x, CASES[0])
     best = max(by_company.items(), key=lambda kv: kv[1])
+    returner = fund_returning_exit(best[0])
     lines_partial = [x.id for x in LINES if x.partial]
 
     return {
@@ -922,7 +975,10 @@ def build() -> dict:
         "terms": {**TERMS, "gp_commit_min": money(TERMS["gp_commit_min_pct"] * FUND["commitments"])},
         "secondary": {**SECONDARY, "lines": lines_partial},
         "buyback_discount": BUYBACK_DISCOUNT,
-        "loan_multiples": LOAN_MULTIPLES,
+        "loan_rate": LOAN_RATE,
+        "loan_multiples": {**LOAN_MULTIPLES,
+                           "performing_min": min(x.loan_mult for x in LINES if x.loan and x.loan_mult >= 1),
+                           "performing_max": max(x.loan_mult for x in LINES if x.loan and x.loan_mult >= 1)},
         "layers": layers,
         "allocation": {
             "seed": layers["seed"]["invested"],
@@ -942,7 +998,8 @@ def build() -> dict:
         "spv": spv,
         "spv_total": sum(x["spv"] for x in spv),
         "fund_returner": {"company": best[0], "proceeds": best[1],
-                          "multiple_of_fund": ratio(best[1] / FUND["commitments"], 1)},
+                          "multiple_of_fund": ratio(best[1] / FUND["commitments"], 1),
+                          **returner},
         "cases": cases,
         "stress_tests": stress_tests(),
         "founder_math": founder_math(),

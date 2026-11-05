@@ -161,15 +161,22 @@ fourchettes de souscription des LPs de `DealFlowModal.tsx` (contrat avec
 `_PROFUND_TICKETS` du proxy). Le calculateur (`founderMath.js`) et le tableau publié
 doivent dire la même chose : `prerender.mjs` fait échouer le build sinon.
 
-**Les chiffres du fonds ont UNE source : `scripts/fund_model.py`** (v3.3, 05/11 :
+**Les chiffres du fonds ont UNE source : `scripts/fund_model.py`** (v3.4, 05/11 :
 un fonds de 100 M€, trois étages Seed / Venture / Growth, nommés Ignite / Relute /
 Compound dans le classeur ; UN tour en actions par société, puis des rachats de
 titres existants avec décote, des prêts (plafond EuVECA de 30 % des engagements) et
 des annulations ; suivi en actions nouvelles seulement si le fondateur lève ailleurs ;
 liquidité partielle des gagnants en année 6, clause 9 du pacte ; aucune sortie
 au-dessus de 300 M€ ; SPV de co-investissement au-delà de 10 M€ par société). Le
-modèle reproduit à l'euro près le classeur v3.3 livré le 05/11 (1 532 valeurs
-comparées). Il porte les hypothèses, les lignes de simulation (S-, V-, G-), les frais,
+portage v3.3 reproduisait à l'euro près le classeur livré le 05/11 (1 532 valeurs,
+tag git `v3.3`). **v3.4** (Antoine, 05/11) : prêts sains à 12 % par an composés sur
+leur durée (`LOAN_RATE`, pas de BSA : ils créeraient des actions nouvelles), au lieu
+de 1,4× quelle que soit la durée ; 40 tickets radar au lieu de 20, financés par 3 M€
+pris sur les chèques Venture des sociétés qui vivent ; la loi 04 chiffrée
+(`fund_returner.fund_returning_exit` : la sortie à laquelle S-01 rend seule tout le
+fonds). Le tableau fondateurs prend le même taux (1,2× = 12 % sur ~1,6 an de vie
+moyenne). `PUBLISHED` fige les valeurs publiées : un changement qui les déplace
+doit être voulu, et les textes relus. Il porte les hypothèses, les lignes de simulation (S-, V-, G-), les frais,
 la cascade de distribution, le TRI, les tests de résistance (`stress_tests` : les
 sorties décalées gardent l'échéancier des prêts), le tableau fondateurs
 (`founder_math`, vérifié contre la table publiée) et vérifie ses invariants (total =
@@ -196,10 +203,10 @@ navigateurs reprennent les nouveaux fichiers.
 `factsheet.py` et `fund_xlsx.py` refusent aussi de tourner dans ce cas. Les frais
 du fonds du modèle sont une estimation en attendant le devis du gestionnaire EuVECA.
 
-**Le Seed est en haltère** (01/11, Alexandre ; v3.3 du 05/11) : 30 sociétés, 10 leads
-de conviction S-01..S-10 et 20 tickets radar de 100 à 150 K€ S-11..S-30 (`SEED_TRACKS`,
-champ `track` des lignes, exporté dans `layers.seed.tracks`). La v3 n'a plus besoin d'une
-licorne, d'où 30 sociétés au lieu de 50. Le modèle refuse un ticket hors de sa voie, une
+**Le Seed est en haltère** (01/11, Alexandre ; v3.4 du 05/11) : 50 sociétés, 10 leads
+de conviction S-01..S-10 et 40 tickets radar de 150 K€ S-11..S-50 (`SEED_TRACKS`,
+champ `track` des lignes, exporté dans `layers.seed.tracks`). En v3, un ticket radar est
+aussi une option sur un rachat : quand la société décolle, on rachète ses angels (S-11). Le modèle refuse un ticket hors de sa voie, une
 numérotation discontinue et une ligne de sortie groupée (la part de sortie est celle
 d'UNE société). La voie se lit dans l'onglet Lines de l'Excel ; sur la fiche p. 4 et
 /pitch, un filet sépare leads et radar et la note de l'étage les nomme. Dans
@@ -223,9 +230,11 @@ sont permis, mais `sheet_engine.check_glyphs` fait échouer la fiche sur tout
 caractère absent d'Archivo. Elle échoue aussi si une page déborde sur le pied :
 chaque page n'a que 6 à 8 mm de marge, tout ajout se paie ailleurs.
 
-**La V1 est sauvegardée** : tag git `v1` (le site à 35 M€, Scout + Core, avant
-la v2) et `archive/v1/profund-factsheet-v1.pdf`. Pour y revenir : partir du tag
-(`git checkout v1 -- .` sur une branche), vérifier, puis fusionner sur `main`.
+**Les versions sont taguées** : `v1` (le site à 35 M€, Scout + Core ; fiche dans
+`archive/v1/profund-factsheet-v1.pdf`), `v2` (100 M€, Seed à 50 sociétés pour une
+licorne, fiche 3 pages, avant la proposition fondateurs), `v3.3` (le classeur
+d'Antoine du 05/11 tel quel) et `v3.4` (prêts au taux, radar à 40). Pour revenir à une version : partir du tag
+(`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`
 (`TitleSlide`, `TheShift`, `TheProblem`… une par slide du deck v3 du 05/11, puis

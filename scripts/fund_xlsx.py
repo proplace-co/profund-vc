@@ -338,10 +338,16 @@ def sheet_assumptions(bk: Book) -> None:
     put("Loans, maximum (% of commitments)", "LoanCapPct", FUND["loan_cap_pct"], "pct0",
         "EuVECA: loans only to portfolio companies, at most 30% of commitments")
     calc("Loans, maximum", "LoanCap", xmoney("LoanCapPct*Commitments"), DATA["fund"]["loan_cap"], "eur")
-    ws.write(r, 0, "Loan repayment multiple: performing / zombie / loss (reference)")
-    for j, k in enumerate(("performing", "zombie", "loss")):
+    ws.write(r, 0, "Loan rate, performing loans (per year, compounded over each loan's tenor)")
+    ws.write(r, 1, fm.LOAN_RATE, inp["pct0"])
+    ws.write(r, 5, "Performing lines: multiple = (1 + rate) ^ (repayment year - draw year), rounded to 0.01 "
+                   "(Lines, column " + lc("loan_mult") + "). No warrants: they would create new shares.", note)
+    r += 1
+    ws.write(r, 0, "Loan repayment multiple: zombie / loss (reference)")
+    for j, k in enumerate(("zombie", "loss")):
         ws.write(r, 1 + j, fm.LOAN_MULTIPLES[k], inp["mult2"])
-    ws.write(r, 5, "Reference values: each line carries its own multiple (Lines, column " + lc("loan_mult") + ")", note)
+    ws.write(r, 5, "Reference values: each distressed line carries its own multiple (Lines, column "
+                   + lc("loan_mult") + ")", note)
     r += 1
     ws.write(r, 0, "After the first cheque, no new shares while the founder grows with ProFund")
     ws.write(r, 5, "If the founder raises elsewhere, ProFund follows or leads the round in new shares (Lines, columns "
@@ -1451,7 +1457,8 @@ def sheet_readme(bk: Book) -> None:
                          f"{pct_txt(TERMS['fee_loan_pct'])} fee.  v3.2: realistic timing (investments over "
                          f"{FUND['investment_period_years']} years, exits years {min(x.exit_year for x in fm.LINES)} "
                          f"to {HORIZON}), partial liquidity of the winners (pact clause 9), loans at "
-                         f"{fm.LOAN_MULTIPLES['performing']}× in tranches, {n['growth']} bought from structural "
+                         f"{round(fm.LOAN_RATE * 100)}% a year in tranches (v3.4; v3.3 priced every loan at "
+                         f"1.4×), {n['growth']} bought from structural "
                          f"sellers. v3.3: real {n['venture']} and {n['growth']} tickets ({eur_txt(vr[0])}–"
                          f"{eur_txt(vr[1])} Series A cheques; {eur_txt(gr[0])}–{eur_txt(gr[1])} growth positions, up "
                          f"to {eur_txt(FUND['company_max_with_spv'])} with SPVs), incl. a block bought in our own "

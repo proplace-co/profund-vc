@@ -1068,7 +1068,8 @@ def net_note():
         "with GP catch-up), before tax. "
         f"Investments over {ip} years, exits from year {min(exits)} to year {max(exits)}. "
         f"Base: every exit value ×{pct(b['exit_mult'])}. Stress: every exit value ×{pct(s['exit_mult'])}. "
-        f"Loans priced at {mult(lm['performing'])} on healthy companies, drawn in tranches; zombies repay "
+        f"Loans priced at {pct(DATA['loan_rate'])} a year on healthy companies ({mult(lm['performing_min'], 2)}"
+        f" to {mult(lm['performing_max'], 2)} by tenor, no warrants), drawn in tranches; zombies repay "
         f"{mult(lm['zombie'])}, plus {extra} further losses on every loan by case. "
         f"Buybacks priced {pct(min(winners))}–{pct(max(winners))} below the valuation of the time on winners "
         f"and angels, {pct(structural)} below from structural sellers (end-of-life funds). "
@@ -1122,6 +1123,7 @@ def page_four(F):
     y += 18
     t, b, s = CASES["target"], CASES["base"], CASES["stress"]
     uni = next(x_ for x_ in STRESS if x_["id"] == "unicorn")
+    fr = DATA["fund_returner"]   # la loi 04 chiffree
     tiles = [
         (pct(t["net_irr"]), "Target net IRR", f"Base case {pct(b['net_irr'])}, stress case {pct(s['net_irr'])}"),
         (mult(t["net_tvpi"]), "Target net TVPI",
@@ -1129,7 +1131,8 @@ def page_four(F):
         (mult(t["dpi_year7"]), f"Net DPI by year {sec['year'] + 1}",
          "Loans, partial liquidity and Growth exits return capital early"),
         (eur(t["largest_exit"], "val"), "Largest exit",
-         f"No unicorn needed: one €1B exit takes the fund to {mult(uni['net_tvpi'])} and {pct(uni['net_irr'])}"),
+         f"No unicorn needed: {fr['company']} returns the whole fund at {eur(fr['fund_returning_exit'], 'val')}; "
+         f"at €1B, {mult(uni['net_tvpi'])} and {pct(uni['net_irr'])}"),
     ]
     gap = 10.0
     tw_ = (W - 3 * gap) / 4

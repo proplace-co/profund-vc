@@ -30,6 +30,7 @@ const AT_250 = FM.rows.find((r) => r.exit === 250e6) ?? FM.rows[1];
 const RAISED_VC = FM.raised_before + FM.vc_equity;
 const DELAY_1 = fund.stress_tests.find((s) => s.id === 'exits_plus_1')!;
 const V2 = fund.reference_v2;
+const FR = fund.fund_returner;   // la loi 04 chiffrée : la sortie qui rend tout le fonds
 const loanLoss = (id: 'target' | 'base' | 'stress') => pct(1 - C[id].loan_repaid);
 // Décotes des rachats, lues sur les lignes : gagnants et angels (Seed, Venture),
 // vendeurs structurels (Growth, fonds en fin de vie).
@@ -283,7 +284,7 @@ function TermsAndTargets() {
         <div className="imp"><span className="imp-n">{pct(TARGET.net_irr)}</span><span className="imp-h">Target net IRR</span><p className="imp-p">Base case {pct(C.base.net_irr)}, stress case {pct(C.stress.net_irr)}</p></div>
         <div className="imp"><span className="imp-n">{mult(TARGET.net_tvpi)}</span><span className="imp-h">Target net TVPI</span><p className="imp-p">Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}</p></div>
         <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">With loan losses in every case</p></div>
-        <div className="imp"><span className="imp-n">{eur(TARGET.largest_exit, 'val')}</span><span className="imp-h">Largest exit</span><p className="imp-p">No unicorn needed</p></div>
+        <div className="imp"><span className="imp-n">{eur(TARGET.largest_exit, 'val')}</span><span className="imp-h">Largest exit</span><p className="imp-p">No unicorn needed: {FR.company} returns the whole fund at {eur(FR.fund_returning_exit, 'val')}</p></div>
       </div>
       <div className="pv-terms-grid">
         <div className="table-scroll"><table className="fund-table">
@@ -317,11 +318,12 @@ function TermsAndTargets() {
         <p>
           <strong>Why {pct(TARGET.net_irr)} holds without fast exits.</strong> Exits are spread from year {EXIT_YEARS[0]} to
           year {EXIT_YEARS[1]}. The IRR rests on large stakes in the winners and cash that comes back early: loans
-          at {mult(fund.loan_multiples.performing)} from year {LOANS_FROM},
+          at {pct(fund.loan_rate)} a year, repaid from year {LOANS_FROM},
           growth positions bought at a {pct(STRUCT_DISC)} discount and sold
           after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years, partial liquidity of the winners in year {SEC.year}.
           One year of delay on every exit: {pct(DELAY_1.net_irr)}. No exit above {eur(TARGET.largest_exit, 'val')}; with the same
-          exits, the v2 model would make {mult(V2.capped_net_tvpi)}.
+          exits, the v2 model would make {mult(V2.capped_net_tvpi)}. Law 04 in numbers: with {pct(FR.stake_at_exit, 1)} of {FR.company} at
+          exit, a {eur(FR.fund_returning_exit, 'val')} sale returns the entire fund on its own.
         </p>
       </div>
     </Slide>
@@ -511,7 +513,7 @@ function Performance() {
         <p className="pf-fine">
           Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, {pct(T.fee_loan_pct)} on the loan sleeve, then {pct(T.fee_post_pct, 1)} on invested capital, loans included until repaid), fund expenses
           and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. Investments over {F.investment_period_years} years, exits from year {EXIT_YEARS[0]} to year {EXIT_YEARS[1]}.
-          Base: every exit value ×{pct(C.base.exit_mult)}. Stress: every exit value ×{pct(C.stress.exit_mult)}. Loans priced at {mult(fund.loan_multiples.performing)} on healthy companies, drawn in tranches;
+          Base: every exit value ×{pct(C.base.exit_mult)}. Stress: every exit value ×{pct(C.stress.exit_mult)}. Loans priced at {pct(fund.loan_rate)} a year on healthy companies ({mult(fund.loan_multiples.performing_min, 2)} to {mult(fund.loan_multiples.performing_max, 2)} by tenor, no warrants), drawn in tranches;
           zombies repay {mult(fund.loan_multiples.zombie)}, plus {loanLoss('target')}, {loanLoss('base')} and {loanLoss('stress')} further losses on every loan by case. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
           and angels, {pct(STRUCT_DISC)} below from structural sellers (end-of-life funds). When a founder raises elsewhere, ProFund follows in new shares (S-01, V-02). G-02 and G-04 are fresh growth rounds in new shares;
           every first cheque carries a 1× non-participating preference. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
