@@ -1085,7 +1085,7 @@ def page_four(F):
     fm = FOUNDERS
     seed_pref = next(h["pref"] for h in fm["holders"] if h["id"] == "seed")
     a_pref = next(h["pref"] for h in fm["holders"] if h["id"] == "series_a")
-    kick(F, M, 80, "Same company, same exit")
+    kick(F, M, 80, "The capital you don't raise is the company you keep")
     fw = 446.0
     fh = founder_table(F, M, 98, fw)
     F.para(M + fw + 16, 98, W - fw - 16, x(

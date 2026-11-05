@@ -16,6 +16,8 @@ const DEFAULT = {
   raised: FM.raised_before / 1e6,
   rounds: FM.vc_rounds.map((r) => ({ amount: r.amount / 1e6, post: r.post / 1e6 })),
   loans: FM.loans / 1e6,
+  extra: 0,          // equity complémentaire si la dette ne suffit pas (pacte, préférence 1×)
+  extraPost: 250,
   exit: FM.rows[1].exit / 1e6,
 };
 const ROUND_NAMES = ['B', 'C', 'D', 'E', 'F'];
@@ -59,6 +61,7 @@ export default function CalculatorPage() {
     rounds: s.rounds.map((x) => ({ amount: n(x.amount) * 1e6, post: n(x.post) * 1e6 })),
     loans: n(s.loans) * 1e6,
     loanMultiple: FM.loan_multiple,
+    extra: [{ amount: n(s.extra) * 1e6, post: n(s.extraPost) * 1e6 }],
     exit: n(s.exit) * 1e6,
   }), [s, founders, investors]);
 
@@ -115,6 +118,11 @@ export default function CalculatorPage() {
               <div className="pv-form-grid">
                 <Num label="Loans instead of these rounds" unit="€M" value={s.loans} onChange={(v) => set('loans', v)}
                      hint={`${pct(FM.loan_rate)} a year, about ${FM.loan_life} years on average: ${FM.loan_multiple.toFixed(1)}×, repaid before equity`} />
+                <Num label="If debt is not enough: extra equity" unit="€M" value={s.extra} onChange={(v) => set('extra', v)}
+                     hint="Your call. Led by us on the pact terms, 1× preference" />
+                {n(s.extra) > 0 && (
+                  <Num label="Extra equity, post-money valuation" unit="€M" value={s.extraPost} step={10} onChange={(v) => set('extraPost', v)} />
+                )}
               </div>
             </div>
           </div>
@@ -142,14 +150,17 @@ export default function CalculatorPage() {
                   {r.vc.stakes.map((st, i) => (
                     <tr key={i}><td>After Series {ROUND_NAMES[i]}</td><td>{pct(st, 1)}</td><td className="pf">{pct(founders, 1)}</td></tr>
                   ))}
-                  <tr className="sub"><td>Equity raised after today</td><td>{money(r.vc.equityRaised)}</td><td>€0, {money(n(s.loans) * 1e6)} of loans</td></tr>
+                  {r.profund.equityRaised > 0 && (
+                    <tr><td>After the extra equity</td><td>–</td><td className="pf">{pct(r.profund.stakeAtExit, 1)}</td></tr>
+                  )}
+                  <tr className="sub"><td>Equity raised after today</td><td>{money(r.vc.equityRaised)}</td><td>{r.profund.equityRaised > 0 ? money(r.profund.equityRaised) : '€0'}, {money(n(s.loans) * 1e6)} of loans</td></tr>
                 </tbody>
               </table>
             </div>
             <p className="pv-fine">
               VC path: 1× non-participating preferences, pari passu; each investor converts when it pays more.
-              ProFund path: no new share after today; loans repaid at exit, before equity. On the ProFund path your stake
-              never goes down (the annual cancellations that lift it are not counted here). Illustrative, not a forecast or an offer.
+              ProFund path: no new share after today unless you ask for extra equity (1× preference, like our
+              first cheque); loans repaid at exit, before equity. The annual cancellations that lift your stake are not counted here. Illustrative, not a forecast or an offer.
             </p>
           </div>
         </div>

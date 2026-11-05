@@ -50,11 +50,21 @@ export function payout(value, holders) {
  *   holders: {id: string, stake: number, pref: number}[],  // les autres porteurs aujourd'hui
  *   rounds: {amount: number, post: number}[],              // tours prévus, chemin VC
  *   loans: number, loanMultiple: number,                   // chemin ProFund
+ *   extra?: {amount: number, post: number}[],              // ProFund : equity si la dette ne suffit pas
  *   exit: number,
  * }} input
  */
-export function founderPaths({ founders, holders, rounds, loans, loanMultiple, exit }) {
+export function founderPaths({ founders, holders, rounds, loans, loanMultiple, extra = [], exit }) {
   const base = [{ id: 'founders', stake: founders, pref: 0 }, ...holders.map((h) => ({ ...h }))];
+  // Chemin ProFund : l'equity complémentaire, au choix du fondateur, aux conditions du
+  // pacte (préférence 1× non participante, comme notre premier chèque).
+  const pf = base.map((h) => ({ ...h }));
+  extra.forEach((r, i) => {
+    const k = r.post > 0 ? Math.min(1, r.amount / r.post) : 0;
+    if (!(k > 0)) return;
+    for (const h of pf) h.stake *= 1 - k;
+    pf.push({ id: `extra${i}`, stake: k, pref: r.amount });
+  });
   const vc = base.map((h) => ({ ...h }));
   const stakes = [];
   rounds.forEach((r, i) => {
@@ -65,10 +75,11 @@ export function founderPaths({ founders, holders, rounds, loans, loanMultiple, e
   });
   const debt = loans * loanMultiple;
   const pv = payout(exit, vc);
-  const pp = payout(Math.max(0, exit - debt), base);
+  const pp = payout(Math.max(0, exit - debt), pf);
   return {
     vc: { founders: pv.founders, stakeAtExit: vc[0].stake, stakes, equityRaised: rounds.reduce((s, r) => s + r.amount, 0) },
-    profund: { founders: pp.founders, stakeAtExit: founders, debt },
+    profund: { founders: pp.founders, stakeAtExit: pf[0].stake, debt,
+               equityRaised: extra.reduce((s, r) => s + (r.amount > 0 ? r.amount : 0), 0) },
     payouts: { vc: pv, profund: pp },
   };
 }

@@ -28,15 +28,15 @@ const here = dirname(fileURLToPath(import.meta.url));
 const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
-const BASE_TITLE = 'ProFund · Where pure vision directs recursive AI.';
-const BASE_DESC = 'Pre-seed to Growth. One round, then never diluted again. We don’t fund headcount: we back tight-knit, AI-native teams building self-improving systems across the world’s largest markets.';
+const BASE_TITLE = 'ProFund · Control was always yours.';
+const BASE_DESC = 'Venture capital for founders, pre-seed to growth. One round, then never diluted again. Your shares, your votes, your exit. Funded like the leaders, diluted like no one.';
 
 // Le titre de /pitch porte la taille du fonds : lue dans le modèle
 // (scripts/fund_model.py → src/data/fund.json), jamais tapée ici.
 const FUND = JSON.parse(readFileSync(join(here, '..', 'src', 'data', 'fund.json'), 'utf8'));
 const FUND_SIZE = `€${FUND.fund.commitments / 1e6}M`;
 
-// Le calculateur (/calculator) et le tableau « Same company. Same exit. » doivent
+// Le calculateur (/calculator) et le tableau « The capital you don't raise » doivent
 // dire la même chose : le moteur JS du site, nourri des hypothèses de fund.json,
 // doit retomber sur le tableau publié que calcule scripts/fund_model.py.
 {
@@ -90,8 +90,8 @@ const ROUTES = [
   },
   {
     path: 'lp',
-    title: 'LP access | ProFund',
-    desc: 'ProFund Fund I, closed-ended EuVECA fund, Luxembourg. Fact sheet, fund model and data room on request, for professional and eligible investors.',
+    title: 'ProFund · Where pure vision directs recursive AI. | LPs',
+    desc: 'ProFund Fund I, closed-ended EuVECA fund, Luxembourg. The thesis, the engines, the founding partner. Fact sheet, fund model and data room on request, for professional and eligible investors.',
   },
   {
     path: 'legal',

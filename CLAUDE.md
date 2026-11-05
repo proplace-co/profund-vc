@@ -96,13 +96,21 @@ redessiné avec les mêmes jetons. Dans les tableaux, la ligne de total porte la
 classe `sub`. /pitch n'est lié nulle part sur le site (deck LP, remis via /lp) ;
 il est hors sitemap et en `noindex` (comme /dealflow, `noindex: true` dans ROUTES).
 
-**L'accueil ne parle qu'aux fondateurs** (Antoine, 05/11, v3.8 ; comme Sequoia ou Index) :
-le contrôle revient au fondateur (section « The rules », les anciennes règles barrées à
-l'écran ; la part du fondateur tour après tour, animée). L'exigence ne se dit pas, elle se
-lit : peu de mots, des chiffres, un seul bouton, « Run your numbers ». Les LPs n'ont qu'un
-lien « LPs » en pied de page vers /lp, qui reprend toute la thèse de l'accueil, le deal
-flow live et la demande d'accès. Le popup du deal flow reste monté sur l'accueil pour
-`profund.vc/#dealflow` (le QR de la fiche), sans bouton visible. Plus de formulaire « Reserve your round » ni de page /sell : le
+**L'accueil est pour les fondateurs d'exception, et pour eux seuls** (Antoine, 05/11,
+v3.9 ; comme Sequoia ou Index). Il s'ouvre sur les règles (`TheRules hero` : « Control was
+always yours. », les anciennes règles du VC barrées à l'écran), puis le capital
+(`CapitalStack` : « Funded like the leaders. Diluted like no one. », revenus, un tour, la
+ligne de prêt avec nos prêteurs partenaires, puis l'equity seulement si le fondateur la
+demande), les chiffres (« The capital you don't raise is the company you keep. » : le
+tableau compare 135 M€ d'equity à 25 M€ de dette, l'hypothèse est dite en clair),
+Founding Partner et un seul bouton, « Run your numbers ». L'exigence ne se dit pas, elle se
+lit. **La thèse et la vision sont sur /lp** : le héros « Where pure vision directs recursive
+AI. » avec la capture du deal flow, manifeste, lois, règles, étages, moteurs, proof of
+work, Founding Partner, demande d'accès et deal flow live. Sur l'accueil, les LPs n'ont
+qu'un lien « LPs » en pied de page ; le popup du deal flow reste monté pour
+`profund.vc/#dealflow` (le QR de la fiche), sans bouton visible. **L'equity complémentaire**
+(si la dette ne suffit pas) se fait au choix du fondateur, aux conditions du pacte, avec la
+même préférence 1× que notre premier chèque (clause 2 ; champ du calculateur). Plus de formulaire « Reserve your round » ni de page /sell : le
 parcours fondateur s'arrête au calculateur (« Send these numbers to the partner », un
 mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
 /lp (`LeadForm.tsx`) n'a PAS de backend : il ouvre un email pré-rempli (mailto). Au-delà
@@ -243,8 +251,9 @@ d'Antoine du 05/11 tel quel), `v3.4` (prêts au taux, radar à 40), `v3.5` (clau
 (S-01 en chemin pur, S-02 lève ailleurs et sort à 250 M€, Seed / Venture / Growth
 partout, accueil à 10 sections, page 4 de la fiche allégée, SPV hors de l'accueil) et
 `v3.7` (plus de Reserve ni de /sell, licorne à 1 Md€ dans le tableau fondateurs, scénario
-grosse licorne à 2 Md€) et `v3.8` (accueil 100 % fondateurs, « Control was always
-yours. », /lp porte toute la thèse pour les LPs). Pour revenir à une version : partir du tag
+grosse licorne à 2 Md€) `v3.8` (accueil 100 % fondateurs) et `v3.9` (les règles en ouverture, le capital
+optimisé, le tableau recadré, la thèse et la capture du deal flow sur /lp, l'equity
+complémentaire à préférence 1×). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`

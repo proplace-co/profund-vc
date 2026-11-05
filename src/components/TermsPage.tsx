@@ -8,7 +8,7 @@ import { Icon } from './Thesis';
 // suivi en actions nouvelles quand le fondateur lève ailleurs (7).
 const CLAUSES: { t: string; d: string }[] = [
   { t: 'One equity round.', d: 'We invest once in new shares. After that, we never create a new share while you grow with us.' },
-  { t: 'A reserved loan line.', d: 'Reserved from day one, drawn in tranches when you need it: hiring, go-to-market, working capital, acquisitions. If debt is not enough, or lenders cannot take the full line, you can ask us to lead extra equity on these same terms, with SPVs alongside the fund.' },
+  { t: 'A reserved loan line.', d: 'Reserved from day one, drawn in tranches when you need it: hiring, go-to-market, working capital, acquisitions. If debt is not enough, or lenders cannot take the full line, you can ask us to lead extra equity on these same terms (with the same 1× preference as our first cheque), with SPVs and co-investors alongside the fund.' },
   { t: 'Buybacks, only with you.', d: 'We buy shares from your angels, leavers and early funds, never without your agreement. Every buyback is priced by an independent valuer.' },
   { t: 'Annual cancellation.', d: 'Each year, the company can buy back and cancel shares. Every cancellation lifts your stake.' },
   { t: 'Your votes.', d: 'Our shares vote with you under a voting agreement. Where the law allows, you hold multiple voting rights.' },

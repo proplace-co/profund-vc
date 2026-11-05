@@ -42,16 +42,24 @@ const RULES: { old: string; now: string }[] = [
   { old: 'A board seat and a veto', now: 'Our shares vote with you.' },
   { old: 'Preferences stacked round after round', now: 'No new preference on top of you.' },
   { old: 'Their exit, on their timing', now: 'Your exit. No veto. Ever.' },
+  { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Your stake goes up.' },
 ];
 
-export function TheRules() {
+/** Les règles. `hero` : en ouverture de l'accueil (titre h1, bouton) ; sinon une section (/lp). */
+export function TheRules({ hero = false }: { hero?: boolean }) {
   const [ref, seen] = useInView<HTMLDivElement>();
+  const H = hero ? 'h1' : 'h2';
   return (
-    <section className="pv-sec night pv-rules-sec" id="rules">
+    <section className={`pv-sec night pv-rules-sec${hero ? ' pv-rules-hero' : ''}`} id="rules">
       <div ref={ref} className={`pv-wrap pv-rules${seen ? ' in' : ''}`}>
-        <p className="pv-kick">The rules</p>
-        <h2 className="pv-rules-h">Control was always yours.</h2>
-        <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Not anymore.</p>
+        <p className="pv-kick">{hero ? 'Venture capital · Pre-seed to growth · Europe' : 'The rules'}</p>
+        <H className="pv-rules-h">Control was always yours.</H>
+        <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Now you get the capital without giving the company away.</p>
+        {hero && (
+          <div className="pv-ctas">
+            <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
+          </div>
+        )}
         <ol className="pv-rules-list">
           {RULES.map((r, i) => (
             <li key={r.old} className="pv-rule" style={{ ['--d' as string]: `${0.15 + i * 0.18}s` }}>
@@ -62,9 +70,51 @@ export function TheRules() {
           ))}
         </ol>
         <div className="pv-rules-foot">
-          <span>Written into the pact. The same for every founder.</span>
+          <span>Written into the pact. The same for every founder. Raise elsewhere whenever you want: we follow or lead.</span>
           <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Le capital, optimisé (v3.9) ──────────────────────────────────────────────
+// Les poches profondes, sans promesse intenable : chaque euro vient de la source la
+// moins chère d'abord ; l'equity en dernier, et seulement si le fondateur la demande
+// (aux conditions du pacte, préférence 1× comme notre premier chèque).
+export function CapitalStack() {
+  const [ref, seen] = useInView<HTMLOListElement>();
+  const steps: { icon: IconName; tag: string; t: string; d: string }[] = [
+    { icon: 'trend', tag: 'No dilution', t: 'Your growth',
+      d: 'Revenue funds what it can. That is what AI-native teams do best.' },
+    { icon: 'target', tag: 'Once', t: 'One equity round',
+      d: `From ${eur(L.seed.ticket_min)} at pre-seed to ${eur(F.company_cap, 'tile')} at growth. Then never again.` },
+    { icon: 'banknote', tag: 'No dilution', t: 'The loan line',
+      d: 'Reserved from day one, with our fund and partner lenders. Hiring, go-to-market, working capital, acquisitions. Drawn in tranches, repaid from growth.' },
+    { icon: 'shield', tag: 'Your call', t: 'Equity, if you ask',
+      d: 'If lenders cannot take it all, we lead the extra equity ourselves, on the pact terms, with SPVs and co-investors alongside the fund.' },
+  ];
+  return (
+    <section className="pv-sec" id="capital">
+      <div className="pv-wrap">
+        <div className="pv-head">
+          <p className="pv-kick">Your capital</p>
+          <h2 className="pv-h2">Funded like the leaders. Diluted like no one.</h2>
+          <p className="sub">Every euro comes from the cheapest source first. Equity comes last, and only if you ask.</p>
+        </div>
+        <ol ref={ref} className={`pv-stack${seen ? ' in' : ''}`}>
+          {steps.map((x, i) => (
+            <li key={x.t} className="pv-stack-s" style={{ ['--d' as string]: `${i * 0.14}s` }}>
+              <div className="pv-stack-top">
+                <span className="pv-stack-n">{i + 1}</span>
+                <span className={`pv-stack-tag${x.tag === 'Your call' ? ' call' : ''}`}>{x.tag}</span>
+              </div>
+              <span className="pv-ic"><Icon name={x.icon} /></span>
+              <h3>{x.t}</h3>
+              <p>{x.d}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
@@ -108,7 +158,7 @@ export function HowWeBack() {
         {/* v3.7 : au-delà de la dette, de l'equity aux mêmes conditions, et des SPV */}
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="banknote" /></span>
-          <p>Need more than debt, or lenders can’t take the full line? Your call: we lead the extra equity ourselves, on the same pact terms, with SPVs alongside the fund, at the level of the largest funds.</p>
+          <p>Need more than debt, or lenders can’t take the full line? Your call: we lead the extra equity ourselves, on the same pact terms, with SPVs and co-investors alongside the fund.</p>
         </div>
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="scale" /></span>
@@ -155,7 +205,7 @@ function StakeChart() {
   );
 }
 
-/** Le tableau « Same company. Same exit. » ; `investor` ajoute la colonne Series A (deck). */
+/** Le tableau « The capital you don't raise » ; `investor` ajoute la colonne Series A (deck). */
 export function FounderTable({ investor = false }: { investor?: boolean }) {
   const [ref, seen] = useInView<HTMLDivElement>();
   const top = Math.max(...FM.rows.map((r) => r.founders_profund));
@@ -194,7 +244,8 @@ export function TheMath() {
       <div className="pv-wrap">
         <div className="pv-head">
           <p className="pv-kick">The math</p>
-          <h2 className="pv-h2">Same company. Same exit. Twice the payout.</h2>
+          <h2 className="pv-h2">The capital you don’t raise is the company you keep.</h2>
+          <p className="sub">Same exit. The usual path sells you {eur(FM.vc_equity, 'tile')} of equity after your Series A. An AI-native team on our terms needs {eur(FM.loans, 'tile')} of debt.</p>
         </div>
         <StakeChart />
         <h3 className="pv-h3 pv-math-t">What you take home</h3>

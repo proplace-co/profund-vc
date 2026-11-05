@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { SiteHeader } from './Thesis';
 
-// La coquille des pages fondateurs et LP (/terms, /calculator, /lp) :
+// La coquille des pages fondateurs (/terms, /calculator) ; /lp a son propre héros :
 // même barre du haut, un héros court, puis le contenu.
 const LINKS = [
   { href: '/#rules', label: 'The rules' },
@@ -10,9 +10,9 @@ const LINKS = [
   { href: '/terms', label: 'The pact' },
 ];
 
-export function SubHeader({ action }: { action?: ReactNode }) {
+export function SubHeader({ action, links = LINKS }: { action?: ReactNode; links?: { href: string; label: string }[] }) {
   return (
-    <SiteHeader links={LINKS}>
+    <SiteHeader links={links}>
       {action ?? <Link to="/calculator" className="pv-btn">Run your numbers</Link>}
     </SiteHeader>
   );

@@ -9,10 +9,11 @@ export function founderPaths(input: {
   rounds: { amount: number; post: number }[];
   loans: number;
   loanMultiple: number;
+  extra?: { amount: number; post: number }[];
   exit: number;
 }): {
   vc: { founders: number; stakeAtExit: number; stakes: number[]; equityRaised: number };
-  profund: { founders: number; stakeAtExit: number; debt: number };
+  profund: { founders: number; stakeAtExit: number; debt: number; equityRaised: number };
   payouts: { vc: Record<string, number>; profund: Record<string, number> };
 };
 

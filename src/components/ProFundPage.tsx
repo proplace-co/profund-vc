@@ -140,7 +140,7 @@ function FounderMathSlide() {
   const rows = FM.rows;
   const list = (k: 'founders_vc' | 'founders_profund') => rows.map((r) => eur(r[k], 'tile')).join(', ');
   return (
-    <Slide id="math" n={5} kick="Founder math" tint title="Same company. Same exit. Twice the payout.">
+    <Slide id="math" n={5} kick="Founder math" tint title="The capital you don’t raise is the company you keep.">
       <p className="pv-lead pv-slide-lead">
         Exits at {rows.map((r) => eur(r.exit, 'val')).join(', ')}: founders take home {list('founders_vc')} on the VC path,
         against {list('founders_profund')} with ProFund, for a company that needs {eur(FM.loans, 'tile')} of loans
