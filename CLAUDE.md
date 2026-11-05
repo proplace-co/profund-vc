@@ -17,7 +17,8 @@ src/
     Founders.tsx        LA PROPOSITION FONDATEURS v3 (the rules, the math et la part animée, how we
                         back + lien vers le pacte, every stage, Founding Partner, final call) — rendus par /, /calculator, /pitch
     HomepageLite.tsx    route /
-    TermsPage.tsx       route /terms — le pacte des fondateurs, 10 clauses (tableau CLAUSES)
+    Pact.tsx            LE PACTE DES FONDATEURS, 10 clauses (CLAUSES) — rendu par l'accueil ET /terms
+    TermsPage.tsx       route /terms — le pacte (texte dans Pact.tsx)
     CalculatorPage.tsx  route /calculator — « Run your numbers »
     LpPage.tsx          route /lp — l'accès LP (mention de pré-commercialisation)
     SubPage.tsx         coquille de /terms, /calculator, /lp
@@ -69,7 +70,8 @@ proof of work) vit dans `Thesis.tsx`, rendu à l'identique par l'accueil et /pit
 la fiche PDF en porte une copie (`factsheet.py`, chute en variante LP « …we lend and
 we buy ») : les changer ensemble. **La proposition fondateurs v3** (Antoine, 05/11 :
 « One round. Then never diluted again. ») vit dans `Founders.tsx` et `TermsPage.tsx`
-(le pacte, 10 clauses : texte contractuel public, ne pas le reformuler) ; la fiche
+(le pacte, 10 clauses, dans `Pact.tsx` : texte contractuel public, ne pas le reformuler ;
+v3.11 : clauses 1 et 2, l'equity complémentaire dite en clair, « Every option stays open ») ; la fiche
 p. 1 et 2 en porte une copie. Deux écarts volontaires à la copie du 05/11 :
 « Every cancellation lifts your stake » (et non « buyback » : quand ProFund rachète
 un angel, la part du fondateur ne bouge pas) et « A partner from venture debt will run
@@ -98,13 +100,15 @@ il est hors sitemap et en `noindex` (comme /dealflow, `noindex: true` dans ROUTE
 
 **L'accueil est pour les fondateurs d'exception, et pour eux seuls** (Antoine, 05/11,
 v3.9-v3.10 ; comme Sequoia ou Index). Pas de barre du haut : le logo blanc ouvre le
-héros. Il s'ouvre sur les règles (`TheRules hero` : « Control was
+héros, sans chapeau. Il s'ouvre sur les règles (`TheRules hero` : « Control was
 always yours. », les anciennes règles du VC barrées à l'écran), puis le capital
 (`CapitalStack` : « Funded like the leaders. Diluted like no one. », revenus, un tour, la
 ligne de prêt avec nos prêteurs partenaires, puis l'equity seulement si le fondateur la
 demande), les chiffres (« The capital you don't raise is the company you keep. » : le
 tableau compare 135 M€ d'equity à 25 M€ de dette, l'hypothèse est dite en clair),
-Founding Partner et un seul bouton, « Run your numbers ». L'exigence ne se dit pas, elle se
+le pacte (v3.11, les 10 clauses en grille éditoriale, sans chapeau ; sans note sous le
+tableau), Founding Partner (sans Dreamzer ni Fadparis sur le site) et un seul bouton,
+« Run your numbers ». L'exigence ne se dit pas, elle se
 lit. **La thèse et la vision sont sur /lp, écrites pour les LPs** (v3.10, rien qui s'adresse
 aux fondateurs) : le héros « Where pure vision directs recursive AI. » et la capture du
 deal flow, le manifeste (chute LP), « The shift » (pourquoi le marché impose ce modèle),
@@ -258,8 +262,8 @@ partout, accueil à 10 sections, page 4 de la fiche allégée, SPV hors de l'acc
 `v3.7` (plus de Reserve ni de /sell, licorne à 1 Md€ dans le tableau fondateurs, scénario
 grosse licorne à 2 Md€) `v3.8` (accueil 100 % fondateurs) et `v3.9` (les règles en ouverture, le capital
 optimisé, le tableau recadré, la thèse et la capture du deal flow sur /lp, l'equity
-complémentaire à préférence 1×) et `v3.10` (accueil sans barre du haut, /lp réécrite pour
-les LPs). Pour revenir à une version : partir du tag
+complémentaire à préférence 1×) `v3.10` (accueil sans barre du haut, /lp réécrite pour
+les LPs) et `v3.11` (le pacte sur l'accueil, l'equity complémentaire dans les clauses 1-2). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`

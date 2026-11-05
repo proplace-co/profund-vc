@@ -54,7 +54,7 @@ export function TheRules({ hero = false }: { hero?: boolean }) {
     <section className={`pv-sec night pv-rules-sec${hero ? ' pv-rules-hero' : ''}`} id="rules">
       <div ref={ref} className={`pv-wrap pv-rules${seen ? ' in' : ''}`}>
         {hero && <img className="pv-rules-logo" src="/logo.png" alt="ProFund" width={150} height={40} />}
-        <p className="pv-kick">{hero ? 'Venture capital · Pre-seed to growth · Europe' : 'The rules'}</p>
+        {!hero && <p className="pv-kick">The rules</p>}
         <H className="pv-rules-h">Control was always yours.</H>
         {hero && (
           <div className="pv-ctas">
@@ -74,7 +74,9 @@ export function TheRules({ hero = false }: { hero?: boolean }) {
         <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Now you get the capital without giving the company away.</p>
         <div className="pv-rules-foot">
           <span>Written into the pact. The same for every founder. Raise elsewhere whenever you want: we follow or lead.</span>
-          <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>
+          {hero
+            ? <a href="#pact" className="pv-link">Read the 10 clauses <Icon name="arrow" /></a>
+            : <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>}
         </div>
       </div>
     </section>
@@ -94,16 +96,15 @@ export function CapitalStack() {
       d: `From ${eur(L.seed.ticket_min)} at pre-seed to ${eur(F.company_cap, 'tile')} at growth. Then never again.` },
     { icon: 'banknote', tag: 'No dilution', t: 'The loan line',
       d: 'Reserved from day one, with our fund and partner lenders. Hiring, go-to-market, working capital, acquisitions. Drawn in tranches, repaid from growth.' },
-    { icon: 'shield', tag: 'Your call', t: 'Equity, if you ask',
-      d: 'If lenders cannot take it all, we lead the extra equity ourselves, on the pact terms, with SPVs and co-investors alongside the fund.' },
+    { icon: 'shield', tag: 'Your call', t: 'Equity, if you need it',
+      d: 'Need more than debt can carry? We go and get the equity: led by us, on the same terms, with SPVs and co-investors alongside the fund. Every option stays open.' },
   ];
   return (
     <section className="pv-sec" id="capital">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">Your capital</p>
           <h2 className="pv-h2">Funded like the leaders. Diluted like no one.</h2>
-          <p className="sub">Every euro comes from the cheapest source first. Equity comes last, and only if you ask.</p>
+          <p className="sub">Every euro comes from the cheapest source first. Equity comes last, on the same terms, and only if you ask.</p>
         </div>
         <ol ref={ref} className={`pv-stack${seen ? ' in' : ''}`}>
           {steps.map((x, i) => (
@@ -246,14 +247,12 @@ export function TheMath() {
     <section className="pv-sec tint" id="math">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">The math</p>
           <h2 className="pv-h2">The capital you don’t raise is the company you keep.</h2>
           <p className="sub">Same exit. The usual path sells you {eur(FM.vc_equity, 'tile')} of equity after your Series A. An AI-native team on our terms needs {eur(FM.loans, 'tile')} of debt.</p>
         </div>
         <StakeChart />
         <h3 className="pv-h3 pv-math-t">What you take home</h3>
         <FounderTable />
-        <p className="pv-fine">{founderNote()}</p>
         <div className="pv-ctas">
           <Link to="/calculator" className="pv-btn">Run your numbers <Icon name="arrow" /></Link>
         </div>
@@ -320,8 +319,7 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
           <h2 className="pv-h2">Alexandre Busson</h2>
           <p className="pv-team-txt">
             M&amp;A Director at Leboncoin, LBO at Ardian (ex-AXA PE),
-            Senior Associate at Partech Ventures, Google. Founder of Dreamzer Games, owner and CEO of
-            Fadparis.com. Three exits at 10×, 20× and 19× before the fund.
+            Senior Associate at Partech Ventures, Google. Three exits at 10×, 20× and 19× before the fund.
           </p>
           {lp && (
             <ul className="pv-checks sm">

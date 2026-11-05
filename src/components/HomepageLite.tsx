@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { CapitalStack, FinalCall, TheMath, TheRules, TheTeam } from './Founders';
+import { ThePact } from './Pact';
 
 const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
 
@@ -48,6 +49,7 @@ export default function HomepageLite() {
     <div className="pfh">
       <TheRules hero />
       <CapitalStack />
+      <ThePact />
       <TheMath />
       <TheTeam tint={false} />
       <FinalCall />

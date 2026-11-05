@@ -520,6 +520,23 @@
   .pv-cards.c4, .pv-cards.c3 { grid-template-columns: minmax(0, 1fr); }
   .pv-rules-logo { height: 28px; margin-bottom: 26px; }
 }
+/* v3.11 : le pacte en grille éditoriale (accueil, /terms) ; les notes sur toute la largeur */
+.pv-fine { max-width: none; }
+.pv-pact-h { font-size: clamp(44px, 6vw, 88px); line-height: .98; letter-spacing: -.045em; }
+.pv-pact-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(32px, 5vw, 72px);
+  margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.pv-pact-list li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 18px; padding: 26px 0;
+  border-top: 1px solid var(--line-2); opacity: 0; transform: translateY(10px);
+  transition: opacity .55s var(--d, 0s), transform .55s var(--d, 0s); }
+.pv-pact-list.in li { opacity: 1; transform: none; }
+.pv-pact-list .n { font-size: 44px; font-weight: 750; line-height: .9; letter-spacing: -.04em;
+  background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pv-pact-list h3 { margin: 2px 0 8px; font-size: clamp(18px, 1.5vw, 21px); font-weight: 750; letter-spacing: -.02em; color: var(--ink); }
+.pv-pact-list p { margin: 0; font-size: 15.5px; line-height: 1.65; color: var(--muted); }
+.pv-pact-conf { margin-top: 28px; }
+@media (prefers-reduced-motion: reduce) { .pv-pact-list li { transition: none; } }
+@media (max-width: 900px) { .pv-pact-list { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) { .pv-pact-list li { grid-template-columns: 52px minmax(0, 1fr); gap: 12px; } .pv-pact-list .n { font-size: 34px; } }
 .pv-pact-row { flex-wrap: wrap; margin-top: 20px; }
 .pv-pact-row p { flex: 1 1 280px; }
 .pv-pact-fair { display: flex; align-items: center; gap: 14px; margin: 18px 0 20px; font-size: 16.5px; line-height: 1.55; color: var(--ink-2); }
