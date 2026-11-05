@@ -28,6 +28,10 @@ loi 04 chiffree (la sortie a laquelle la meilleure societe rend tout le fonds).
 v3.5 (05/11, Antoine) : la clause 9 (liquidite partielle en annee 6) reste dans le
 pacte mais sort du cas cible : c'est une option de la societe, pas une hypothese du
 fonds. Elle devient un test de resistance (CLAUSE9_LINES).
+v3.6 (05/11, Antoine) : S-01, la vitrine, suit le chemin ProFund pur (aucune
+dilution) ; S-02 devient la societe qui leve ailleurs, que l'on suit en actions
+nouvelles et qui sort a 250 M EUR (V-02 reste l'autre exemple) ; un seul
+vocabulaire, Seed / Venture / Growth ; cinq tests de resistance.
 scripts/fund_xlsx.py regenere le classeur en formules vivantes.
 
 Conventions :
@@ -59,7 +63,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.5"
+VERSION = "v3.6"
 MODEL_DATE = "2026-11-05"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
@@ -135,7 +139,7 @@ CASE_IDS = tuple(c.id for c in CASES)
 
 LAYERS = ("seed", "venture", "growth")
 # Noms des etages dans le classeur (onglets Lines, Construction) : la fiche le dit.
-MODEL_NAMES = {"seed": "Ignite", "venture": "Relute", "growth": "Compound"}
+MODEL_NAMES = {"seed": "Seed", "venture": "Venture", "growth": "Growth"}
 # Seed en haltere : 10 leads de conviction portent la propriete, 40 tickets radar
 # de 150 K EUR multiplient les tirages (v3.4, comme en v2). En v3, un ticket radar est
 # aussi une option sur un rachat : quand la societe decolle, on rachete ses angels
@@ -189,15 +193,18 @@ class Line:
 
 L = Line
 LINES = (
-    # Seed (Ignite) : 30 societes, pre-seed / seed, entrees annees 1-3.
-    # S-01 a S-10 : leads de conviction ; S-11 a S-30 : tickets radar.
-    L("S-01", "seed", "S-01", 1, "Breakout, raised elsewhere once, we followed", "green", "new",
+    # Seed : 50 societes, pre-seed / seed, entrees annees 1-3.
+    # S-01 a S-10 : leads de conviction ; S-11 a S-50 : tickets radar.
+    # S-01, la vitrine : le chemin ProFund pur, un tour, des rachats, des annulations, un pret.
+    L("S-01", "seed", "S-01", 1, "Breakout", "green", "new",
       1_500_000, 7_500_000, 1, 9, buyback=1_500_000, buyback_year=3, buyback_value=40 * M,
-      discount=0.10, cancel=0.08, dilution=0.15, follow=1 * M, follow_year=4, follow_post=80 * M,
+      discount=0.10, cancel=0.08,
       loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=300 * M, track="lead"),
-    L("S-02", "seed", "S-02", 1, "Breakout", "green", "new",
+    # S-02 : le fondateur leve ailleurs (fair both ways), ProFund suit en actions nouvelles.
+    L("S-02", "seed", "S-02", 1, "Breakout, raised elsewhere once, we followed", "green", "new",
       1 * M, 6 * M, 1, 8, buyback=1 * M, buyback_year=3, buyback_value=25 * M, discount=0.10,
-      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=150 * M, track="lead"),
+      dilution=0.15, follow=1 * M, follow_year=4, follow_post=60 * M,
+      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=250 * M, track="lead"),
     L("S-03", "seed", "S-03", 1, "Strategic exit, angels bought back", "blue", "new",
       1 * M, 7 * M, 2, 7, buyback=500_000, buyback_year=4, buyback_value=20 * M, discount=0.10,
       loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=80 * M,
@@ -223,7 +230,7 @@ LINES = (
       1_200_000, 8 * M, 3, 7, recovery=0.5, track="radar"),
     L("S-23", "seed", "S-23", 28, "Losses (×28)", "red", "new",
       4_200_000, 8 * M, 3, 5, recovery=0.0, track="radar"),
-    # Venture (Relute) : 7 societes, premiers cheques de 2 a 4 M EUR en seed+ ou
+    # Venture : 7 societes, premiers cheques de 2 a 4 M EUR en seed+ ou
     # Serie A, entrees annees 2-4 (v3.4 : 3 M EUR de moins qu'en v3.3 sur les lignes qui
     # vivent, passes au radar ; la perte V-07 garde son montant).
     L("V-01", "venture", "V-01", 1, "Breakout", "green", "new",
@@ -246,7 +253,7 @@ LINES = (
       recovery=0.5),
     L("V-07", "venture", "V-07", 1, "Loss", "red", "new",
       2_500_000, 25 * M, 4, 6, recovery=0.0),
-    # Growth (Compound) : 5 a 7 M EUR par position. Blocs rachetes a des fonds en fin
+    # Growth : 5 a 7 M EUR par position. Blocs rachetes a des fonds en fin
     # de vie (30 % de decote), tours de croissance en actions nouvelles, et un bloc
     # dans notre propre breakout ; entrees annees 3-5, sorties 2 a 4 ans plus tard.
     L("G-01", "growth", "G-01", 1, "Strategic exit, block bought from an end-of-life fund", "blue",
@@ -321,9 +328,9 @@ REFERENCE_V2 = {"commit": "2f3b590", "net_tvpi": 2.7, "capped_exit": 300 * M, "c
 # Valeurs publiees de la v3.4 (fiche, /pitch) que le modele doit retrouver : un
 # changement d'hypothese qui les deplace doit etre voulu, et les textes relus.
 PUBLISHED = {
-    "target": {"net_tvpi": 2.5, "net_irr": 0.25, "dpi_year7": 1.0},
-    "base": {"net_tvpi": 1.6, "net_irr": 0.13},
-    "stress": {"net_tvpi": 1.3, "net_irr": 0.06},
+    "target": {"net_tvpi": 2.7, "net_irr": 0.27, "dpi_year7": 1.0},
+    "base": {"net_tvpi": 1.8, "net_irr": 0.15},
+    "stress": {"net_tvpi": 1.4, "net_irr": 0.08},
 }
 
 
@@ -627,9 +634,7 @@ def _unicorn(lines):
 def stress_tests() -> list[dict]:
     target = CASES[0]
     rows = [
-        ("as_published", "As published", LINES, target),
         ("exits_plus_1", "Every exit one year later", _shift(LINES, 1), target),
-        ("exits_plus_2", "Every exit two years later, by year 10 at the latest", _shift(LINES, 2), target),
         ("best_zombie", "Best company (S-01, both lines) becomes a zombie", _zombie_best(LINES), target),
         ("loan_losses", "30% more losses on every loan", LINES,
          replace(target, loan_repaid=ratio(target.loan_repaid - 0.30, 2))),

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
-import { EveryStage, HowWeBack, ReserveSection, TheMath, ThePact, TheTeam } from './Founders';
+import { EveryStage, HowWeBack, ReserveSection, TheMath, TheTeam } from './Founders';
 import { eur, fund } from '../lib/fund';
 import { savedAccess } from '../lib/access';
 
@@ -23,7 +23,7 @@ const FUND_SIZE = eur(fund.fund.commitments, 'tile');
 const LINKS = [
   { href: '#how', label: 'How we back' },
   { href: '#math', label: 'The math' },
-  { href: '#pact', label: 'The pact' },
+  { href: '/terms', label: 'The pact' },
   { href: '#edge', label: 'Our edge' },
   { href: '#team', label: 'Team' },
 ];
@@ -108,7 +108,6 @@ export default function HomepageLite() {
       <HowWeBack />
       <TheMath />
       <EveryStage />
-      <ThePact />
       <OurEdge onFollow={follow} />
       <ProofOfWork />
       <TheTeam />

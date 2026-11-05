@@ -414,6 +414,8 @@
 .pv-tick svg { width: 16px; height: 16px; stroke-width: 2.4; }
 .pv-tick.soft { background: var(--blue-soft); color: var(--blue-dk); }
 .pv-tick.soft svg { stroke-width: 2; }
+.pv-pact-row { flex-wrap: wrap; margin-top: 20px; }
+.pv-pact-row p { flex: 1 1 280px; }
 .pv-pact-fair { display: flex; align-items: center; gap: 14px; margin: 18px 0 20px; font-size: 16.5px; line-height: 1.55; color: var(--ink-2); }
 
 /* The team */

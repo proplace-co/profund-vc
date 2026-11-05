@@ -38,6 +38,7 @@ export function HowWeBack() {
         <div className="pv-head">
           <p className="pv-kick">How we back them</p>
           <h2 className="pv-h2">Built for founders who own what they build.</h2>
+          <p className="sub">Same terms for every founder. In public.</p>
         </div>
         <ol className="pv-blocks">
           {BLOCKS.map((b) => (
@@ -48,6 +49,12 @@ export function HowWeBack() {
             </li>
           ))}
         </ol>
+        {/* 05/11 (v3.6) : « The pact » fusionnée ici, la promesse ne se répète plus */}
+        <div className="pv-callout pv-pact-row">
+          <span className="pv-tick soft"><Icon name="scale" /></span>
+          <p>If you raise elsewhere, we can follow or lead the round. Fair both ways.</p>
+          <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>
+        </div>
       </div>
     </section>
   );
@@ -108,15 +115,15 @@ export function TheMath() {
   );
 }
 
-// Les tickets sont ceux des bornes du modèle (fund_model.BOUNDS) ; au-delà du
-// plafond par société, les SPV de co-investissement.
+// Les tickets sont ceux des bornes du modèle (fund_model.BOUNDS). Les SPV (au-delà
+// du plafond par société) sont hors du fonds : documents LP seulement.
 const STAGES = [
   { layer: 'Seed', stage: 'Pre-seed, seed', ticket: eurRange(L.seed.ticket_min, L.seed.ticket_max),
     what: 'Your first and only equity round, as lead or radar ticket' },
   { layer: 'Venture', stage: 'Seed+, Series A', ticket: eurRange(L.venture.ticket_min, L.venture.ticket_max),
     what: 'First cheque at the inflection, or a buyback of your angels and leavers' },
   { layer: 'Growth', stage: 'Series B and beyond',
-    ticket: `${eurRange(L.growth.ticket_min, F.company_cap)}, ${eur(F.company_max_with_spv, 'tile')} with SPVs`,
+    ticket: eurRange(L.growth.ticket_min, F.company_cap),
     what: 'Fresh growth rounds, buybacks of early funds, growth loans, acquisition financing' },
 ];
 
@@ -141,34 +148,6 @@ export function EveryStage() {
               </dl>
             </div>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const PACT = [
-  'One equity round, then no new shares.',
-  'A reserved loan line.',
-  'Our shares vote with you.',
-  'No board seat, no veto.',
-];
-
-export function ThePact() {
-  return (
-    <section className="pv-sec tint" id="pact">
-      <div className="pv-wrap pv-pact">
-        <div className="pv-head">
-          <p className="pv-kick">The pact</p>
-          <h2 className="pv-h2">Same terms for every founder. In public.</h2>
-        </div>
-        <div className="pv-pact-card">
-          <ul className="pv-checks">
-            {PACT.map((p) => <li key={p}><span className="pv-tick"><Icon name="check" /></span>{p}</li>)}
-          </ul>
-          <p className="pv-pact-fair"><span className="pv-tick soft"><Icon name="scale" /></span>
-            If you raise elsewhere, we can follow or lead the round. Fair both ways.</p>
-          <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>
         </div>
       </div>
     </section>

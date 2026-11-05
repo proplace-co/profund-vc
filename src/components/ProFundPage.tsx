@@ -386,7 +386,6 @@ function Construction() {
             </div>
           ))}
         </div>
-        <p className="pf-fine">In the fund model, the three layers are named {LAYER_IDS.map((id) => L[id].model_name).join(', ').replace(/, ([^,]*)$/, ' and $1')}.</p>
       </div>
     </div>
   );
@@ -484,7 +483,6 @@ function Performance() {
     ['Net DPI by year 7', (id) => mult(C[id].dpi_year7)],
     ['Loans: repaid ÷ lent', (id) => mult(C[id].loans_multiple, 2)],
     ['Largest exit', (id) => eur(C[id].largest_exit, 'val')],
-    ...LAYER_IDS.map((l) => [`Gross MOIC · ${LAYER_NAME[l]}`, (id: 'target' | 'base' | 'stress') => mult(L[l].moic[id])] as [string, (id: 'target' | 'base' | 'stress') => string]),
   ];
   return (
     <div className="pf-section" id="performance">
@@ -501,10 +499,10 @@ function Performance() {
             </tbody>
           </table></div>
           <div className="table-scroll" style={{ marginTop: 0 }}><table className="perf-table">
-            <thead><tr><th>Stress test, Target case</th><th className="hl">Net TVPI</th><th>Net IRR</th></tr></thead>
+            <thead><tr><th>Stress test, Target case</th><th>Net TVPI</th><th>Net IRR</th></tr></thead>
             <tbody>
-              {fund.stress_tests.map((s, i) => (
-                <tr key={s.id}><td>{s.label}</td><td className={i === 0 ? 'hl' : undefined}>{mult(s.net_tvpi)}</td><td>{pct(s.net_irr)}</td></tr>
+              {fund.stress_tests.map((s) => (
+                <tr key={s.id}><td>{s.label}</td><td>{mult(s.net_tvpi)}</td><td>{pct(s.net_irr)}</td></tr>
               ))}
             </tbody>
           </table></div>
@@ -514,7 +512,7 @@ function Performance() {
           and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. Investments over {F.investment_period_years} years, exits from year {EXIT_YEARS[0]} to year {EXIT_YEARS[1]}.
           Base: every exit value ×{pct(C.base.exit_mult)}. Stress: every exit value ×{pct(C.stress.exit_mult)}. Loans priced at {pct(fund.loan_rate)} a year on healthy companies ({mult(fund.loan_multiples.performing_min, 2)} to {mult(fund.loan_multiples.performing_max, 2)} by tenor, no warrants), drawn in tranches;
           zombies repay {mult(fund.loan_multiples.zombie)}, plus {loanLoss('target')}, {loanLoss('base')} and {loanLoss('stress')} further losses on every loan by case. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
-          and angels, {pct(STRUCT_DISC)} below from structural sellers (end-of-life funds). When a founder raises elsewhere, ProFund follows in new shares (S-01, V-02). G-02 and G-04 are fresh growth rounds in new shares;
+          and angels, {pct(STRUCT_DISC)} below from structural sellers (end-of-life funds). When a founder raises elsewhere, ProFund follows in new shares ({ALL_LINES.filter((l) => l.follow).map((l) => l.id).join(', ')}). G-02 and G-04 are fresh growth rounds in new shares;
           every first cheque carries a 1× non-participating preference. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
           topped up to {eur(F.company_max_with_spv, 'tile')} with SPVs, outside the fund. Net TVPI on paid-in capital. Loan recycling not included. Targets are model outputs, not a forecast or a guarantee.
         </p>
