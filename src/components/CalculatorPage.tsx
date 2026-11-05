@@ -72,15 +72,6 @@ export default function CalculatorPage() {
     set('rounds', s.rounds.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
   }
 
-  const summary = [
-    'My numbers (profund.vc/calculator):',
-    `Founders' stake today: ${pct(founders, 1)}, investors ${pct(investors, 1)}, raised so far ${money(n(s.raised) * 1e6)}`,
-    `Planned rounds: ${s.rounds.map((x, i) => `${ROUND_NAMES[i]} ${money(n(x.amount) * 1e6)} at ${money(n(x.post) * 1e6)} post`).join(', ') || 'none'}`,
-    `Expected exit: ${money(n(s.exit) * 1e6)}. Loans instead: ${money(n(s.loans) * 1e6)}`,
-    `Take-home, VC path: ${money(vc)}; ProFund path: ${money(pf)}`,
-    '',
-  ].join('\n');
-
   return (
     <SubPage kick="Run your numbers" title="Run your numbers."
       intro="Your stake today, the rounds you plan, your expected exit. What you take home on each path, and your stake after every round.">
@@ -154,8 +145,6 @@ export default function CalculatorPage() {
                   <tr className="sub"><td>Equity raised after today</td><td>{money(r.vc.equityRaised)}</td><td>€0, {money(n(s.loans) * 1e6)} of loans</td></tr>
                 </tbody>
               </table>
-              <a href={`mailto:alexandre@profund.vc?subject=${encodeURIComponent('My numbers')}&body=${encodeURIComponent(summary)}`}
-                 className="pv-btn line pv-res-go">Send these numbers to the partner <Icon name="arrow" /></a>
             </div>
             <p className="pv-fine">
               VC path: 1× non-participating preferences, pari passu; each investor converts when it pays more.
