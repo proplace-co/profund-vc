@@ -9,23 +9,33 @@ sur le domaine `profund.vc`. **Pas de backend, aucun appel réseau côté app**
 ```
 src/
   main.tsx              montage React + ErrorBoundary
-  App.tsx               les 4 routes + la route catch-all
+  App.tsx               les 8 routes + la route catch-all
   index.css             TOUT le style du site (CSS maison : jetons, système pv-, anciennes classes)
   components/
     Thesis.tsx          LE TEXTE DE LA THÈSE (manifeste, 4 lois, 2 moteurs, proof of work),
                         barre du haut, visuel du héros — rendus par / ET /pitch
+    Founders.tsx        LA PROPOSITION FONDATEURS v3 (how we back, the math, every stage,
+                        the pact, team, Reserve your round) — rendus par /, /calculator, /pitch
     HomepageLite.tsx    route /
-    ProFundPage.tsx     route /pitch — un composant local par section
+    TermsPage.tsx       route /terms — le pacte des fondateurs, 10 clauses (tableau CLAUSES)
+    CalculatorPage.tsx  route /calculator — « Run your numbers »
+    SellPage.tsx        route /sell — les vendeurs de titres (angels, leavers, fonds early)
+    LpPage.tsx          route /lp — l'accès LP (mention de pré-commercialisation)
+    SubPage.tsx         coquille de /terms, /calculator, /sell, /lp
+    LeadForm.tsx        formulaires (réserver un tour, vendre, accès LP) → email préparé
+    ProFundPage.tsx     route /pitch — le deck LP, une section par slide + annexe
     LegalPage.tsx       route /legal — le texte vit dans le tableau CLAUSES
     PrivacyPage.tsx     route /privacy — le texte vit dans le tableau SECTIONS
-    Footer.tsx          pied de page commun aux 4 routes
+    Footer.tsx          pied de page commun (sauf /dealflow)
     CookieBanner.tsx    bandeau, monté globalement dans App.tsx
     ErrorBoundary.tsx   filet anti-page-blanche
-  lib/fund.ts           types de fund.json + formateurs (€, ×, %) de /pitch
+  lib/fund.ts           types de fund.json + formateurs (€, ×, %)
+  lib/founderMath.js    le calcul fondateurs (VC vs ProFund), en JS pur : prerender.mjs l'importe
   lib/links.ts          URL (avec ?v=) de la fiche PDF et du modèle Excel
   data/fund.json        CHIFFRES DU FONDS — généré, ne pas éditer à la main
+  data/pipeline.json    chiffres du pipeline signé (slide 9 de /pitch, cachée tant que null)
 scripts/fund_model.py   modèle du fonds : la seule source des chiffres → fund.json
-scripts/factsheet.py    fiche PDF 3 pages, lit fund.json
+scripts/factsheet.py    fiche PDF 4 pages (v3), lit fund.json
 scripts/sheet_engine.py moteur de dessin de la fiche (repris de Maximum fiches_v5.py)
 scripts/assets/fonts/   Archivo (OFL), embarquée dans la fiche
 scripts/fund_xlsx.py    modèle Excel vivant (formules + valeurs en cache) → public/
@@ -54,10 +64,17 @@ qui dépend à la fois de `--border` dans le `:root` du CSS **et** de
 **Le contenu textuel est dans les composants**, en dur. Les pages Legal et
 Privacy sont l'exception : leur texte est dans un tableau en haut du fichier
 (`CLAUSES`, `SECTIONS`), c'est là qu'il faut le modifier. **Le texte de la
-thèse** (Antoine, 31/10 : « Where pure vision directs recursive AI. », manifeste, quatre
-lois, deux moteurs, proof of work) vit dans `Thesis.tsx`, rendu à l'identique
-par l'accueil et /pitch ; la fiche PDF en porte une copie (`factsheet.py`) :
-les changer ensemble. **Ton de la copie (Antoine, 30/10)** : pas de tiret long
+thèse** (Antoine, 31/10 : « Where pure vision directs recursive AI. », manifeste et
+sa chute v3 « Capital is no longer scarce. Ownership is. », quatre lois, deux moteurs,
+proof of work) vit dans `Thesis.tsx`, rendu à l'identique par l'accueil et /pitch ;
+la fiche PDF en porte une copie (`factsheet.py`, chute en variante LP « …we lend and
+we buy ») : les changer ensemble. **La proposition fondateurs v3** (Antoine, 05/11 :
+« One round. Then never diluted again. ») vit dans `Founders.tsx` et `TermsPage.tsx`
+(le pacte, 10 clauses : texte contractuel public, ne pas le reformuler) ; la fiche
+p. 1 et 2 en porte une copie. Deux écarts volontaires à la copie du 05/11 :
+« Every cancellation lifts your stake » (et non « buyback » : quand ProFund rachète
+un angel, la part du fondateur ne bouge pas) et « A partner from venture debt will run
+the loan book (to be recruited) » (le poste n'est pas pourvu). **Ton de la copie (Antoine, 30/10)** : pas de tiret long
 « — » dans les textes visibles (accueil, /pitch, fiche, meta ; virgule, deux-points
 ou parenthèses à la place ; cellules vides des tableaux : « – »), et titres en
 casse de phrase, pas en Title Case (« Self-improving systems »). /legal et
@@ -77,7 +94,14 @@ cohabitent : le système commun `pv-` (barre du haut, héros, sections de la
 thèse, bandeau, boutons — accueil ET /pitch) et l'ancien jeu (`.pf-wrap`,
 `.mod`, `.fund-table`…) des sections propres à /pitch, /legal et /privacy,
 redessiné avec les mêmes jetons. Dans les tableaux, la ligne de total porte la
-classe `sub`. /pitch n'est lié nulle part depuis l'accueil (deck, un à un).
+classe `sub`. /pitch n'est lié nulle part sur le site (deck LP, remis via /lp) ;
+il est hors sitemap et en `noindex` (comme /dealflow, `noindex: true` dans ROUTES).
+
+**Les formulaires fondateurs et LP n'ont PAS de backend.** « Reserve your round »
+(accueil, /calculator), /sell et /lp passent par `LeadForm.tsx`, qui ouvre un email
+pré-rempli vers alexandre@profund.vc (mailto). Le jour où une route existe côté proxy
+(`modal_proxy/proxy.py`, monorepo), seul `submit()` change. Le calculateur joint ses
+chiffres à la demande ; il ne les stocke nulle part.
 
 **Le popup d'abonnement appelle un vrai backend.** `DealFlowModal.tsx` POSTe
 `https://alexandre-79537--proplace-chat-proxy-fastapi-app.modal.run/profund/subscribe`,
@@ -124,25 +148,37 @@ L'intégration LP conserve la classe de mise en page `pp-desk` du cockpit source
 titre, pastilles avec le bouton « + » à droite, puis période/recherche/filtres.
 Le panneau « + » reste flottant et sa largeur est bornée dans la vue LP.
 
-**UN SEUL MONTANT SUR L'ACCUEIL** (décision d'Antoine, 30/08, assouplie par
-Alexandre le 29/10) : la taille du fonds, lue dans `fund.json` — dans la phrase
-du héros et, depuis le texte d'Antoine du 30/10, dans la loi 04 (« return our
-entire €100M fund »). La construction, les tickets et les rendements cibles vivent
-**uniquement** dans la fiche PDF, le modèle Excel et /pitch. L'accueil
-parle du passé, de ce qui est en cours, et du deal flow. `/pitch` garde ses
-chiffres : c'est le deck, pas la vitrine. La règle couvre aussi le shell
-`index.html` (meta description et `<noscript>`), servi sur TOUTES les routes et
-sur `404.html` : `prerender.mjs` fait échouer le build s'il y trouve un montant.
-Seule exception : les fourchettes de souscription des LPs de `DealFlowModal.tsx`
-(contrat avec `_PROFUND_TICKETS` du proxy).
+**PAS DE FRAIS, DE CARRY NI DE RENDEMENT CIBLE EN ACCÈS LIBRE** (Antoine, 05/11,
+remplace la règle « un seul montant » du 30/08) : l'accueil et les pages fondateurs
+(/terms, /calculator, /sell, /lp) parlent aux fondateurs. Montants permis, tous lus
+dans `fund.json` : la taille du fonds (héros, loi 04), les tickets des étages (Every
+stage) et le tableau fondateurs, illustratif (`founder_math`). Frais, carry,
+construction détaillée et rendements cibles vivent **uniquement** derrière /lp :
+fiche PDF, modèle Excel, /pitch. La règle couvre aussi le shell `index.html` (meta
+description et `<noscript>`), servi sur TOUTES les routes et sur `404.html` :
+`prerender.mjs` fait échouer le build s'il y trouve un montant. Exception : les
+fourchettes de souscription des LPs de `DealFlowModal.tsx` (contrat avec
+`_PROFUND_TICKETS` du proxy). Le calculateur (`founderMath.js`) et le tableau publié
+doivent dire la même chose : `prerender.mjs` fait échouer le build sinon.
 
-**Les chiffres du fonds ont UNE source : `scripts/fund_model.py`** (v2, 28/10 :
-un fonds de 100 M€, trois étages Seed / Venture / Growth, SPV de co-investissement
-au-delà de 10 M€ par société). Le modèle porte les hypothèses, les lignes de
-simulation (S-, V-, G-), les frais, la cascade de distribution, le TRI, et
-vérifie ses invariants (total = engagements, tickets dans les bornes, plafond par
-société, arrondis…). Il écrit `src/data/fund.json`, que lisent `/pitch` (via
-`src/lib/fund.ts`), la fiche PDF et le titre de `/pitch` dans `prerender.mjs`.
+**Les chiffres du fonds ont UNE source : `scripts/fund_model.py`** (v3.3, 05/11 :
+un fonds de 100 M€, trois étages Seed / Venture / Growth, nommés Ignite / Relute /
+Compound dans le classeur ; UN tour en actions par société, puis des rachats de
+titres existants avec décote, des prêts (plafond EuVECA de 30 % des engagements) et
+des annulations ; suivi en actions nouvelles seulement si le fondateur lève ailleurs ;
+liquidité partielle des gagnants en année 6, clause 9 du pacte ; aucune sortie
+au-dessus de 300 M€ ; SPV de co-investissement au-delà de 10 M€ par société). Le
+modèle reproduit à l'euro près le classeur v3.3 livré le 05/11 (1 532 valeurs
+comparées). Il porte les hypothèses, les lignes de simulation (S-, V-, G-), les frais,
+la cascade de distribution, le TRI, les tests de résistance (`stress_tests` : les
+sorties décalées gardent l'échéancier des prêts), le tableau fondateurs
+(`founder_math`, vérifié contre la table publiée) et vérifie ses invariants (total =
+engagements, tickets dans les bornes, plafond par société, plafond des prêts, pas
+d'action nouvelle sans tour extérieur, détention de sortie ≥ entrée quand le fondateur
+grandit avec nous, valeurs publiées…). Il écrit `src/data/fund.json`, que lisent le
+site (via `src/lib/fund.ts`), la fiche PDF, le xlsx et le titre de `/pitch` dans
+`prerender.mjs`. La v2 (50 sociétés Seed, licornes) reste dans l'historique git
+(commit `2f3b590`) ; `reference_v2` cite son 1,3× à sorties plafonnées.
 Ne JAMAIS taper un montant, un multiple ou un TRI du fonds dans un composant
 ou dans la fiche : changer le modèle, puis
 
@@ -160,27 +196,29 @@ navigateurs reprennent les nouveaux fichiers.
 `factsheet.py` et `fund_xlsx.py` refusent aussi de tourner dans ce cas. Les frais
 du fonds du modèle sont une estimation en attendant le devis du gestionnaire EuVECA.
 
-**Le Seed est en haltère** (01/11, Alexandre) : 50 sociétés pour viser une licorne
-(≈ 1 % des sociétés seed en deviennent une, 2,5 % pour les meilleurs fonds), au même
-budget : 10 leads de conviction S-01..S-10 et 40 tickets radar de 100 à 150 K€ S-11..S-50
-(`SEED_TRACKS`, champ `track` des lignes, exporté dans `layers.seed.tracks`). Le modèle
-refuse un ticket hors de sa voie, une numérotation discontinue et une ligne de sortie
-groupée (`proceeds()` lit la part d'UNE société). La voie se lit dans la colonne Track :
-onglet Lines de l'Excel, page 3 de la fiche, tableau Seed de /pitch (seul tableau qui l'a ;
-classe `tracked`, marges resserrées pour tenir en 1200 px). Dans `fund_xlsx.py`, les
-formules de Lines prennent leurs lettres de colonne via `lc()`, jamais en dur. La page 3
-de la fiche n'a plus que 3,4 mm de marge : une ligne de plus en Seed se paie ailleurs.
+**Le Seed est en haltère** (01/11, Alexandre ; v3.3 du 05/11) : 30 sociétés, 10 leads
+de conviction S-01..S-10 et 20 tickets radar de 100 à 150 K€ S-11..S-30 (`SEED_TRACKS`,
+champ `track` des lignes, exporté dans `layers.seed.tracks`). La v3 n'a plus besoin d'une
+licorne, d'où 30 sociétés au lieu de 50. Le modèle refuse un ticket hors de sa voie, une
+numérotation discontinue et une ligne de sortie groupée (la part de sortie est celle
+d'UNE société). La voie se lit dans l'onglet Lines de l'Excel ; sur la fiche p. 4 et
+/pitch, un filet sépare leads et radar et la note de l'étage les nomme. Dans
+`fund_xlsx.py`, les formules de Lines prennent leurs lettres de colonne via `lc()`,
+jamais en dur. Les produits d'une ligne (fonds propres à 100 K près + prêt à 10 K près)
+ne tombent pas toujours sur la maille : c'est voulu (identique au classeur v3.3).
 
-**Le modèle Excel** (téléchargeable sur /pitch, « sur demande » dans la fiche)
+**Le modèle Excel** (téléchargeable sur /pitch, « sur demande » dans la fiche et sur /lp)
 est vivant : chaque sortie est une formule, écrite avec sa valeur en cache pour
 les aperçus qui ne recalculent pas. `fund_xlsx.py` le recalcule avec pycel et
 échoue si une formule ne retombe pas sur sa valeur et sur `fund.json` (onglet
 Checks). Dépendance : `xlsxwriter` (`pip install --user xlsxwriter`).
 
-**La fiche PDF fait 3 pages** (1 : vision, manifeste, lois, construction ;
-2 : moteurs, termes, GP, track record, proof of work, appel avec QR vers
-`profund.vc/#dealflow` qui ouvre le popup ; 3 : simulation ligne à ligne et
-performance). Elle embarque Archivo (`scripts/assets/fonts/`) : `€`, `—`, `×`
+**La fiche PDF fait 4 pages** (v3, 05/11 ; 1 : thèse, ligne forte, mention de
+pré-commercialisation, manifeste, lois, pacte, bandeau de chiffres ; 2 : construction,
+termes, allocation, « Everyone wins », conflits ; 3 : moteurs, équipe, track record,
+proof of work, contact avec QR vers `profund.vc/#dealflow` qui ouvre le popup ;
+4 : tableau fondateurs, simulation ligne à ligne, performance, tests de résistance).
+Pages 3 et 4 n'ont qu'environ 5 mm de marge. Elle embarque Archivo (`scripts/assets/fonts/`) : `€`, `—`, `×`
 sont permis, mais `sheet_engine.check_glyphs` fait échouer la fiche sur tout
 caractère absent d'Archivo. Elle échoue aussi si une page déborde sur le pied :
 chaque page n'a que 6 à 8 mm de marge, tout ajout se paie ailleurs.
@@ -190,8 +228,11 @@ la v2) et `archive/v1/profund-factsheet-v1.pdf`. Pour y revenir : partir du tag
 (`git checkout v1 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`
-(`HeroSection`, `TheOpportunity`, `ThePlatform`…), assemblés en bas du fichier.
-Pour réordonner les sections, changer l'ordre dans le `export default`.
+(`TitleSlide`, `TheShift`, `TheProblem`… une par slide du deck v3 du 05/11, puis
+l'annexe `Construction`, `Simulation`, `Performance`), assemblés en bas du fichier.
+Pour réordonner les sections, changer l'ordre dans le `export default`. La slide 9
+(pipeline signé) lit `src/data/pipeline.json` et reste cachée tant qu'un chiffre est
+`null` : jamais de « [X] » en ligne. Le cas Datadog est retiré des documents LP.
 
 **Fichiers en UTF-8 sans BOM, fins de ligne LF** (cf. `.gitattributes`). Les
 pages juridiques contiennent des caractères non-ASCII (`— · € ’`) : un fichier
@@ -241,10 +282,10 @@ branche de travail, ce serait la mettre en ligne.
 python scripts/fund_model.py --check   # fund.json à jour et invariants du modèle
 npm run typecheck              # doit sortir 0 erreur
 npm run build                  # doit finir par "prerender: N routes ... écrits"
-npm run preview                # puis ouvrir /, /pitch/, /legal/, /privacy/
+npm run preview                # puis ouvrir /, /terms/, /calculator/, /sell/, /lp/, /pitch/, /legal/, /privacy/
 ```
 
-Après un changement de la fiche : rendre ses trois pages en PNG (PyMuPDF,
+Après un changement de la fiche : rendre ses quatre pages en PNG (PyMuPDF,
 `python -c "import fitz; …"`, sans `-I` : fitz est installé dans le site-packages
 utilisateur) et les regarder.
 

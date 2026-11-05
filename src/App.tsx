@@ -6,6 +6,10 @@ import Footer from './components/Footer';
 import LegalPage from './components/LegalPage';
 import PrivacyPage from './components/PrivacyPage';
 import CookieBanner from './components/CookieBanner';
+import TermsPage from './components/TermsPage';
+import CalculatorPage from './components/CalculatorPage';
+import SellPage from './components/SellPage';
+import LpPage from './components/LpPage';
 
 export default function App() {
   return (
@@ -14,6 +18,12 @@ export default function App() {
         <Route path="/" element={<><HomepageLite /><Footer /></>} />
         <Route path="/dealflow" element={<DealFlowPage />} />
         <Route path="/pitch" element={<><ProFundPage /><Footer /></>} />
+        {/* v3 (05/11) : les pages fondateurs et LP. Chaque route a AUSSI son entrée
+            dans ROUTES de scripts/prerender.mjs (sinon HTTP 404) et dans public/sitemap.xml. */}
+        <Route path="/terms" element={<><TermsPage /><Footer /></>} />
+        <Route path="/calculator" element={<><CalculatorPage /><Footer /></>} />
+        <Route path="/sell" element={<><SellPage /><Footer /></>} />
+        <Route path="/lp" element={<><LpPage /><Footer /></>} />
         <Route path="/legal" element={<><LegalPage /><Footer /></>} />
         <Route path="/privacy" element={<><PrivacyPage /><Footer /></>} />
         {/* Sans cette route, une URL inconnue ne matche rien et React rend une

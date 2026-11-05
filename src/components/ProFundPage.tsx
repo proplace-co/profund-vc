@@ -1,49 +1,74 @@
-import { useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
-import { fund, eur, eurRange, mult, pct, rowId, outcomeTag, type CaseId, type LayerId } from '../lib/fund';
+import { CV_LOGOS, EveryStage, FounderTable, HowWeBack, founderNote } from './Founders';
+import { CASE_IDS, LAYER_IDS, eur, eurRange, fund, mult, pct, rowId, type FundLayer, type LayerId } from '../lib/fund';
+import pipeline from '../data/pipeline.json';
 import { FACTSHEET_URL, MODEL_XLSX_URL } from '../lib/links';
 
-const GP_PHOTO_URL = '/gp-photo.jpg';
-// Parcours du GP, en logos (tirés de public/track-record.png ; Google et Mirakl retirés le 31/10).
-const CV_LOGOS = [
-  { name: 'Partech', src: '/cv-partech.png', h: 24 },
-  { name: 'Ardian', src: '/cv-ardian.png', h: 20 },
-  { name: 'leboncoin', src: '/cv-leboncoin.png', h: 20 },
-];
-
+// /pitch — LE DECK LP v3 (Antoine, 05/11), une section par slide, puis l'annexe
+// (construction, simulation ligne à ligne, performance). Réservé aux LPs : la page
+// n'est liée nulle part sur le site ; /lp la remet sur demande.
 // Chiffres du fonds : src/data/fund.json, généré par scripts/fund_model.py.
 // Ne jamais taper un montant, un multiple ou un TRI du fonds dans ce fichier.
+// Cas Datadog : retiré (05/11), ne pas le réintroduire.
 const F = fund.fund;
 const T = fund.terms;
 const L = fund.layers;
 const A = fund.allocation;
-const R = fund.reserve_policy;
-const LEAD = L.seed.tracks!.lead;    // S-01..S-10 : leads de conviction
-const RADAR = L.seed.tracks!.radar;  // S-11..S-50 : tickets radar
-const TARGET = fund.cases.target;
-const BASE = fund.cases.base;
-const STRESS = fund.cases.stress;
-const BASE_CAP = eur(BASE.exit_cap ?? 0, 'val');
-const STRESS_CAP = eur(STRESS.exit_cap ?? 0, 'val');
+const C = fund.cases;
+const TARGET = C.target;
+const FM = fund.founder_math;
+const SEC = fund.secondary;
+const FUND_SIZE = eur(F.commitments, 'tile');
+const LAYER_NAME: Record<LayerId, string> = { seed: 'Seed', venture: 'Venture', growth: 'Growth' };
+const ALL_LINES = LAYER_IDS.flatMap((id) => L[id].lines);
+const EXIT_YEARS = [Math.min(...ALL_LINES.map((l) => l.exit_year)), Math.max(...ALL_LINES.map((l) => l.exit_year))];
+const GROWTH_HOLDS = L.growth.lines.map((l) => l.exit_year - l.entry_year);
+const AT_250 = FM.rows.find((r) => r.exit === 250e6) ?? FM.rows[1];
+const RAISED_VC = FM.raised_before + FM.vc_equity;
+const DELAY_1 = fund.stress_tests.find((s) => s.id === 'exits_plus_1')!;
+const V2 = fund.reference_v2;
+const loanLoss = (id: 'target' | 'base' | 'stress') => pct(1 - C[id].loan_repaid);
+// Décotes des rachats, lues sur les lignes : gagnants et angels (Seed, Venture),
+// vendeurs structurels (Growth, fonds en fin de vie).
+const discounts = (ids: LayerId[]) => ids.flatMap((id) => L[id].lines).filter((l) => l.buyback && l.discount !== null).map((l) => l.discount!);
+const WINNER_DISC = discounts(['seed', 'venture']);
+const STRUCT_DISC = Math.max(...discounts(['growth']));
+const LOANS_FROM = Math.min(...ALL_LINES.filter((l) => l.loan_repay_year !== null).map((l) => l.loan_repay_year!));
 
-// Le héros reprend le texte de l'accueil (Thesis.tsx), puis ce que seul le deck
-// dit : la mécanique du fonds et ses chiffres, tous lus dans fund.json.
-function HeroSection() {
+function Slide({ id, n, kick, title, tint, night, children }: {
+  id: string; n: number; kick: string; title: ReactNode; tint?: boolean; night?: boolean; children?: ReactNode;
+}) {
+  return (
+    <section className={`pv-sec${tint ? ' tint' : ''}${night ? ' night' : ''}`} id={id}>
+      <div className="pv-wrap">
+        <div className="pv-head">
+          <p className="pv-kick"><span className="pv-slide-n">{String(n).padStart(2, '0')}</span>{kick}</p>
+          <h2 className="pv-h2">{title}</h2>
+        </div>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+// 1 · Title
+function TitleSlide() {
   return (
     <header className="pv-hero pv-hero-pitch" id="hero">
       <div className="pv-wrap pv-hero-grid">
         <div className="pv-hero-copy">
-          <span className="pv-eyebrow"><b />Pre-Marketing Phase · EuVECA</span>
-          <h1 className="pv-h1 pv-h1-one">Where pure vision directs recursive AI.</h1>
-          <p className="pv-lead pv-lead-k">Seed to Growth. {eur(F.commitments, 'tile')}.</p>
+          <span className="pv-eyebrow"><b />Pre-marketing phase · EuVECA</span>
+          <h1 className="pv-h1 pv-h1-one">ProFund. One round. Then never diluted again.</h1>
+          <p className="pv-lead pv-lead-k">{FUND_SIZE} · EuVECA, Luxembourg · Pre-seed to growth · Europe</p>
           <p className="pv-lead">
             We don’t fund headcount. We back tight-knit, AI-native teams building <span className="nw">self-improving</span> systems
             across the world’s largest markets.
           </p>
-          <p className="pv-hero-note">A {eur(F.commitments, 'tile')} European venture fund, seed to growth. We lead at seed, enter at the inflection point in Series A (in our own companies or directly in the best external rounds) and double down at growth, up to {eur(F.company_max_with_spv, 'tile')} per company with co-investment SPVs.</p>
           <div className="pv-ctas">
-            <a href="#contact" className="pv-btn">Request LP access <Icon name="arrow" /></a>
+            <Link to="/lp" className="pv-btn">Request LP access <Icon name="arrow" /></Link>
             <a href={MODEL_XLSX_URL} className="pv-btn line" download><Icon name="sheet" />Fund model (Excel)</a>
           </div>
         </div>
@@ -53,395 +78,445 @@ function HeroSection() {
   );
 }
 
-function TheOpportunity() {
+// 2 · The shift. Chiffres de tiers (Lovable, Stripe) sourcés en note : ne pas les
+// arrondir ni les reformuler sans relire la source.
+function TheShift() {
   return (
-    <div id="opportunity" className="pf-section" style={{ background: 'var(--bg)' }}>
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">The Opportunity</span>
-        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}>
-          <div>
-            <h2 className="h2">Every great company was<br /><em>invisible before it was obvious.</em></h2>
-            <p className="pf-body">When a new category emerges, there is a window of twelve to eighteen months where the future winner is already visible in the weak signals, but invisible to the market. The founding team is there. The architecture is taking shape. The data loop is being designed.</p>
-            <p className="pf-body">Whoever enters that window invests at the right valuation, builds the relationship before anyone else, and backs the right founder before the category is decided. Missing that window means paying three to five times more for the same company once TechCrunch writes about it.</p>
-            <p className="pf-body">The challenge is not judgment. Every good VC has judgment. <strong>The challenge is seeing the signal before it becomes noise</strong>, systematically, on every emerging category, every day. That requires a system. Not a bigger team.</p>
-          </div>
-          <div>
-            <div className="stat-grid" style={{ marginBottom: '16px' }}>
-              <div className="sg"><span className="sg-n">3–5×</span><span className="sg-l">Higher entry valuation once TechCrunch writes about it, vs. the same company detected 12 months earlier</span></div>
-              <div className="sg"><span className="sg-n">6–18mo</span><span className="sg-l">Average detection lead before any public announcement in our current pipeline</span></div>
-              <div className="sg"><span className="sg-n">{pct(TARGET.net_irr)}</span><span className="sg-l">Target net IRR, after fees, expenses and carry · base case {pct(BASE.net_irr)} with no exit above {BASE_CAP}</span></div>
-              <div className="sg"><span className="sg-n">{mult(TARGET.net_tvpi)}</span><span className="sg-l">Target net TVPI · {eur(TARGET.gross_exits, 'tile')} gross exit value on a {eur(F.commitments, 'tile')} fund</span></div>
-            </div>
-          </div>
+    <Slide id="shift" n={2} kick="The shift" title="AI collapsed the cost of building.">
+      <div className="pv-duo">
+        <div className="pv-duo-txt">
+          <p className="big">The best AI companies no longer need €50M.</p>
+          <p><b>The capital that wins the next decade buys ownership, not dilution.</b></p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-// La thèse v2 : un seul fonds du seed à la growth. Les chiffres de tiers
-// (Lovable, Stripe) sont sourcés en note : ne pas les arrondir ni les
-// reformuler sans relire la source.
-function WhyOneFund() {
-  return (
-    <div className="pf-section">
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">Why One Fund, Seed to Growth</span>
-        <div className="fw-grid">
-          <div>
-            <h2 className="h2">The stage ladder has collapsed.<br /><em>We position ideally just before the exponential.</em></h2>
-            <p className="fw-body">AI-native companies no longer climb one stage every eighteen months. The best of them go from first revenue to growth-stage metrics in a few months, with a fraction of the team a SaaS company needed. A fund split by stage arrives either too early or too late.</p>
-            <p className="fw-body">The value created by AI growth has nothing in common with classic software growth: it compounds faster, with far fewer resources. What these companies still need capital for is people: a small number of exceptional profiles, with a culture of excellence and radical execution, the Revolut standard. <strong>Our tickets fund that talent density.</strong></p>
-            <p className="fw-body">So ProFund is one fund, organised in three layers. We lead at seed when we detect the team before the round, we enter at the inflection point when the curve bends, and we double down at growth, from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_cap, 'tile')} in the same company, without changing vehicle.</p>
-            <p className="fw-body"><strong>The Seed Radar.</strong> Every European seed round is tracked, company by company, and re-scored every week on growth signals: exceptional hires, hiring velocity, traffic, product releases, revenue proxies, back-to-back rounds. Our objective: never miss a European company entering exponential growth.</p>
-          </div>
-          <div>
-            <div className="fw-stats">
-              <div className="fw-s hl"><span className="fw-big">8 mo</span><div className="fw-det"><strong>Lovable (Stockholm)</strong> went from launch to $100M ARR in eight months, with 45 employees.¹</div></div>
-              <div className="fw-s"><span className="fw-big">24 mo</span><div className="fw-det"><strong>To $5M ARR</strong> for the top 100 AI companies on Stripe (2024), against 37 months for SaaS companies (2018).²</div></div>
-              <div className="fw-s"><span className="fw-big">Every</span><div className="fw-det"><strong>European seed round</strong> tracked by the Seed Radar and re-scored weekly, so the fund can move the moment the curve bends.</div></div>
-              <div className="fw-s"><span className="fw-big">{eur(F.company_max_with_spv, 'tile')}</span><div className="fw-det"><strong>Per company, in one fund.</strong> Up to {eur(F.company_cap, 'tile')} from the fund across the three layers, the rest through co-investment SPVs.</div></div>
-            </div>
-            <p className="pf-fine">¹ TechCrunch, 23 July 2025 (company-reported figures). ² Stripe 2025 annual letter, reported by TechCrunch on 27 February 2025.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ThePlatform() {
-  return (
-    <div className="pf-section" style={{ background: 'var(--bg)' }}>
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">The Platform</span>
-        <h2 className="h2">Every weak signal in an emerging category.<br /><em>Automatically. Before anyone else sees it.</em></h2>
-        <p className="pf-intro">Physical network and human interactions with top founders. Digitally, the latest AI tools sit on top of our in-house sourcing platform: more than 25 custom engines reading 24/7 weak signals in emerging categories, detecting founders matching our thesis before they become obvious to the category.</p>
-        <div className="mods">
-          <div className="mod">
-            <div className="mod-num">① WHAT IT READS</div>
-            <div className="mod-title">25+ custom engines. Parallel. Every morning.</div>
-            <div className="mod-sub">The latest AI tools, added to our in-house sourcing platform.</div>
-            <div className="mod-desc">SSL certificate registrations · Pappers legal filings · GitHub repositories · leadership at Tier 1 startups changing jobs · LinkedIn job posts · semantic search · grandes écoles alumni networks. Every signal matched against our active themes. Every match qualified automatically against dozens of green flags and red flags, weighted by their historical predictive accuracy.<br /><br /><strong>A full investment memo and financial model generated automatically for every high-conviction match. Only the top 1% surfaces as a CALL, the only verdict that requires human attention.</strong> The same engine operates outbound for Proplace, Maximum Insurance, ProFund and portfolio startups, and books meetings with AI-native founders (seed, where we lead; Series A and growth, where we invest alongside Tier 1 funds) and international VCs for allocation.</div>
-            <div className="mod-out">
-              <span className="mod-out-title">Output</span>
-              <div className="mod-out-row"><strong>Daily curated pipeline</strong>: off-market opportunities matching active themes, pre-ranked by conviction score.</div>
-              <div className="mod-out-row"><strong>Detects teams 6–18 months</strong> before they appear on TechCrunch or Crunchbase.</div>
-            </div>
-          </div>
-          <div className="mod">
-            <div className="mod-num">② WHAT IT FINDS</div>
-            <div className="mod-title">Representative signals from the platform.</div>
-            <div className="mod-sub">These are examples of what the system detects: the type of early signal that precedes every category winner.</div>
-            <div className="mod-desc">
-              <div className="mod-sig">
-                <strong>→ SSL certificate registered.</strong><span> No LinkedIn, no press, no Crunchbase entry. Detected 3 weeks before first public mention.</span>
-              </div>
-              <div className="mod-sig">
-                <strong>→ New SARL registered, NAF 6201Z, founder ex-Doctolib.</strong><span> Detected via Pappers, 6 weeks before Crunchbase listing.</span>
-              </div>
-              <div className="mod-sig">
-                <strong>→ GitHub repo created, 2 contributors, ex-Alan engineering team.</strong><span> Detected 11 months before Series A announcement.</span>
-              </div>
-            </div>
-          </div>
-          <div className="mod">
-            <div className="mod-num">③ WHAT MAKES IT COMPOUND</div>
-            <div className="mod-title">The platform learns from every decision.</div>
-            <div className="mod-sub">Every GO and NO-GO updates the detection parameters every Monday.</div>
-            <div className="mod-desc">Sourcing queries sharpen. Qualification flags are reweighted. Founder profiles evolve toward recent winners. After six months, the system reflects the GP's actual conviction with a precision no competitor can reverse-engineer.<br /><br /><strong>The gap with a manual fund widens every week. Indefinitely.</strong> No competitor can reverse-engineer the accumulated pattern of decisions.</div>
-            <div className="mod-out">
-              <span className="mod-out-title">The compounding advantage</span>
-              <div className="mod-out-row"><strong>Weekly thesis calibration</strong>: decision patterns automatically update scoring weights every Monday.</div>
-              <div className="mod-out-row">After 12 months, our deal flow is structurally irreplicable.</div>
-            </div>
-          </div>
-          <div className="mod">
-            <div className="mod-num">④ WHAT IT NEVER DOES</div>
-            <div className="mod-title">The judgment remains human.</div>
-            <div className="mod-sub">The platform creates the conditions. The GP makes the call.</div>
-            <div className="mod-desc">The platform never replaces the judgment that decides whether a founder is exceptional, whether a data moat is real, whether the timing is right. That judgment is ours.<br /><br />The platform creates the conditions for that judgment to be applied at the right moment: on the right deals, with full information, without the noise. <strong>The system finds the signal. The GP decides.</strong></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HowThemesWork() {
-  return (
-    <div className="pf-section">
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">How Themes Work</span>
-        <h2 className="h2">The themes are the parameters.<br /><em>The system is the edge.</em></h2>
-        <p className="pf-intro">A theme is an emerging category where the future winner is not yet decided, where there is still alpha for an early investor who can identify the right founding team before the market does. We start with two themes. We add new ones as new categories emerge. We retire themes when a category matures: when the winner is obvious, when valuations reflect the opportunity, when the alpha is gone.</p>
-        <div className="pf-callout">
-          <p>This is not a fixed mandate. It is a living system that covers the most promising emerging categories in European software at any given moment, with the same depth, the same speed, the same precision, regardless of which themes are active. The GP's job is to decide when a new category deserves focus, and when it no longer does.</p>
-        </div>
-        <div className="mods">
-          <div className="mod">
-            <div className="mod-num">① AI WORKFLOW EXECUTOR</div>
-            <div className="mod-title">Professional work executed by AI, charged per outcome.</div>
-            <div className="mod-sub">The category being created.</div>
-            <div className="mod-desc">Today, every professional service firm charges per hour or per seat. The transition to charging per outcome (per audit completed, per contract reviewed, per filing submitted) is just beginning. The companies that own this transition in European regulated verticals will be among the most valuable software businesses of this decade.<br /><br />The future winner is being built right now. Probably in Paris, London, or Stockholm. Probably by a former senior professional in a regulated vertical paired with a strong ML engineer. Probably with a private GitHub repo that shows a fine-tuning pipeline nobody has noticed yet.<br /><br /><strong>Our platform finds that team before they have a website.</strong> The GP judges whether the data architecture is real, because he has done the work these products automate, manually, at Ardian and Partech.</div>
-            <div className="mod-out">
-              <span className="mod-out-title">Current proof points</span>
-              <div className="mod-out-row">Leya · Robin AI · Legartis</div>
-            </div>
-          </div>
-          <div className="mod">
-            <div className="mod-num">② REGULATED INTERMEDIARY OS</div>
-            <div className="mod-title">The operating system for European regulated intermediaries.</div>
-            <div className="mod-sub">The category being created.</div>
-            <div className="mod-desc">Expert-comptables, insurance brokers, HR consultants: every one of them manages a portfolio of SMB clients with tools built in the 1990s. The platform that becomes their operating system wins distribution, data, and switching cost simultaneously. The SMB clients follow the intermediary. The category leader becomes indispensable without ever running a direct sales cycle.<br /><br />This category has already produced Pennylane, Alan, and PayFit, some of the best seed returns in France of the past decade. It is not finished. The next wave (AI-native, broader in scope, faster to deploy) is starting now. No other fund is scanning for it systematically.<br /><br /><strong>Our platform detects it via NAF code filings and intermediary network job posts</strong>, weeks before any Crunchbase entry. The GP judges whether the distribution mechanic is real, because sourcing through a network rather than a direct target is exactly how M&A works, and he ran that process at Leboncoin.</div>
-            <div className="mod-out">
-              <span className="mod-out-title">Current proof points</span>
-              <div className="mod-out-row">Pennylane · Alan · PayFit</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TheConversion() {
-  return (
-    <div className="pf-section" style={{ background: 'var(--bg)' }}>
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">The Conversion</span>
-        <div className="fw-grid">
-          <div>
-            <h2 className="h2">The platform finds the signal.<br /><em>The relationship wins the deal.</em></h2>
-            <p className="fw-body">Detection is the beginning, not the end. When the platform surfaces a founding team (via a GitHub repo, a Pappers filing, a LinkedIn job post), we reach out immediately. Before they are fundraising. Before they have a deck. Before any other VC has noticed them.</p>
-            <p className="fw-body">The first message is specific enough to show we read their code, understood their architecture, and have a view on why their data moat is defensible. That precision, delivered before the founder has a public profile, is not forgotten. By the time they open a round, we are already a partner in their thinking, not an evaluator arriving late.</p>
-            <p className="fw-body">We track grandes écoles networks (X, Centrale, HEC, ESSEC, EPFL) as primary signal sources. A founding team from the incubateur de l'X or Station F is in our system before they register their SARL. <strong>The digital connection always precedes the human one.</strong> But it makes the human one possible, and warmer, than any cold introduction could.</p>
-            <p className="fw-body">Domain expertise closes the final gap. A founder automating M&A due diligence knows immediately that the GP has done that work manually for years. That credibility cannot be faked, and it turns a first conversation into a term sheet faster than any brand name.</p>
-          </div>
+        <div>
           <div className="fw-stats">
-            <div className="fw-s"><span className="fw-big">Before</span><div className="fw-det"><strong>We reach founders before the round opens.</strong> Before the deck exists. The founder who receives a message showing we understood their architecture before anyone else noticed them remembers that.</div></div>
-            <div className="fw-s hl"><span className="fw-big">1%</span><div className="fw-det"><strong>Human time reserved exclusively</strong> for founding teams that clear the algorithmic threshold. Every other signal is processed automatically.</div></div>
-            <div className="fw-s"><span className="fw-big" style={{ fontSize: '28px', letterSpacing: '0' }}>X · HEC</span><div className="fw-det"><strong>Grandes écoles networks.</strong> X · Centrale · HEC · ESSEC · EPFL. Primary signal sources. Teams in our system before they register their SARL.</div></div>
-            <div className="fw-s"><span className="fw-big">0</span><div className="fw-det"><strong>Cold introductions.</strong> Every outreach is specific, informed, and timed to the moment the signal appears, not when the founder is already meeting 20 other funds.</div></div>
+            <div className="fw-s hl"><span className="fw-big">8 mo</span><div className="fw-det"><strong>Lovable (Stockholm)</strong> went from launch to $100M ARR in eight months, with 45 employees.¹</div></div>
+            <div className="fw-s"><span className="fw-big">24 mo</span><div className="fw-det"><strong>To $5M ARR</strong> for the top 100 AI companies on Stripe (2024), against 37 months for SaaS companies (2018).²</div></div>
+          </div>
+          <p className="pf-fine">¹ TechCrunch, 23 July 2025 (company-reported figures). ² Stripe 2025 annual letter, reported by TechCrunch on 27 February 2025.</p>
+        </div>
+      </div>
+    </Slide>
+  );
+}
+
+// 3 · The problem
+function TheProblem() {
+  const first = FM.rows[0];
+  return (
+    <Slide id="problem" n={3} kick="The problem" tint
+      title="VCs sell cash to founders who need ownership, control and liquidity.">
+      <div className="pv-tiles3">
+        <div className="pv-tile"><b>{eur(RAISED_VC, 'tile')}</b><span>raised from seed to Series D, every euro with a 1× preference</span></div>
+        <div className="pv-tile"><b>{eur(first.exit, 'val')}</b><span>exit, a good outcome for most companies</span></div>
+        <div className="pv-tile dark"><b>{eur(first.founders_vc, 'tile')}</b><span>left for the founders</span></div>
+      </div>
+      <p className="pv-fine">{founderNote()}</p>
+    </Slide>
+  );
+}
+
+// 4 · The inversion
+function TheInversion() {
+  return (
+    <Slide id="inversion" n={4} kick="The inversion" title="One equity round, then loans and buybacks.">
+      <div className="pv-flow">
+        <div className="pv-flow-s"><span className="pv-ic"><Icon name="target" /></span><h3>One equity round</h3><p>A first cheque in new shares, from seed to Series A, or a buyback of existing shares.</p></div>
+        <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>A reserved loan line</h3><p>Covers every future need except compute-heavy model training.</p></div>
+        <div className="pv-flow-s"><span className="pv-ic"><Icon name="trend" /></span><h3>Buybacks and cancellations</h3><p>Angels, leavers and early funds bought out; the company cancels shares every year.</p></div>
+      </div>
+      <div className="pv-callout">
+        <span className="pv-tick soft"><Icon name="scale" /></span>
+        <p>If the founder grows with us, we never create a new share. If he raises elsewhere, we follow, or lead the round, in new shares. At growth stage we also write fresh cheques in new shares.</p>
+      </div>
+    </Slide>
+  );
+}
+
+// 5 · Founder math
+function FounderMathSlide() {
+  const rows = FM.rows;
+  const list = (k: 'founders_vc' | 'founders_profund') => rows.map((r) => eur(r[k], 'tile')).join(', ');
+  return (
+    <Slide id="math" n={5} kick="Founder math" tint title="Same company. Same exit. Twice the payout.">
+      <p className="pv-lead pv-slide-lead">
+        Exits at {rows.map((r) => eur(r.exit, 'val')).join(', ')}: founders take home {list('founders_vc')} on the VC path,
+        against {list('founders_profund')} with ProFund, for a company that needs {eur(FM.loans, 'tile')} of loans
+        instead of {eur(FM.vc_equity, 'tile')} of equity.
+      </p>
+      <FounderTable investor />
+      <p className="pv-fine">{founderNote()}</p>
+    </Slide>
+  );
+}
+
+// 6 · Everyone wins
+function EveryoneWins() {
+  return (
+    <Slide id="wins" n={6} kick="Everyone wins" title={`At a ${eur(AT_250.exit, 'val')} exit, everyone wins.`}>
+      <div className="table-scroll pv-ts"><table className="fund-table pv-wins">
+        <thead><tr><th>At a {eur(AT_250.exit, 'val')} exit</th><th>VC path</th><th>ProFund path</th></tr></thead>
+        <tbody>
+          <tr><td>Founders</td><td>{eur(AT_250.founders_vc, 'tile')}</td><td className="pf">{eur(AT_250.founders_profund, 'tile')}</td></tr>
+          <tr><td>Series A investor, equity multiple</td><td>{mult(AT_250.series_a_vc)}</td><td className="pf">{mult(AT_250.series_a_profund)} (ProFund)</td></tr>
+          <tr><td>Angels</td><td>Wait for the exit</td><td className="pf">Liquidity at year 2</td></tr>
+          <tr><td>LPs</td><td>Need a unicorn</td><td className="pf">{mult(TARGET.net_tvpi)} net and {pct(TARGET.net_irr)} IRR target, no exit above {eur(TARGET.largest_exit, 'val')}</td></tr>
+        </tbody>
+      </table></div>
+      <p className="pv-punch">The only one who loses is the VC who would have sold rounds B, C and D.</p>
+    </Slide>
+  );
+}
+
+// 7 · Perfect alignment
+function Alignment() {
+  return (
+    <Slide id="alignment" n={7} kick="Perfect alignment" tint title="Our stake rises with the founder’s.">
+      <div className="pv-trio">
+        <div className="pv-card">
+          <h3>Aligned</h3>
+          <p>Every buyback and cancellation lifts both stakes. We never need the founder to dilute, to raise or to chase a unicorn, and he never needs to fight us on an exit.</p>
+        </div>
+        <div className="pv-card">
+          <h3>Downside</h3>
+          <p>Loans are repaid before equity, and our first cheque carries a 1× preference.</p>
+        </div>
+        <div className="pv-card">
+          <h3>Conflicts policy</h3>
+          <p>Buybacks priced by an independent valuer, our votes excluded from decisions involving ProFund, LP advisory committee approval.</p>
+        </div>
+      </div>
+      <div className="pv-ctas"><Link to="/terms" className="pv-link">Read the founders’ pact, 10 clauses <Icon name="arrow" /></Link></div>
+    </Slide>
+  );
+}
+
+// 9 · Signed pipeline : les chiffres vivent dans src/data/pipeline.json (données
+// commerciales, pas le modèle). La slide reste cachée tant qu'un chiffre manque :
+// jamais de « [X] » en ligne.
+type Pipeline = { as_of: string | null; founders_signed: number | null; first_cheques_reserved: number | null;
+  buyback_options: number | null; loan_lines_requested: number | null };
+const PIPE = pipeline as Pipeline;
+const PIPE_READY = [PIPE.founders_signed, PIPE.first_cheques_reserved, PIPE.buyback_options, PIPE.loan_lines_requested]
+  .every((v) => typeof v === 'number');
+
+function SignedPipeline() {
+  if (!PIPE_READY) return null;
+  return (
+    <Slide id="pipeline" n={9} kick="Signed pipeline" title="Founders who already chose the inversion.">
+      <div className="impact-grid">
+        <div className="imp"><span className="imp-n">{PIPE.founders_signed}</span><span className="imp-h">Founders signed</span></div>
+        <div className="imp"><span className="imp-n">{eur(PIPE.first_cheques_reserved!, 'tile')}</span><span className="imp-h">Of first cheques reserved</span></div>
+        <div className="imp"><span className="imp-n">{eur(PIPE.buyback_options!, 'tile')}</span><span className="imp-h">Of buyback options</span></div>
+        <div className="imp"><span className="imp-n">{eur(PIPE.loan_lines_requested!, 'tile')}</span><span className="imp-h">Of loan lines requested</span></div>
+      </div>
+      {PIPE.as_of && <p className="pf-fine">As of {PIPE.as_of}.</p>}
+    </Slide>
+  );
+}
+
+// 10 · The team (le détail du parcours et le track record sont du texte vérifié :
+// ne pas reformuler les chiffres).
+function Team() {
+  return (
+    <section className="pv-sec" id="team">
+      <div className="pv-wrap">
+        <div className="pv-head">
+          <p className="pv-kick"><span className="pv-slide-n">10</span>The team</p>
+          <h2 className="pv-h2">Built for this model: M&amp;A, LBO, VC.</h2>
+        </div>
+        <div className="gp-grid">
+          <div><img src="/gp-photo.jpg" alt="Alexandre Busson" style={{ width: '160px', height: '200px', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} /></div>
+          <div>
+            <div className="gp-name">Alexandre Busson</div>
+            <div className="gp-role">Founding Partner · M&amp;A Director at Leboncoin, LBO at Ardian, Partech Ventures, Google. Three exits at 10×, 20×, 19×, prior to the fund.</div>
+            <div className="gp-logos" aria-label="Partech · Ardian · leboncoin">
+              {CV_LOGOS.map((l) => <img key={l.name} src={l.src} alt={l.name} style={{ height: l.h }} />)}
+            </div>
+            <div className="f-rows">
+              <div className="f-row"><span className="f-co">Ardian · LBO analyst</span><span className="f-desc">Financial analysis, due diligence and portfolio monitoring across European mid-market companies. The work these products automate, done manually, at institutional standard.</span></div>
+              <div className="f-row"><span className="f-co">Partech Ventures · Senior associate</span><span className="f-desc">Sourcing and qualification of European pre-seed to Series B startups. Hundreds of founding teams evaluated. The conviction the platform encodes today was built here, manually, before it was an algorithm.</span></div>
+              <div className="f-row"><span className="f-co">Leboncoin · M&amp;A director</span><span className="f-desc">End-to-end acquisitions across Europe. The only GP who has sat on the acquirer's side of the table, and knows what makes a company unmissable at the LOI stage.</span></div>
+              <div className="f-row"><span className="f-co">Google · Key account manager assistant</span><span className="f-desc">Key account management at Google.</span></div>
+              <div className="f-row"><span className="f-co">Founder &amp; operator</span><span className="f-desc">Owner and CEO of Fadparis.com. Founder and investor of Dreamzer Games.</span></div>
+              {/* 05/11 : « [to recruit] » de la copie rendu explicite, le poste n'est pas pourvu */}
+              <div className="f-row"><span className="f-co">Loan book</span><span className="f-desc">A partner from venture debt will run the loan book (to be recruited).</span></div>
+              <div className="f-row"><span className="f-co">Governance</span><span className="f-desc">Investment committee and key-person clause.</span></div>
+            </div>
           </div>
         </div>
+        <TrackRecord />
       </div>
-    </div>
+    </section>
   );
 }
 
-function WinningFounder() {
+function TrackRecord() {
   return (
-    <div className="pf-section">
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">Why the Best Founders Choose ProFund</span>
-        <h2 className="h2">We were there first.<br /><em>And we can prove it.</em></h2>
-        <p className="pf-intro">Why the best founders choose ProFund over generalist VCs.</p>
-        <div className="serve-grid">
-          <div className="sc"><div className="sc-h">We were there first</div><p className="sc-p">We reach out before the round opens, before the deck exists. The founder who receives a message showing we understood their architecture before anyone else noticed them remembers that. The relationship starts months before any process.</p></div>
-          <div className="sc"><div className="sc-h">A GP who built what we use</div><p className="sc-p">The AI-native venture platform powering ProFund's deal flow was built and is operated by the GP. We understand data moat architecture and agent design at a level most VCs cannot, because we made those decisions ourselves.</p></div>
-          <div className="sc"><div className="sc-h">Hands-on AI support</div><p className="sc-p">Expert in AI-powered tools (n8n, Make, Airtable, any API, MCP servers, Cursor). We help founders stress-test their architecture and design autonomous workflows, ensuring they build defensible data moats, not LLM wrappers.</p></div>
-          <div className="sc"><div className="sc-h">M&amp;A wargaming from day one</div><p className="sc-p">Algorithms that detect acquisition races before the market. We know who will want to buy your company before you do, and we structure the exit path from the first term sheet.</p></div>
-          <div className="sc"><div className="sc-h">Automated elite governance</div><p className="sc-p">Fund administration 100% externalized. Daily &amp; weekly reporting fully automated. Our platform parses founders' reports instantly, updates evergreen investment memos, and flags risks in real-time.</p></div>
-        </div>
-      </div>
+    <div className="pv-sub-block">
+      <span className="eyebrow">Track record, prior to the fund</span>
+      <p className="pf-fine" style={{ marginTop: 0 }}><em>Methodology: Public figures. Exit valuations and transaction metrics may contain assumptions &amp; estimations.</em></p>
+      <div className="table-scroll"><table className="fund-table">
+        <thead>
+          <tr><th>Deal ID</th><th>Status</th><th>Entry Date</th><th>Exit Date</th><th>Initial Tkt</th><th>Entry Val (Post)</th><th>Entry %</th><th>Exit Val (Total)</th><th>Return</th><th>CoC</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Deal-01</td><td><span className="tag green">Exited (Full)</span></td><td>2006</td><td>2007</td><td>n.c.</td><td>n.c.</td><td>100%</td><td>n.c.</td><td>n.c.</td><td className="moic">10.0×</td></tr>
+          <tr><td>Deal-02</td><td><span className="tag green">Exited (Full)</span></td><td>2008</td><td>2014</td><td>n.c.</td><td>n.c.*</td><td>100%→40%→0%</td><td>n.c.**</td><td>n.c.</td><td className="moic">20.0×</td></tr>
+          <tr><td>Deal-03</td><td><span className="tag blue">Graduated (Seed → LBO)</span></td><td>2014</td><td>Feb 2025</td><td>€200K</td><td>€5.26M</td><td>3.8%</td><td>€100M***</td><td style={{ color: 'var(--blue-dk)', fontWeight: 700 }}>€3.8M</td><td className="moic">19.0×</td></tr>
+          <tr><td>Deal-04</td><td><span className="tag grey">Ongoing (100% held)</span></td><td>2016</td><td>Ongoing</td><td>€45M</td><td>€45M</td><td>100%</td><td>–</td><td>–</td><td className="moic" style={{ color: 'var(--mid)' }}>–</td></tr>
+        </tbody>
+      </table></div>
+      <p className="pf-fine">* Deal-03: Entry seed €5.3M · Follow-on at €15M round · Exit LBO/MBO Feb 2025 at €100M · 12.5× EBITDA on €8M EBITDA · Estimated 19× on seed ticket.<br />** Deal-04: 100% acquisition, €45M buyout in 2016 · Revenue growing ~20% YoY since acquisition · No multiple shown for a position still fully held.<br />Companies anonymised. Names and references on request.</p>
     </div>
   );
 }
 
-const LAYER_NAME: Record<LayerId, string> = { seed: 'Seed', venture: 'Venture', growth: 'Growth' };
-const CASE_IDS: CaseId[] = ['target', 'base', 'stress'];
-const TIER_TAG: Record<LayerId, string> = {
-  seed: 'Layer 1 · Seed',
-  venture: 'Layer 2 · Venture',
-  growth: 'Layer 3 · Growth',
-};
+// 11 · Terms and targets
+function TermsAndTargets() {
+  const sd = L.seed;
+  const vt = L.venture;
+  const gr = L.growth;
+  return (
+    <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. One equity round per company.`}>
+      <div className="impact-grid">
+        <div className="imp"><span className="imp-n">{pct(TARGET.net_irr)}</span><span className="imp-h">Target net IRR</span><p className="imp-p">Base case {pct(C.base.net_irr)}, stress case {pct(C.stress.net_irr)}</p></div>
+        <div className="imp"><span className="imp-n">{mult(TARGET.net_tvpi)}</span><span className="imp-h">Target net TVPI</span><p className="imp-p">Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}</p></div>
+        <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">With loan losses in every case</p></div>
+        <div className="imp"><span className="imp-n">{eur(TARGET.largest_exit, 'val')}</span><span className="imp-h">Largest exit</span><p className="imp-p">No unicorn needed</p></div>
+      </div>
+      <div className="pv-terms-grid">
+        <div className="table-scroll"><table className="fund-table">
+          <thead><tr><th>Term</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Target fund size</td><td>{FUND_SIZE}, first close {eurRange(F.first_close_min, F.first_close_max, 'tile', '–')}</td></tr>
+            <tr><td>Closed-ended EuVECA fund (Lux.)</td><td>{F.term_years} years, successive closings over {F.closing_months} months</td></tr>
+            <tr><td>Management fee, years 1–{F.investment_period_years}</td><td>{pct(T.fee_ip_pct)} ({pct(T.fee_loan_pct)} on the loan sleeve)</td></tr>
+            <tr><td>Then, on invested capital incl. loans until repaid</td><td>{pct(T.fee_post_pct, 1)}</td></tr>
+            <tr><td>Carried interest, European</td><td>{pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, with GP catch-up</td></tr>
+            <tr><td>Per company: fund / with SPVs</td><td>{eur(F.company_cap, 'tile')} / {eur(F.company_max_with_spv, 'tile')}</td></tr>
+            <tr><td>Loans</td><td>Up to {pct(F.loan_cap_pct)} of commitments (EuVECA)</td></tr>
+            <tr><td>Tickets</td><td>Up to {eur(sd.ticket_max, 'tile')} at seed, {eurRange(vt.first_cheque_range[0], vt.first_cheque_range[1], 'table', '–')} at Series A, {eurRange(gr.position_range[0], gr.position_range[1], 'tile', '–')} at growth ({eur(F.company_max_with_spv, 'tile')} with SPVs)</td></tr>
+          </tbody>
+        </table></div>
+        <div className="table-scroll"><table className="fund-table">
+          <thead><tr><th>Capital allocation</th><th>Amount</th></tr></thead>
+          <tbody>
+            <tr><td>First cheques, incl. fresh growth rounds</td><td>{eur(A.first)}</td></tr>
+            <tr><td>Buybacks and follow-ons</td><td>{eur(A.buyback_follow)}</td></tr>
+            <tr><td>Loans</td><td>{eur(A.loans)}</td></tr>
+            <tr className="sub"><td>Invested ({pct(A.after_first_pct)} after the first cheque)</td><td>{eur(A.invested)}</td></tr>
+            <tr><td>Management fees</td><td>{eur(A.mgmt_fees)}</td></tr>
+            <tr><td>Fund expenses, incl. set-up</td><td>{eur(A.fund_expenses)}</td></tr>
+            <tr><td>Contingency</td><td>{eur(A.contingency)}</td></tr>
+            <tr className="sub"><td>Total commitments</td><td>{eur(A.total)}</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div className="pf-callout pv-why">
+        <p>
+          <strong>Why {pct(TARGET.net_irr)} holds without fast exits.</strong> Exits are spread from year {EXIT_YEARS[0]} to
+          year {EXIT_YEARS[1]}. The IRR rests on large stakes in the winners and cash that comes back early: loans
+          at {mult(fund.loan_multiples.performing)} from year {LOANS_FROM},
+          growth positions bought at a {pct(STRUCT_DISC)} discount and sold
+          after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years, partial liquidity of the winners in year {SEC.year}.
+          One year of delay on every exit: {pct(DELAY_1.net_irr)}. No exit above {eur(TARGET.largest_exit, 'val')}; with the same
+          exits, the v2 model would make {mult(V2.capped_net_tvpi)}.
+        </p>
+      </div>
+    </Slide>
+  );
+}
 
-// Lignes des cartes d'étage : le texte est ici, tous les chiffres viennent de fund.json.
+// ── Annexe : construction, simulation, performance ─────────────────────────
+const TIER_TAG: Record<LayerId, string> = { seed: 'Layer 1 · Seed', venture: 'Layer 2 · Venture', growth: 'Layer 3 · Growth' };
+
 function tierRows(id: LayerId): [string, string][] {
   const x = L[id];
-  const entry = `${eurRange(x.entry_post_min, x.entry_post_max)} post`;
-  const invested = `${eur(x.invested)} · ${eur(x.initial)} initial + ${eur(x.follow_on)} follow-on`;
+  const leads = x.tracks?.lead;
+  const radar = x.tracks?.radar;
   if (id === 'seed') return [
-    ['Ticket', `${eurRange(LEAD.ticket_min, LEAD.ticket_max)} lead · ${eurRange(RADAR.ticket_min, RADAR.ticket_max)} radar · pro-rata reserved`],
-    ['Stage', `Pre-seed / seed · ${LEAD.companies} leads or co-leads, ${RADAR.companies} radar tickets`],
-    ['Entry valuation', entry],
-    ['Ownership', `${pct(x.ownership_min)} – ${pct(x.ownership_max, 1)} at entry`],
-    ['Edge', 'Leads: team detected before the round · radar: the strongest Seed Radar signals'],
-    ['Invested', invested],
+    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, the only equity round, loan line reserved`],
+    ['Stage', x.stage],
+    ['Role', 'Lead + radar tickets'],
+    ['Entry post', eurRange(x.entry_post_min, x.entry_post_max)],
+    ['Companies', `${leads!.companies} leads + ${radar!.companies} radar`],
+    ['Invested, loans included', eur(x.invested)],
+    ['Target gross', `${mult(x.moic.target)} MOIC`],
   ];
   if (id === 'venture') return [
-    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)} initial · pro-rata reserved`],
-    ['Stage', 'Seed+ / Series A · at the inflection point'],
-    ['Entry valuation', entry],
-    ['Ownership', `${pct(x.ownership_min)} – ${pct(x.ownership_max)} at entry`],
-    ['Edge', 'Entry triggered by the Seed Radar · next to a Tier 1 lead'],
-    ['Invested', invested],
+    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, first cheque or buyback, loan line reserved`],
+    ['Stage', x.stage],
+    ['Role', 'Direct at the inflection, or buyback of angels and leavers'],
+    ['Entry post', eurRange(x.entry_post_min, x.entry_post_max)],
+    ['Companies', `${x.companies} direct entries, ${eurRange(x.first_cheque_range[0], x.first_cheque_range[1], 'table', '–')} first cheques`],
+    ['Invested, loans included', eur(x.invested)],
+    ['Target gross', `${mult(x.moic.target)} MOIC`],
   ];
   return [
-    ['Ticket', `${eurRange(x.ticket_min, F.company_cap)} from the fund · up to ${eur(F.company_max_with_spv, 'tile')} with SPVs`],
-    ['Stage', 'Series B and beyond'],
-    ['Entry valuation', entry],
-    ['Two ways in', `At least ${pct(x.direct_min_pct ?? 0)} direct entries alongside leading growth funds · the rest doubles down on our breakouts`],
-    ['Invested', `${eur(x.invested)} · ${pct(x.direct_pct ?? 0)} direct, ${pct(x.internal_pct ?? 0)} in our breakouts`],
+    ['Ticket', `${eurRange(x.ticket_min, F.company_cap)} from the fund, up to ${eur(F.company_max_with_spv, 'tile')} with SPVs`],
+    ['Stage', x.stage],
+    ['Role', 'Direct: blocks from end-of-life funds and fresh growth rounds. Our breakouts: blocks bought in our winners'],
+    ['Entry post', eurRange(x.entry_post_min, x.entry_post_max, 'val')],
+    ['Companies', `${x.companies} direct entries + ${x.breakouts} of our breakouts, ${eurRange(x.position_range[0], x.position_range[1], 'tile', '–')} each`],
+    ['Invested, loans included', eur(x.invested)],
+    ['Target gross', `${mult(x.moic.target)} MOIC, ${pct(x.gross_irr.target)} gross IRR over ${Math.min(...GROWTH_HOLDS)}–${Math.max(...GROWTH_HOLDS)} year holds`],
   ];
 }
 
-function TierCard({ id }: { id: LayerId }) {
-  const x = L[id];
-  const head = id === 'growth' ? `Growth · ${x.positions} positions` : `${LAYER_NAME[id]} · ${x.companies} companies`;
+function Construction() {
   return (
-    <div className={`tier ${id}`}>
-      <div className="tier-tag">{TIER_TAG[id]}</div>
-      <div className="tier-h">{head}</div>
-      {tierRows(id).map(([label, value]) => (
-        <div key={label} className="tier-row"><span className="tier-label">{label}</span>{value}</div>
-      ))}
-    </div>
-  );
-}
-
-function PortfolioArch() {
-  const g = L.growth;
-  return (
-    <div className="pf-section" id="construction" style={{ background: 'var(--bg)' }}>
+    <div className="pf-section" id="construction">
       <div className="pf-wrap-wide">
-        <span className="eyebrow">Portfolio Architecture</span>
-        <h2 className="h2">The conviction funnel.<br /><em>One fund, from Seed to Growth.</em></h2>
-        <p className="pf-intro">A {eur(F.commitments, 'tile')} European venture fund in three layers. Every layer has two ways in: direct entries into the best external rounds, and follow-ons in our own companies that take off. Seed is {L.seed.companies} companies: {LEAD.companies} where we lead or co-lead before the round, and {RADAR.companies} radar tickets of {eurRange(RADAR.ticket_min, RADAR.ticket_max)} that multiply our shots on goal. Venture is {L.venture.companies} direct entries at the inflection point, next to a Tier 1 lead; our own Seed graduates are funded from Seed reserves. Growth is {L.growth.companies} direct entries alongside leading growth funds ({pct(L.growth.direct_pct ?? 0)} of the layer), and the rest doubles down on our breakouts.</p>
-        <div className="funnel-grid">
-          <div>
-            {(['seed', 'venture', 'growth'] as LayerId[]).map((id) => <TierCard key={id} id={id} />)}
-          </div>
-          <div>
-            <div className="fw-stats">
-              <div className="fw-s"><span className="fw-big">{eur(F.commitments, 'tile')}</span><div className="fw-det"><strong>Total fund.</strong> {eur(A.invested)} invested · {eur(A.mgmt_fees)} management fees · {eur(A.fund_expenses)} fund expenses · {eur(A.contingency)} contingency.</div></div>
-              <div className="fw-s hl"><span className="fw-big">{F.companies}</span><div className="fw-det"><strong>Companies.</strong> {L.seed.companies} Seed · {L.venture.companies} Venture · {g.companies} direct Growth entries, plus {g.positions - g.companies} Growth follow-ons in our own breakouts.</div></div>
-              <div className="fw-s"><span className="fw-big">{pct(A.follow_on_pct)}</span><div className="fw-det"><strong>Reserved for follow-ons.</strong> Pro-rata and super pro-rata in the companies that go exponential.</div></div>
-              <div className="fw-s"><span className="fw-big">{eur(F.company_cap, 'tile')}</span><div className="fw-det"><strong>Maximum per company from the fund</strong> ({pct(F.company_cap_pct)} of commitments). Up to {eur(F.company_max_with_spv, 'tile')} with one or several co-investment SPVs.</div></div>
-              <div className="fw-s"><span className="fw-big">{eur(TARGET.gross_exits, 'tile')}</span><div className="fw-det"><strong>Target gross exit value.</strong> Seed {eur(L.seed.proceeds.target)} · Venture {eur(L.venture.proceeds.target)} · Growth {eur(g.proceeds.target)}.</div></div>
+        <span className="eyebrow">Appendix · Fund construction</span>
+        <h2 className="h2">Fund construction.<br /><em>Two ways in at every layer.</em></h2>
+        <p className="pf-intro">A first equity cheque, or a buyback of existing shares. Then loans, never new shares.</p>
+        <div className="pv-tiers">
+          {LAYER_IDS.map((id) => (
+            <div key={id} className={`tier ${id}`}>
+              <div className="tier-tag">{TIER_TAG[id]}</div>
+              <div className="tier-h">{LAYER_NAME[id]} · {L[id].positions} positions</div>
+              {tierRows(id).map(([label, value]) => (
+                <div key={label} className="tier-row"><span className="tier-label">{label}</span>{value}</div>
+              ))}
             </div>
-          </div>
+          ))}
         </div>
-        <div style={{ marginTop: '40px' }}>
-          <span className="eyebrow">Follow-on Reserves</span>
-          <div className="table-scroll"><table className="fund-table">
-            <thead>
-              <tr><th>Layer</th><th>Initial Tickets</th><th>Reserve Assumption</th><th>Follow-On Reserved</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Seed</td><td>{eur(L.seed.initial)}</td><td>{pct(R.seed.graduation_pct)} raise a Series A of ~{eur(R.seed.next_round, 'tile')}, pro-rata ~{pct(R.seed.pro_rata_pct, 1)} · plus {eur(R.seed.bridges, 'tile')} of bridges</td><td>{eur(L.seed.follow_on)}</td></tr>
-              <tr><td>Venture</td><td>{eur(L.venture.initial)}</td><td>{pct(R.venture.graduation_pct)} raise a Series B of ~{eur(R.venture.next_round, 'tile')}, pro-rata ~{pct(R.venture.pro_rata_pct, 1)}</td><td>{eur(L.venture.follow_on)}</td></tr>
-              <tr><td>Growth</td><td>{eur(g.external ?? 0)}</td><td>Pro-rata and super pro-rata in our breakouts, Series B and beyond</td><td>{eur(g.internal ?? 0)}</td></tr>
-              <tr className="sub"><td>Total</td><td>{eur(A.initial)}</td><td>{pct(A.follow_on_pct)} of invested capital goes to follow-ons</td><td>{eur(A.follow_on)}</td></tr>
-            </tbody>
-          </table></div>
-        </div>
+        <p className="pf-fine">In the fund model, the three layers are named {LAYER_IDS.map((id) => L[id].model_name).join(', ').replace(/, ([^,]*)$/, ' and $1')}.</p>
       </div>
     </div>
   );
 }
 
 const TONE_COLOR = { green: 'var(--blue-dk)', blue: 'var(--blue-dk)', grey: 'var(--mid)', red: 'var(--red)' } as const;
-const SIM_TITLE: Record<LayerId, string> = {
-  seed: `The Seed layer · ${L.seed.companies} companies.`,
-  venture: `The Venture layer · ${L.venture.companies} companies.`,
-  growth: `The Growth layer · ${L.growth.positions} positions.`,
-};
 
-// Une table de simulation par étage, même markup que les tables V1 ; la ligne
-// SUB porte la classe `sub` (gras, fond teinté). Mêmes colonnes en page 3 de
-// la fiche PDF (scripts/factsheet.py) et dans l'onglet Lines du modèle Excel.
-// La colonne Track (lead / radar) n'existe que pour le Seed.
-function FundSimTable({ id, bg }: { id: LayerId; bg?: boolean }) {
+function layerIntro(id: LayerId, x: FundLayer): string {
+  const [y0, y1] = x.entry_years;
+  if (id === 'seed') {
+    const l = x.tracks!.lead;
+    const r = x.tracks!.radar;
+    return `${x.companies} companies: ${l.companies} leads (${l.first} to ${l.last}) + ${r.companies} radar tickets (${r.first} to ${r.last}), entries years ${y0}–${y1}`;
+  }
+  if (id === 'venture') {
+    return `${x.companies} companies, first cheques of ${eurRange(x.first_cheque_range[0], x.first_cheque_range[1], 'table', '–')} at seed+ or Series A, entries years ${y0}–${y1}`;
+  }
+  return `${eurRange(x.position_range[0], x.position_range[1], 'tile', '–')} per position: blocks bought from end-of-life funds at a ${pct(STRUCT_DISC)} discount, fresh growth rounds, and a block in our own breakout; entries years ${y0}–${y1}, exits ${Math.min(...GROWTH_HOLDS)}–${Math.max(...GROWTH_HOLDS)} years later`;
+}
+
+// Une table par étage. Mêmes colonnes en page 4 de la fiche (scripts/factsheet.py)
+// et dans l'onglet Lines du modèle Excel. La ligne de sous-total porte la classe `sub`.
+function SimTable({ id }: { id: LayerId }) {
   const x = L[id];
-  const tracked = id === 'seed';
-  const secondary = new Set(fund.secondary.companies);
-  const marked = x.lines.some((l) => secondary.has(l.company));
+  const dash = '–';
+  // un montant de ligne groupée hors maille de 100 K (S-08–10 : 3 × €750K) s'affiche
+  // à €10K près, comme dans la fiche : €2.25M, pas €2.3M
+  const m = (v: number) => (!v ? dash : v >= 1e6 && v % 1e5 ? `€${(v / 1e6).toFixed(2)}M` : eur(v));
   return (
-    <div className="pf-section" style={bg ? { background: 'var(--bg)' } : undefined}>
+    <div className="pv-sim">
+      <h3 className="pv-sim-h">{TIER_TAG[id]}<small>{layerIntro(id, x)}</small></h3>
+      <div className="table-scroll"><table className="fund-table sim">
+        <thead>
+          <tr><th>Deal ID</th><th>Status</th><th>First cheque</th><th>Buybacks</th><th>Follow-on</th><th>Loan</th><th>Entry stake</th><th>Stake at exit</th><th>Exit value</th><th>Fund return</th><th>MOIC</th></tr>
+        </thead>
+        <tbody>
+          {x.lines.map((l, i) => {
+            const next = x.lines[i + 1];
+            const trackEnd = next !== undefined && l.track !== null && next.track !== l.track;
+            const color = TONE_COLOR[l.tone];
+            const strong = l.tone === 'green' || l.tone === 'blue';
+            return (
+              <tr key={l.id} className={trackEnd ? 'track-end' : undefined}>
+                <td>{rowId(l)}</td>
+                <td><span className={`tag ${l.tone}`}>{l.status}{l.partial ? '*' : ''}</span></td>
+                <td>{m(l.first)}</td>
+                <td>{m(l.buyback)}</td>
+                <td>{m(l.follow)}</td>
+                <td>{m(l.loan)}</td>
+                <td>{l.n === 1 ? pct(l.entry_pct, 1) : dash}</td>
+                <td>{l.exit_pct === null ? dash : pct(l.exit_pct, 1)}</td>
+                <td>{l.exit_value === null ? dash : eur(l.exit_value, 'val')}</td>
+                <td style={strong ? { color, fontWeight: 700 } : { color }}>{eur(l.proceeds)}</td>
+                <td className="moic" style={strong ? undefined : { color }}>{mult(l.moic)}</td>
+              </tr>
+            );
+          })}
+          <tr className="sub"><td>Subtotal</td><td>{LAYER_NAME[id]}</td><td>{eur(x.first)}</td><td>{m(x.buyback)}</td><td>{m(x.follow)}</td><td>{m(x.loans)}</td><td>{dash}</td><td>{dash}</td><td>{dash}</td><td>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  );
+}
+
+function Simulation() {
+  const partial = ALL_LINES.filter((l) => l.partial).map((l) => l.id);
+  const lastTwo = partial.slice(-1)[0];
+  return (
+    <div className="pf-section" id="simulation" style={{ background: 'var(--bg)' }}>
       <div className="pf-wrap-wide">
-        <span className="eyebrow">Fund Simulation</span>
-        <h2 className="h2">{SIM_TITLE[id]}<br /><em>Line-by-line entry, follow-on &amp; exit.</em></h2>
-        <div className="table-scroll"><table className={`fund-table sim${tracked ? ' tracked' : ''}`}>
-          <thead>
-            <tr>
-              <th>Deal ID</th>{tracked && <th>Track</th>}<th>Status</th><th>Initial Tkt</th><th>Entry Val (Post)</th><th>Entry %</th><th>Follow-On</th><th>Exit % (Diluted)</th><th>Exit Val</th><th>Fund Return</th><th>MOIC</th>
-            </tr>
-          </thead>
+        <span className="eyebrow">Appendix · Fund simulation</span>
+        <h2 className="h2">Line-by-line entry, buybacks, loans &amp; exit.<br /><em>Target case, every position of the three layers.</em></h2>
+        <p className="pf-intro">Ownership at exit is higher than at entry on every line where the founder grows with us: buybacks and cancellations lift our stake with his.</p>
+        {LAYER_IDS.map((id) => <SimTable key={id} id={id} />)}
+        <div className="table-scroll pv-total"><table className="fund-table">
           <tbody>
-            {x.lines.map((l, i) => {
-              const tag = outcomeTag(l);
-              const next = x.lines[i + 1];
-              const trackEnd = next !== undefined && next.track !== l.track;  // leads -> radar
-              const color = TONE_COLOR[tag.tone];
-              const strong = tag.tone === 'green' || tag.tone === 'blue';
-              return (
-                <tr key={l.id} className={trackEnd ? 'track-end' : undefined}>
-                  <td>{rowId(l)}{secondary.has(l.company) ? '*' : ''}</td>
-                  {tracked && <td className={`track ${l.track ?? ''}`}>{l.track === 'lead' ? 'Lead' : l.track === 'radar' ? 'Radar' : '–'}</td>}
-                  <td><span className={`tag ${tag.tone}`}>{tag.label}</span></td>
-                  <td>{eur(l.initial)}</td>
-                  <td>{eur(l.entry_post, 'val')}</td>
-                  <td>{pct(l.entry_pct, 1)}</td>
-                  <td>{eur(l.follow_on)}</td>
-                  <td>{l.exit_pct === null ? '–' : pct(l.exit_pct, 1)}</td>
-                  <td>{l.exit_value === null ? '–' : eur(l.exit_value, 'val')}</td>
-                  <td style={strong ? { color, fontWeight: 700 } : { color }}>{eur(l.proceeds)}</td>
-                  <td className="moic" style={strong ? undefined : { color }}>{mult(l.moic)}</td>
-                </tr>
-              );
-            })}
-            <tr className="sub"><td><strong>SUB</strong></td>{tracked && <td>–</td>}<td><strong>({LAYER_NAME[id]})</strong></td><td><strong>{eur(x.initial)}</strong></td><td>–</td><td>–</td><td><strong>{eur(x.follow_on)}</strong></td><td>–</td><td>–</td><td style={{ color: 'var(--blue-dk)', fontWeight: 700 }}>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
+            <tr className="sub"><td>Total</td><td>First cheques {eur(A.first)}</td><td>Buybacks {eur(LAYER_IDS.reduce((s, id) => s + L[id].buyback, 0))}</td><td>Follow-on {eur(LAYER_IDS.reduce((s, id) => s + L[id].follow, 0))}</td><td>Loans {eur(A.loans)}</td><td>Fund return {eur(TARGET.gross_proceeds)}</td><td className="moic">{mult(TARGET.gross_moic)}</td></tr>
           </tbody>
         </table></div>
-        {(marked || id === 'growth' || id === 'seed') && (
-          <p className="pf-fine">
-            {id === 'seed' && <>{LEAD.first} to {LEAD.last}: lead or co-lead tickets ({eurRange(LEAD.ticket_min, LEAD.ticket_max)}). {RADAR.first} to {RADAR.last}: radar tickets ({eurRange(RADAR.ticket_min, RADAR.ticket_max)}), with pro-rata only in the companies that take off.<br /></>}
-            {id === 'growth' && <>Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are made alongside leading growth funds, with a liquidation preference.<br /></>}
-            {marked && <>* Fund return shown at exit value. In the fund model, {pct(fund.secondary.share)} of this position is sold in a year-{fund.secondary.year} secondary at {pct(fund.secondary.price_pct)} of its exit value (see Fund Performance).</>}
-          </p>
-        )}
+        <p className="pf-fine">
+          Fund return at exit value, equity plus loan repayment. * Partial liquidity (pact clause 9): {partial.slice(0, -1).join(', ')} and {lastTwo} sell {pct(SEC.share)} of
+          their stake to the company in year {SEC.year} at {pct(SEC.price_pct)} of exit value; the cash flows and the performance below include it.
+        </p>
       </div>
     </div>
   );
 }
 
-function FundPerformance() {
-  const cases = CASE_IDS.map((id) => fund.cases[id]);
+function Performance() {
   const cell = (i: number) => (i === 0 ? 'hl' : undefined);
+  const rows: [string, (id: 'target' | 'base' | 'stress') => string][] = [
+    ['Fund size', () => FUND_SIZE],
+    ['Gross proceeds, exits and loans', (id) => eur(C[id].gross_proceeds)],
+    [`Partial liquidity discount (clause 9)`, (id) => `−${eur(C[id].secondary_discount)}`],
+    ['Net TVPI', (id) => mult(C[id].net_tvpi)],
+    ['Net IRR', (id) => pct(C[id].net_irr)],
+    ['Net DPI by year 6', (id) => mult(C[id].dpi_year6)],
+    ['Net DPI by year 7', (id) => mult(C[id].dpi_year7)],
+    ['Loans: repaid ÷ lent', (id) => mult(C[id].loans_multiple, 2)],
+    ['Largest exit', (id) => eur(C[id].largest_exit, 'val')],
+    ...LAYER_IDS.map((l) => [`Gross MOIC · ${LAYER_NAME[l]}`, (id: 'target' | 'base' | 'stress') => mult(L[l].moic[id])] as [string, (id: 'target' | 'base' | 'stress') => string]),
+  ];
   return (
-    <div className="pf-section" id="performance" style={{ background: 'var(--bg)' }}>
+    <div className="pf-section" id="performance">
       <div className="pf-wrap-wide">
-        <span className="eyebrow">Fund Performance</span>
+        <span className="eyebrow">Appendix · Fund performance</span>
         <h2 className="h2">Target returns, built line by line.<br /><em>Net of fees, expenses and carry.</em></h2>
-        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}>
-          <div>
-            <div className="table-scroll"><table className="perf-table">
-              <thead>
-                <tr><th>Metric</th><th className="hl">Target</th><th>Base</th><th>Stress</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Fund size</td>{cases.map((_, i) => <td key={i} className={cell(i)}>{eur(F.commitments, 'tile')}</td>)}</tr>
-                <tr><td>Gross exit value</td>{cases.map((c, i) => <td key={i} className={cell(i)}>{eur(c.gross_exits, 'tile')}</td>)}</tr>
-                <tr><td>Year-{fund.secondary.year} secondary discount</td>{cases.map((c, i) => <td key={i} className={cell(i)}>−{eur(c.secondary_discount)}</td>)}</tr>
-                <tr><td>Net TVPI</td>{cases.map((c, i) => <td key={i} className={cell(i)}>{mult(c.net_tvpi)}</td>)}</tr>
-                <tr><td>Net IRR</td>{cases.map((c, i) => <td key={i} className={cell(i)}>{pct(c.net_irr)}</td>)}</tr>
-                <tr><td>Net DPI by year {fund.secondary.year}</td>{cases.map((c, i) => <td key={i} className={cell(i)}>{mult(c.dpi_year6)}</td>)}</tr>
-                {(['seed', 'venture', 'growth'] as LayerId[]).map((layer) => (
-                  <tr key={layer}><td>Gross MOIC · {LAYER_NAME[layer]}</td>{CASE_IDS.map((id, i) => <td key={id} className={cell(i)}>{mult(L[layer].moic[id])}</td>)}</tr>
-                ))}
-              </tbody>
-            </table></div>
-            <p className="pf-fine">Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital), fund expenses and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. The target assumes one fund returner ({fund.fund_returner.company}, returning {mult(fund.fund_returner.multiple_of_fund)} the fund across its Seed and Growth lines) and a year-{fund.secondary.year} secondary sale of {pct(fund.secondary.share)} of the two largest winners at {pct(fund.secondary.price_pct)} of their exit value. Base caps every exit value at {BASE_CAP}, Stress at {STRESS_CAP}; everything else is unchanged. Targets are model outputs, not a forecast or a guarantee.</p>
-          </div>
-          <div className="fw-stats">
-            <div className="fw-s hl"><span className="fw-big">{pct(TARGET.net_irr)}</span><div className="fw-det"><strong>Target net IRR.</strong> Base case {pct(BASE.net_irr)} with no exit above {BASE_CAP}.</div></div>
-            <div className="fw-s"><span className="fw-big">{mult(TARGET.net_tvpi)}</span><div className="fw-det"><strong>Target net TVPI.</strong> Base case {mult(BASE.net_tvpi)}, stress case {mult(STRESS.net_tvpi)}.</div></div>
-            <div className="fw-s"><span className="fw-big">{mult(TARGET.dpi_year6)}</span><div className="fw-det"><strong>Net DPI by year {fund.secondary.year}.</strong> Partial secondaries on our winners return capital early.</div></div>
-            <div className="fw-s"><span className="fw-big">{mult(fund.fund_returner.multiple_of_fund)}</span><div className="fw-det"><strong>One fund returner.</strong> {fund.fund_returner.company} returns the fund across its Seed and Growth lines.</div></div>
-          </div>
+        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}>
+          <div className="table-scroll" style={{ marginTop: 0 }}><table className="perf-table">
+            <thead><tr><th>Metric</th><th className="hl">Target</th><th>Base</th><th>Stress</th></tr></thead>
+            <tbody>
+              {rows.map(([label, fn]) => (
+                <tr key={label}><td>{label}</td>{CASE_IDS.map((id, i) => <td key={id} className={cell(i)}>{fn(id)}</td>)}</tr>
+              ))}
+            </tbody>
+          </table></div>
+          <div className="table-scroll" style={{ marginTop: 0 }}><table className="perf-table">
+            <thead><tr><th>Stress test, Target case</th><th className="hl">Net TVPI</th><th>Net IRR</th></tr></thead>
+            <tbody>
+              {fund.stress_tests.map((s, i) => (
+                <tr key={s.id}><td>{s.label}</td><td className={i === 0 ? 'hl' : undefined}>{mult(s.net_tvpi)}</td><td>{pct(s.net_irr)}</td></tr>
+              ))}
+            </tbody>
+          </table></div>
         </div>
+        <p className="pf-fine">
+          Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, {pct(T.fee_loan_pct)} on the loan sleeve, then {pct(T.fee_post_pct, 1)} on invested capital, loans included until repaid), fund expenses
+          and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. Investments over {F.investment_period_years} years, exits from year {EXIT_YEARS[0]} to year {EXIT_YEARS[1]}.
+          Base: every exit value ×{pct(C.base.exit_mult)}. Stress: every exit value ×{pct(C.stress.exit_mult)}. Loans priced at {mult(fund.loan_multiples.performing)} on healthy companies, drawn in tranches;
+          zombies repay {mult(fund.loan_multiples.zombie)}, plus {loanLoss('target')}, {loanLoss('base')} and {loanLoss('stress')} further losses on every loan by case. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
+          and angels, {pct(STRUCT_DISC)} below from structural sellers (end-of-life funds). When a founder raises elsewhere, ProFund follows in new shares (S-01, V-02). G-02 and G-04 are fresh growth rounds in new shares;
+          every first cheque carries a 1× non-participating preference. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
+          topped up to {eur(F.company_max_with_spv, 'tile')} with SPVs, outside the fund. Net TVPI on paid-in capital. Loan recycling not included. Targets are model outputs, not a forecast or a guarantee.
+        </p>
         <Downloads />
       </div>
     </div>
@@ -459,215 +534,77 @@ function Downloads() {
       </a>
       <a className="pv-dl" href={FACTSHEET_URL} download>
         <span className="pv-dl-ic"><Icon name="file" /></span>
-        <span><b>Fact sheet (PDF)</b><small>Three pages, fund simulation included</small></span>
+        <span><b>Fact sheet (PDF)</b><small>Four pages, fund simulation included</small></span>
       </a>
     </div>
   );
 }
 
-function ExitStrategy() {
+function Contact({ onFollow }: { onFollow: () => void }) {
   return (
-    <div className="pf-section">
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">Exit Strategy</span>
-        <h2 className="h2">Reverse-engineering the exit.<br /><em>AI-powered wargaming &amp; kingmaker assets.</em></h2>
-        <p className="pf-intro">We only invest if we can identify the exit at entry. Every position is underwritten against two scenarios: standalone giant (IPO) or strategic acquisition by a legacy incumbent who must buy to survive.</p>
-        <div className="mods">
-          <div className="mod">
-            <div className="mod-num">① COLLISION ALGORITHMS</div>
-            <div className="mod-title">Detecting M&amp;A races</div>
-            <div className="mod-sub">Finding strategic gaps before the market does.</div>
-            <div className="mod-desc">We run algorithms to detect forming M&amp;A races and structural gaps in competitive landscapes. Our wargaming engine maps acquisition posture vs. acquisition capacity across all relevant incumbents in a sector.<br /><br /><strong>We identify who will buy a company 18–24 months before the LOI is signed</strong>, and build our entry thesis around that exit thesis.</div>
-          </div>
-          <div className="mod">
-            <div className="mod-num">② THE KINGMAKER ASSET</div>
-            <div className="mod-title">Must-buy or must-build</div>
-            <div className="mod-sub">Two acceptable exit paths. No third option.</div>
-            <div className="mod-desc">We invest only if the asset can become a <strong>stand-alone giant</strong> capable of IPO, or a <strong>Kingmaker</strong> that legacy incumbents must acquire to defend their market cap.<br /><br />The question at entry: if this company owns the category in Europe by 2028, what does the dominant incumbent in that space pay to own it?</div>
-          </div>
-          <div className="mod">
-            <div className="mod-num">③ THE BUYERS</div>
-            <div className="mod-title">Category ownership as the exit thesis</div>
-            <div className="mod-sub">We invest in companies that will own their category in Europe. The rest follows.</div>
-            <div className="mod-desc">Legacy incumbents cannot build category-defining AI products at speed: their organizational structure, data governance and talent base make organic transformation impossible. They must acquire.<br /><br />We invest in companies that will own their category in Europe. The rest follows.</div>
-          </div>
-          <div className="mod">
-            <div className="mod-num">④ PORTFOLIO WARGAMING</div>
-            <div className="mod-title">Exit timing &amp; scenario modeling</div>
-            <div className="mod-sub">6, 12, 18-month exit scenarios, continuously updated.</div>
-            <div className="mod-desc">Our platform runs continuous 6, 12 and 18-month exit scenarios for every portfolio company. It detects if a company is becoming an acquisition target, if an M&amp;A race is forming, or if a strategic gap is opening that accelerates exit timing.<br /><br /><strong>Portfolio health scores</strong> flag deterioration before it becomes irreversible. We help founders course-correct as fast as possible.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FoundingPartner() {
-  return (
-    <div className="pf-section" id="gp" style={{ background: 'var(--bg)' }}>
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">Founding Partner</span>
-        <div className="gp-grid" style={{ marginTop: '28px' }}>
-          <div><img src={GP_PHOTO_URL} alt="Alexandre Busson" style={{ width: '160px', height: '200px', objectFit: 'cover', objectPosition: 'center top', border: '1px solid var(--line)', display: 'block' }} /></div>
+    <section className="pv-sec pv-sec-end" id="contact">
+      <div className="pv-wrap">
+        <div className="pv-band">
           <div>
-            <div className="gp-name">Alexandre Busson</div>
-            <div className="gp-role">Founding Partner &amp; GP · ProFund · ESSEC · Ardian · Partech · Leboncoin · Google</div>
-            {/* 31/10 (Antoine) — les maisons où le GP a investi et déployé du capital */}
-            <div className="gp-logos" aria-label="Partech · Ardian · leboncoin">
-              {CV_LOGOS.map((l) => <img key={l.name} src={l.src} alt={l.name} style={{ height: l.h }} />)}
-            </div>
-            <div className="f-rows">
-              <div className="f-row"><span className="f-co">Ardian · LBO analyst</span><span className="f-desc">Financial analysis, due diligence and portfolio monitoring across European mid-market companies. The work these products automate, done manually, at institutional standard.</span></div>
-              <div className="f-row"><span className="f-co">Partech Ventures · Senior associate</span><span className="f-desc">Sourcing and qualification of European pre-seed to Series B startups. Hundreds of founding teams evaluated. The conviction the platform encodes today was built here, manually, before it was an algorithm.</span></div>
-              <div className="f-row"><span className="f-co">Leboncoin · M&amp;A director</span><span className="f-desc">End-to-end acquisitions across Europe. The only GP who has sat on the acquirer's side of the table, and knows what makes a company unmissable at the LOI stage.</span></div>
-              <div className="f-row"><span className="f-co">Google · Key account manager assistant</span><span className="f-desc">Key account management at Google.</span></div>
-              <div className="f-row"><span className="f-co">Founder &amp; operator</span><span className="f-desc">Owner and CEO of Fadparis.com. Founder and investor of Dreamzer Games.</span></div>
-              <div className="f-row"><span className="f-co">Network</span><span className="f-desc">ESSEC graduate. Active across Station F, the incubateur de l'X, and HEC's entrepreneurship program. Direct relationships with founding teams before they are visible.</span></div>
-              <div className="f-row"><span className="f-co">Deal-03 · 19×</span><span className="f-desc">Seed ticket €200K at €5.3M. LBO exit at €100M. Sourced 14 months before public announcement, via the same weak signal methodology the platform now runs at scale every morning. <span className="f-kpi">19× return.</span></span></div>
-              <div className="f-row"><span className="f-co">Deal-04 · Acquired 2016</span><span className="f-desc">100% acquisition, €45M buyout. Revenue growing ~20% YoY since acquisition.</span></div>
-            </div>
+            <h2>Request LP access</h2>
+            <p>Fact sheet, fund model (Excel) and data room, for professional and eligible investors. Contact: <a className="pv-band-a" href="mailto:alexandre@profund.vc">alexandre@profund.vc</a></p>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TrackRecord() {
-  return (
-    <div className="pf-section">
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">Track Record</span>
-        <h2 className="h2">Generating tens of millions in value<br /><em>at every stage, every employer.</em></h2>
-        <p className="pf-fine" style={{ marginTop: 0 }}><em>Methodology: Public figures. Exit valuations and transaction metrics may contain assumptions &amp; estimations.</em></p>
-        <div className="table-scroll"><table className="fund-table">
-          <thead>
-            <tr><th>Deal ID</th><th>Status</th><th>Entry Date</th><th>Exit Date</th><th>Initial Tkt</th><th>Entry Val (Post)</th><th>Entry %</th><th>Exit Val (Total)</th><th>Return</th><th>CoC</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Deal-01</td><td><span className="tag green">Exited (Full)</span></td><td>2006</td><td>2007</td><td>n.c.</td><td>n.c.</td><td>100%</td><td>n.c.</td><td>n.c.</td><td className="moic">10.0×</td></tr>
-            <tr><td>Deal-02</td><td><span className="tag green">Exited (Full)</span></td><td>2008</td><td>2014</td><td>n.c.</td><td>n.c.*</td><td>100%→40%→0%</td><td>n.c.**</td><td>n.c.</td><td className="moic">20.0×</td></tr>
-            <tr><td>Deal-03</td><td><span className="tag blue">Graduated (Seed → LBO)</span></td><td>2014</td><td>Feb 2025</td><td>€200K</td><td>€5.26M</td><td>3.8%</td><td>€100M***</td><td style={{ color: 'var(--blue-dk)', fontWeight: 700 }}>€3.8M</td><td className="moic">19.0×</td></tr>
-            <tr><td>Deal-04</td><td><span className="tag grey">Ongoing (100% held)</span></td><td>2016</td><td>Ongoing</td><td>€45M</td><td>€45M</td><td>100%</td><td>–</td><td>–</td><td className="moic" style={{ color: 'var(--mid)' }}>–</td></tr>
-          </tbody>
-        </table></div>
-        <p className="pf-fine">* Deal-03: Entry seed €5.3M · Follow-on at €15M round · Exit LBO/MBO Feb 2025 at €100M · 12.5× EBITDA on €8M EBITDA · Estimated 19× on seed ticket.<br />** Deal-04: 100% acquisition, €45M buyout in 2016 · Revenue growing ~20% YoY since acquisition · No multiple shown for a position still fully held.</p>
-      </div>
-    </div>
-  );
-}
-
-function GovernanceSection() {
-  return (
-    <div className="pf-section" style={{ background: 'var(--bg)' }}>
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">Governance &amp; Terms</span>
-        <h2 className="h2">One fund. One GP. No back office.<br /><em>Standard terms, outsourced operations.</em></h2>
-        <p className="pf-intro">A single fund run by a solo GP on an AI platform. Administration, audit, reporting and investor onboarding are outsourced to a regulated third-party EuVECA manager, so the GP's time goes to founders.</p>
-        <div className="gov-grid">
-          <div className="gov">
-            <div className="gov-h">Fund structure</div>
-            <p className="gov-p">EuVECA fund (Luxembourg) managed by a third-party EuVECA manager: administration, audit, reporting and investor onboarding.<br /><br />Closed-ended Fund I · {F.term_years} years · successive closings over {F.closing_months} months. Marketed across the EU under the EuVECA passport.</p>
-          </div>
-          <div className="gov">
-            <div className="gov-h">Fund terms</div>
-            <p className="gov-p">{pct(T.fee_ip_pct)} management fee on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital ({pct(T.fee_first_close_pct, 2)} for first-close investors)<br />{pct(T.carry_pct)} carried interest · {pct(T.hurdle_pct)} hurdle · European whole-of-fund waterfall with GP catch-up and clawback</p>
-          </div>
-          <div className="gov">
-            <div className="gov-h">3-person advisory committee</div>
-            <p className="gov-p">Independent experts consulted on every Growth-layer investment. The investment decision stays with the manager.<br /><br />· Member A: ex-partner at a Tier 1 fund<br />· Member B: founder &amp; CEO of an operating decacorn</p>
-          </div>
-        </div>
-        <div style={{ marginTop: '32px' }}>
-          <div className="impact-grid">
-            <div className="imp"><span className="imp-n">{eur(F.commitments, 'tile')}</span><span className="imp-h">Target Fund I</span><p className="imp-p">Closed-ended · {F.term_years} years · closings over {F.closing_months} months</p></div>
-            <div className="imp"><span className="imp-n">{(T.fee_ip_pct * 100).toFixed(0)}/{(T.carry_pct * 100).toFixed(0)}</span><span className="imp-h">Fee structure</span><p className="imp-p">Then {pct(T.fee_post_pct, 1)} on invested capital · {pct(T.hurdle_pct)} hurdle</p></div>
-            <div className="imp"><span className="imp-n">{eur(F.company_max_with_spv, 'tile')}</span><span className="imp-h">Max per company</span><p className="imp-p">Up to {eur(F.company_cap, 'tile')} from the fund, the rest through co-investment SPVs offered to our investors</p></div>
-            <div className="imp"><span className="imp-n">1 GP</span><span className="imp-h">Solo GP + AI platform</span><p className="imp-p">Back office outsourced · automated monitoring and LP reporting</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CTASection({ onFollow }: { onFollow: () => void }) {
-  return (
-    <div id="contact" className="pf-section">
-      <div className="pf-wrap-wide">
-        <div className="pv-band pv-band-col">
-          <div>
-            <span className="eyebrow">Get in Touch</span>
-            <h2 className="cta-h">Invest in the future<br />of <em>European AI.</em></h2>
-            <p className="cta-p">We are selectively building our LP base. A {eur(F.commitments, 'tile')} European venture fund, seed to growth: one fund that follows AI-native companies from {eur(L.seed.ticket_min, 'tile')} to {eur(F.company_cap, 'tile')}, powered by an in-house AI platform that tracks every European seed round and reads 24/7 weak signals before they become obvious to the category.</p>
-            <p className="cta-note">Contact: <a href="mailto:alexandre@profund.vc">alexandre@profund.vc</a></p>
-          </div>
-          {/* 29/10 — le même formulaire que l'accueil (DealFlowModal), plus l'ancien iframe Brevo */}
           <div className="pv-band-ctas">
-            <button type="button" className="pv-btn light" onClick={onFollow}>Follow our deal flow live <Icon name="arrow" /></button>
-            <a href={MODEL_XLSX_URL} className="pv-btn ghost-light" download><Icon name="sheet" />Fund model (Excel)</a>
-            <p className="pv-band-fine">Every evening, the companies we reviewed that day, the ones we kept, and why.</p>
+            <Link to="/lp" className="pv-btn light">Request LP access <Icon name="arrow" /></Link>
+            <button type="button" className="pv-btn ghost-light" onClick={onFollow}>Follow our deal flow live</button>
           </div>
         </div>
+        {/* La mention de pré-commercialisation, inchangée (même texte que /lp, la fiche et /legal). */}
+        <p className="pv-note">
+          This document is a pre-marketing communication within the meaning of Article 4a of Regulation (EU) No 345/2013 (EuVECA).
+          The fund is not yet established and no units may be subscribed at this stage. For professional and eligible investors only.
+        </p>
       </div>
-    </div>
+    </section>
   );
 }
 
 const PITCH_LINKS = [
-  { href: '#thesis', label: 'Thesis' },
-  { href: '#edge', label: 'Edge' },
-  { href: '#construction', label: 'Construction' },
-  { href: '#performance', label: 'Returns' },
-  { href: '#gp', label: 'GP' },
+  { href: '#shift', label: 'Thesis' },
+  { href: '#math', label: 'Founder math' },
+  { href: '#alignment', label: 'Alignment' },
+  { href: '#team', label: 'Team' },
+  { href: '#terms', label: 'Terms' },
+  { href: '#simulation', label: 'Simulation' },
 ];
 
 export default function ProFundPage() {
   // Un seul popup pour la page : le moteur de deal flow (OurEdge) et le bloc contact l'ouvrent.
   const [open, setOpen] = useState(false);
   const follow = () => setOpen(true);
+  useEffect(() => { if (!window.location.hash) window.scrollTo(0, 0); }, []);
   return (
     <>
       <SiteHeader links={PITCH_LINKS}>
         <a href={MODEL_XLSX_URL} className="pv-btn line pv-hide-sm" download><Icon name="sheet" />Excel model</a>
-        <a href="#contact" className="pv-btn">Request LP access</a>
+        <Link to="/lp" className="pv-btn">Request LP access</Link>
       </SiteHeader>
-      <HeroSection />
-      <Manifesto />
-      <FourLaws />
+      <TitleSlide />
+      <TheShift />
+      <Manifesto tint />
+      <FourLaws tint={false} />
+      <TheProblem />
+      <TheInversion />
+      <HowWeBack />
+      <EveryStage />
+      <FounderMathSlide />
+      <EveryoneWins />
+      <Alignment />
       <OurEdge onFollow={follow} />
       <ProofOfWork />
-      <TheOpportunity />
+      <SignedPipeline />
+      <Team />
+      <TermsAndTargets />
+      <Construction />
       <hr className="pf-div" />
-      <WhyOneFund />
-      <hr className="pf-div" />
-      <ThePlatform />
-      <hr className="pf-div" />
-      <HowThemesWork />
-      <hr className="pf-div" />
-      <TheConversion />
-      <hr className="pf-div" />
-      <WinningFounder />
-      <hr className="pf-div" />
-      <PortfolioArch />
-      <hr className="pf-div" />
-      <FundSimTable id="seed" />
-      <hr className="pf-div" />
-      <FundSimTable id="venture" bg />
-      <hr className="pf-div" />
-      <FundSimTable id="growth" />
-      <hr className="pf-div" />
-      <FundPerformance />
-      <hr className="pf-div" />
-      <ExitStrategy />
-      <hr className="pf-div" />
-      <FoundingPartner />
-      <hr className="pf-div" />
-      <TrackRecord />
-      <hr className="pf-div" />
-      <GovernanceSection />
-      <CTASection onFollow={follow} />
+      <Simulation />
+      <Performance />
+      <Contact onFollow={follow} />
       <DealFlowModal open={open} onClose={() => setOpen(false)} />
     </>
   );

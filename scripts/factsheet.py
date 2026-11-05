@@ -1,4 +1,4 @@
-"""Genere public/profund-factsheet.pdf — la fiche du fonds, trois pages A4.
+"""Genere public/profund-factsheet.pdf — la fiche du fonds (v3), quatre pages A4.
 
 Mise en page reprise des fiches V5 de Maximum Insurance (fiche entreprise :
 https://maximum-insurance.com/entreprises) avec leur moteur de dessin
@@ -7,21 +7,28 @@ titres serres, cartes arrondies a ombre douce, tuiles d'icones en degrade,
 tableau a colonne mise en avant, bande d'appel sombre avec un grand QR.
 Palette ProFund (gris bleu), la meme que le site.
 
-    page 1  la vision : titre, manifeste, quatre lois, construction du fonds
-    page 2  l'avantage (deux moteurs), termes, le GP, la preuve, l'appel (QR)
-    page 3  la simulation ligne a ligne et la performance du fonds
+    page 1  la these et la structure : titre, ligne forte, manifeste, quatre
+            lois, le pacte des fondateurs, la bande de chiffres
+    page 2  la construction du fonds, les termes, l'allocation, « Everyone
+            wins » (le tableau a 250 M EUR), conflits et filet de securite
+    page 3  l'avantage (deux moteurs), l'equipe, le track record, la preuve,
+            le contact (QR)
+    page 4  meme societe, meme sortie (le tableau des fondateurs), la
+            simulation ligne a ligne, la performance et les tests de resistance
 
-REGLE EDITORIALE : construction detaillee, tickets et rendements cibles vivent
-ICI (et sur /pitch). L'accueil ne porte que la taille du fonds et renvoie ici.
+Texte : la fiche v3 d'Antoine (05/11). La copie de la these (manifeste,
+lois, moteurs, preuve) est la meme que src/components/Thesis.tsx : les changer
+ensemble.
 
 CHIFFRES : tous lus dans src/data/fund.json, genere par scripts/fund_model.py
-(la meme source que /pitch). Aucun chiffre du fonds ne se tape ici. Le script
+(la meme source que le site). Aucun chiffre du fonds ne se tape ici. Le script
 refuse de produire la fiche si fund.json n'est plus a jour.
 
-TEXTE : Archivo est embarquee, « € », « — », « × » sont permis. Un caractere
-sans glyphe dans Archivo fait echouer la fiche (sheet_engine.check_glyphs).
-La mention de pre-commercialisation (encadre de tete et pied) est la meme que
-dans le pied de l'accueil et du popup : les changer ensemble.
+TEXTE : Archivo est embarquee, « € », « × » sont permis. Un caractere sans
+glyphe dans Archivo fait echouer la fiche (sheet_engine.check_glyphs). Pas de
+tiret long dans le texte visible (regle du 30/10). La mention de
+pre-commercialisation (encadre de tete et pied) est la meme que dans le pied
+de l'accueil et du popup : les changer ensemble.
 
 La page ne doit jamais deborder sur le pied : chaque page renvoie sa plus basse
 ligne et main() echoue si elle passe sous le filet du pied.
@@ -43,7 +50,7 @@ from reportlab.pdfgen import canvas
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sheet_engine import (  # noqa: E402
-    ARROW, BLUE, BLUE_DK, BLUE_GRAD, BLUE_SOFT, BLUE_TINT, BOTTOM, CHECK, FOOT_RULE, GLOW, GREEN, GREEN_SOFT,
+    ARROW, BLUE, BLUE_DK, BLUE_SOFT, BLUE_TINT, BOTTOM, CHECK, FOOT_RULE, GLOW, GREEN, GREEN_SOFT,
     INK, INK2, LINE, LINE2, M, MUTED, NIGHT, NIGHT_LINE, NIGHT_TXT, PH, PW, PX, RED, RED_SOFT, SOFT, W, WARM,
     WHITE, Frame, x,
 )
@@ -51,8 +58,6 @@ from sheet_engine import (  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 LOGO = ROOT / "public" / "logo.png"
 PHOTO = ROOT / "public" / "gp-photo-sheet.jpg"
-# Vraie capture de profund.vc/dealflow (vue LP marque blanche du cockpit), pas
-# une maquette. A refaire si l'ecran change.
 # Captures 3x du deal flow ProFund (vue LP de profund.vc/dealflow, 30/10) : (fichier, hauteur / largeur).
 MAP_SHOT = (ROOT / "public" / "dealflow-map.jpg", 1212 / 2000)
 PIPE_SHOT = (ROOT / "public" / "dealflow-pipeline.jpg", 937 / 1500)
@@ -61,16 +66,17 @@ FUND_JSON = ROOT / "src" / "data" / "fund.json"
 
 SITE = "https://profund.vc"
 DEALFLOW = "https://profund.vc/#dealflow"      # ce hash ouvre le popup d'abonnement de l'accueil
+DEALFLOW_TXT = "profund.vc/dealflow"
 MAIL = "alexandre@profund.vc"
 PHONE = "+33 6 83 10 72 86"
-PAGES = 3
+PAGES = 4
 MONTHS = ("January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December")
 
 # Les societes que le GP opere avec ses agents, hors du fonds (detenues a 100 %).
-# Memes accroches que l'accueil (src/components/HomepageLite.tsx). Maximum
-# Insurance n'existe qu'en SVG cote site : reportlab ne lit pas le SVG, d'ou sa
-# version PNG dans scripts/assets/.
+# Memes accroches que l'accueil (src/components/Thesis.tsx). Maximum Insurance
+# n'existe qu'en SVG cote site : reportlab ne lit pas le SVG, d'ou sa version
+# PNG dans scripts/assets/.
 PORTFOLIO = (
     ("Proplace", "Autonomous AI operating system for corporate development & M&A.",
      ROOT / "public" / "portfolio-proplace.png", "https://proplace.co"),
@@ -97,8 +103,12 @@ LAYERS = DATA["layers"]
 CASES = DATA["cases"]
 ALLOC = DATA["allocation"]
 SECONDARY = DATA["secondary"]
+FOUNDERS = DATA["founder_math"]
+STRESS = DATA["stress_tests"]
 LAYER_IDS = ("seed", "venture", "growth")
 CASE_IDS = ("target", "base", "stress")
+LAYER_NAME = {"seed": "Seed", "venture": "Venture", "growth": "Growth"}
+ALL_LINES = [ln for k in LAYER_IDS for ln in LAYERS[k]["lines"]]
 
 
 # ── formats (meme logique que src/lib/fund.ts) ──────────────────────────────
@@ -108,7 +118,7 @@ def eur(v, mode="table"):
         return "€0"
     if mode == "val":
         if v >= 1e9:
-            return f"€{v / 1e9:.1f}B"
+            return f"€{v / 1e9:.1f}B" if v % 1e9 else f"€{v // 1_000_000_000}B"
         if v >= 1e7:
             return f"€{v / 1e6:.0f}M"
     if mode == "tile" and v >= 1e6 and v % 1_000_000 == 0:
@@ -118,21 +128,32 @@ def eur(v, mode="table"):
     return f"€{v / 1e6:.1f}M"
 
 
-def rng(a, b):
+def eur_cost(v):
+    """Montant investi d'une ligne : €2.25M quand le total n'est pas sur la maille de 100 K."""
+    if v >= 1e6 and v % 100_000:
+        return f"€{v / 1e6:.2f}M"
+    return eur(v)
+
+
+def rng(a, b, mode="tile"):
     """€150K–€1.5M"""
-    return f"{eur(a, 'tile')}–{eur(b, 'tile')}"
+    return f"{eur(a, mode)}–{eur(b, mode)}"
 
 
-def mult(v):
-    return f"{v:.1f}×"
+def mult(v, dp=1):
+    return f"{v:.{dp}f}×"
 
 
 def pct(v, dp=0):
     return f"{v * 100:.{dp}f}%"
 
 
+def dash(v, fmt):
+    return "–" if not v else fmt(v)
+
+
 def row_id(line):
-    """S-01 ; S-07–09 pour trois societes ; V-05/06 pour deux (src/lib/fund.ts, rowId)."""
+    """S-01 ; S-08–10 pour trois societes ; V-05/06 pour deux (src/lib/fund.ts, rowId)."""
     if line["n"] == 1:
         return line["id"]
     prefix, num = line["id"].split("-")
@@ -140,22 +161,14 @@ def row_id(line):
     return f"{line['id']}/{last}" if line["n"] == 2 else f"{prefix}-{num}–{last}"
 
 
-# Libelle et ton du statut d'une ligne (src/lib/fund.ts, outcomeTag).
-def outcome_tag(line):
-    n, co = line["n"], line["company"]
-    return {
-        "fund_returner": ("Fund returner", "green"), "breakout": ("Breakout", "green"),
-        "strategic_exit": ("Strategic exit", "blue"), "early_exit": ("Early exit (M&A)", "blue"),
-        "zombie": (f"Zombies (×{n})", "grey"), "loss": (f"Losses (×{n})", "red"),
-        "anchor": ("Anchor", "green"), "strategic_win": ("Strategic win", "blue"),
-        "base_hit": ("Base hit", "grey"), "breakout_follow_on": (f"Breakout ({co})", "green"),
-        "pro_rata": (f"Pro-rata ({co})", "blue"), "external_growth": ("Direct growth entry", "blue"),
-        "downside_protected": ("Downside, preference", "grey"),
-    }[line["outcome"]]
+def lst(items):
+    """« a, b and c »"""
+    items = list(items)
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
 
 
 TONE = {"green": (GREEN, GREEN_SOFT), "blue": (BLUE_DK, BLUE_SOFT), "grey": (MUTED, WARM), "red": (RED, RED_SOFT)}
-# couleur du « Fund return » (ProFundPage.tsx, TONE_COLOR)
+# couleur du « Fund return » (site, TONE_COLOR)
 TONE_TEXT = {"green": BLUE_DK, "blue": BLUE_DK, "grey": MUTED, "red": RED}
 FUND_SIZE = eur(FUND["commitments"], "tile")
 
@@ -167,7 +180,7 @@ class Doc:
         self.c = canvas.Canvas(self.buf, pagesize=(PW * PX, PH * PX), pageCompression=1)
         self.c.setTitle("ProFund · Fund fact sheet")
         self.c.setAuthor("ProFund")
-        self.c.setSubject(f"Venture capital, seed to growth · {FUND_SIZE} target Fund I · "
+        self.c.setSubject(f"Venture capital, pre-seed to growth · {FUND_SIZE} target Fund I · "
                           "pre-marketing communication")
         self.c.setCreator("ProFund · scripts/factsheet.py")
         self.num = 0
@@ -185,13 +198,23 @@ class Doc:
         return self.F
 
     def _header(self):
+        """Logo ; VENTURE CAPITAL · PRE-SEED TO GROWTH · EUROPE · profund.vc/dealflow · Fact sheet n/4."""
         F = self.F
         lh = 25.0
         lw = lh * 351 / 93
         F.image(LOGO, M, 21, lw, lh)
         F.link(M, 18, lw, lh + 6, SITE)
-        wn = F.text(M + W, 30, f"{self.num} / {PAGES}", "xgras", 11, BLUE_DK, align="r")
-        F.text(M + W - wn - 14, 30, "Fact sheet", "semi", 11, MUTED, align="r")
+        r = M + W
+        r -= F.text(r, 30, f"{self.num}/{PAGES}", "xgras", 11, BLUE_DK, align="r") + 5
+        r -= F.text(r, 30, "Fact sheet", "semi", 11, MUTED, align="r") + 9
+        F.text(r, 31, "·", "semi", 10, SOFT, align="r")
+        r -= 13
+        wd = F.text(r, 31.5, DEALFLOW_TXT, "semi", 9.2, BLUE_DK, align="r")
+        F.link(r - wd, 28, wd, 15, DEALFLOW)
+        r -= wd + 9
+        F.text(r, 31, "·", "semi", 10, SOFT, align="r")
+        r -= 13
+        F.text(r, 33, "VENTURE CAPITAL · PRE-SEED TO GROWTH · EUROPE", "xgras", 7.6, BLUE, 0.12, align="r")
         F.line(M, 60, M + W, 60, LINE2, 1)
 
     def _footer(self):
@@ -202,7 +225,8 @@ class Doc:
                  f"Contact: {MAIL}")
         F.para(M, 1062, W - 180, x(legal), 7.6, "reg", SOFT, 1.5)
         # version et date : trace de ce qui a ete envoye a qui (regle des 18 mois)
-        F.text(M, 1077, f"Fact sheet {DATA['version']} · {MONTHS[int(month) - 1]} {year}", "semi", 7.6, SOFT)
+        major = DATA["version"].split(".")[0]
+        F.text(M, 1077, f"Fact sheet {major} · {MONTHS[int(month) - 1]} {year}", "semi", 7.6, SOFT)
         w1 = F.text(M + W, 1062, "profund.vc", "xgras", 10, INK, align="r")
         F.link(M + W - w1, 1060, w1, 14, SITE)
         w2 = F.text(M + W, 1078, MAIL, "reg", 9, MUTED, align="r")
@@ -261,7 +285,7 @@ def grey_logo(path, darkness=0.6):
     return ImageReader(out), out.size
 
 
-def browser(F, u, v, w, url="profund.vc/dealflow"):
+def browser(F, u, v, w, url=DEALFLOW_TXT):
     """La capture de la carte du deal flow dans un cadre de navigateur ; rend la hauteur."""
     ih = w * MAP_SHOT[1]
     F.shadow(u, v, w, ih + 26, 14, 0.8, 0.025)
@@ -308,7 +332,74 @@ def powers(F, u, v, w, names, draw=True):
     return cy_ - v + 19
 
 
-# ── page 1 : la vision ──────────────────────────────────────────────────────
+# Un tableau en carte : en-tete gris clair, colonne mise en avant (hl), cellules
+# qui passent a la ligne. cols : (largeur relative, alignement "l" / "r" / "c").
+# Une cellule : texte, ou (texte, graisse, couleur).
+_AL = {"l": 0, "c": 1, "r": 2}
+
+
+def grid(F, u, v, w, cols, head, rows, size=8.8, hsize=7.0, pad_y=4.6, hl=None, lead=1.3,
+         strong_last=False, pad=12.0, draw=True, head_pad=None):
+    tot = sum(c[0] for c in cols)
+    xs, cx = [], u + pad
+    for cw, _al in cols:
+        xs.append((cx, cw * (w - 2 * pad) / tot))
+        cx += cw * (w - 2 * pad) / tot
+
+    def norm(c, i, last):
+        if isinstance(c, tuple):
+            return c
+        if last and strong_last:
+            return (c, "gras", INK)
+        if i == 0:
+            return (c, "semi", INK)
+        return (c, "reg", INK2)
+
+    def hgt(i, s, role, sz):
+        return F.hpara(xs[i][1] - 6, x(s), sz, role, lead)
+
+    hp = pad_y if head_pad is None else head_pad
+    hh = max(hgt(i, h.upper(), "xgras", hsize) for i, h in enumerate(head)) + 2 * hp + 4
+    rhs = []
+    for k, r in enumerate(rows):
+        cells = [norm(c, i, k == len(rows) - 1) for i, c in enumerate(r)]
+        rhs.append(max(hgt(i, c[0], c[1], size) for i, c in enumerate(cells)) + 2 * pad_y)
+    total = hh + sum(rhs)
+    if not draw:
+        return total
+    card(F, u, v, w, total, 14)
+    F.clip(u, v, w, total, 14)
+    F.rr(u, v, w, hh, 0, fill="#FAFBFC")
+    if hl is not None:
+        x0, cw = xs[hl]
+        x1 = u + w if hl == len(cols) - 1 else x0 + cw + 4   # derniere colonne : jusqu'au bord
+        F.rr(x0 - 4, v, x1 - x0 + 4, total, 0, fill=BLUE_TINT)
+        F.rr(x0 - 4, v, x1 - x0 + 4, hh, 0, fill=BLUE_SOFT)
+        F.rr(x0 - 4, v, x1 - x0 + 4, 3, 0, fill=BLUE)
+    if strong_last:
+        F.rr(u, v + total - rhs[-1], w, rhs[-1], 0, fill=WARM)
+    F.unclip()
+    F.rr(u, v, w, total, 14, stroke=LINE2, lw=1)
+
+    def put(i, yy, s, role, color, sz):
+        x0, cw = xs[i]
+        F.para(x0 + 3, yy, cw - 6, x(s), sz, role, color, lead, _AL[cols[i][1]])
+
+    for i, h in enumerate(head):
+        put(i, v + hp + 2, h.upper(), "xgras", BLUE_DK if i == hl else MUTED, hsize)
+    y = v + hh
+    for k, r in enumerate(rows):
+        F.line(u, y, u + w, y, LINE2 if (strong_last and k == len(rows) - 1) else LINE, 1)
+        for i, c in enumerate(r):
+            s, role, color = norm(c, i, k == len(rows) - 1)
+            if i == hl and not isinstance(c, tuple):
+                role, color = ("gras", BLUE_DK)
+            put(i, y + pad_y, s, role, color, size)
+        y += rhs[k]
+    return total
+
+
+# ── page 1 : la these et la structure ───────────────────────────────────────
 LAWS = (
     ("crown", "Visionary founders",
      "We back obsessive visionaries from Day 1. Founders who don't build org charts, but "
@@ -324,86 +415,55 @@ LAWS = (
      f"company built to dominate its category globally and return our entire {FUND_SIZE} fund."),
 )
 
-
-def tier_rows(layer):
-    t = LAYERS[layer]
-    moic = f"{mult(t['moic']['target'])} MOIC"
-    entry = rng(t["entry_post_min"], t["entry_post_max"])
-    if layer == "seed":
-        st = t["tracks"]
-        return [("STAGE", "Pre-seed / seed"), ("ROLE", "Lead + radar tickets"), ("ENTRY POST", entry),
-                ("COMPANIES", f"{st['lead']['companies']} leads + {st['radar']['companies']} radar"),
-                ("INVESTED", eur(t["invested"])),
-                ("TARGET GROSS", moic)]
-    if layer == "venture":
-        return [("STAGE", "Seed+ / Series A"), ("ROLE", "Direct, at the inflection"), ("ENTRY POST", entry),
-                ("COMPANIES", f"{t['companies']} direct entries"), ("INVESTED", eur(t["invested"])),
-                ("TARGET GROSS", moic)]
-    follow = t["positions"] - t["companies"]
-    return [("STAGE", "Series B and beyond"), ("ROLE", "Direct + our breakouts"), ("ENTRY POST", entry),
-            ("POSITIONS", f"{t['companies']} direct + {follow} follow-ons"), ("INVESTED", eur(t["invested"])),
-            ("TARGET GROSS", moic)]
-
-
-def tier_card(F, u, v, w, h, layer, n):
-    t = LAYERS[layer]
-    card(F, u, v, w, h)
-    pad = 15.0
-    F.rr(u + pad, v + pad, 26, 26, 8, fill=BLUE_SOFT)
-    F.text(u + pad + 13, v + pad + 6.6, str(n), "gras", 12, BLUE_DK, align="c")
-    F.text(u + pad + 36, v + pad + 1.5, f"LAYER {n}", "xgras", 8.2, BLUE, 0.12)
-    F.text(u + pad + 36, v + pad + 12.5, layer.capitalize(), "gras", 12.5, INK)
-    if layer == "growth":
-        big = rng(t["ticket_min"], FUND["company_cap"])
-        cap = f"from the fund, up to {eur(FUND['company_max_with_spv'], 'tile')} with SPVs"
-    else:
-        big = rng(t["ticket_min"], t["ticket_max"])
-        cap = "initial ticket, pro-rata reserved"
-    F.text(u + pad, v + 50, big, "gras", 18, INK, -0.01)
-    F.text(u + pad, v + 72, cap, "reg", 8.6, MUTED)
-    ry = v + 91
-    rows = tier_rows(layer)
-    for i, (label, value) in enumerate(rows):
-        F.line(u + pad, ry - 5, u + w - pad, ry - 5, LINE, 1)
-        F.text(u + pad, ry + 0.8, label, "xgras", 7, SOFT, 0.08)
-        F.text(u + w - pad, ry, value, "semi", 9.2, INK, align="r")
-        if F.tw(label, "xgras", 7, 0.08) + F.tw(value, "semi", 9.2) > w - 2 * pad - 8:
-            raise SystemExit(f"carte {layer} : ligne trop longue : {label} {value}")
-        ry += 14.6
-    if ry - 2 > v + h:
-        raise SystemExit(f"carte {layer} : le contenu depasse la carte")
+PACT = (
+    ("One round.", "We invest once in new shares, then never create a new share while the founder "
+                   "grows with us."),
+    ("A reserved loan line.", "Hiring, go-to-market, working capital, acquisitions, drawn in tranches. "
+                              "No more fundraising."),
+    ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
+                                    "agreement, and the company cancels shares every year. Founder and "
+                                    "fund own more at every stage."),
+    ("Founder control.", "Our shares vote with the founder. No board seat, no veto, no veto on a sale."),
+    ("Fair both ways.", "If a founder raises elsewhere, we can follow or lead the round in new shares."),
+)
 
 
 def page_one(F):
-    kick(F, M, 84, "Venture capital · Seed to Growth · Europe")
-    tw = 360.0
-    y = 102 + title(F, M, 102, tw, "", 33, lead=1.04,
-                    markup=x("Where pure vision directs recursive AI."))
-    y += 12 + F.para(M, y + 12, tw, x(f"Seed to Growth. {FUND_SIZE}."), 13, "gras", INK, 1.4)
-    y += 6 + F.para(M, y + 6, tw, x("We don't fund headcount. We back tight-knit, AI-native teams building "
-                                    "self-improving systems across the world's largest markets."), 11.6, "reg", INK2, 1.5)
-    y += 12 + micro(F, M, y + 14, tw, ["EuVECA fund, Luxembourg"])
+    tw = 366.0
+    y = 84.0
+    y += title(F, M, y, tw, "", 33, lead=1.04, markup=x("Where pure vision directs recursive AI."))
+    y += 11 + F.para(M, y + 11, tw, x(f"Pre-seed to Growth. {FUND_SIZE}."), 13, "gras", INK, 1.4)
+    y += 5 + F.para(M, y + 5, tw, x("We don't fund headcount. We back tight-knit, AI-native teams building "
+                                    "self-improving systems across the world's largest markets."), 11.4, "reg", INK2, 1.48)
+    # la ligne forte, en gras sous le sous-titre (v3)
+    y += 12
+    strong = (f"<b>{x('One round. Then never diluted again.')}</b> "
+              + x("One equity round per company, then loans and buybacks: founders own more at every "
+                  "stage, and so do our LPs."))
+    hs = F.para(M + 13, y, tw - 13, strong, 11.4, "reg", INK, 1.45)
+    F.rr(M, y + 1, 3.2, hs - 2, 1.6, fill=BLUE)
+    y += hs
+    y += 10 + micro(F, M, y + 12, tw, ["EuVECA fund, Luxembourg"])
 
     # le visuel : la carte du deal flow dans la fenetre, le pipeline pose devant
-    # (les memes captures que le heros du site)
     vw = 252.0
     vx = M + W - vw
-    bh = browser(F, vx, 82, vw)
-    ph = snap(F, vx - 52, 82 + bh - 78, 140.0, PIPE_SHOT)
-    y = max(y, 82 + bh - 78 + ph + 8)
+    bh = browser(F, vx, 84, vw)
+    ph = snap(F, vx - 52, 84 + bh - 78, 140.0, PIPE_SHOT)
+    y = max(y, 84 + bh - 78 + ph + 4)
 
     # l'encadre de pre-commercialisation, en tete de document
-    y += 14
-    bh2 = 58.0
+    y += 12
+    bh2 = 54.0
     F.rr(M, y, W, bh2, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
-    F.rr(M + 14, y + 14, 30, 30, 9, fill=BLUE_SOFT)
-    F.icon("shield", M + 20, y + 20, 18, BLUE_DK)
-    F.text(M + 56, y + 12, "PRE-MARKETING PHASE", "xgras", 8.4, BLUE_DK, 0.12)
-    F.para(M + 56, y + 25, W - 72, x(
+    F.rr(M + 14, y + 12, 30, 30, 9, fill=BLUE_SOFT)
+    F.icon("shield", M + 20, y + 18, 18, BLUE_DK)
+    F.text(M + 56, y + 10, "PRE-MARKETING PHASE", "xgras", 8.4, BLUE_DK, 0.12)
+    F.para(M + 56, y + 23, W - 72, x(
         "This document is a pre-marketing communication within the meaning of Article 4a of Regulation (EU) "
         "No 345/2013 (EuVECA). The fund is not yet established and no units may be subscribed at this stage. "
-        "For professional and eligible investors only."), 9, "reg", INK2, 1.4)
-    y += bh2 + 22
+        "For professional and eligible investors only."), 9, "reg", INK2, 1.38)
+    y += bh2 + 18
 
     # le manifeste
     lw = 214.0
@@ -411,77 +471,89 @@ def page_one(F):
     title(F, M, y + 18, lw, "The end of human friction.", 21, lead=1.1)
     rx = M + lw + 26
     rw = W - lw - 26
+    sz, ld, gp = 9.5, 1.42, 5.5
     h1 = F.para(rx, y + 2, rw, x("For two centuries, scaling a company meant scaling human labor, hiring thousands "
-                                 "of people to execute the vision of one. That era is over."), 11.2, "semi", INK, 1.45)
-    h2 = F.para(rx, y + 2 + h1 + 7, rw, x(
+                                 "of people to execute the vision of one. That era is over."), 11, "semi", INK, 1.42)
+    yy = y + 2 + h1 + gp
+    yy += gp + F.para(rx, yy, rw, x(
         "Today, a tight-knit team that knows how to challenge, direct, and iterate with AI can architect an "
         "integral, self-improving system in record time. AI frees humanity from mechanical execution, "
-        "returning creation to pure thought."), 9.8, "reg", MUTED, 1.45)
-    h3 = F.para(rx, y + 2 + h1 + 7 + h2 + 7, rw, x(
+        "returning creation to pure thought."), sz, "reg", MUTED, ld)
+    yy += gp + F.para(rx, yy, rw, x(
         "The future doesn't belong to the largest organizations. It belongs to the clearest minds directing "
-        "the most autonomous machines."), 9.8, "semi", INK, 1.45)
-    y += max(2 + h1 + 7 + h2 + 7 + h3, 70) + 20
+        "the most autonomous machines."), sz, "semi", INK, ld)
+    yy += F.para(rx, yy, rw, f"<b>{x('Capital is no longer scarce. Ownership is.')}</b> " + x(
+        "A team that doesn't need an army doesn't need a round every 18 months. So we don't sell it one: "
+        "we invest once, then we lend and we buy."), sz, "reg", BLUE_DK, ld)
+    y = max(yy, y + 70) + 24
 
     # les quatre lois
     kick(F, M, y, "What we back")
-    title(F, M, y + 17, W, "Four laws drive our thesis and our Deal Engine every morning.", 18)
-    y += 46
+    title(F, M, y + 17, W, "Four laws drive our thesis and our Deal Engine every morning.", 17)
+    y += 44
     gap = 12.0
     cw = (W - 3 * gap) / 4
-    pad = 13.0
-    hs = [pad + 28 + 10 + F.hpara(cw - 2 * pad, x(t), 11, "gras", 1.2) + 5
-          + F.hpara(cw - 2 * pad, x(d), 8.9, "reg", 1.42) + pad for _i, t, d in LAWS]
+    pad = 12.0
+    hs = [pad + 26 + 9 + F.hpara(cw - 2 * pad, x(t), 10.6, "gras", 1.2) + 4
+          + F.hpara(cw - 2 * pad, x(d), 8.6, "reg", 1.4) + pad for _i, t, d in LAWS]
     th = max(hs)
     for i, (ic, t, d) in enumerate(LAWS):
         cx = M + i * (cw + gap)
         card(F, cx, y, cw, th)
-        F.tile(cx + pad, y + pad, 28, 9)
-        F.icon(ic, cx + pad + 6, y + pad + 6, 16, WHITE, sw=1.8)
+        F.tile(cx + pad, y + pad, 26, 8)
+        F.icon(ic, cx + pad + 5.5, y + pad + 5.5, 15, WHITE, sw=1.8)
         F.text(cx + cw - pad, y + pad + 1, f"{i + 1:02d}", "xgras", 10, SOFT, 0.06, "r")
-        ht = F.para(cx + pad, y + pad + 38, cw - 2 * pad, x(t), 11, "gras", INK, 1.2)
-        F.para(cx + pad, y + pad + 38 + ht + 5, cw - 2 * pad, x(d), 8.9, "reg", MUTED, 1.42)
-    y += th + 20
+        ht = F.para(cx + pad, y + pad + 35, cw - 2 * pad, x(t), 10.6, "gras", INK, 1.2)
+        F.para(cx + pad, y + pad + 35 + ht + 4, cw - 2 * pad, x(d), 8.6, "reg", MUTED, 1.4)
+    y += th + 26
 
-    # la construction : Seed + Venture + Growth = le fonds
-    kick(F, M, y, "Fund construction")
-    F.text(M + W, y, "Two ways in at every layer: direct entries in top rounds, and our own breakouts.",
-           "reg", 9.8, MUTED, align="r")
-    y += 22
-    opw = 22.0
-    tcw = (W - 2 * opw) / 3
-    tch = 178.0
-    for i, layer in enumerate(LAYER_IDS):
-        tier_card(F, M + i * (tcw + opw), y, tcw, tch, layer, i + 1)
-    for i in range(2):
-        F.text(M + tcw * (i + 1) + opw * i + opw / 2, y + tch / 2 - 13, "+", "reg", 22, SOFT, align="c")
-    y += tch + 12
+    # le pacte des fondateurs (v3) : le titre a gauche, les cinq clauses a droite
+    lw = 196.0
+    kick(F, M, y, "How we back them")
+    title(F, M, y + 17, lw, "The founders' pact.", 17)
+    F.para(M, y + 40, lw - 16, x("The same for every company, and public."), 9.6, "reg", MUTED, 1.4)
+    rx = M + lw
+    rw = W - lw
+    pad = 13.0
+    rows_h = [F.hpara(rw - 2 * pad - 24, f"<b>{x(t)}</b> " + x(d), 8.9, "reg", 1.38) for t, d in PACT]
+    ch = sum(rows_h) + 2 * pad + 10 * (len(PACT) - 1)
+    card(F, rx, y - 4, rw, ch)
+    py = y - 4 + pad
+    for k, (t, d) in enumerate(PACT):
+        if k:
+            F.line(rx + pad + 24, py - 5, rx + rw - pad, py - 5, LINE, 1)
+        F.check(rx + pad, py + 0.5, 14, fill=GREEN)
+        F.para(rx + pad + 24, py, rw - 2 * pad - 24, f"<b>{x(t)}</b> " + x(d), 8.9, "reg", INK2, 1.38)
+        py += rows_h[k] + 10
+    y += max(ch - 4, 60) + 24
 
-    # = le fonds : bande sombre, quatre chiffres (l'ancienne bande de chiffres)
-    seed = LAYERS["seed"]
+    # la bande de chiffres : cinq chiffres
     stats = [
         (FUND_SIZE, f"Target Fund I, closed-ended, closings over {FUND['closing_months']} months"),
-        ("3 layers", f"Seed, Venture, Growth: {eur(seed['ticket_min'])} to "
-                     f"{eur(FUND['company_cap'], 'tile')} per company"),
+        (f"{len(LAYER_IDS)} layers", f"Seed, Venture, Growth: {eur(LAYERS['seed']['ticket_min'])} to "
+                                     f"{eur(FUND['company_cap'], 'tile')} per company"),
+        ("1 round", "Equity round per company, then loans and buybacks. 0 board seats"),
         ("Every", "European seed round tracked by the Seed Radar, weekly"),
         ("6–18mo", "Detection lead before announcement"),
     ]
-    bh3 = 68.0
+    eq = 40.0
+    colw = (W - eq - 10) / len(stats)
+    lab_h = max(F.hpara(colw - 18, x(lab), 8.1, "reg", 1.3) for _n, lab in stats)
+    bh3 = 38 + lab_h + 13
     card(F, M, y, W, bh3, 18, fill=NIGHT, stroke=None, depth=0.8, alpha=0.03)
     F.glow(M + W - 60, y + 6, 160, BLUE, 16, 0.03, (M, y, W, bh3, 18))
-    eq = 46.0
     F.text(M + eq / 2 + 6, y + bh3 / 2 - 15, "=", "reg", 26, GLOW, align="c")
-    colw = (W - eq - 10) / 4
     for i, (num, lab) in enumerate(stats):
         sx = M + eq + 10 + i * colw
         if i:
-            F.line(sx - 10, y + 16, sx - 10, y + bh3 - 16, NIGHT_LINE, 1)
-        F.text(sx, y + 13, num, "gras", 19 if i == 0 else 17, WHITE, -0.01)
-        F.para(sx, y + 38, colw - 22, x(lab), 8.4, "reg", NIGHT_TXT, 1.3)
+            F.line(sx - 9, y + 14, sx - 9, y + bh3 - 14, NIGHT_LINE, 1)
+        F.text(sx, y + 12, num, "gras", 17, WHITE, -0.01)
+        F.para(sx, y + 36, colw - 18, x(lab), 8.1, "reg", NIGHT_TXT, 1.3)
     return y + bh3
 
 
-# ── page 2 : l'avantage, les termes, le GP, la preuve ───────────────────────
-KV_PAD, KV_ROW = 15.0, 17.0
+# ── page 2 : la construction et les termes ──────────────────────────────────
+KV_PAD, KV_ROW = 15.0, 18.2
 
 
 def kv_height(rows):
@@ -500,25 +572,149 @@ def kv_card(F, u, v, w, head, icon, rows, bold_last=False, h=None):
     for i, (k, val) in enumerate(rows):
         last = bold_last and i == len(rows) - 1
         F.line(u + pad, ry, u + w - pad, ry, LINE2 if last else LINE, 1)
-        F.text(u + pad, ry + 3.9, k, "semi" if last else "reg", 9.6, INK if last else INK2)
-        F.text(u + w - pad, ry + 3.9, val, "gras", 9.6, INK, align="r")
-        if F.tw(k, "reg", 9.6) + F.tw(val, "gras", 9.6) > w - 2 * pad - 10:
+        F.text(u + pad, ry + 3.6, k, "semi" if last else "reg", 9.2, INK if last else INK2)
+        F.text(u + w - pad, ry + 3.6, val, "gras", 9.2, INK, align="r")
+        if F.tw(k, "reg", 9.2) + F.tw(val, "gras", 9.2) > w - 2 * pad - 10:
             raise SystemExit(f"carte {head} : ligne trop longue : {k} {val}")
         ry += rh
     return h
 
 
+def construction_rows():
+    s, v, g = (LAYERS[k] for k in LAYER_IDS)
+    lead, radar = s["tracks"]["lead"], s["tracks"]["radar"]
+    holds = [ln["exit_year"] - ln["entry_year"] for ln in g["lines"]]
+    spv = eur(FUND["company_max_with_spv"], "tile")
+    return [
+        ("Ticket", f"{rng(s['ticket_min'], s['ticket_max'])}, the only equity round, loan line reserved",
+         f"{rng(v['ticket_min'], v['ticket_max'])}, first cheque or buyback, loan line reserved",
+         f"{rng(g['ticket_min'], FUND['company_cap'])} from the fund, up to {spv} with SPVs"),
+        ("Stage", s["stage"], v["stage"], g["stage"]),
+        ("Role", "Lead + radar tickets", "Direct at the inflection, or buyback of angels and leavers",
+         "Direct: blocks from end-of-life funds and fresh growth rounds. "
+         "Our breakouts: blocks bought in our winners"),
+        ("Entry post", rng(s["entry_post_min"], s["entry_post_max"]),
+         rng(v["entry_post_min"], v["entry_post_max"]), rng(g["entry_post_min"], g["entry_post_max"])),
+        ("Companies", f"{lead['companies']} leads + {radar['companies']} radar",
+         f"{v['companies']} direct entries, {rng(*v['first_cheque_range'])} first cheques",
+         f"{g['companies']} direct entries + {g['breakouts']} of our breakout{'s' if g['breakouts'] > 1 else ''}, "
+         f"{rng(*g['position_range'])} each"),
+        ("Invested, loans included", eur(s["invested"]), eur(v["invested"]), eur(g["invested"])),
+        ("Target gross", f"{mult(s['moic']['target'])} MOIC", f"{mult(v['moic']['target'])} MOIC",
+         f"{mult(g['moic']['target'])} MOIC, {pct(g['gross_irr']['target'])} gross IRR over "
+         f"{min(holds)}–{max(holds)} year holds"),
+    ]
+
+
 def page_two(F):
+    kick(F, M, 84, "Fund construction")
+    y = 102 + title(F, M, 102, W, "", 19, lead=1.18, markup=(
+        x("Two ways in at every layer: a first equity cheque, or a buyback of existing shares. ")
+        + f'<font color="{BLUE}">{x("Then loans, never new shares.")}</font>'))
+    y += 20
+
+    # le tableau des trois etages
+    rows = construction_rows()
+    cells = [[r[0]] + list(r[1:]) for r in rows]
+    cells[-1] = [(cells[-1][0], "semi", INK)] + [(c, "gras", BLUE_DK) for c in cells[-1][1:]]
+    cols = [(0.82, "l"), (1.3, "l"), (1.3, "l"), (1.42, "l")]
+    th = grid(F, M, y, W, cols, ["", "", "", ""], cells, size=9.2, hsize=7.6, pad_y=6.6, lead=1.32,
+              head_pad=19)
+    # l'en-tete : « Layer n · Nom », en pastille numerotee (les cartes d'etage de la v2)
+    tot = sum(c[0] for c in cols)
+    cx = M + 12 + cols[0][0] * (W - 24) / tot
+    for n, layer in enumerate(LAYER_IDS, 1):
+        F.rr(cx + 3, y + 10, 24, 24, 7, fill=BLUE_SOFT)
+        F.text(cx + 15, y + 15.8, str(n), "gras", 11.5, BLUE_DK, align="c")
+        F.text(cx + 35, y + 10.5, f"LAYER {n}", "xgras", 7.4, BLUE, 0.12)
+        F.text(cx + 35, y + 20.5, LAYER_NAME[layer], "gras", 12, INK)
+        cx += cols[n][0] * (W - 24) / tot
+    y += th + 7
+    names = ", ".join(LAYERS[k]["model_name"] for k in LAYER_IDS[:-1]) + " and " + LAYERS["growth"]["model_name"]
+    F.text(M + 2, y, f"In the fund model, the three layers are named {names}.", "reg", 8, SOFT)
+    y += 26
+
+    # termes | allocation
+    half = (W - 16) / 2
+    ip = FUND["investment_period_years"]
+    terms = [
+        ("Closed-ended EuVECA fund (Lux.)", f"{FUND['term_years']} years"),
+        ("Successive closings", f"{FUND['closing_months']} months"),
+        (f"Management fee, years 1–{ip}", pct(TERMS["fee_ip_pct"])),
+        (f"On the loan sleeve, years 1–{ip}", pct(TERMS["fee_loan_pct"])),
+        ("Then, on invested capital incl. loans until repaid", pct(TERMS["fee_post_pct"], 1)),
+        ("Carried interest, European", pct(TERMS["carry_pct"])),
+        ("Hurdle, with GP catch-up", pct(TERMS["hurdle_pct"])),
+        ("Per company: fund / with SPVs",
+         f"{eur(FUND['company_cap'], 'tile')} / {eur(FUND['company_max_with_spv'], 'tile')}"),
+        ("Loans", f"Up to {pct(FUND['loan_cap_pct'])} of commitments (EuVECA)"),
+    ]
+    alloc = [
+        ("First cheques, incl. fresh growth rounds", eur(ALLOC["first"])),
+        ("Buybacks and follow-ons", eur(ALLOC["buyback_follow"])),
+        ("Loans", eur(ALLOC["loans"])),
+        (f"Invested ({pct(ALLOC['after_first_pct'])} after the first cheque)", eur(ALLOC["invested"])),
+        ("Management fees", eur(ALLOC["mgmt_fees"])),
+        ("Fund expenses, incl. set-up", eur(ALLOC["fund_expenses"])),
+        ("Contingency", eur(ALLOC["contingency"])),
+        ("Total commitments", eur(ALLOC["total"])),
+    ]
+    kh = max(kv_height(terms), kv_height(alloc))
+    kv_card(F, M, y, half, "Key terms", "building", terms, h=kh)
+    kv_card(F, M + half + 16, y, half, "Capital allocation", "layers", alloc, bold_last=True, h=kh)
+    y += kh + 36
+
+    # tout le monde y gagne (v3) : le texte a gauche, le tableau a 250 M EUR a droite
+    t = CASES["target"]
+    row = next(r for r in FOUNDERS["rows"] if r["exit"] == 250_000_000)
+    lw = 268.0
+    kick(F, M, y, "Everyone wins")
+    ty = y + 19
+    ty += F.para(M, ty, lw, x(
+        "Our stake rises with the founder's: every buyback and cancellation lifts both. We never need the "
+        "founder to dilute, to raise or to chase a unicorn, and he never needs to fight us on an exit."),
+        10.4, "reg", INK2, 1.52) + 12
+    ty += F.para(M, ty, lw, x("The only one who loses is the VC who would have sold rounds B, C and D."),
+                 10.6, "semi", BLUE_DK, 1.42)
+    gx = M + lw + 20
+    gw = W - lw - 20
+    rows = [
+        ["Founders", eur(row["founders_vc"], "tile"), eur(row["founders_profund"], "tile")],
+        ["Series A investor, equity multiple", mult(row["series_a_vc"]), f"{mult(row['series_a_profund'])} (ProFund)"],
+        ["Angels", "Wait for the exit", "Liquidity at year 2"],
+        ["LPs", "Need a unicorn", f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target, "
+                                  f"no exit above {eur(t['largest_exit'], 'val')}"],
+    ]
+    gh = grid(F, gx, y - 4, gw, [(1.25, "l"), (0.95, "l"), (1.35, "l")],
+              [f"At a {eur(row['exit'], 'val')} exit", "VC path", "ProFund path"], rows, size=9.2,
+              hsize=7.4, pad_y=7.4, hl=2)
+    y = max(ty, y - 4 + gh) + 34
+
+    # conflits et filet de securite
+    txt = (f"<b>{x('Conflicts and fallback.')}</b> " + x(
+        "Every buyback is priced by an independent valuer. ProFund's votes are excluded from any decision that "
+        "involves ProFund, and conflicts go to the LP advisory committee. In case of fraud or gross misconduct, "
+        "the voting agreement ends."))
+    hb = F.hpara(W - 72, txt, 9.6, "reg", 1.5) + 30
+    F.rr(M, y, W, hb, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
+    F.rr(M + 14, y + (hb - 30) / 2, 30, 30, 9, fill=BLUE_SOFT)
+    F.icon("shield", M + 20, y + (hb - 30) / 2 + 6, 18, BLUE_DK)
+    F.para(M + 56, y + 15, W - 72, txt, 9.6, "reg", INK2, 1.5)
+    return y + hb
+
+
+# ── page 3 : l'avantage, l'equipe, la preuve ────────────────────────────────
+def page_three(F):
     kick(F, M, 84, "Our edge")
     title(F, M, 102, W, "Two autonomous AI engines.", 27)
     F.para(M, 136, W, x("We run on what we back."), 11.6, "reg", MUTED, 1.5)
 
-    # les deux moteurs, cote a cote (la capture du cockpit est dans le heros, page 1)
     y = 164.0
     engines = (
         ("radar", "The Deal Engine",
          "Scores every company against our thesis and flags inflection points before they become consensus. "
-         "Autonomously detects the right targets for our portfolio companies.",
+         "Autonomously detects the right targets for our portfolio companies, and the angels, leavers and "
+         "early funds ready to sell.",
          ("ProFund", "Proplace", "Portfolio companies")),
         ("bot", "The Growth Engine",
          "Autonomous AI agents running content, inbound, and outbound end-to-end. They operate our fund and "
@@ -546,98 +742,75 @@ def page_two(F):
             wl = F.text(lx, y + pad + 7.5, "Follow live deal flow", "semi", 9.6, BLUE_DK)
             F.svg(ARROW, lx + wl + 5, y + pad + 8, 12, BLUE_DK)
             F.link(lx - 18, y + pad + 2, wl + 40, 20, DEALFLOW)
-        # qui tourne sur ce moteur
         fy = y + eh - pad - chips
         F.line(ex + pad, fy - 9, ex + ew - pad, fy - 9, LINE, 1)
         powers(F, ex + pad, fy, ew - 2 * pad, names)
-    y += eh + 16
+    y += eh + 32
 
-    # termes | allocation
+    # l'equipe | le track record
     half = (W - 16) / 2
-    growth = LAYERS["growth"]
-    seed = LAYERS["seed"]
-    terms = [
-        ("Closed-ended EuVECA fund (Lux.)", f"{FUND['term_years']} years"),
-        ("Successive closings", f"{FUND['closing_months']} months"),
-        (f"Management fee, years 1–{FUND['investment_period_years']}", pct(TERMS["fee_ip_pct"])),
-        ("Then, on invested capital", pct(TERMS["fee_post_pct"], 1)),
-        ("Carried interest, European", pct(TERMS["carry_pct"])),
-        ("Hurdle, with GP catch-up", pct(TERMS["hurdle_pct"])),
-        ("Per company: fund / with SPVs",
-         f"{eur(FUND['company_cap'], 'tile')} / {eur(FUND['company_max_with_spv'], 'tile')}"),
-    ]
-    alloc = [
-        (f"Seed – {seed['companies']} companies", eur(ALLOC["seed"])),
-        (f"Venture – {LAYERS['venture']['companies']} companies", eur(ALLOC["venture"])),
-        (f"Growth – {growth['companies']} direct + {growth['positions'] - growth['companies']} follow-ons",
-         eur(ALLOC["growth"])),
-        (f"Invested ({pct(ALLOC['follow_on_pct'])} in follow-ons)", eur(ALLOC["invested"])),
-        ("Management fees", eur(ALLOC["mgmt_fees"])),
-        ("Fund expenses, incl. set-up", eur(ALLOC["fund_expenses"])),
-        ("Contingency", eur(ALLOC["contingency"])),
-        ("Total commitments", eur(ALLOC["total"])),
-    ]
-    kh = max(kv_height(terms), kv_height(alloc))
-    kv_card(F, M, y, half, "Key terms", "building", terms, h=kh)
-    kv_card(F, M + half + 16, y, half, "Capital allocation", "layers", alloc, bold_last=True, h=kh)
-    y += kh + 22
-
-    # le GP | le track record
-    kick(F, M, y, "The GP")
-    kick(F, M + half + 16, y, "Track record, prior to the fund")
-    y += 20
-    # Memes faits que le tableau Track Record de /pitch (ProFundPage.tsx) ; seul
-    # Deal-04 porte en plus la croissance depuis l'acquisition (05/10), et SANS
-    # multiple : un 2.5x cash-on-cash n'a pas de sens pour une acquisition a
-    # 100 % toujours detenue (decision d'Antoine, 05/10).
+    kick(F, M, y, "The team")
+    title(F, M, y + 17, W, "Built for this model: M&A, LBO, VC.", 18)
+    y += 46
+    # Memes faits que le tableau Track Record de /pitch ; Deal-04 SANS multiple :
+    # un cash-on-cash n'a pas de sens pour une acquisition a 100 % toujours detenue.
     deals = (
-        ("Deal-01 – exited 2007", "Entry 2006, 100% owned. Full exit in 2007.", "10.0×"),
-        ("Deal-02 – exited 2014", "Entry 2008 at 100%. Sold down to 40%, then full exit in 2014.", "20.0×"),
-        ("Deal-03 – LBO exit 2025",
+        ("Deal-01, exited 2007", "Entry 2006, 100% owned. Full exit in 2007.", "10.0×"),
+        ("Deal-02, exited 2014", "Entry 2008 at 100%. Sold down to 40%, then full exit in 2014.", "20.0×"),
+        ("Deal-03, LBO exit 2025",
          "Seed ticket €200K at €5.3M in 2014. LBO exit in Feb 2025 at €100M. "
          "Sourced 14 months before public announcement.", "19.0×"),
-        ("Deal-04 – acquired 2016",
-         "100% acquisition, €45M buyout. Revenue growing ~20% YoY since acquisition.", ""),
+        ("Deal-04, acquired 2016",
+         "100% acquisition, €45M buyout. Revenue growing ~20% YoY since acquisition.", "–"),
     )
-    track_h = 13 + sum(12.5 + F.hpara(half - 28, x(d), 8.4, "reg", 1.3) + 5.5 for _h, d, _v in deals) + 12
-    gh = max(146.0, track_h)
-    card(F, M, y, half, gh)
-    pw_ = 104.0
-    ph_ = pw_ * 468 / 429
-    F.image(PHOTO, M + 14, y + 14, pw_, ph_, 12)
-    tx = M + 14 + pw_ + 16
-    F.text(tx, y + 18, "Alexandre Busson", "gras", 14, INK)
-    F.text(tx, y + 37, "Founding Partner", "reg", 9.6, MUTED)
-    yy = y + 58
-    # Memes intitules que /pitch (ProFundPage.tsx, GP) - confirmes par Alexandre le 29/10.
-    for role in (
+    extras = ("A partner from venture debt will run the loan book (to be recruited).",
+              "Investment committee and key-person clause.")
+    roles = (
         "M&A Director, Leboncoin",
         "Senior Associate, Partech Ventures",
         "LBO Analyst, Ardian (ex-AXA PE)",
         "Key Account Manager assistant, Google",
         "Founder / Investor, Dreamzer Games",
         "Owner and CEO, Fadparis.com",
-    ):
+    )
+    pw_ = 100.0
+    ph_ = pw_ * 468 / 429
+    top_h = 14 + max(ph_, 58 + 13.2 * len(roles)) + 10
+    ex_h = sum(F.hpara(half - 56, x(e), 8.8, "reg", 1.35) + 12 for e in extras) + 4
+    track_h = 30 + sum(12.5 + F.hpara(half - 28, x(d), 8.4, "reg", 1.3) + 6 for _h, d, _v in deals) + 18
+    gh = max(top_h + ex_h, track_h)
+    card(F, M, y, half, gh)
+    F.image(PHOTO, M + 14, y + 14, pw_, ph_, 12)
+    tx = M + 14 + pw_ + 16
+    F.text(tx, y + 18, "Alexandre Busson", "gras", 14, INK)
+    F.text(tx, y + 37, "Founding Partner", "reg", 9.6, MUTED)
+    yy = y + 58
+    for role in roles:
         F.circle(tx + 2.5, yy + 5.6, 1.8, fill=BLUE)
         F.text(tx + 10, yy, role, "reg", 9.2, INK2)
-        yy += 13.4
-    if max(yy, y + 14 + ph_) > y + gh:
-        raise SystemExit("carte du GP : le contenu depasse la carte")
+        yy += 13.2
+    ey = y + top_h
+    F.line(M + 14, ey - 4, M + half - 14, ey - 4, LINE, 1)
+    for k, e in enumerate(extras):
+        F.rr(M + 14, ey + 2, 20, 20, 6, fill=BLUE_SOFT)
+        F.icon("layers" if k == 0 else "building", M + 17.5, ey + 5.5, 13, BLUE_DK)
+        ey += 3 + F.para(M + 42, ey + 3, half - 56, x(e), 8.8, "reg", INK2, 1.35) + 9
+    if ey > y + gh + 1:
+        raise SystemExit("carte de l'equipe : le contenu depasse la carte")
 
     tx = M + half + 16
     card(F, tx, y, half, gh)
-    ty = y + 13
+    F.text(tx + 14, y + 13, "TRACK RECORD, PRIOR TO THE FUND", "xgras", 8.2, BLUE, 0.12)
+    ty = y + 32
     for i, (head, detail, val) in enumerate(deals):
-        if i:
-            F.line(tx + 14, ty - 5, tx + half - 14, ty - 5, LINE, 1)
+        F.line(tx + 14, ty - 5, tx + half - 14, ty - 5, LINE, 1)
         F.text(tx + 14, ty, head, "semi", 9.8, INK)
-        if val:
-            F.text(tx + half - 14, ty, val, "gras", 9.8, BLUE_DK, align="r")
-        ty += 12.5 + F.para(tx + 14, ty + 12.5, half - 28, x(detail), 8.4, "reg", MUTED, 1.3) + 5.5
-    F.text(tx + 14, ty - 1, "Companies anonymised. Names and references on request.", "reg", 7.8, SOFT)
+        F.text(tx + half - 14, ty, val, "gras", 9.8, BLUE_DK if val != "–" else SOFT, align="r")
+        ty += 12.5 + F.para(tx + 14, ty + 12.5, half - 28, x(detail), 8.4, "reg", MUTED, 1.3) + 6
+    F.text(tx + 14, ty, "Companies anonymised. Names and references on request.", "reg", 7.8, SOFT)
     if ty + 10 > y + gh:
         raise SystemExit("carte du track record : le contenu depasse la carte")
-    y += gh + 22
+    y += gh + 32
 
     # la preuve : les societes operees par le GP
     kick(F, M, y, "Proof of work")
@@ -659,16 +832,16 @@ def page_two(F):
         F.image(ir, px_ + 14, y + 12 + (15 - lh) / 2, lwid, lh)
         F.para(px_ + 14, y + 33, pcw - 28, x(tagline), 8.8, "reg", INK2, 1.3)
         F.link(px_, y, pcw, pch, href)
-    y += pch + 14
+    y += pch + 18
     return cta(F, y)
 
 
 def cta(F, ymin):
-    """« Follow our deal flow live » : trois gestes, un grand QR (bande sombre des fiches Maximum)."""
+    """Contact : trois gestes, un grand QR (bande sombre des fiches Maximum)."""
     actions = (
-        ("radar", "Follow live deal flow", ("Every evening, the companies we reviewed",), DEALFLOW),
+        ("radar", "Follow our deal flow live", ("Every evening, the companies we reviewed.",), DEALFLOW),
         ("mail", "Request LP access", (MAIL, PHONE), "mailto:" + MAIL),
-        ("sheet", "Fund model (Excel)", ("On request",), "mailto:" + MAIL + "?subject=ProFund%20fund%20model"),
+        ("sheet", "Fund model (Excel)", ("On request.",), "mailto:" + MAIL + "?subject=ProFund%20fund%20model"),
     )
     qs, pad = 88.0, 24.0
     inner = W - pad * 2 - qs - 30
@@ -682,7 +855,7 @@ def cta(F, ymin):
     v = max(ymin, BOTTOM - h)
     card(F, M, v, W, h, 22, fill=NIGHT, stroke=None, depth=0.8, alpha=0.03)
     F.glow(M + W - 80, v + 10, 190, BLUE, 16, 0.03, (M, v, W, h, 22))
-    F.text(M + pad, v + 22, "Follow our deal flow live", "gras", 20, WHITE, -0.01)
+    F.text(M + pad, v + 22, "Contact", "gras", 20, WHITE, -0.01)
     for i, (ic, lab, sm, url) in enumerate(actions):
         ax = M + pad + i * col
         F.tile(ax, v + 62, 34, 10)
@@ -698,216 +871,294 @@ def cta(F, ymin):
     return v + h
 
 
-# ── page 3 : la simulation et la performance ────────────────────────────────
-SIM_COLS = (  # (titre, largeur relative, alignement) ; TRACK : voie Seed, lead ou radar
-    (("DEAL ID",), 52, "l"), (("TRACK",), 40, "l"), (("STATUS",), 104, "l"), (("INITIAL", "TICKET"), 54, "r"),
-    (("ENTRY VAL", "(POST)"), 58, "r"), (("ENTRY %",), 48, "r"), (("FOLLOW-ON",), 58, "r"),
-    (("EXIT %", "(DILUTED)"), 56, "r"), (("EXIT VAL",), 52, "r"), (("FUND", "RETURN"), 58, "r"),
-    (("MOIC",), 42, "r"),
+# ── page 4 : la simulation et la performance ────────────────────────────────
+SIM_COLS = (  # (titre, largeur relative, alignement)
+    (("DEAL ID",), 46, "l"), (("STATUS",), 214, "l"), (("FIRST", "CHEQUE"), 46, "r"),
+    (("BUYBACKS",), 48, "r"), (("FOLLOW-ON",), 48, "r"), (("LOAN",), 40, "r"),
+    (("ENTRY", "STAKE"), 38, "r"), (("STAKE", "AT EXIT"), 40, "r"), (("EXIT", "VALUE"), 40, "r"),
+    (("FUND", "RETURN"), 46, "r"), (("MOIC",), 34, "r"),
 )
-TRACK_LABEL = {"lead": ("Lead", "semi", BLUE_DK), "radar": ("Radar", "reg", INK2)}
-SIM_TITLE = {"seed": ("Layer 1", "The Seed layer", "companies"), "venture": ("Layer 2", "The Venture layer", "companies"),
-             "growth": ("Layer 3", "The Growth layer", "positions")}
+
+
+def seed_band():
+    s = LAYERS["seed"]
+    lead, radar = s["tracks"]["lead"], s["tracks"]["radar"]
+    a, b = s["entry_years"]
+    return (f"{s['companies']} companies: {lead['companies']} leads ({lead['first']} to {lead['last']}) + "
+            f"{radar['companies']} radar tickets ({radar['first']} to {radar['last']}), entries years {a}–{b}")
+
+
+def venture_band():
+    v = LAYERS["venture"]
+    a, b = v["entry_years"]
+    return (f"{v['companies']} companies, first cheques of {rng(*v['first_cheque_range'])} at seed+ or Series A, "
+            f"entries years {a}–{b}")
+
+
+def growth_band():
+    g = LAYERS["growth"]
+    a, b = g["entry_years"]
+    disc = max(ln["discount"] or 0 for ln in g["lines"])
+    holds = [ln["exit_year"] - ln["entry_year"] for ln in g["lines"]]
+    return (f"{rng(*g['position_range'])} per position: blocks bought from end-of-life funds at a {pct(disc)} "
+            "discount, fresh growth rounds, and a block in our own breakout; "
+            f"entries years {a}–{b}, exits {min(holds)}–{max(holds)} years later")
+
+
+BAND = {"seed": seed_band, "venture": venture_band, "growth": growth_band}
 
 
 def sim_table(F, u, v, w):
-    pad = 12.0
+    pad = 10.0
     scale = (w - 2 * pad) / sum(c[1] for c in SIM_COLS)
     xs, cx = [], u + pad
     for _t, cw, _a in SIM_COLS:
         xs.append((cx, cw * scale))
         cx += cw * scale
-    head, band, rh, sub = 30.0, 22.0, 15.8, 18.0   # 50 societes en Seed : 24 lignes a loger
-    n_lines = sum(len(LAYERS[k]["lines"]) for k in LAYER_IDS)
-    total = head + 3 * (band + sub) + n_lines * rh + 4
-    card(F, u, v, w, total)
-    F.clip(u, v, w, total, 16)
+    head, rh, sub, fs = 22.0, 11.5, 13.0, 7.9
+    band_w = w - 2 * pad - 4
+    bands = {}
+    for layer in LAYER_IDS:
+        t = LAYERS[layer]
+        n = LAYER_IDS.index(layer) + 1
+        lab = f"LAYER {n} · {LAYER_NAME[layer].upper()}"
+        lw_ = F.tw(lab, "xgras", 7.2, 0.12) + 10
+        bh = max(15.0, F.hpara(band_w - lw_, x(BAND[layer]()), 7.6, "reg", 1.3) + 6)
+        bands[layer] = (lab, lw_, bh)
+    n_lines = len(ALL_LINES)
+    total = head + sum(b[2] for b in bands.values()) + 3 * sub + n_lines * rh + sub + 2
+    card(F, u, v, w, total, 14)
+    F.clip(u, v, w, total, 14)
     F.rr(u, v, w, head, 0, fill="#FAFBFC")
     F.unclip()
-    F.rr(u, v, w, total, 16, stroke=LINE2, lw=1)
 
-    def cell(i, yy, s, role="reg", size=8.8, color=INK2):
+    def cell(i, yy, s, role="reg", size=fs, color=INK2):
         x0, cw = xs[i]
-        al = SIM_COLS[i][2]
-        if al == "r":
-            F.text(x0 + cw - 6, yy, s, role, size, color, align="r")
+        if SIM_COLS[i][2] == "r":
+            F.text(x0 + cw - 3, yy, s, role, size, color, align="r")
         else:
             F.text(x0 + 2, yy, s, role, size, color)
 
     for i, (lines, _cw, _al) in enumerate(SIM_COLS):
-        top = v + (head - len(lines) * 9.4) / 2 + 0.6
+        top = v + (head - len(lines) * 8.4) / 2 + 0.6
         for j, ln in enumerate(lines):
-            cell(i, top + j * 9.4, ln, "xgras", 7.1, MUTED)
+            cell(i, top + j * 8.4, ln, "xgras", 6.5, MUTED)
     y = v + head
-    secondary = set(SECONDARY["companies"])
-    for n, layer in enumerate(LAYER_IDS):
+    for layer in LAYER_IDS:
         t = LAYERS[layer]
-        tag, name, unit = SIM_TITLE[layer]
-        count = t["positions"] if layer == "growth" else t["companies"]
-        F.rr(u + 1, y, w - 2, band, 0, fill=BLUE_TINT)
-        F.line(u, y, u + w, y, LINE, 1)
-        wt = F.text(u + pad + 2, y + 7.2, tag.upper(), "xgras", 7.6, BLUE, 0.12)
-        wn = F.text(u + pad + 2 + wt + 10, y + 5.4, f"{name} · {count} {unit}", "gras", 10, INK)
-        if layer == "seed":
-            lead, radar = t["tracks"]["lead"], t["tracks"]["radar"]
-            F.text(u + pad + 2 + wt + 10 + wn + 8, y + 6.2,
-                   f"{lead['companies']} leads ({lead['first']} to {lead['last']}) + "
-                   f"{radar['companies']} radar tickets ({radar['first']} to {radar['last']})",
-                   "reg", 8.8, MUTED)
-        y += band
+        lab, lw_, bh = bands[layer]
+        F.rr(u + 1, y, w - 2, bh, 0, fill=BLUE_TINT)
+        F.line(u, y, u + w, y, LINE2, 1)
+        F.text(u + pad + 2, y + 4.4, lab, "xgras", 7.2, BLUE, 0.12)
+        F.para(u + pad + 2 + lw_, y + 3.2, band_w - lw_, x(BAND[layer]()), 7.6, "reg", INK2, 1.3)
+        y += bh
         for k, line in enumerate(t["lines"]):
             if k:
                 edge = line["track"] != t["lines"][k - 1]["track"]   # leads -> radar
-                F.line(u + pad, y, u + w - pad, y, LINE2 if edge else LINE, 1.2 if edge else 0.8)
-            label, tone = outcome_tag(line)
-            fg, bg = TONE[tone]
-            strong = tone in ("green", "blue")
-            ty = y + (rh - 8.8) / 2 + 0.4
-            cell(0, ty, row_id(line) + ("*" if line["company"] in secondary else ""), "semi", 8.8, INK)
-            track, role, color = TRACK_LABEL.get(line["track"], ("–", "reg", SOFT))
-            cell(1, ty, track, role, 8.8, color)
-            pw_ = F.tw(label, "semi", 7.6) + 14
-            F.rr(xs[2][0] + 1, y + (rh - 12) / 2, pw_, 12, 6, fill=bg)
-            F.text(xs[2][0] + 1 + pw_ / 2, y + (rh - 12) / 2 + 2.3, label, "semi", 7.6, fg, align="c")
-            cell(3, ty, eur(line["initial"]))
-            cell(4, ty, eur(line["entry_post"], "val"))
-            cell(5, ty, pct(line["entry_pct"], 1))
-            cell(6, ty, eur(line["follow_on"]))
+                F.line(u + pad, y, u + w - pad, y, LINE2 if edge else LINE, 1.2 if edge else 0.7)
+            fg, bg = TONE[line["tone"]]
+            strong = line["tone"] in ("green", "blue")
+            ty = y + (rh - fs) / 2 + 0.3
+            cell(0, ty, row_id(line) + ("*" if line["partial"] else ""), "semi", fs, INK)
+            label = line["status"]
+            ps = 7.0
+            pw_ = F.tw(label, "semi", ps) + 11
+            if pw_ > xs[1][1] - 2:
+                raise SystemExit(f"statut trop long pour sa colonne : {label}")
+            F.rr(xs[1][0] + 1, y + (rh - 10.4) / 2, pw_, 10.4, 5.2, fill=bg)
+            F.text(xs[1][0] + 1 + pw_ / 2, y + (rh - 10.4) / 2 + 2.0, label, "semi", ps, fg, align="c")
+            cell(2, ty, dash(line["first"], eur_cost))
+            cell(3, ty, dash(line["buyback"], eur_cost))
+            cell(4, ty, dash(line["follow"], eur_cost))
+            cell(5, ty, dash(line["loan"], eur_cost))
+            cell(6, ty, pct(line["entry_pct"], 1) if line["n"] == 1 and line["entry_pct"] else "–")
             cell(7, ty, "–" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
             cell(8, ty, "–" if line["exit_value"] is None else eur(line["exit_value"], "val"))
-            cell(9, ty, eur(line["proceeds"]), "gras" if strong else "reg", 8.8, TONE_TEXT[tone])
-            cell(10, ty, mult(line["moic"]), "gras", 8.8, BLUE_DK if strong else TONE_TEXT[tone])
+            cell(9, ty, eur(line["proceeds"]), "gras" if strong else "reg", fs, TONE_TEXT[line["tone"]])
+            cell(10, ty, mult(line["moic"]), "gras", fs, BLUE_DK if strong else TONE_TEXT[line["tone"]])
             y += rh
         F.rr(u + 1, y, w - 2, sub, 0, fill=WARM)
         F.line(u, y, u + w, y, LINE2, 1)
-        ty = y + (sub - 8.8) / 2 + 0.4
-        cell(0, ty, "SUB", "gras", 8.8, INK)
-        cell(2, ty, f"({layer.capitalize()})", "gras", 8.8, INK)
-        cell(3, ty, eur(t["initial"]), "gras", 8.8, INK)
-        for i in (1, 4, 5, 7, 8):
-            cell(i, ty, "–", "reg", 8.8, SOFT)
-        cell(6, ty, eur(t["follow_on"]), "gras", 8.8, INK)
-        cell(9, ty, eur(t["proceeds"]["target"]), "gras", 8.8, BLUE_DK)
-        cell(10, ty, mult(t["moic"]["target"]), "gras", 8.8, BLUE_DK)
+        ty = y + (sub - fs) / 2 + 0.3
+        cell(1, ty, f"Subtotal {LAYER_NAME[layer]}", "gras", fs, INK)
+        for i, key in ((2, "first"), (3, "buyback"), (4, "follow"), (5, "loans")):
+            cell(i, ty, dash(t[key], eur), "gras", fs, INK)
+        for i in (6, 7, 8):
+            cell(i, ty, "–", "reg", fs, SOFT)
+        cell(9, ty, eur(t["proceeds"]["target"]), "gras", fs, BLUE_DK)
+        cell(10, ty, mult(t["moic"]["target"]), "gras", fs, BLUE_DK)
         y += sub
-        if n < 2:
-            F.line(u, y, u + w, y, LINE2, 1)
+    # le total du fonds
+    F.clip(u, v, w, total, 14)
+    F.rr(u, y, w, total - (y - v), 0, fill=BLUE_SOFT)
+    F.unclip()
+    F.line(u, y, u + w, y, BLUE, 1.2)
+    ty = y + (sub - fs) / 2 + 1
+    cell(1, ty, "Total", "xgras", fs, INK)
+    tot = {k: sum(LAYERS[l][k] for l in LAYER_IDS) for k in ("first", "buyback", "follow", "loans")}
+    for i, key in ((2, "first"), (3, "buyback"), (4, "follow"), (5, "loans")):
+        cell(i, ty, eur(tot[key]), "xgras", fs, INK)
+    for i in (6, 7, 8):
+        cell(i, ty, "–", "reg", fs, SOFT)
+    cell(9, ty, eur(CASES["target"]["gross_proceeds"]), "xgras", fs, BLUE_DK)
+    cell(10, ty, mult(CASES["target"]["gross_moic"]), "xgras", fs, BLUE_DK)
+    F.rr(u, v, w, total, 14, stroke=LINE2, lw=1)
     return total
+
+
+def founder_table(F, u, v, w):
+    rows = [[eur(r["exit"], "val"), eur(r["founders_vc"], "tile"), eur(r["founders_profund"], "tile"),
+             mult(r["series_a_vc"]), mult(r["series_a_profund"])] for r in FOUNDERS["rows"]]
+    rows = [[(r[0], "gras", INK), r[1], (r[2], "gras", BLUE_DK), r[3], (r[4], "gras", BLUE_DK)] for r in rows]
+    return grid(F, u, v, w, [(0.7, "l"), (1, "r"), (1.1, "r"), (1.15, "r"), (1, "r")],
+                ["Exit", "Founders, VC path", "Founders, ProFund path", "Series A investor, VC path",
+                 "ProFund, equity"], rows, size=8.8, hsize=6.8, pad_y=3.6)
 
 
 def perf_table(F, u, v, w):
-    """La table Fund Performance de /pitch : la colonne Target mise en avant."""
+    """La table Fund performance : la colonne Target mise en avant."""
     cases = [CASES[k] for k in CASE_IDS]
-    c1 = w * 0.43
-    cw = (w - c1) / 3
-    head, rh = 34.0, 20.5
-    rows = [
-        ("Fund size", [FUND_SIZE] * 3),
-        ("Gross exit value", [eur(c["gross_exits"], "tile") for c in cases]),
-        (f"Year-{SECONDARY['year']} secondary discount", [f"−{eur(c['secondary_discount'])}" for c in cases]),
-        ("Net TVPI", [mult(c["net_tvpi"]) for c in cases]),
-        ("Net IRR", [pct(c["net_irr"]) for c in cases]),
-        (f"Net DPI by year {SECONDARY['year']}", [mult(c["dpi_year6"]) for c in cases]),
-    ] + [(f"Gross MOIC · {k.capitalize()}", [mult(LAYERS[k]["moic"][c]) for c in CASE_IDS]) for k in LAYER_IDS]
-    total = head + rh * len(rows)
-    card(F, u, v, w, total)
-    F.clip(u, v, w, total, 16)
-    F.rr(u + c1, v, cw, total, 0, fill=BLUE_TINT)
-    F.rr(u, v, c1, head, 0, fill="#FAFBFC")
-    F.rr(u + c1 + cw, v, 2 * cw, head, 0, fill="#FAFBFC")
-    F.rr(u + c1, v, cw, head, 0, fill=BLUE_SOFT)
-    F.rr(u + c1, v, cw, 3, 0, fill=BLUE)
-    F.unclip()
-    F.rr(u, v, w, total, 16, stroke=LINE2, lw=1)
-    F.text(u + 14, v + 13, "METRIC", "xgras", 7.6, MUTED, 0.1)
-    for j, name in enumerate(("Target", "Base", "Stress")):
-        F.text(u + c1 + cw * j + cw / 2, v + 12, name, "gras", 10.6, BLUE_DK if j == 0 else INK, align="c")
-    y = v + head
-    for lab, vals in rows:
-        F.line(u, y, u + w, y, LINE, 1)
-        F.text(u + 14, y + 5.6, lab, "semi", 9.4, INK)
-        for j, val in enumerate(vals):
-            F.text(u + c1 + cw * j + cw / 2, y + 5.6, val, "gras" if j == 0 else "semi", 9.6,
-                   BLUE_DK if j == 0 else INK2, align="c")
-        y += rh
-    return total
-
-
-def page_three(F):
-    kick(F, M, 84, "Fund simulation")
-    title(F, M, 102, W, "Line-by-line entry, follow-on & exit.", 25)
-    F.text(M + W, 110, "Target case · every position of the three layers", "reg", 9.8, MUTED, align="r")
-    y = 144.0
-    y += sim_table(F, M, y, W) + 8
     sec = SECONDARY
-    lead, radar = LAYERS["seed"]["tracks"]["lead"], LAYERS["seed"]["tracks"]["radar"]
-    y += F.para(M, y, W, x(
-        f"Seed: {lead['first']} to {lead['last']} are lead or co-lead tickets "
-        f"({rng(lead['ticket_min'], lead['ticket_max'])}), {radar['first']} to {radar['last']} radar tickets "
-        f"({rng(radar['ticket_min'], radar['ticket_max'])}) with pro-rata only in the companies that take off. "
-        "Positions with a company in brackets are follow-ons in our own breakouts; the direct growth entries are "
-        "made alongside leading growth funds, with a liquidation preference. "
-        f"* Fund return shown at exit value. In the fund model, {pct(sec['share'])} of this position is sold in a "
-        f"year-{sec['year']} secondary at {pct(sec['price_pct'])} of its exit value (see Fund Performance)."),
-        7.8, "reg", SOFT, 1.4) + 14
+    rows = [
+        ["Fund size"] + [FUND_SIZE] * 3,
+        ["Gross proceeds, exits and loans"] + [eur(c["gross_proceeds"]) for c in cases],
+        [f"Partial liquidity discount (clause 9)"] + [f"−{eur(c['secondary_discount'])}" for c in cases],
+        ["Net TVPI"] + [mult(c["net_tvpi"]) for c in cases],
+        ["Net IRR"] + [pct(c["net_irr"]) for c in cases],
+        [f"Net DPI by year {sec['year']}"] + [mult(c["dpi_year6"]) for c in cases],
+        [f"Net DPI by year {sec['year'] + 1}"] + [mult(c["dpi_year7"]) for c in cases],
+        ["Loans: repaid ÷ lent"] + [mult(c["loans_multiple"], 2) for c in cases],
+        ["Largest exit"] + [eur(c["largest_exit"], "val") for c in cases],
+    ] + [[f"Gross MOIC · {LAYER_NAME[k]}"] + [mult(LAYERS[k]["moic"][c]) for c in CASE_IDS] for k in LAYER_IDS]
+    return grid(F, u, v, w, [(2.05, "l"), (1, "c"), (1, "c"), (1, "c")], ["Metric", "Target", "Base", "Stress"],
+                rows, size=8.5, hsize=6.9, pad_y=2.5, hl=1, lead=1.2)
 
-    kick(F, M, y, "Fund performance")
-    title(F, M, y + 17, W, "Target returns, built line by line.", 18)
-    F.text(M + W, y + 22, "Net of fees, expenses and carry", "reg", 9.8, MUTED, align="r")
-    y += 48
-    tw_ = 404.0
-    th = perf_table(F, M, y, tw_)
-    rx = M + tw_ + 16
-    rw = W - tw_ - 16
-    # les quatre chiffres de /pitch (FundPerformance, colonne de droite)
+
+def stress_table(F, u, v, w, height=None):
+    rows = [[(s["label"], "reg", INK2 if k else INK), mult(s["net_tvpi"]), pct(s["net_irr"])]
+            for k, s in enumerate(STRESS)]
+    rows[0] = [(STRESS[0]["label"], "semi", INK)] + rows[0][1:]
+    cols = [(3.0, "l"), (0.8, "c"), (0.8, "c")]
+    head = ["Stress test, Target case", "Net TVPI", "Net IRR"]
+    pad_y = 2.5
+    if height:   # meme hauteur que la table de performance a cote
+        h0 = grid(F, u, v, w, cols, head, rows, size=8.3, hsize=6.9, pad_y=pad_y, lead=1.2, draw=False)
+        pad_y += max(0.0, height - h0) / (2 * len(rows))
+    return grid(F, u, v, w, cols, head, rows, size=8.3, hsize=6.9, pad_y=pad_y, lead=1.2, head_pad=2.5)
+
+
+def net_note():
     t, b, s = CASES["target"], CASES["base"], CASES["stress"]
-    fr = DATA["fund_returner"]
-    base_cap = eur(b["exit_cap"], "val")
-    stats = [
-        (pct(t["net_irr"]), "Target net IRR", f"Base case {pct(b['net_irr'])} with no exit above {base_cap}."),
-        (mult(t["net_tvpi"]), "Target net TVPI", f"Base case {mult(b['net_tvpi'])}, stress case {mult(s['net_tvpi'])}."),
-        (mult(t["dpi_year6"]), f"Net DPI by year {sec['year']}", "Partial secondaries on our winners return capital early."),
-        (mult(fr["multiple_of_fund"]), "One fund returner", f"{fr['company']} returns the fund across its Seed and Growth lines."),
+    lm = DATA["loan_multiples"]
+    exits = [ln["exit_year"] for ln in ALL_LINES]
+    disc = sorted({ln["discount"] for ln in ALL_LINES if ln["discount"]})
+    structural = max(disc)
+    winners = [d for d in disc if d < structural]
+    followed = [ln["id"] for ln in ALL_LINES if ln["follow"]]
+    fresh = [ln["id"] for ln in LAYERS["growth"]["lines"] if ln["first"]]
+    brk = [ln for ln in ALL_LINES if ln["kind"] == "breakout"]
+    zombie = sorted({ln["recovery"] for ln in ALL_LINES if ln["tone"] == "grey" and ln["recovery"]})
+    extra = lst([pct(round(1 - c["loan_repaid"], 2)) for c in (t, b, s)])
+    ip = FUND["investment_period_years"]
+    s_ = (
+        f"Net = after management fees ({pct(TERMS['fee_ip_pct'])} on commitments for {ip} years, "
+        f"{pct(TERMS['fee_loan_pct'])} on the loan sleeve, then {pct(TERMS['fee_post_pct'], 1)} on invested "
+        "capital, loans included until repaid), fund expenses and carried interest "
+        f"({pct(TERMS['carry_pct'])} over an {pct(TERMS['hurdle_pct'])} hurdle, European whole-of-fund waterfall "
+        "with GP catch-up), before tax. "
+        f"Investments over {ip} years, exits from year {min(exits)} to year {max(exits)}. "
+        f"Base: every exit value ×{pct(b['exit_mult'])}. Stress: every exit value ×{pct(s['exit_mult'])}. "
+        f"Loans priced at {mult(lm['performing'])} on healthy companies, drawn in tranches; zombies repay "
+        f"{mult(lm['zombie'])}, plus {extra} further losses on every loan by case. "
+        f"Buybacks priced {pct(min(winners))}–{pct(max(winners))} below the valuation of the time on winners "
+        f"and angels, {pct(structural)} below from structural sellers (end-of-life funds). "
+        f"When a founder raises elsewhere, ProFund follows in new shares ({', '.join(followed)}). "
+        f"{lst(fresh)} are fresh growth rounds in new shares; every first cheque carries a 1× non-participating "
+        "preference. "
+        + "".join(f"{ln['id']} is a block bought in {ln['company']}, counted as one company with it. " for ln in brk)
+        + f"Zombies return {mult(zombie[0])} of the equity invested. "
+        f"Any growth position can be topped up to {eur(FUND['company_max_with_spv'], 'tile')} with SPVs, "
+        "outside the fund. Net TVPI on paid-in capital. Loan recycling not included. "
+        "Targets are model outputs, not a forecast or a guarantee."
+    )
+    return s_
+
+
+def page_four(F):
+    # meme societe, meme sortie (v3)
+    fm = FOUNDERS
+    seed_pref = next(h["pref"] for h in fm["holders"] if h["id"] == "seed")
+    a_pref = next(h["pref"] for h in fm["holders"] if h["id"] == "series_a")
+    kick(F, M, 80, "Same company, same exit")
+    fw = 446.0
+    fh = founder_table(F, M, 98, fw)
+    F.para(M + fw + 16, 98, W - fw - 16, x(
+        f"Typical European path: {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} Series A, then "
+        f"{eur(fm['vc_equity'], 'tile')} of equity across Series B to D, with 1× non-participating preferences. "
+        f"ProFund path: same seed and Series A, then {eur(fm['loans'], 'tile')} of loans. "
+        "Illustrative, not a forecast."), 8.2, "reg", MUTED, 1.42)
+    y = 98 + fh + 12
+
+    # la simulation ligne a ligne
+    kick(F, M, y, "Fund simulation")
+    title(F, M, y + 16, W, "Line-by-line entry, buybacks, loans & exit.", 15.5)
+    y += 37
+    y += F.para(M, y, W, x(
+        "Target case, every position of the three layers. Ownership at exit is higher than at entry on every "
+        "line where the founder grows with us: buybacks and cancellations lift our stake with his."),
+        8.6, "reg", MUTED, 1.4) + 7
+    y += sim_table(F, M, y, W) + 5
+    sec = SECONDARY
+    y += F.para(M, y, W, x(
+        "Fund return at exit value, equity plus loan repayment. "
+        f"* Partial liquidity (pact clause 9): {lst(sec['lines'])} sell {pct(sec['share'])} of their stake to the "
+        f"company in year {sec['year']} at {pct(sec['price_pct'])} of exit value; the cash flows and the "
+        "performance below include it."), 7.3, "reg", SOFT, 1.35) + 9
+
+    # la performance
+    kick(F, M, y, "Fund performance")
+    F.text(M + F.tw("FUND PERFORMANCE", "xgras", 10, 0.14) + 14, y - 0.5,
+           "Target returns, built line by line. Net of fees, expenses and carry.", "semi", 9.4, INK)
+    y += 18
+    t, b, s = CASES["target"], CASES["base"], CASES["stress"]
+    uni = next(x_ for x_ in STRESS if x_["id"] == "unicorn")
+    tiles = [
+        (pct(t["net_irr"]), "Target net IRR", f"Base case {pct(b['net_irr'])}, stress case {pct(s['net_irr'])}"),
+        (mult(t["net_tvpi"]), "Target net TVPI",
+         f"Base case {mult(b['net_tvpi'])}, stress case {mult(s['net_tvpi'])}"),
+        (mult(t["dpi_year7"]), f"Net DPI by year {sec['year'] + 1}",
+         "Loans, partial liquidity and Growth exits return capital early"),
+        (eur(t["largest_exit"], "val"), "Largest exit",
+         f"No unicorn needed: one €1B exit takes the fund to {mult(uni['net_tvpi'])} and {pct(uni['net_irr'])}"),
     ]
     gap = 10.0
-    sw = (rw - gap) / 2
-    sh = 72.0
-    for i, (num, lab, det) in enumerate(stats):
-        sx = rx + (i % 2) * (sw + gap)
-        sy = y + (i // 2) * (sh + gap)
-        F.rr(sx, sy, sw, sh, 13, fill=WARM)
-        F.text(sx + 12, sy + 10, num, "gras", 18, BLUE_DK, -0.01)
-        F.text(sx + 12, sy + 33, lab, "semi", 9, INK)
-        F.para(sx + 12, sy + 45, sw - 22, x(det), 7.6, "reg", MUTED, 1.28)
-    # le modele Excel, sur demande
-    ey = y + 2 * sh + gap + 12
-    eh = y + th - ey
-    F.grad(rx, ey, rw, eh, 14, BLUE_GRAD, 120)
-    F.rr(rx + 14, ey + (eh - 34) / 2, 34, 34, 10, fill=WHITE, alpha=0.18)
-    F.icon("sheet", rx + 22, ey + (eh - 34) / 2 + 8, 18, WHITE)
-    F.text(rx + 60, ey + eh / 2 - 13, "Full fund model (Excel)", "gras", 11.5, WHITE)
-    F.text(rx + 60, ey + eh / 2 + 3, f"On request · {MAIL}", "reg", 8.8, "#E6EDF5")
-    F.link(rx, ey, rw, eh, "mailto:" + MAIL + "?subject=ProFund%20fund%20model")
-    y += th + 10
+    tw_ = (W - 3 * gap) / 4
+    dh = max(F.hpara(tw_ - 22, x(d), 7.6, "reg", 1.3) for _n, _l, d in tiles)
+    sh = 35 + dh + 9
+    for i, (num, lab, det) in enumerate(tiles):
+        sx = M + i * (tw_ + gap)
+        if i == 0:
+            card(F, sx, y, tw_, sh, 13, fill=NIGHT, stroke=None, depth=0.6, alpha=0.03)
+            F.glow(sx + tw_ - 20, y + 6, 90, BLUE, 12, 0.035, (sx, y, tw_, sh, 13))
+        else:
+            F.rr(sx, y, tw_, sh, 13, fill=WARM)
+        wn = F.text(sx + 11, y + 9, num, "gras", 18, WHITE if i == 0 else BLUE_DK, -0.01)
+        F.para(sx + 11 + wn + 8, y + 9.5, tw_ - 30 - wn, x(lab), 8.6, "semi", WHITE if i == 0 else INK, 1.2)
+        F.para(sx + 11, y + 35, tw_ - 22, x(det), 7.6, "reg", NIGHT_TXT if i == 0 else MUTED, 1.3)
+    y += sh + 8
 
-    # Meme note que /pitch (ProFundPage.tsx, FundPerformance) : les memes faits.
-    y += F.para(M, y, W, x(
-        f"Net = after management fees ({pct(TERMS['fee_ip_pct'])} on commitments for "
-        f"{FUND['investment_period_years']} years, then {pct(TERMS['fee_post_pct'], 1)} on invested capital), "
-        f"fund expenses and carried interest ({pct(TERMS['carry_pct'])} over an {pct(TERMS['hurdle_pct'])} hurdle, "
-        "European whole-of-fund waterfall with GP catch-up), before tax. The target assumes one fund returner "
-        f"({fr['company']}, returning {mult(fr['multiple_of_fund'])} the fund across its Seed and Growth lines) and "
-        f"a year-{sec['year']} secondary sale of {pct(sec['share'])} of the two largest winners at "
-        f"{pct(sec['price_pct'])} of their exit value. Base caps every exit value at {base_cap}, Stress at "
-        f"{eur(s['exit_cap'], 'val')}; everything else is unchanged. Targets are model outputs, not a forecast or "
-        "a guarantee."), 7.8, "reg", SOFT, 1.4)
+    lw_ = 372.0
+    ph = perf_table(F, M, y, lw_)
+    sh2 = stress_table(F, M + lw_ + 12, y, W - lw_ - 12, height=ph)
+    y += max(ph, sh2) + 7
+    y += F.para(M, y, W, x(net_note()), 6.9, "reg", SOFT, 1.32)
     return y
 
 
 def main():
     doc = Doc()
     lows = []
-    for page in (page_one, page_two, page_three):
+    for page in (page_one, page_two, page_three, page_four):
         F = doc.page()
         lows.append(page(F))
     pdf = doc.fin()

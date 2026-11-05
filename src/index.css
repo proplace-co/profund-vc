@@ -335,6 +335,284 @@
 .pfh { background: #fff; color: var(--ink); }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   v3 (05/11) — LA PROPOSITION FONDATEURS : accueil, /terms, /calculator, /sell,
+   /lp, et les slides de /pitch. Même grammaire que le système pv- ci-dessus.
+   ══════════════════════════════════════════════════════════════════════════ */
+.pv-eyebrow.caps { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.pv-strong { margin: 2px 0 0; max-width: 32em; padding-left: 18px; border-left: 3px solid var(--blue);
+  font-size: clamp(17px, 1.35vw, 20px); line-height: 1.5; font-weight: 700; letter-spacing: -.01em; color: var(--ink); text-wrap: pretty; }
+.pv-hero-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.pv-link { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none;
+  font: inherit; font-size: 15.5px; font-weight: 600; color: var(--blue-dk); text-decoration: none; cursor: pointer; }
+.pv-link svg { width: 15px; height: 15px; flex: none; transition: transform .15s; }
+.pv-link:hover svg { transform: translateX(3px); }
+.pv-link:hover { color: var(--blue-press); }
+.pv-link.muted { color: var(--muted); font-weight: 500; }
+.pv-badge { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px 0 11px; border-radius: 999px;
+  background: #fff; box-shadow: var(--sh-1); font-size: 13px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+.pv-badge svg { width: 15px; height: 15px; color: var(--blue); }
+.pv-note-end { margin: 0 0 40px; }
+.pv-fine { margin: 18px 0 0; max-width: 62em; font-size: 13px; line-height: 1.65; color: var(--muted); }
+.pv-mani-body p.chute { margin-top: 6px; padding: 22px 24px; border-radius: var(--r-md); background: var(--blue-tint);
+  box-shadow: inset 0 0 0 1px #dfe6ef; }
+.pv-mani-body p.chute b { color: var(--blue-dk); }
+
+/* Les deux chiffres sous les moteurs */
+.pv-edge-figs { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.pv-edge-figs div { display: flex; align-items: baseline; gap: 16px; padding: 22px 28px; border-radius: var(--r-lg);
+  background: var(--night-2); box-shadow: inset 0 0 0 1px var(--night-line); }
+.pv-edge-figs b { flex: none; font-size: clamp(26px, 2.4vw, 34px); font-weight: 750; letter-spacing: -.03em; color: #fff; white-space: nowrap; }
+.pv-edge-figs span { font-size: 15.5px; line-height: 1.5; color: var(--night-txt); }
+
+/* How we back them : cinq tuiles */
+.pv-blocks { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+.pv-block { display: flex; flex-direction: column; gap: 10px; padding: 26px 22px 28px; border-radius: var(--r-lg);
+  background: #fff; box-shadow: var(--sh-2); }
+.pv-block .pv-ic { width: 50px; height: 50px; border-radius: 14px; margin-bottom: 6px; }
+.pv-block .pv-ic svg { width: 24px; height: 24px; }
+.pv-block h3 { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.25; letter-spacing: -.015em; }
+.pv-block p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--muted); }
+
+/* The math : un tableau de barres */
+.pv-math { overflow: hidden; border-radius: var(--r-xl); background: #fff; box-shadow: var(--sh-2); }
+.pv-math-head, .pv-math-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: center; padding: 0 32px; }
+.pv-math:has(.wide) .pv-math-head, .pv-math-row.wide { grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1fr) 130px 110px; gap: 24px; }
+.pv-math-head { padding-top: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-size: 11.5px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.pv-math-row { padding-top: 22px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.pv-math-row:last-child { border-bottom: 0; }
+.pv-math-row small { display: none; }
+.pv-math-exit { font-size: 22px; font-weight: 750; letter-spacing: -.02em; color: var(--ink); }
+.pv-math-v { display: grid; gap: 10px; }
+.pv-math-v b { font-size: clamp(24px, 2.2vw, 32px); font-weight: 750; letter-spacing: -.03em; line-height: 1; color: var(--muted); }
+.pv-math-v.pf b { color: var(--blue-dk); }
+.pv-math-v i { display: block; height: 10px; border-radius: 999px; background: var(--line-2); }
+.pv-math-v.pf i { background: var(--grad); box-shadow: 0 6px 14px -8px rgba(74, 96, 128, .9); }
+.pv-math-m { font-size: 22px; font-weight: 750; letter-spacing: -.02em; color: var(--muted); }
+.pv-math-m.pf { color: var(--blue-dk); }
+
+/* Every stage : trois cartes */
+.pv-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.pv-stage { padding: 28px 28px 30px; border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
+.pv-stage-n { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.pv-stage h3 { margin: 0 0 16px; font-size: 26px; font-weight: 750; letter-spacing: -.025em; }
+.pv-stage dl { display: grid; gap: 0; margin: 0; }
+.pv-stage dl > div { padding: 12px 0; border-top: 1px solid var(--line); }
+.pv-stage dt { margin-bottom: 4px; font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
+.pv-stage dd { margin: 0; font-size: 15.5px; line-height: 1.55; color: var(--ink-2); }
+.pv-stage dd.tk { font-size: 19px; font-weight: 700; letter-spacing: -.01em; color: var(--blue-dk); }
+
+/* The pact */
+.pv-pact { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 96px); align-items: start; }
+.pv-pact .pv-head { margin-bottom: 0; }
+.pv-pact-card { padding: clamp(24px, 3vw, 36px); border-radius: var(--r-xl); background: #fff; box-shadow: var(--sh-2); }
+.pv-checks { display: grid; margin: 0; padding: 0; list-style: none; }
+.pv-checks li { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line);
+  font-size: 18px; font-weight: 600; letter-spacing: -.01em; color: var(--ink); }
+.pv-checks.sm li { padding: 9px 0; font-size: 15.5px; font-weight: 500; color: var(--ink-2); }
+.pv-tick { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--green-soft); color: var(--green); }
+.pv-tick svg { width: 16px; height: 16px; stroke-width: 2.4; }
+.pv-tick.soft { background: var(--blue-soft); color: var(--blue-dk); }
+.pv-tick.soft svg { stroke-width: 2; }
+.pv-pact-fair { display: flex; align-items: center; gap: 14px; margin: 18px 0 20px; font-size: 16.5px; line-height: 1.55; color: var(--ink-2); }
+
+/* The team */
+.pv-team { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: clamp(32px, 4vw, 64px); align-items: center; }
+.pv-team-photo { display: block; width: 240px; height: 300px; object-fit: cover; object-position: center top;
+  border-radius: var(--r-lg); box-shadow: var(--sh-2); }
+.pv-team .pv-h2 { margin: 14px 0 0; }
+.pv-team-txt { max-width: 40em; margin: 18px 0 22px; font-size: 18px; line-height: 1.7; color: var(--ink-2); }
+.pv-team-txt b { color: var(--ink); }
+.pv-team .gp-logos { margin: 22px 0 0; }
+
+/* Final call : le bandeau sombre et son formulaire */
+.pv-reserve { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(28px, 4vw, 56px); align-items: start; padding: clamp(28px, 4vw, 56px); border-radius: var(--r-xl);
+  background: var(--night); color: #fff; box-shadow: 0 40px 80px -40px rgba(15, 18, 22, .6); }
+.pv-reserve::after { content: ""; position: absolute; left: -10%; bottom: -50%; width: 60%; height: 140%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(98, 124, 153, .34), rgba(98, 124, 153, 0)); pointer-events: none; }
+.pv-reserve > * { position: relative; z-index: 1; }
+.pv-reserve .pv-kick { color: var(--blue-glow); }
+.pv-reserve h2 { margin: 12px 0 14px; font-size: clamp(32px, 3.4vw, 50px); font-weight: 750; line-height: 1.04; letter-spacing: -.03em; }
+.pv-reserve-copy > p:not(.pv-kick) { margin: 0; max-width: 26em; font-size: 17.5px; line-height: 1.6; color: var(--night-txt); }
+.pv-reserve-links { display: grid; gap: 12px; margin: 32px 0 0; padding: 22px 0 0; list-style: none; border-top: 1px solid var(--night-line); }
+.pv-reserve-links a, .pv-reserve-links button { display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none;
+  font: inherit; font-size: 15.5px; font-weight: 600; color: #fff; text-decoration: none; cursor: pointer; text-align: left; }
+.pv-reserve-links svg { width: 15px; height: 15px; color: var(--blue-glow); transition: transform .15s; }
+.pv-reserve-links a:hover svg, .pv-reserve-links button:hover svg { transform: translateX(3px); }
+
+/* Les formulaires (LeadForm.tsx) */
+.pv-form { padding: clamp(22px, 2.6vw, 32px); border-radius: var(--r-xl); background: #fff; color: var(--ink); box-shadow: var(--sh-2); }
+.pv-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; }
+.pv-fld { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.pv-fld.full { grid-column: 1 / -1; }
+.pv-fld-l { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.pv-fld-l i { font-style: normal; color: var(--blue); }
+.pv-fld-h { font-size: 12px; line-height: 1.45; color: var(--soft); }
+.pv-form .pfm-in, .pv-calc .pfm-in { height: 48px; }
+.pv-ta.pfm-in { height: auto; min-height: 92px; padding: 12px 16px; line-height: 1.5; resize: vertical; }
+select.pfm-in { appearance: none; padding-right: 40px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23646b77' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 16px center; cursor: pointer; }
+.pv-seg { flex-wrap: wrap; }
+.pv-seg button { height: auto; min-height: 42px; padding: 8px 12px; white-space: normal; line-height: 1.3; }
+.pv-form-go { width: 100%; margin-top: 22px; }
+.pv-form-fine { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: var(--soft); text-align: center; }
+.pv-form-done { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 44px 28px; text-align: center; }
+.pv-form-done h3 { margin: 0; font-size: 24px; font-weight: 750; letter-spacing: -.025em; }
+.pv-form-done p { margin: 0; max-width: 28em; font-size: 15.5px; line-height: 1.6; color: var(--muted); }
+.pv-form-done a { color: var(--blue-dk); font-weight: 600; }
+
+/* Les pages courtes : héros, clauses, étapes, encadrés */
+.pv-page-hero { padding: clamp(48px, 6vw, 80px) 0 clamp(44px, 5vw, 64px); }
+.pv-page-hero .pv-wrap { display: grid; gap: 18px; justify-items: start; }
+.pv-h1p { margin: 0; max-width: 17em; font-size: clamp(38px, 4.6vw, 64px); font-weight: 750; line-height: 1.04;
+  letter-spacing: -.035em; color: var(--ink); text-wrap: balance; }
+.pv-h1p span { color: var(--blue); }
+.pv-page-hero .pv-lead { max-width: 40em; }
+.pv-sec-tight { padding: clamp(48px, 6vw, 80px) 0; }
+.pv-clauses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+.pv-clause { display: flex; gap: 18px; padding: 24px 26px; border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
+.pv-clause-n { width: 42px; height: 42px; flex: none; display: grid; place-items: center; border-radius: 13px; background: var(--grad);
+  color: #fff; font-size: 14px; font-weight: 750; box-shadow: 0 12px 24px -14px rgba(74, 96, 128, .9); }
+.pv-clause h2 { margin: 2px 0 6px; font-size: 18.5px; font-weight: 700; letter-spacing: -.015em; color: var(--ink); }
+.pv-clause p { margin: 0; font-size: 15.5px; line-height: 1.6; color: var(--muted); }
+.pv-callout { display: flex; align-items: center; gap: 14px; margin: 24px 0 0; padding: 18px 22px; border-radius: var(--r-md);
+  background: var(--blue-tint); box-shadow: inset 0 0 0 1px #dfe6ef; }
+.pv-callout p { margin: 0; font-size: 16px; line-height: 1.6; color: var(--ink-2); }
+.pv-callout b { color: var(--ink); }
+.pv-ctas-c { justify-content: center; margin-top: 36px; }
+.pv-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(32px, 5vw, 72px); align-items: start; }
+.pv-split .pv-head { margin-bottom: 0; }
+.pv-h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin: 0 0 18px; font-size: 22px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
+.pv-h3 small { font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
+.pv-steps { display: grid; margin: 0 0 8px; padding: 0; list-style: none; }
+.pv-steps li { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.pv-steps span { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--blue-soft);
+  color: var(--blue-dk); font-size: 15px; font-weight: 750; }
+.pv-steps p { margin: 0; font-size: 17px; line-height: 1.5; color: var(--ink); }
+.pv-notice { padding: 24px 26px; border-radius: var(--r-lg); background: #fff; box-shadow: inset 0 0 0 1.5px #c9d5e3; }
+.pv-notice-h { margin: 0 0 8px; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.pv-notice p:not(.pv-notice-h) { margin: 0; font-size: 15px; line-height: 1.65; color: var(--ink-2); }
+.pv-contact { margin: 20px 0 0; font-size: 16px; color: var(--ink-2); }
+.pv-contact a { color: var(--blue-dk); font-weight: 600; }
+
+/* /calculator */
+.pv-calc { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 24px; align-items: start; }
+.pv-calc-in { display: grid; gap: 16px; }
+.pv-calc-out { position: sticky; top: 92px; }
+.pv-card { padding: clamp(22px, 2.4vw, 30px); border-radius: var(--r-xl); background: #fff; box-shadow: var(--sh-2); }
+.pv-num { position: relative; display: block; }
+.pv-num input { width: 100%; padding-right: 52px; }
+.pv-num em { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 13.5px;
+  font-weight: 600; color: var(--muted); pointer-events: none; }
+.pv-round { display: grid; grid-template-columns: 82px minmax(0, 1fr) minmax(0, 1fr) 32px; gap: 12px; align-items: end; margin-bottom: 14px; }
+.pv-round-n { padding-bottom: 15px; font-size: 14px; font-weight: 700; color: var(--ink); }
+.pv-round-x { width: 32px; height: 32px; margin-bottom: 8px; border: 0; border-radius: 50%; background: none; color: var(--muted);
+  font-size: 20px; line-height: 1; cursor: pointer; }
+.pv-round-x:hover { background: var(--bg); color: var(--ink); }
+.pv-round-act { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 4px; }
+.pv-result .pv-kick { margin-bottom: 18px; }
+.pv-res-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 4px 16px; margin-bottom: 18px; }
+.pv-res-row span { font-size: 15px; font-weight: 600; color: var(--muted); }
+.pv-res-row b { font-size: clamp(30px, 3vw, 42px); font-weight: 750; letter-spacing: -.035em; line-height: 1; color: var(--muted); }
+.pv-res-row.pf span { color: var(--ink); }
+.pv-res-row.pf b { color: var(--blue-dk); }
+.pv-res-row i { grid-column: 1 / -1; display: block; height: 12px; border-radius: 999px; background: var(--bg); }
+.pv-res-row i em { display: block; height: 100%; border-radius: inherit; background: var(--line-2); transition: width .3s; }
+.pv-res-row.pf i em { background: var(--grad); }
+.pv-res-x { margin: 4px 0 20px; font-size: 16px; line-height: 1.5; color: var(--ink-2); }
+.pv-res-x b { color: var(--blue-dk); }
+.pv-res-t { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.pv-res-t th { padding: 0 0 10px; border-bottom: 1px solid var(--line); text-align: left; font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.pv-res-t td { padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+.pv-res-t td.pf { color: var(--blue-dk); font-weight: 700; }
+.pv-res-t tr.sub td { border-bottom: 0; font-weight: 600; color: var(--ink); }
+.pv-res-go { width: 100%; margin-top: 22px; }
+
+/* /pitch : les slides */
+.pv-slide-n { display: inline-grid; place-items: center; min-width: 32px; height: 22px; margin-right: 12px; padding: 0 7px;
+  border-radius: 999px; background: var(--blue-soft); color: var(--blue-dk); font-size: 11.5px; letter-spacing: .04em; vertical-align: 1px; }
+.pv-sec.night .pv-slide-n { background: rgba(159, 182, 207, .16); color: #fff; }
+.pv-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.pv-duo-txt p { margin: 0 0 16px; font-size: 19px; line-height: 1.6; color: var(--ink-2); }
+.pv-duo-txt p.big { font-size: clamp(24px, 2.3vw, 34px); line-height: 1.25; font-weight: 650; letter-spacing: -.02em; color: var(--ink); }
+.pv-duo-txt b { color: var(--blue-dk); }
+.pv-tiles3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.pv-tile { padding: 30px 28px; border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
+.pv-tile b { display: block; margin-bottom: 10px; font-size: clamp(40px, 4.4vw, 64px); font-weight: 750; letter-spacing: -.045em; line-height: 1; color: var(--ink); }
+.pv-tile span { font-size: 15.5px; line-height: 1.55; color: var(--muted); }
+.pv-tile.dark { background: var(--night); box-shadow: 0 24px 48px -30px rgba(0, 0, 0, .7); }
+.pv-tile.dark b { color: #fff; }
+.pv-tile.dark span { color: var(--night-txt); }
+.pv-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.pv-flow-s { padding: 28px 26px; border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
+.pv-flow-s h3 { margin: 0 0 8px; font-size: 19px; font-weight: 700; letter-spacing: -.015em; }
+.pv-flow-s p { margin: 0; font-size: 15.5px; line-height: 1.6; color: var(--muted); }
+.pv-slide-lead { margin: -24px 0 28px; max-width: 48em; }
+.pv-ts { margin-top: 0; }
+.pv-wins td:first-child { font-weight: 600; color: var(--ink); }
+.pv-wins td.pf { color: var(--blue-dk); font-weight: 700; }
+.pv-punch { margin: 28px 0 0; max-width: 34em; font-size: clamp(20px, 1.9vw, 27px); line-height: 1.3; font-weight: 650; letter-spacing: -.02em; color: var(--ink); }
+.pv-trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.pv-trio h3 { margin: 0 0 10px; font-size: 19px; font-weight: 700; letter-spacing: -.015em; }
+.pv-trio p { margin: 0; font-size: 15.5px; line-height: 1.65; color: var(--muted); }
+.pv-sub-block { margin-top: 64px; }
+.pv-terms-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.pv-why { margin: 24px 0 0; }
+.pv-tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.pv-tiers .tier { margin-bottom: 0; }
+.pv-tiers .tier-label { min-width: 104px; }
+.pv-sim { margin-top: 40px; }
+.pv-sim-h { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.pv-sim-h small { display: block; margin-top: 6px; font-size: 14.5px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--muted); }
+.pv-total { margin-top: 24px; }
+/* les tables de simulation tiennent dans 1200 px : statut sur deux lignes, marges resserrées */
+.pv-sim .fund-table th, .pv-sim .fund-table td { padding-left: 9px; padding-right: 9px; }
+.pv-sim .fund-table th { letter-spacing: .06em; font-size: 10.5px; white-space: normal; }
+.pv-sim .fund-table td { font-size: 13.5px; }
+.pv-sim .fund-table td:nth-child(2) { white-space: normal; min-width: 150px; max-width: 230px; }
+.pv-sim .tag { height: auto; min-height: 24px; padding: 4px 10px; line-height: 1.3; white-space: normal; }
+.pv-reserve-sec { padding-bottom: 40px; }
+.pv-fine + .pv-ctas { margin-top: 24px; }
+/* calculateur : les libellés « Amount / Valuation » une seule fois, puis lus par les lecteurs d'écran seulement */
+.pv-round ~ .pv-round .pv-fld-l { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.pv-round ~ .pv-round .pv-round-n { padding-bottom: 15px; }
+.pv-band-a { color: #fff; font-weight: 600; text-decoration: none; border-bottom: 1.5px solid rgba(159, 182, 207, .6); }
+
+@media (max-width: 1080px) {
+  .pv-blocks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pv-calc { grid-template-columns: minmax(0, 1fr); }
+  .pv-calc-out { position: static; }
+  .pv-math:has(.wide) .pv-math-head, .pv-math-row.wide { grid-template-columns: 100px minmax(0, 1fr) minmax(0, 1fr) 110px 90px; gap: 16px; }
+}
+@media (max-width: 900px) {
+  .pv-blocks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pv-stages, .pv-pact, .pv-reserve, .pv-split, .pv-duo, .pv-tiles3, .pv-flow, .pv-trio, .pv-terms-grid, .pv-tiers,
+  .pv-edge-figs, .pv-clauses { grid-template-columns: minmax(0, 1fr); }
+  .pv-team { grid-template-columns: minmax(0, 1fr); }
+  .pv-team-photo { width: 160px; height: 200px; }
+  .pv-pact .pv-head, .pv-split .pv-head { margin-bottom: 8px; }
+}
+@media (max-width: 700px) {
+  .pv-math-head { display: none; }
+  .pv-math-row, .pv-math-row.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; padding: 20px 22px; }
+  .pv-math-row small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  .pv-math-exit { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px; }
+  .pv-math-exit small { order: -1; }
+  .pv-math-m { display: grid; gap: 6px; font-size: 20px; }
+}
+@media (max-width: 600px) {
+  .pv-blocks, .pv-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .pv-hero-foot { gap: 12px 18px; }
+  .pv-round { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px; }
+  .pv-round-n { grid-column: 1 / -1; padding-bottom: 0; }
+  .pv-edge-figs div { flex-direction: column; gap: 6px; }
+  .pv-clause { padding: 20px; gap: 14px; }
+  .pv-reserve-copy > p:not(.pv-kick) { font-size: 16.5px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    /pitch, /legal, /privacy — l'ancien jeu de classes (.pf-wrap, .mod,
    .fund-table…), redessiné avec les mêmes jetons : cartes arrondies, ombres
    douces, chapeaux en capitales espacées. La bascule mobile reste à 768 px.

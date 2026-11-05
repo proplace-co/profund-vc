@@ -2,15 +2,16 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { eur, fund } from '../lib/fund';
 
-// LE TEXTE DE LA THÈSE (Antoine, 30/10) : manifeste, quatre lois, deux moteurs,
-// proof of work. L'accueil ET /pitch rendent ces composants, la fiche PDF
-// (scripts/factsheet.py) en porte la même copie : les changer ensemble.
-// Seul montant : la taille du fonds, lue dans fund.json (loi 04).
+// LE TEXTE DE LA THÈSE (Antoine, 30/10, v3 du 05/11) : manifeste et sa chute,
+// quatre lois, deux moteurs, proof of work. L'accueil ET /pitch rendent ces
+// composants, la fiche PDF (scripts/factsheet.py) en porte la même copie : les
+// changer ensemble. Montant : la taille du fonds, lue dans fund.json (loi 04).
 const FUND_SIZE = eur(fund.fund.commitments, 'tile');
 
 // Icônes au trait (tracés Lucide, licence ISC), 24 × 24, couleur du texte.
-type IconName = 'crown' | 'loop' | 'globe' | 'trend' | 'radar' | 'bot' | 'check' | 'arrow'
-  | 'out' | 'sheet' | 'file';
+export type IconName = 'crown' | 'loop' | 'globe' | 'trend' | 'radar' | 'bot' | 'check' | 'arrow'
+  | 'out' | 'sheet' | 'file' | 'target' | 'banknote' | 'shield' | 'door' | 'scale' | 'calc'
+  | 'handshake' | 'lock' | 'mail';
 const PATHS: Record<IconName, ReactNode> = {
   crown: <><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" /><path d="M5 21h14" /></>,
   loop: <><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></>,
@@ -23,6 +24,15 @@ const PATHS: Record<IconName, ReactNode> = {
   out: <><path d="M7 7h10v10" /><path d="M7 17 17 7" /></>,
   sheet: <><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></>,
   file: <><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></>,
+  target: <><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></>,
+  banknote: <><rect width="20" height="12" x="2" y="6" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></>,
+  shield: <><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" /></>,
+  door: <><path d="M13 4h3a2 2 0 0 1 2 2v14" /><path d="M2 20h3" /><path d="M13 20h9" /><path d="M10 12v.01" /><path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z" /></>,
+  scale: <><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /><path d="M7 21h10" /><path d="M12 3v18" /><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" /></>,
+  calc: <><rect width="16" height="20" x="4" y="2" rx="2" /><path d="M8 6h8" /><path d="M16 14v4" /><path d="M16 10h.01" /><path d="M12 10h.01" /><path d="M8 10h.01" /><path d="M12 14h.01" /><path d="M8 14h.01" /><path d="M12 18h.01" /><path d="M8 18h.01" /></>,
+  handshake: <><path d="m11 17 2 2a1 1 0 1 0 3-3" /><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" /><path d="m21 3 1 11h-2" /><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" /><path d="M3 4h8" /></>,
+  lock: <><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>,
+  mail: <><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></>,
 };
 
 export function Icon({ name }: { name: IconName }) {
@@ -41,7 +51,10 @@ export function SiteHeader({ links, children }: { links: { href: string; label: 
       <div className="pv-wrap pv-top-in">
         <Link to="/" className="pv-top-logo" aria-label="ProFund"><img src="/logo.png" alt="ProFund" /></Link>
         <nav className="pv-top-nav">
-          {links.map((l) => <a key={l.href} href={l.href}>{l.label}</a>)}
+          {/* une route (« /terms ») passe par le routeur ; une ancre (« #math », « /#how ») reste un lien */}
+          {links.map((l) => (l.href.startsWith('/') && !l.href.includes('#')
+            ? <Link key={l.href} to={l.href}>{l.label}</Link>
+            : <a key={l.href} href={l.href}>{l.label}</a>))}
         </nav>
         <div className="pv-top-act">{children}</div>
       </div>
@@ -86,6 +99,11 @@ export function Manifesto({ tint = false }: { tint?: boolean }) {
           <p>
             <b>The future doesn’t belong to the largest organizations.</b> It belongs to the clearest
             minds directing the most autonomous machines.
+          </p>
+          {/* La chute v3 (05/11) : la fiche porte sa variante LP (« …we lend and we buy »). */}
+          <p className="chute">
+            <b>Capital is no longer scarce. Ownership is.</b> A team that doesn’t need an army doesn’t
+            need a round every 18 months. So we don’t sell you one.
           </p>
         </div>
       </div>
@@ -155,8 +173,7 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
       <div className="pv-wrap">
         <div className="pv-head">
           <p className="pv-kick">Our edge</p>
-          <h2 className="pv-h2">Two autonomous AI engines.</h2>
-          <p className="sub">We run on what we back.</p>
+          <h2 className="pv-h2">Two autonomous AI engines. We run on what we back.</h2>
         </div>
         <div className="pv-edge">
           <div className="pv-eng">
@@ -164,7 +181,8 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
             <h3>The Deal Engine</h3>
             <p>
               Scores every company against our thesis and flags inflection points before they
-              become consensus. Autonomously detects the right targets for our portfolio companies.
+              become consensus. Autonomously detects the right targets for our portfolio companies,
+              and the angels, leavers and early funds ready to sell.
             </p>
             <Powers names={['ProFund', 'Proplace', 'Portfolio companies']} />
             <button type="button" className="pv-btn light" onClick={onFollow}>
@@ -181,6 +199,10 @@ export function OurEdge({ onFollow }: { onFollow: () => void }) {
             </p>
             <Powers names={['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites', 'Portfolio companies']} />
           </div>
+        </div>
+        <div className="pv-edge-figs">
+          <div><b>Every</b><span>European seed round tracked by the Seed Radar, weekly</span></div>
+          <div><b>6–18 months</b><span>detection lead before announcement</span></div>
         </div>
       </div>
     </section>
