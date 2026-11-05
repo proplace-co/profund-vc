@@ -17,8 +17,8 @@ src/
     Founders.tsx        LA PROPOSITION FONDATEURS v3 (the rules, the math et la part animée, how we
                         back + lien vers le pacte, every stage, Founding Partner, final call) — rendus par /, /calculator, /pitch
     HomepageLite.tsx    route /
-    Pact.tsx            LE PACTE DES FONDATEURS, 10 clauses (CLAUSES) — rendu par l'accueil ET /terms
-    TermsPage.tsx       route /terms — le pacte (texte dans Pact.tsx)
+    Pact.tsx            LE PACTE DES FONDATEURS (CLAUSES, N_CLAUSES, CONFLICTS) — rendu par /terms
+    TermsPage.tsx       route /terms — le pacte, page sombre sans barre du haut (texte dans Pact.tsx)
     CalculatorPage.tsx  route /calculator — « Run your numbers »
     LpPage.tsx          route /lp — l'accès LP (mention de pré-commercialisation)
     SubPage.tsx         coquille de /terms, /calculator, /lp
@@ -108,8 +108,10 @@ always yours. », les anciennes règles du VC barrées à l'écran), puis le cap
 ligne de prêt avec nos prêteurs partenaires, puis l'equity seulement si le fondateur la
 demande), les chiffres (« The capital you don't raise is the company you keep. » : le
 tableau compare 135 M€ d'equity à 25 M€ de dette, l'hypothèse est dite en clair),
-le pacte (v3.11, les 10 clauses en grille éditoriale, sans chapeau ; sans note sous le
-tableau), Founding Partner (sans Dreamzer ni Fadparis sur le site) et un seul bouton,
+(v3.14) le fonds en chiffres (taille, tickets, suivi, au-delà de 10 M€), les étages, les
+chiffres sans phrase contestable (« When debt can carry your growth… When it cannot, we bring
+the equity on the same terms »), les deux moteurs côté fondateur (« Two AI engines, working
+for you. ») ; le pacte est sur /terms (page sombre), pas sur l'accueil ; Founding Partner (sans Dreamzer ni Fadparis sur le site) et un seul bouton,
 « Run your numbers ». L'exigence ne se dit pas, elle se
 lit. **La thèse et la vision sont sur /lp, écrites pour les LPs** (v3.10, rien qui s'adresse
 aux fondateurs) : le héros « Where pure vision directs recursive AI. » et la capture du
@@ -274,7 +276,8 @@ complémentaire à préférence 1×) `v3.10` (accueil sans barre du haut, /lp r�
 les LPs), `v3.11` (le pacte sur l'accueil, l'equity complémentaire dans les clauses 1-2) et
 `v3.12` (clause 9 supprimée, conflits et rachats en clair) et `v3.13` (le tableau fondateurs
 sur les médianes Carta : 37,5 % après la série A, dilution médiane B-D, recharges du pool ;
-clause 4 : le pool se recharge avec des titres rachetés). Pour revenir à une version : partir du tag
+clause 4 : le pool se recharge avec des titres rachetés) et `v3.14` (accueil : le fonds en
+chiffres, les étages, les moteurs côté fondateur ; le pacte sur une page /terms sombre). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`

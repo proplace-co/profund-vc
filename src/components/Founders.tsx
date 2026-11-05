@@ -76,9 +76,7 @@ export function TheRules({ hero = false }: { hero?: boolean }) {
         <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Now you get the capital without giving the company away.</p>
         <div className="pv-rules-foot">
           <span>Written into the pact. The same for every founder. Raise elsewhere whenever you want: we follow or lead.</span>
-          {hero
-            ? <a href="#pact" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></a>
-            : <Link to="/terms" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></Link>}
+          <Link to="/terms" className="pv-link">Read the pact, {N_CLAUSES} clauses <Icon name="arrow" /></Link>
         </div>
       </div>
     </section>
@@ -98,15 +96,25 @@ export function CapitalStack() {
       d: `From ${eur(L.seed.ticket_min)} at pre-seed to ${eur(F.company_cap, 'tile')} at growth. Then never again.` },
     { icon: 'banknote', tag: 'No dilution', t: 'The loan line',
       d: 'Reserved from day one, with our fund and partner lenders. Hiring, go-to-market, working capital, acquisitions. Drawn in tranches, repaid from growth.' },
-    { icon: 'shield', tag: 'Your call', t: 'Equity, if you need it',
-      d: 'Need more than debt can carry? We go and get the equity: led by us, on the same terms, with SPVs and co-investors alongside the fund. Every option stays open.' },
+    { icon: 'shield', tag: 'Your call', t: 'Equity, when debt is not enough',
+      d: 'If debt cannot carry your growth, or lenders cannot take the full line, we go and get the equity: led by us, on the same terms, with SPVs and co-investors alongside the fund. Every option stays open.' },
+  ];
+  // Le fonds en quatre chiffres : taille, tickets, suivi, au-delà (montants de fund.json).
+  const figs = [
+    { b: eur(F.commitments, 'tile'), s: 'Fund I, pre-seed to growth' },
+    { b: `${eur(L.seed.ticket_min)} – ${eur(F.company_cap, 'tile')}`, s: 'Per company, from the fund' },
+    { b: 'Follow-on', s: 'Loans, buybacks, and equity on the same terms' },
+    { b: `Beyond ${eur(F.company_cap, 'tile')}`, s: 'SPVs and co-investors alongside the fund' },
   ];
   return (
     <section className="pv-sec" id="capital">
       <div className="pv-wrap">
         <div className="pv-head">
           <h2 className="pv-h2">Funded like the leaders. Diluted like no one.</h2>
-          <p className="sub">Every euro comes from the cheapest source first. Equity comes last, on the same terms, and only if you ask.</p>
+          <p className="sub">Every euro comes from the cheapest source first. When debt is not enough, the equity comes too, on the same terms.</p>
+        </div>
+        <div className="pv-figs">
+          {figs.map((f) => <div key={f.s}><b>{f.b}</b><span>{f.s}</span></div>)}
         </div>
         <ol ref={ref} className={`pv-stack${seen ? ' in' : ''}`}>
           {steps.map((x, i) => (
@@ -244,13 +252,13 @@ export function FounderTable({ investor = false }: { investor?: boolean }) {
   );
 }
 
-export function TheMath() {
+export function TheMath({ tint = true }: { tint?: boolean }) {
   return (
-    <section className="pv-sec tint" id="math">
+    <section className={`pv-sec${tint ? ' tint' : ''}`} id="math">
       <div className="pv-wrap">
         <div className="pv-head">
           <h2 className="pv-h2">The capital you don’t raise is the company you keep.</h2>
-          <p className="sub">Same exit. The usual path sells you {eur(FM.vc_equity, 'tile')} of equity after your Series A. An AI-native team on our terms needs {eur(FM.loans, 'tile')} of debt.</p>
+          <p className="sub">When debt can carry your growth, this is what you keep. When it cannot, we bring the equity on the same terms, and the calculator shows your real path.</p>
         </div>
         <StakeChart />
         <h3 className="pv-h3 pv-math-t">What you take home</h3>
@@ -276,14 +284,14 @@ const STAGES = [
     what: 'Fresh growth rounds, buybacks of early funds, growth loans, acquisition financing' },
 ];
 
-export function EveryStage({ tint = false }: { tint?: boolean }) {
+export function EveryStage({ tint = false, kicker = true }: { tint?: boolean; kicker?: boolean }) {
   return (
     <section className={`pv-sec${tint ? ' tint' : ''}`} id="stages">
       <div className="pv-wrap">
         <div className="pv-head">
-          <p className="pv-kick">Every stage</p>
+          {kicker && <p className="pv-kick">Every stage</p>}
           <h2 className="pv-h2">Pre-seed to growth. One equity round, wherever you are.</h2>
-          <p className="sub">Two ways in at every layer: a first equity cheque, or a buyback of existing shares. Then loans, never new shares.</p>
+          <p className="sub">Two ways in at every layer: a first equity cheque, or a buyback of existing shares. Then loans, and equity on the same terms only if you need it.</p>
         </div>
         <div className="pv-stages">
           {STAGES.map((s, i) => (
@@ -351,6 +359,34 @@ export function FinalCall() {
           </div>
           <div className="pv-band-ctas">
             <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
+            <Link to="/terms" className="pv-btn ghost-light">Read the pact</Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Les moteurs, pour les fondateurs (v3.14) ─────────────────────────────────
+// Même faits que OurEdge (Thesis.tsx), dits du côté du fondateur.
+export function FounderEngines() {
+  return (
+    <section className="pv-sec night" id="engines">
+      <div className="pv-wrap">
+        <div className="pv-head">
+          <h2 className="pv-h2">Two AI engines, working for you.</h2>
+          <p className="sub">The engines that already run ProFund, Proplace, Maximum Insurance and Sosuites.</p>
+        </div>
+        <div className="pv-edge">
+          <div className="pv-eng">
+            <span className="pv-ic"><Icon name="radar" /></span>
+            <h3>The Deal Engine</h3>
+            <p>Detects the right acquisition targets for your company before they become consensus, and the angels, leavers and early funds ready to sell, so your cap table stays clean.</p>
+          </div>
+          <div className="pv-eng">
+            <span className="pv-ic"><Icon name="bot" /></span>
+            <h3>The Growth Engine</h3>
+            <p>Autonomous AI agents running content, inbound and outbound end-to-end. They run our fund and our companies today, and plug directly into yours.</p>
           </div>
         </div>
       </div>
