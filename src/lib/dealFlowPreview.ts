@@ -4,8 +4,10 @@ const PROFUND_TOKEN = 'ERMTuBeSbTA9CfFJ';
 /** Same live source as the GP's cockpit, with the investor presentation.
  *  28/10 — the access service decides who reads: `guest=gp` (the GP's own link: every gesture
  *  of the file) or `guest=lp` (an investor: read and discuss), and `lpk` signs the reader's
- *  messages in the deal discussion. Both are carried over; anything else stays `lp`. */
-export function dealFlowPreview(serverSrc?: string): string {
+ *  messages in the deal discussion. Both are carried over; anything else stays `lp`.
+ *  05/11 — `sel` (la société du bouton « See it in the deal flow → » de l'email) est transmis
+ *  au cockpit, qui ouvre sa fiche (`?sel=`, nom exact). */
+export function dealFlowPreview(serverSrc?: string, sel?: string): string {
   let token = PROFUND_TOKEN;
   let guest = 'lp';
   let lpk = '';
@@ -19,6 +21,7 @@ export function dealFlowPreview(serverSrc?: string): string {
       if (/^[A-Za-z0-9_-]{16,64}$/.test(key)) lpk = key;
     }
   } catch { /* Keep the known ProFund source if the access service omits its URL. */ }
+  const company = (sel || '').trim().slice(0, 160);
 
   const preview = new URL('/fr/carte/', PROPLACE);
   preview.search = new URLSearchParams({
@@ -26,6 +29,7 @@ export function dealFlowPreview(serverSrc?: string): string {
     ...(lpk ? { lpk } : {}),
     ticker: '0', onb: '0', ptab: '1', tab: 'kept', dens: 'liste', win: 'all',
     memo_ui: 'reader16', cockpit_ui: 'aligned2',
+    ...(company ? { sel: company } : {}),
   }).toString();
   return preview.href;
 }

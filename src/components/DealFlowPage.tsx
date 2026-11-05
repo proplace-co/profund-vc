@@ -30,11 +30,14 @@ export default function DealFlowPage() {
   // Le lien de l'email, sinon l'accès déjà retenu par ce navigateur (lib/access.ts).
   const [saved, setSaved] = useState(() => savedAccess());
   const k = (params.get('k') || '').trim() || saved;
+  // 05/11 — le bouton « See it in the deal flow → » de l'email nomme la société (&sel=) :
+  // transmise au cockpit, qui ouvre sa fiche. Lue une fois à l'arrivée.
+  const [sel] = useState(() => (params.get('sel') || '').trim().slice(0, 160));
   const [state, setState] = useState<State>(k ? 'check' : 'none');
   const [slow, setSlow] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [first, setFirst] = useState('');
-  const [src, setSrc] = useState(() => dealFlowPreview());
+  const [src, setSrc] = useState(() => dealFlowPreview(undefined, sel));
   const [modal, setModal] = useState(false);
   const [frameH, setFrameH] = useState<number | null>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
@@ -74,7 +77,7 @@ export default function DealFlowPage() {
           if (r.ok && d && d.ok) {
             setFirst(d.first_name || '');
             // The access server may still return the old Retenues URL.
-            setSrc(dealFlowPreview(d.preview_src));
+            setSrc(dealFlowPreview(d.preview_src, sel));
             setFrameH(null);
             setState('ok');
             rememberAccess(k);
