@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
-import { SiteHeader } from './Thesis';
 import { CapitalStack, FinalCall, TheMath, TheRules, TheTeam } from './Founders';
 
 const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
@@ -18,12 +17,7 @@ function hashWantsDealflow() {
 // fondateurs (illustratif). JAMAIS de frais, de carry ni de rendement cible. Le shell
 // index.html reste sans montant (scripts/prerender.mjs le vérifie).
 // Le popup du deal flow reste monté pour profund.vc/#dealflow (le QR de la fiche).
-const LINKS = [
-  { href: '#rules', label: 'The rules' },
-  { href: '#capital', label: 'Your capital' },
-  { href: '#math', label: 'The math' },
-  { href: '#team', label: 'Founding Partner' },
-];
+// Pas de barre du haut (Antoine, 05/11) : le logo blanc ouvre le héros, un seul bouton.
 
 export default function HomepageLite() {
   const [open, setOpen] = useState(() => hashWantsDealflow());
@@ -52,9 +46,6 @@ export default function HomepageLite() {
 
   return (
     <div className="pfh">
-      <SiteHeader links={LINKS}>
-        <Link to="/calculator" className="pv-btn">Run your numbers</Link>
-      </SiteHeader>
       <TheRules hero />
       <CapitalStack />
       <TheMath />

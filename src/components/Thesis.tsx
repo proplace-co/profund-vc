@@ -78,7 +78,7 @@ export function HeroVisual() {
   );
 }
 
-export function Manifesto({ tint = false }: { tint?: boolean }) {
+export function Manifesto({ tint = false, lp = false }: { tint?: boolean; lp?: boolean }) {
   return (
     <section className={`pv-sec${tint ? ' tint' : ''}`} id="manifesto">
       <div className="pv-wrap pv-mani">
@@ -103,7 +103,7 @@ export function Manifesto({ tint = false }: { tint?: boolean }) {
           {/* La chute v3 (05/11) : la fiche porte sa variante LP (« …we lend and we buy »). */}
           <p className="chute">
             <b>Capital is no longer scarce. Ownership is.</b> A team that doesn’t need an army doesn’t
-            need a round every 18 months. So we don’t sell you one.
+            need a round every 18 months. {lp ? 'So we don’t sell it one: we invest once, then we lend and we buy.' : 'So we don’t sell you one.'}
           </p>
         </div>
       </div>

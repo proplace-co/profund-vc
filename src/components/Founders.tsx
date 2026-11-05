@@ -40,7 +40,8 @@ const RULES: { old: string; now: string }[] = [
   { old: 'A new round every 18 months', now: 'One round. Then never again.' },
   { old: 'A slice of your company at every round', now: 'Your stake never goes down.' },
   { old: 'A board seat and a veto', now: 'Our shares vote with you.' },
-  { old: 'Preferences stacked round after round', now: 'No new preference on top of you.' },
+  // (v3.10 : la ligne « No new preference on top of you » est retirée : l'equity
+  // complémentaire, au choix du fondateur, porte une préférence 1×.)
   { old: 'Their exit, on their timing', now: 'Your exit. No veto. Ever.' },
   { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Your stake goes up.' },
 ];
@@ -52,9 +53,9 @@ export function TheRules({ hero = false }: { hero?: boolean }) {
   return (
     <section className={`pv-sec night pv-rules-sec${hero ? ' pv-rules-hero' : ''}`} id="rules">
       <div ref={ref} className={`pv-wrap pv-rules${seen ? ' in' : ''}`}>
+        {hero && <img className="pv-rules-logo" src="/logo.png" alt="ProFund" width={150} height={40} />}
         <p className="pv-kick">{hero ? 'Venture capital · Pre-seed to growth · Europe' : 'The rules'}</p>
         <H className="pv-rules-h">Control was always yours.</H>
-        <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Now you get the capital without giving the company away.</p>
         {hero && (
           <div className="pv-ctas">
             <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
@@ -69,6 +70,8 @@ export function TheRules({ hero = false }: { hero?: boolean }) {
             </li>
           ))}
         </ol>
+        {/* la conclusion des règles barrées (Antoine, 05/11 : en bas, pas sous le titre) */}
+        <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Now you get the capital without giving the company away.</p>
         <div className="pv-rules-foot">
           <span>Written into the pact. The same for every founder. Raise elsewhere whenever you want: we follow or lead.</span>
           <Link to="/terms" className="pv-link">Read the 10 clauses <Icon name="arrow" /></Link>

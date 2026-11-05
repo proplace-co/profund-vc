@@ -507,6 +507,19 @@
 @media (prefers-reduced-motion: reduce) { .pv-stack-s { transition: none; } }
 @media (max-width: 1080px) { .pv-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pv-stack-s::after { display: none; } }
 @media (max-width: 600px) { .pv-stack { grid-template-columns: minmax(0, 1fr); } }
+/* v3.10 : l'accueil sans barre du haut (le logo blanc ouvre le héros), et /lp */
+.pv-rules-logo { display: block; width: auto; height: 34px; margin: 0 0 34px; filter: brightness(0) invert(1); }
+.pv-rules-hero { padding-top: clamp(48px, 6vw, 80px); }
+.pv-rules .pv-rules-sub { max-width: 46em; margin-top: 34px; font-size: clamp(19px, 1.7vw, 24px); line-height: 1.5; color: #e6eaf0; }
+.pv-cards { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.pv-cards.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pv-cards.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pv-lp-layers { margin-top: 16px; }
+@media (max-width: 1080px) { .pv-cards.c4, .pv-cards.c3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .pv-cards.c4, .pv-cards.c3 { grid-template-columns: minmax(0, 1fr); }
+  .pv-rules-logo { height: 28px; margin-bottom: 26px; }
+}
 .pv-pact-row { flex-wrap: wrap; margin-top: 20px; }
 .pv-pact-row p { flex: 1 1 280px; }
 .pv-pact-fair { display: flex; align-items: center; gap: 14px; margin: 18px 0 20px; font-size: 16.5px; line-height: 1.55; color: var(--ink-2); }
