@@ -33,10 +33,11 @@ const FUND_SIZE = eur(F.commitments, 'tile');
 const T = fund.terms;
 const C = fund.cases;
 const TARGET = C.target;
-const UNICORN = fund.stress_tests.find((s) => s.id === 'unicorn')!;
+// v3.16 (06/11) : la licorne est dans la cible ; son absence et une plus grosse sont des tests.
+const FR = fund.fund_returner;
+const NO_UNI = fund.stress_tests.find((s) => s.id === 'best_zombie')!;
+const UNI_EXIT_YEAR = Math.max(...L.seed.lines.filter((l) => l.company === FR.company).map((l) => l.exit_year));
 const BIG_UNICORN = fund.stress_tests.find((s) => s.id === 'big_unicorn')!;
-const UNICORN_EXIT = UNICORN.label.replace(/^One unicorn: /, '');
-const BIG_UNICORN_EXIT = BIG_UNICORN.label.replace(/^A big unicorn: /, '');
 
 // Le modèle, vu du fonds : quatre moteurs de détention.
 const MODEL: { icon: IconName; t: string; d: string }[] = [
@@ -149,8 +150,8 @@ function AtAGlance() {
   const tiles = [
     { b: pct(TARGET.net_irr), l: 'Target net IRR', s: `Base case ${pct(C.base.net_irr)}, stress case ${pct(C.stress.net_irr)}.` },
     { b: mult(TARGET.net_tvpi), l: 'Target net TVPI', s: `Base case ${mult(C.base.net_tvpi)}, stress case ${mult(C.stress.net_tvpi)}.` },
-    { b: mult(TARGET.dpi_year7), l: 'Net DPI by year 7', s: 'Capital back by year 7 in the target case, loan losses included.' },
-    { b: mult(UNICORN.net_tvpi), l: 'With one unicorn', s: `${UNICORN_EXIT}: ${pct(UNICORN.net_irr)} net IRR. ${BIG_UNICORN_EXIT}: ${mult(BIG_UNICORN.net_tvpi)}.` },
+    { b: mult(TARGET.dpi_year7), l: 'Net DPI by year 7', s: `Loans and growth exits bring cash back early; the unicorn sells in year ${UNI_EXIT_YEAR}.` },
+    { b: eur(TARGET.largest_exit, 'val'), l: 'One unicorn carries the fund', s: `${FR.company}, ${pct(FR.stake_at_exit, 1)} owned at exit, returns ${mult(FR.multiple_of_fund)} the fund. Without it: ${mult(NO_UNI.net_tvpi)} net. ${BIG_UNICORN.label.replace(/^A bigger unicorn: /, '')}: ${mult(BIG_UNICORN.net_tvpi)}.` },
   ];
   const terms: [string, string][] = [
     ['Vehicle', 'Closed-ended EuVECA fund'],

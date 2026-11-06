@@ -672,7 +672,7 @@ def page_two(F):
     ty = y + 19
     ty += F.para(M, ty, lw, x(
         "Our stake rises with the founder's: every buyback and cancellation lifts both. We never need the "
-        "founder to dilute, to raise or to chase a unicorn, and he never needs to fight us on an exit."),
+        "founder to dilute or to raise again, and when a unicorn comes, we both still own our full stake."),
         10.4, "reg", INK2, 1.52) + 12
     ty += F.para(M, ty, lw, x("The only one who loses is the VC who would have sold rounds B, C and D."),
                  10.6, "semi", BLUE_DK, 1.42)
@@ -682,8 +682,9 @@ def page_two(F):
         ["Founders", eur(row["founders_vc"], "tile"), eur(row["founders_profund"], "tile")],
         ["Series A investor, equity multiple", mult(row["series_a_vc"]), f"{mult(row['series_a_profund'])} (ProFund)"],
         ["Angels", "Wait for the exit", "Liquidity at year 2"],
-        ["LPs", "Need a unicorn", f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target, "
-                                  f"no exit above {eur(t['largest_exit'], 'val')}"],
+        ["LPs", "A unicorn, diluted round after round",
+         f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target: the same unicorn, "
+         f"{DATA['fund_returner']['stake_at_exit'] * 100:.1f}% owned at exit"],
     ]
     gh = grid(F, gx, y - 4, gw, [(1.25, "l"), (0.95, "l"), (1.35, "l")],
               [f"At a {eur(row['exit'], 'val')} exit", "VC path", "ProFund path"], rows, size=9.2,
@@ -1129,17 +1130,18 @@ def page_four(F):
            "Target returns, built line by line. Net of fees, expenses and carry.", "semi", 9.4, INK)
     y += 18
     t, b, s = CASES["target"], CASES["base"], CASES["stress"]
-    uni = next(x_ for x_ in STRESS if x_["id"] == "unicorn")
+    no_uni = next(x_ for x_ in STRESS if x_["id"] == "best_zombie")
     fr = DATA["fund_returner"]   # la loi 04 chiffree
     tiles = [
         (pct(t["net_irr"]), "Target net IRR", f"Base case {pct(b['net_irr'])}, stress case {pct(s['net_irr'])}"),
         (mult(t["net_tvpi"]), "Target net TVPI",
          f"Base case {mult(b['net_tvpi'])}, stress case {mult(s['net_tvpi'])}"),
         (mult(t["dpi_year7"]), f"Net DPI by year {sec['year'] + 1}",
-         "LPs get their capital back: loans and Growth exits return cash early"),
-        (eur(t["largest_exit"], "val"), "Largest exit",
-         f"No unicorn needed: {fr['company']} returns the whole fund at {eur(fr['fund_returning_exit'], 'val')}; "
-         f"at €1B, {mult(uni['net_tvpi'])} and {pct(uni['net_irr'])}"),
+         "Loans and Growth exits bring cash back early; the unicorn sells in year "
+         + str(max(l["exit_year"] for l in LAYERS["seed"]["lines"] if l.get("company") == fr["company"]))),
+        (eur(t["largest_exit"], "val"), "One unicorn",
+         f"{fr['company']}, {fr['stake_at_exit'] * 100:.1f}% owned at exit, returns {mult(fr['multiple_of_fund'])} "
+         f"the fund; without it, {mult(no_uni['net_tvpi'])} net"),
     ]
     gap = 10.0
     tw_ = (W - 3 * gap) / 4

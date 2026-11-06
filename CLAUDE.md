@@ -261,8 +261,16 @@ un fonds de 100 M€, trois étages Seed / Venture / Growth (un seul vocabulaire
 classeur compris, depuis la v3.6) ; UN tour en actions par société, puis des rachats de
 titres existants avec décote, des prêts (plafond EuVECA de 30 % des engagements) et
 des annulations ; suivi en actions nouvelles seulement si le fondateur lève ailleurs ;
-la liquidité partielle de l'année 6 (ancienne clause 9) est supprimée du pacte en v3.12 : le moteur et le classeur la gardent comme levier « what if », aucune ligne marquée ; aucune sortie
-au-dessus de 300 M€ ; SPV de co-investissement au-delà de 10 M€ par société). Le
+la liquidité partielle de l'année 6 (ancienne clause 9) est supprimée du pacte en v3.12 : le moteur et le classeur la gardent comme levier « what if », aucune ligne marquée ; SPV de
+co-investissement au-delà de 10 M€ par société). **v3.16 (06/11, Antoine) : le portefeuille
+en loi de puissance, comme les meilleurs fonds** (choix « P2 ») : S-01 est une licorne
+vendue 1 Md€ qui porte le fonds (31,3 % détenus à la sortie, non dilués : 3,1× le fonds à
+elle seule), V-01 un second gagnant à 500 M€, et la plupart des sociétés ne rendent pas leur
+mise (S-03 et S-04 perdues, V-03 zombie, leurs prêts suivent). Plus de plafond à 300 M€ ni
+de « no unicorn needed ». Cible 4,4× net / 36 % (DPI 7 ans 0,7×), base 2,8× / 24 %, stress
+2,0× / 15 % ; tests : sans licorne 2,0× / 18 %, deux licornes 5,0×, licorne à 2 Md€ 7,0×.
+Titre LP (site, fiche, /pitch) : « Backing AI-native teams building self-improving AI
+systems. » Le
 portage v3.3 reproduisait à l'euro près le classeur livré le 05/11 (1 532 valeurs,
 tag git `v3.3`). **v3.4** (Antoine, 05/11) : prêts sains à 12 % par an composés sur
 leur durée (`LOAN_RATE`, pas de BSA : ils créeraient des actions nouvelles), au lieu

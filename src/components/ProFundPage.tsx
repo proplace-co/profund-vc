@@ -30,8 +30,10 @@ const GROWTH_HOLDS = L.growth.lines.map((l) => l.exit_year - l.entry_year);
 const AT_250 = FM.rows.find((r) => r.exit === 250e6) ?? FM.rows[1];
 const RAISED_VC = FM.raised_before + FM.vc_equity;
 const DELAY_1 = fund.stress_tests.find((s) => s.id === 'exits_plus_1')!;
-const V2 = fund.reference_v2;
 const FR = fund.fund_returner;   // la loi 04 chiffrée : la sortie qui rend tout le fonds
+// v3.16 (06/11) : la loi de puissance. La licorne est dans la cible ; son absence est un test.
+const NO_UNI = fund.stress_tests.find((s) => s.id === 'best_zombie')!;
+const UNI_EXIT_YEAR = Math.max(...ALL_LINES.filter((l) => l.company === FR.company).map((l) => l.exit_year));
 const loanLoss = (id: 'target' | 'base' | 'stress') => pct(1 - C[id].loan_repaid);
 // Décotes des rachats, lues sur les lignes : gagnants et angels (Seed, Venture),
 // vendeurs structurels (Growth, fonds en fin de vie).
@@ -63,7 +65,7 @@ function TitleSlide() {
       <div className="pv-wrap pv-hero-grid">
         <div className="pv-hero-copy">
           <span className="pv-eyebrow"><b />Pre-marketing phase · EuVECA</span>
-          <h1 className="pv-h1 pv-h1-one">ProFund. One round. Then never diluted again.</h1>
+          <h1 className="pv-h1 pv-h1-one">Backing AI-native teams building self-improving AI systems.</h1>
           <p className="pv-lead pv-lead-k">{FUND_SIZE} · EuVECA · Pre-seed to growth · Europe</p>
           <p className="pv-lead">
             We don’t fund headcount. We back tight-knit, AI-native teams building <span className="nw">self-improving</span> systems
@@ -162,7 +164,7 @@ function EveryoneWins() {
           <tr><td>Founders</td><td>{eur(AT_250.founders_vc, 'tile')}</td><td className="pf">{eur(AT_250.founders_profund, 'tile')}</td></tr>
           <tr><td>Series A investor, equity multiple</td><td>{mult(AT_250.series_a_vc)}</td><td className="pf">{mult(AT_250.series_a_profund)} (ProFund)</td></tr>
           <tr><td>Angels</td><td>Wait for the exit</td><td className="pf">Liquidity at year 2</td></tr>
-          <tr><td>LPs</td><td>Need a unicorn</td><td className="pf">{mult(TARGET.net_tvpi)} net and {pct(TARGET.net_irr)} IRR target, no exit above {eur(TARGET.largest_exit, 'val')}</td></tr>
+          <tr><td>LPs</td><td>A unicorn, diluted round after round</td><td className="pf">{mult(TARGET.net_tvpi)} net and {pct(TARGET.net_irr)} IRR target: the same unicorn, {pct(FR.stake_at_exit, 1)} owned at exit</td></tr>
         </tbody>
       </table></div>
       <p className="pv-punch">The only one who loses is the VC who would have sold rounds B, C and D.</p>
@@ -177,7 +179,7 @@ function Alignment() {
       <div className="pv-trio">
         <div className="pv-card">
           <h3>Aligned</h3>
-          <p>Every buyback and cancellation lifts both stakes. We never need the founder to dilute, to raise or to chase a unicorn, and he never needs to fight us on an exit.</p>
+          <p>Every buyback and cancellation lifts both stakes. We never need the founder to dilute or to raise again, and when a unicorn comes, we both still own our full stake.</p>
         </div>
         <div className="pv-card">
           <h3>Downside</h3>
@@ -280,8 +282,8 @@ function TermsAndTargets() {
       <div className="impact-grid">
         <div className="imp"><span className="imp-n">{pct(TARGET.net_irr)}</span><span className="imp-h">Target net IRR</span><p className="imp-p">Base case {pct(C.base.net_irr)}, stress case {pct(C.stress.net_irr)}</p></div>
         <div className="imp"><span className="imp-n">{mult(TARGET.net_tvpi)}</span><span className="imp-h">Target net TVPI</span><p className="imp-p">Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}</p></div>
-        <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">LPs get their capital back by year 7, with loan losses in every case</p></div>
-        <div className="imp"><span className="imp-n">{eur(TARGET.largest_exit, 'val')}</span><span className="imp-h">Largest exit</span><p className="imp-p">No unicorn needed: {FR.company} returns the whole fund at {eur(FR.fund_returning_exit, 'val')}</p></div>
+        <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">Loans and growth exits bring cash back early; the unicorn sells in year {UNI_EXIT_YEAR}</p></div>
+        <div className="imp"><span className="imp-n">{eur(TARGET.largest_exit, 'val')}</span><span className="imp-h">One unicorn</span><p className="imp-p">{FR.company}, {pct(FR.stake_at_exit, 1)} owned at exit, returns {mult(FR.multiple_of_fund)} the fund; without it, {mult(NO_UNI.net_tvpi)} net</p></div>
       </div>
       <TermsTables />
     </Slide>
@@ -326,14 +328,13 @@ export function TermsTables() {
       </div>
       <div className="pf-callout pv-why">
         <p>
-          <strong>Why {pct(TARGET.net_irr)} holds without fast exits.</strong> Exits are spread from year {EXIT_YEARS[0]} to
-          year {EXIT_YEARS[1]}. The IRR rests on large stakes in the winners and cash that comes back early: loans
-          at {pct(fund.loan_rate)} a year, repaid from year {LOANS_FROM},
-          growth positions bought at a {pct(STRUCT_DISC)} discount and sold
-          after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years.
-          One year of delay on every exit: {pct(DELAY_1.net_irr)}. No exit above {eur(TARGET.largest_exit, 'val')}; with the same
-          exits, the v2 model would make {mult(V2.capped_net_tvpi)}. Law 04 in numbers: with {pct(FR.stake_at_exit, 1)} of {FR.company} at
-          exit, a {eur(FR.fund_returning_exit, 'val')} sale returns the entire fund on its own.
+          <strong>Where {pct(TARGET.net_irr)} comes from.</strong> Like the best venture funds, one company carries the fund:
+          {' '}{FR.company}, sold for {eur(TARGET.largest_exit, 'val')}, with {pct(FR.stake_at_exit, 1)} of it at exit because no round after
+          ours dilutes us. A second winner and most companies returning little or nothing make the rest of the power law. Cash
+          comes back early too: loans at {pct(fund.loan_rate)} a year, repaid from year {LOANS_FROM}, and growth positions bought at
+          a {pct(STRUCT_DISC)} discount and sold after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years. Without the
+          unicorn: {mult(NO_UNI.net_tvpi)} net. One year of delay on every exit: {pct(DELAY_1.net_irr)}. Law 04 in numbers: a
+          {' '}{eur(FR.fund_returning_exit, 'val')} sale of {FR.company} returns the entire fund on its own.
         </p>
       </div>
     </>

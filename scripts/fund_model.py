@@ -70,8 +70,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.9"
-MODEL_DATE = "2026-11-05"   # fixe : --check doit rester stable d'un jour a l'autre
+VERSION = "v3.16"
+MODEL_DATE = "2026-11-06"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
 
@@ -203,21 +203,23 @@ LINES = (
     # Seed : 50 societes, pre-seed / seed, entrees annees 1-3.
     # S-01 a S-10 : leads de conviction ; S-11 a S-50 : tickets radar.
     # S-01, la vitrine : le chemin ProFund pur, un tour, des rachats, des annulations, un pret.
-    L("S-01", "seed", "S-01", 1, "Breakout", "green", "new",
+    # v3.16 (06/11, loi de puissance) : la licorne qui porte le fonds, vendue 1 Md EUR.
+    L("S-01", "seed", "S-01", 1, "Unicorn: one round, buybacks, cancellations", "green", "new",
       1_500_000, 7_500_000, 1, 9, buyback=1_500_000, buyback_year=3, buyback_value=40 * M,
       discount=0.10, cancel=0.08,
-      loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=300 * M, track="lead"),
+      loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=1000 * M, track="lead"),
     # S-02 : le fondateur leve ailleurs (fair both ways), ProFund suit en actions nouvelles.
     L("S-02", "seed", "S-02", 1, "Breakout, raised elsewhere once, we followed", "green", "new",
       1 * M, 6 * M, 1, 8, buyback=1 * M, buyback_year=3, buyback_value=25 * M, discount=0.10,
       dilution=0.15, follow=1 * M, follow_year=4, follow_post=60 * M,
       loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=250 * M, track="lead"),
-    L("S-03", "seed", "S-03", 1, "Strategic exit, angels bought back", "blue", "new",
+    # v3.16 : la loi de puissance, la plupart des societes ne rendent pas leur mise.
+    L("S-03", "seed", "S-03", 1, "Loss, after an angels buyback", "red", "new",
       1 * M, 7 * M, 2, 7, buyback=500_000, buyback_year=4, buyback_value=20 * M, discount=0.10,
-      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=80 * M,
+      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult=LOAN_MULTIPLES["loss"], recovery=0.0,
       track="lead"),
-    L("S-04", "seed", "S-04", 1, "Early exit (M&A)", "blue", "new",
-      750_000, 7 * M, 2, 5, exit_value=40 * M, track="lead"),
+    L("S-04", "seed", "S-04", 1, "Loss", "red", "new",
+      750_000, 7 * M, 2, 5, recovery=0.0, track="lead"),
     L("S-05", "seed", "S-05", 1, "Early exit (M&A)", "blue", "new",
       700_000, 8 * M, 2, 5, exit_value=30 * M, track="lead"),
     L("S-06", "seed", "S-06", 2, "Zombies (×2)", "grey", "new",
@@ -240,18 +242,18 @@ LINES = (
     # Venture : 7 societes, premiers cheques de 2 a 4 M EUR en seed+ ou
     # Serie A, entrees annees 2-4 (v3.4 : 3 M EUR de moins qu'en v3.3 sur les lignes qui
     # vivent, passes au radar ; la perte V-07 garde son montant).
-    L("V-01", "venture", "V-01", 1, "Breakout", "green", "new",
+    L("V-01", "venture", "V-01", 1, "Breakout, second winner", "green", "new",
       4 * M, 40 * M, 2, 9, buyback=1_500_000, buyback_year=4, buyback_value=100 * M,
       discount=0.05, cancel=0.08, loan=2 * M, loan_year=3, loan_repay_year=6, loan_mult="rate",
-      exit_value=300 * M),
+      exit_value=500 * M),
     L("V-02", "venture", "V-02", 1, "Raised elsewhere once, we followed", "green", "new",
       3_500_000, 35 * M, 2, 8, buyback=500_000, buyback_year=4, buyback_value=60 * M, discount=0.10,
       dilution=0.20, follow=1_500_000, follow_year=5, follow_post=120 * M,
       loan=1_500_000, loan_year=4, loan_repay_year=6, loan_mult="rate", exit_value=250 * M),
-    L("V-03", "venture", "V-03", 1, "Strategic exit, angels bought back", "blue", "new",
+    L("V-03", "venture", "V-03", 1, "Zombie, after an angels buyback", "grey", "new",
       3 * M, 35 * M, 3, 7, buyback=500_000, buyback_year=4, buyback_value=40 * M,
-      discount=0.10, loan=1 * M, loan_year=4, loan_repay_year=6, loan_mult="rate",
-      exit_value=120 * M),
+      discount=0.10, loan=1 * M, loan_year=4, loan_repay_year=6, loan_mult=LOAN_MULTIPLES["zombie"],
+      recovery=0.5),
     L("V-04", "venture", "V-04", 1, "Early exit (M&A)", "blue", "new",
       2_500_000, 30 * M, 3, 5, loan=500_000, loan_year=4, loan_repay_year=5, loan_mult="rate",
       exit_value=60 * M),
@@ -277,9 +279,9 @@ LINES = (
     L("G-05", "growth", "G-05", 1, "Block bought from an end-of-life fund, loss", "red", "new",
       0, 120 * M, 5, 8, buyback=5 * M, buyback_year=5, buyback_value=120 * M, discount=0.30,
       recovery=0.2),
-    L("G-06", "growth", "S-01", 1, "Breakout (S-01): a seed fund's block bought back", "green",
+    L("G-06", "growth", "S-01", 1, "Unicorn (S-01): a seed fund's block bought back", "green",
       "breakout", 0, 150 * M, 5, 9, buyback=5 * M, buyback_year=5, buyback_value=150 * M,
-      discount=0.30, cancel=0.04, exit_value=300 * M),
+      discount=0.30, cancel=0.04, exit_value=1000 * M),
 )
 # Prets sains : le prix suit la duree (LOAN_RATE) ; les zombies gardent leur multiple.
 LINES = tuple(replace(x, loan_mult=loan_price(x.loan_year, x.loan_repay_year))
@@ -351,10 +353,14 @@ REFERENCE_V2 = {"commit": "2f3b590", "net_tvpi": 2.7, "capped_exit": 300 * M, "c
 
 # Valeurs publiees de la v3.4 (fiche, /pitch) que le modele doit retrouver : un
 # changement d'hypothese qui les deplace doit etre voulu, et les textes relus.
+# v3.16 (06/11, Antoine) : le portefeuille en loi de puissance, comme les meilleurs fonds :
+# une licorne porte le fonds (S-01 vendue 1 Md EUR, 31 % detenus a la sortie, non dilues),
+# un second gagnant (V-01, 500 M EUR), et la plupart des societes ne rendent pas leur mise
+# (S-03 et S-04 perdues, V-03 zombie). Plus de plafond a 300 M EUR. Sans la licorne : 2,0x.
 PUBLISHED = {
-    "target": {"net_tvpi": 2.7, "net_irr": 0.27, "dpi_year7": 1.0},
-    "base": {"net_tvpi": 1.8, "net_irr": 0.15},
-    "stress": {"net_tvpi": 1.4, "net_irr": 0.08},
+    "target": {"net_tvpi": 4.4, "net_irr": 0.36, "dpi_year7": 0.7},
+    "base": {"net_tvpi": 2.8, "net_irr": 0.24},
+    "stress": {"net_tvpi": 2.0, "net_irr": 0.15},
 }
 
 
@@ -651,19 +657,19 @@ def _zombie_best(lines):
     return tuple(out)
 
 
-def _unicorn(lines, value=1000 * M):
-    return tuple(replace(x, exit_value=value) if x.company == "S-01" else x for x in lines)
+def _unicorn(lines, value=1000 * M, company="S-01"):
+    return tuple(replace(x, exit_value=value) if x.company == company else x for x in lines)
 
 
 def stress_tests() -> list[dict]:
     target = CASES[0]
     rows = [
         ("exits_plus_1", "Every exit one year later", _shift(LINES, 1), target),
-        ("best_zombie", "Best company (S-01, both lines) becomes a zombie", _zombie_best(LINES), target),
+        ("best_zombie", "No unicorn: S-01 (both lines) becomes a zombie", _zombie_best(LINES), target),
         ("loan_losses", "30% more losses on every loan", LINES,
          replace(target, loan_repaid=ratio(target.loan_repaid - 0.30, 2))),
-        ("unicorn", "One unicorn: S-01 sold for €1B", _unicorn(LINES), target),
-        ("big_unicorn", "A big unicorn: S-01 sold for €2B", _unicorn(LINES, 2000 * M), target),
+        ("two_unicorns", "Two unicorns: V-01 also sold for €1B", _unicorn(LINES, 1000 * M, "V-01"), target),
+        ("big_unicorn", "A bigger unicorn: S-01 sold for €2B", _unicorn(LINES, 2000 * M), target),
     ]
     out = []
     for key, label, lines, case in rows:
