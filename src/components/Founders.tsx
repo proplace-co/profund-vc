@@ -218,35 +218,57 @@ export function HowWeBack() {
 // v3.15 : le chemin VC est calé sur les parts médianes de Carta par étape (fund_model.py).
 const AFTER = (id: string) => pct(FM.vc_stakes.find((s) => s.round === id)!.founders, 1);
 export function founderNote() {
-  return `Typical European path, calibrated on Carta medians: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over a bridge, the Series B, a second bridge, the Series C and the Series D, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B and ${AFTER('C')} after the Series C, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Source: Carta, Founder Ownership Report 2026.`;
+  return `Typical European path, calibrated on Carta medians: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr.`;
 }
 
-/** La part des fondateurs, tour après tour : VC (elle fond) contre ProFund (elle tient). */
+// La part PAR FONDATEUR (06/11) : les médianes Carta portent sur l'équipe fondatrice ; pour
+// deux cofondateurs à parts égales, chacun en détient la moitié. Hypothèse dite en clair.
+const AFTER_D = FM.vc_stakes.find((s) => s.round === 'D')!.founders;
+const PER_FOUNDER_D = pct(AFTER_D / 2, 1);
+
+/** La part des fondateurs, étape après étape (v3.15, 06/11) : toutes les étapes du chemin
+ *  VC, levées intermédiaires comprises (elle fond) ; le chemin ProFund est une ligne (elle
+ *  ne bouge pas) ; la dernière colonne est un cas réel, sourcé dans RealDilution : le
+ *  fondateur de Deliveroo à l'IPO, après des tours jusqu'à la série H. */
+const REAL_IPO = 0.063;
 function StakeChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
-  const cols = [
-    { label: 'Today', vc: FM.founders },
-    // les levées intermédiaires comptent dans la part, pas dans les colonnes
-    ...FM.vc_stakes.filter((s) => !s.bridge).map((s) => ({ label: `After ${s.label}`, vc: s.founders })),
+  const cols: { label: string; v: number; kind: 'now' | 'bridge' | 'round' | 'real' }[] = [
+    { label: 'Today', v: FM.founders, kind: 'now' },
+    ...FM.vc_stakes.map((s) => ({ label: s.bridge ? 'Bridge' : s.label, v: s.founders, kind: s.bridge ? 'bridge' as const : 'round' as const })),
+    { label: 'Deliveroo, at IPO', v: REAL_IPO, kind: 'real' },
   ];
   const h = (v: number) => `${(v / FM.founders) * 100}%`;
   return (
     <div ref={ref} className={`pv-card pv-stake${seen ? ' in' : ''}`}>
       <div className="pv-stake-top">
         <h3 className="pv-h3">Your stake, round after round</h3>
-        <div className="pv-legend"><span className="vc">VC path</span><span className="pf">ProFund path</span></div>
+        <div className="pv-legend">
+          <span className="vc">VC path, Carta medians</span>
+          <span className="real">A real case</span>
+          <span className="pf">ProFund path</span>
+        </div>
       </div>
-      <div className="pv-stake-grid">
-        {cols.map((c, i) => (
-          <div key={c.label} className="pv-stake-col" style={{ ['--d' as string]: `${i * 0.12}s` }}>
-            <div className="pv-stake-bars">
-              <i className="vc" style={{ ['--h' as string]: h(c.vc) }}><b>{pct(c.vc, 1)}</b></i>
-              <i className="pf" style={{ ['--h' as string]: h(FM.founders) }}><b>{pct(FM.founders, 1)}</b></i>
+      <div className="pv-stake-plot">
+        <div className="pv-stake-pf" aria-hidden="true">
+          <span>ProFund path: {pct(FM.founders, 1)}, from today to exit</span>
+        </div>
+        {/* la colonne du cas réel est plus large : son nom tient sur mobile */}
+        <div className="pv-stake-grid" style={{ gridTemplateColumns: `repeat(${cols.length - 1}, minmax(0, 1fr)) minmax(0, 1.6fr)` }}>
+          {cols.map((c, i) => (
+            <div key={`${c.label}${i}`} className={`pv-stake-col ${c.kind}`} style={{ ['--d' as string]: `${i * 0.1}s` }}>
+              <div className="pv-stake-bars">
+                <i style={{ ['--h' as string]: h(c.v) }}><b>{pct(c.v, 1)}</b></i>
+              </div>
+              <span className="pv-stake-l">{c.label}</span>
             </div>
-            <span className="pv-stake-l">{c.label}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+      <p className="pv-stake-note">
+        The whole founding team. Split equally between two co-founders: <b>{PER_FOUNDER_D} each</b> after the Series D,
+        less than Deliveroo’s founder at IPO.
+      </p>
     </div>
   );
 }
@@ -287,11 +309,12 @@ export function FounderTable({ investor = false }: { investor?: boolean }) {
 // ── La dilution réelle (v3.15, 06/11) ────────────────────────────────────────
 // Un cas public et les médianes Carta, sourcés en note : ne pas les modifier sans relire
 // les sources (CNBC du 23/03/2021, d'après le prospectus ; Tech.eu du 17/01/2021 ;
-// Carta, Founder Ownership Report 2026). Pas de médiane Carta après la D : non vérifiée.
+// Carta, Founder Ownership Report 2026 ; la D, 11,4 % : donnée Carta citée par SaaStr).
 const CARTA = [
   { v: 0.375, l: 'After the Series A', s: 'Digital companies' },
   { v: 0.273, l: 'After the Series B', s: 'AI teams' },
   { v: 0.161, l: 'After the Series C', s: 'Less than the employee pool' },
+  { v: 0.114, l: 'After the Series D', s: 'Carta data, via SaaStr' },
 ];
 
 function RealDilution() {
@@ -318,13 +341,18 @@ function RealDilution() {
               </li>
             ))}
           </ol>
+          <p className="pv-real-duo">
+            <b>{pct(CARTA[CARTA.length - 1].v / 2, 1)}</b>
+            <span>each, for two co-founders sharing equally after the Series D. Less than Deliveroo’s founder at IPO.</span>
+          </p>
           <p className="pv-real-pf"><Icon name="shield" />On our path, your stake today is your stake at exit.</p>
         </div>
       </div>
       <p className="pv-fine pv-real-src">
         Deliveroo: CNBC, 23 March 2021, from the IPO prospectus (6.3% of the share capital; Class B shares with 20 votes,
         converting three years after the IPO); Tech.eu, 17 January 2021 (Series H). Median founding-team ownership, fully
-        diluted: Carta, Founder Ownership Report 2026.
+        diluted: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr (“The Real State of Seed
+        Today”).
       </p>
     </>
   );
@@ -337,7 +365,7 @@ export function TheMath({ tint = true, calcOpen = false, onCalc }: { tint?: bool
       <div className="pv-wrap">
         <div className="pv-head">
           <h2 className="pv-h2">The capital you don’t raise is the company you keep.</h2>
-          <p className="sub">On the VC path, the median founding team holds 16.1% of its company after the Series C. On ours, your stake today is your stake at exit. When debt cannot carry your growth, we bring the equity on the same terms.</p>
+          <p className="sub">On the VC path, the median founding team holds 16.1% of its company after the Series C, and 11.4% after the D. On ours, your stake today is your stake at exit. When debt cannot carry your growth, we bring the equity on the same terms.</p>
         </div>
         {onCalc && <RealDilution />}
         <StakeChart />
@@ -373,7 +401,7 @@ export function TheMath({ tint = true, calcOpen = false, onCalc }: { tint?: bool
 // une clause du pacte (Pact.tsx) ; ne rien promettre de plus.
 const TERMS: { k: string; vc: string; pf: string }[] = [
   { k: 'Rounds', vc: 'A new round every 18 months', pf: 'One. Then a reserved loan line' },
-  { k: 'Your stake', vc: 'Down at every round: 16.1% after the Series C, at the median', pf: 'Never goes down. Every cancellation lifts it' },
+  { k: 'Your stake', vc: 'Down at every round: 11.4% for the team after the Series D, 5.7% each for two co-founders', pf: 'Never goes down. Every cancellation lifts it' },
   { k: 'Board', vc: 'A seat for every lead. Your majority erodes', pf: 'One seat. The majority stays yours' },
   { k: 'Votes', vc: 'Every investor votes its own shares', pf: 'Our shares vote with you' },
   { k: 'Vetoes', vc: 'Consent on the budget, key hires, new rounds, the sale', pf: 'Only on what would change our shares behind our back' },

@@ -171,8 +171,8 @@ export function Calculator({ className = '' }: { className?: string }) {
         <p className="pv-fine">
           VC path: 1× non-participating preferences, pari passu; each investor converts when it pays more; the option
           pool is topped up before each round. Defaults: calibrated on Carta medians (Founder Ownership Report 2026):
-          founders at 37.5% after the Series A, then a bridge before the B and the C, as most companies raise one, so
-          that founders hold Carta’s median stake after the Series B (AI teams) and the Series C. ProFund path: no new share after today unless you ask for extra equity (1× preference, like
+          founders at 37.5% after the Series A, then a bridge before the B, the C and the D, as most companies raise one,
+          so that founders hold Carta’s median stake after each round (AI teams after the B). ProFund path: no new share after today unless you ask for extra equity (1× preference, like
           our first cheque); the pool is refilled with bought-back shares; loans repaid at exit, before equity. The annual
           cancellations that lift your stake are not counted here. Illustrative, not a forecast or an offer.
         </p>

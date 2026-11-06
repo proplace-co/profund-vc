@@ -835,6 +835,52 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   .pv-rules-brand span { padding-left: 0; border-left: 0; flex-basis: 100%; font-size: 11.5px; }
 }
 @media (prefers-reduced-motion: reduce) { .pv-real-carta i { transition: none; } }
+/* v3.15 (06/11, 2) : la part, étape après étape. Chaque étape du chemin VC (levées
+   intermédiaires en barres fines), le chemin ProFund en ligne (sa part ne bouge pas, elle
+   occupe toute la hauteur), et un cas réel en rouge, séparé par un pointillé. */
+.pv-stake-plot { position: relative; margin-top: 40px; }
+.pv-stake .pv-stake-grid { grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: clamp(4px, 1.4vw, 18px); margin-top: 0; }
+.pv-stake .pv-stake-bars { gap: 0; }
+.pv-stake .pv-stake-bars i { width: min(64px, 72%); background: linear-gradient(180deg, #cfd5dc, #b7bfca); }
+.pv-stake-col.now .pv-stake-bars i { background: var(--grad); box-shadow: 0 10px 24px -14px rgba(74, 96, 128, .9); }
+.pv-stake-col.now b { color: var(--blue-dk); }
+.pv-stake-col.round b { color: var(--ink-2); }
+.pv-stake-col.bridge .pv-stake-bars i { width: min(40px, 48%); background: #dde1e7; }
+.pv-stake-col.bridge .pv-stake-l { color: var(--soft); font-weight: 500; }
+.pv-stake-col.real { position: relative; }
+.pv-stake-col.real::before { content: ""; position: absolute; left: calc(-1 * clamp(2px, .7vw, 9px)); top: -28px; bottom: 0;
+  border-left: 1.5px dashed var(--line-2); }
+.pv-stake-col.real .pv-stake-bars i { background: linear-gradient(180deg, #e8a49c, var(--red)); }
+.pv-stake-col.real b, .pv-stake-col.real .pv-stake-l { color: var(--red); }
+.pv-stake-pf { position: absolute; left: 0; right: 0; top: 0; height: clamp(180px, 22vw, 260px); pointer-events: none; z-index: 0; }
+/* les barres et leurs étiquettes passent devant la ligne ProFund ; l'étiquette sur fond blanc */
+.pv-stake .pv-stake-bars i { z-index: 2; }
+.pv-stake .pv-stake-bars b { padding: 1px 5px; border-radius: 6px; background: #fff; }
+.pv-stake-pf::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; border-top: 3px solid var(--blue-dk);
+  border-radius: 3px; transform-origin: left; transform: scaleX(0); transition: transform 1.3s cubic-bezier(.2, .7, .2, 1) .2s; }
+.pv-stake.in .pv-stake-pf::before { transform: scaleX(1); }
+.pv-stake-pf span { position: absolute; right: 0; bottom: calc(100% + 9px); font-size: 13.5px; font-weight: 750;
+  color: var(--blue-dk); white-space: nowrap; opacity: 0; transition: opacity .5s 1.2s; }
+.pv-stake.in .pv-stake-pf span { opacity: 1; }
+.pv-legend { flex-wrap: wrap; }
+.pv-legend .real::before { background: var(--red); }
+.pv-legend .pf::before { height: 3px; border-radius: 2px; background: var(--blue-dk); }
+@media (max-width: 600px) {
+  .pv-stake-plot { margin-top: 34px; }
+  .pv-stake .pv-stake-bars i, .pv-stake-col.bridge .pv-stake-bars i { width: 70%; border-radius: 6px 6px 0 0; }
+  .pv-stake .pv-stake-bars b { font-size: 10px; letter-spacing: -.02em; }
+  .pv-stake .pv-stake-l { font-size: 10.5px; line-height: 1.25; }
+  .pv-stake-col.bridge .pv-stake-l { font-size: 8.5px; letter-spacing: -.02em; }
+  .pv-stake-pf span { font-size: 11.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .pv-stake-pf::before, .pv-stake-pf span { transition: none; } }
+/* la part par fondateur (deux cofondateurs à parts égales) */
+.pv-stake-note { margin: 18px 0 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+.pv-stake-note b { color: var(--red); }
+.pv-real-duo { display: flex; align-items: baseline; gap: 14px; margin: 0; padding: 14px 16px; border-radius: var(--r-md);
+  background: var(--red-soft); box-shadow: inset 0 0 0 1px #f3d4cf; }
+.pv-real-duo b { flex: none; font-size: clamp(26px, 2.6vw, 36px); font-weight: 750; letter-spacing: -.035em; line-height: 1; color: var(--red); }
+.pv-real-duo span { font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
 @media (max-width: 600px) {
   .pv-calc-dock .pv-btn, .pv-rules-foot .pv-toggle { width: 100%; justify-content: space-between; padding-left: 22px; }
   /* calculateur : à 390 px, une case de tour fait ~80 px ; l'unité ne doit plus cacher le chiffre */

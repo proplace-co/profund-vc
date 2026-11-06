@@ -311,8 +311,9 @@ FOUNDER_MATH = {
     # pool plus fortes. Cibles (Founder Ownership Report 2026) : 27,3 % pour les
     # fondateurs d'une equipe IA apres la Serie B (le modele : 27,2 %) ; 16,1 % apres
     # la Serie C, le pool (16,8 %) passant devant les fondateurs (le modele : 16,2 % et
-    # 16,5 %). La Serie D suit (13,5 %) : pas de mediane Carta verifiee, on ne la cite pas.
-    # 194 M EUR de fonds propres apres la Serie A. Preferences 1x non participantes,
+    # 16,5 %). 06/11 (2) : une levee intermediaire avant la D aussi, 11,4 % apres la Serie D
+    # (donnee Carta citee par SaaStr ; 10,4 % dans une reprise du rapport 2026 ; le modele :
+    # 11,4 %). 224 M EUR de fonds propres apres la Serie A. Preferences 1x non participantes,
     # pari passu. `bridge` : levee intermediaire (absente du graphique, presente au
     # calculateur).
     "vc_rounds": [
@@ -320,7 +321,8 @@ FOUNDER_MATH = {
         {"id": "B", "label": "Series B", "amount": 25 * M, "post": 150 * M, "pool": 0.05},
         {"id": "B2", "label": "Bridge to C", "bridge": True, "amount": 24 * M, "post": 160 * M, "pool": 0.0},
         {"id": "C", "label": "Series C", "amount": 60 * M, "post": 260 * M, "pool": 0.09},
-        {"id": "D", "label": "Series D", "amount": 80 * M, "post": 600 * M, "pool": 0.04},
+        {"id": "C2", "label": "Bridge to D", "bridge": True, "amount": 30 * M, "post": 300 * M, "pool": 0.0},
+        {"id": "D", "label": "Series D", "amount": 80 * M, "post": 450 * M, "pool": 0.05},
     ],
     # Chemin ProFund : le pool se recharge avec des titres rachetes (pacte, clause 4),
     # sans action nouvelle.
@@ -335,9 +337,9 @@ FOUNDER_MATH["loan_rate"] = LOAN_RATE
 FOUNDER_MATH["loan_multiple"] = loan_price(0, FOUNDER_MATH["loan_life"])
 # v3.15 (06/11) : le chemin VC recale sur Carta (ci-dessus) ; le chemin ProFund ne bouge pas.
 PUBLISHED_FOUNDER_MATH = {
-    "founders_vc": [0, 15 * M, 65 * M, 135 * M],
+    "founders_vc": [0, 5 * M, 57 * M, 114 * M],
     "founders_profund": [26 * M, 83 * M, 176 * M, 364 * M],
-    "series_a_vc": [0.5, 1.0, 3.5, 7.2],
+    "series_a_vc": [0.4, 1.0, 3.0, 6.1],
     "series_a_profund": [1.4, 4.4, 9.4, 19.4],
 }
 

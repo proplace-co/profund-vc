@@ -1100,10 +1100,12 @@ def page_four(F):
     F.para(M + fw + 16, 98, W - fw - 16, x(
         f"Typical European path, calibrated on Carta medians: {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} "
         f"Series A, founders at {fm['founders'] * 100:.1f}% after the Series A, then {eur(fm['vc_equity'], 'tile')} "
-        f"of equity over two bridges and Series B to D, with pool refreshes and 1× non-participating preferences: "
-        f"founders at {after('B')} after the B and {after('C')} after the C, Carta's medians. ProFund path: same "
+        f"of equity over Series B to D, each after a bridge, with pool refreshes and 1× non-participating "
+        f"preferences: founders at {after('B')}, {after('C')} and {after('D')} after the B, C and D, Carta's medians. "
+        f"ProFund path: same "
         f"seed and Series A, then {eur(fm['loans'], 'tile')} of loans; the pool is refilled with bought-back "
-        "shares. Illustrative, not a forecast. Source: Carta, Founder Ownership Report 2026."),
+        "shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Series D, Carta "
+        "data reported by SaaStr."),
         7.6, "reg", MUTED, 1.38)
     y = 98 + fh + 12
 

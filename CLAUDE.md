@@ -28,8 +28,8 @@ src/
     ProFundPage.tsx     route /pitch — le deck LP, une section par slide + annexe
     LegalPage.tsx       route /legal — le texte vit dans le tableau CLAUSES
     PrivacyPage.tsx     route /privacy — le texte vit dans le tableau SECTIONS
-    Footer.tsx          pied de page commun (sauf /dealflow) : « Venture capital for the AI era » ; Privacy
-                        et Legal Notice masqués depuis le 06/11 (les pages restent en ligne)
+    Footer.tsx          pied de page commun (sauf /dealflow) : « Venture capital for the AI era », LPs,
+                        email ; Privacy, Legal Notice, The pact et Run your numbers masqués depuis le 06/11
     CookieBanner.tsx    bandeau, monté globalement dans App.tsx
     ErrorBoundary.tsx   filet anti-page-blanche
   lib/fund.ts           types de fund.json + formateurs (€, ×, %)
@@ -126,10 +126,14 @@ always yours. », les anciennes règles du VC barrées à l'écran), puis le cap
 (`CapitalStack` : « Funded like the leaders. Diluted like no one. », revenus, un tour, la
 ligne de prêt avec nos prêteurs partenaires, puis l'equity seulement si le fondateur la
 demande), les chiffres (« The capital you don't raise is the company you keep. » : le
-tableau compare 194 M€ d'equity à 25 M€ de dette, l'hypothèse est dite en clair ; v3.15 :
+tableau compare 224 M€ d'equity à 25 M€ de dette, l'hypothèse est dite en clair ; v3.15 :
 au-dessus, `RealDilution`, un cas réel sourcé, Will Shu à 6,3 % de Deliveroo à l'IPO de 2021,
-et les médianes Carta 37,5 / 27,3 / 16,1 %, sources en note, ne pas les changer sans relire
-les sources ; pas de médiane après la D, non vérifiée),
+et les médianes Carta 37,5 / 27,3 / 16,1 / 11,4 %, la D étant une donnée Carta reprise par
+SaaStr, sources en note, ne pas les changer sans relire les sources ; le graphique « Your
+stake, round after round » montre chaque étape, levées intermédiaires comprises, la ligne
+ProFund à 37,5 % et une dernière colonne rouge, le cas réel Deliveroo à l'IPO ; la part par
+fondateur, 5,7 % chacun après la D pour deux cofondateurs à parts égales, est dite comme une
+hypothèse : ne jamais afficher une MÉDIANE plus basse que ce que Carta mesure),
 (v3.14) le fonds en chiffres (taille, tickets, suivi, au-delà de 10 M€), les étages, les
 chiffres sans phrase contestable (« When debt can carry your growth… When it cannot, we bring
 the equity on the same terms »), les deux moteurs côté fondateur (« Two AI engines, working
@@ -271,11 +275,12 @@ du fonds du modèle sont une estimation en attendant le devis du gestionnaire Eu
 fondateurs à 37,5 % après la série A (Founder Ownership Report 2026, sociétés « digital »).
 **v3.15 (06/11)** : le chemin VC est calé sur les parts médianes PAR ÉTAPE (et non plus sur
 la seule dilution médiane par tour, qui oubliait tout ce qui se passe entre deux tours) :
-une levée intermédiaire avant la B et avant la C (`bridge: true`, « Bridge to B/C »), des
+une levée intermédiaire avant la B, la C et la D (`bridge: true`, « Bridge to B/C/D »), des
 recharges de pool plus fortes ; 27,2 % après la B (Carta, équipes IA : 27,3 %), 16,2 % après
-la C avec un pool à 16,5 % (Carta : 16,1 % et 16,8 %), 13,5 % après la D ; 194 M€ de fonds
-propres après la A. Le graphique n'a pas de colonne pour les levées intermédiaires ; le
-calculateur les montre, et garde les classes d'investisseurs séparées (seed, Series A),
+la C avec un pool à 16,5 % (Carta : 16,1 % et 16,8 %), 11,4 % après la D (donnée Carta citée
+par SaaStr : 11,4 % ; 10,4 % dans une reprise du rapport 2026) ; 224 M€ de fonds propres
+après la A. Le graphique et le calculateur montrent les levées intermédiaires ; le
+calculateur garde les classes d'investisseurs séparées (seed, Series A),
 comme le modèle, sinon il s'écarte du tableau publié. Côté ProFund, le pool se recharge
 avec des titres rachetés (pacte, clause 5). Ne pas revenir à des hypothèses plus flatteuses
 pour le VC sans source.

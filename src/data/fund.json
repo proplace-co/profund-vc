@@ -1483,20 +1483,28 @@
         "pool": 0.09
       },
       {
+        "id": "C2",
+        "label": "Bridge to D",
+        "bridge": true,
+        "amount": 30000000,
+        "post": 300000000,
+        "pool": 0.0
+      },
+      {
         "id": "D",
         "label": "Series D",
         "amount": 80000000,
-        "post": 600000000,
-        "pool": 0.04
+        "post": 450000000,
+        "pool": 0.05
       }
     ],
     "loans": 25000000,
     "loan_life": 1.6,
     "loan_rate": 0.12,
     "loan_multiple": 1.2,
-    "vc_equity": 194000000,
+    "vc_equity": 224000000,
     "raised_before": 12000000,
-    "founders_after_vc": 0.135,
+    "founders_after_vc": 0.114,
     "vc_stakes": [
       {
         "round": "A2",
@@ -1523,10 +1531,16 @@
         "founders": 0.162
       },
       {
+        "round": "C2",
+        "label": "Bridge to D",
+        "bridge": true,
+        "founders": 0.146
+      },
+      {
         "round": "D",
         "label": "Series D",
         "bridge": false,
-        "founders": 0.135
+        "founders": 0.114
       }
     ],
     "rows": [
@@ -1534,28 +1548,28 @@
         "exit": 100000000,
         "founders_vc": 0,
         "founders_profund": 26000000,
-        "series_a_vc": 0.5,
+        "series_a_vc": 0.4,
         "series_a_profund": 1.4
       },
       {
         "exit": 250000000,
-        "founders_vc": 15000000,
+        "founders_vc": 5000000,
         "founders_profund": 83000000,
         "series_a_vc": 1.0,
         "series_a_profund": 4.4
       },
       {
         "exit": 500000000,
-        "founders_vc": 65000000,
+        "founders_vc": 57000000,
         "founders_profund": 176000000,
-        "series_a_vc": 3.5,
+        "series_a_vc": 3.0,
         "series_a_profund": 9.4
       },
       {
         "exit": 1000000000,
-        "founders_vc": 135000000,
+        "founders_vc": 114000000,
         "founders_profund": 364000000,
-        "series_a_vc": 7.2,
+        "series_a_vc": 6.1,
         "series_a_profund": 19.4
       }
     ]
