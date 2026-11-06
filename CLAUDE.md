@@ -98,8 +98,10 @@ once », on ne pousse jamais de tour) et « Follow-on capital, reserved for you.
 equity aux mêmes termes dès que le fondateur la demande, SPV pour les plus gros tours) ; la
 réserve se lit dans `allocation.after_first_pct` (46 % de l'investi après le premier chèque :
 suivis, rachats, prêts), dite sur /lp et dans le bandeau de la fiche p. 1.
-« The term sheet, rewritten » (`TermSheet`, accueil) compare un term sheet VC classique au
-pacte, ligne à ligne : chaque ligne ProFund doit rester une clause. Aussi en v3.15 : la phrase
+« The term sheet, rewritten » (accueil, replié) compare un term sheet VC classique au pacte : une
+ligne par clause, les 12, dans l'ordre (`TERMS`) ; une clause qui change change aussi là.
+**Préférence 1× (06/11)** : pas sur les petits tours de seed (clause 1 : « The most we ever ask is a 1×… ») ;
+aucun chiffre ne bouge, le plancher du modèle ne joue sur aucune ligne Seed (V-04, G-02, G-04 seulement). Aussi en v3.15 : la phrase
 sur les conflits, « our shares don't vote… LP advisory committee », quitte le pacte des
 fondateurs : c'est la politique de conflits du fonds, gardée côté LPs, /lp « Protection » et
 fiche p. 2) ; la fiche p. 1 et 2 en porte une copie. Deux écarts volontaires à la copie du 05/11 :
@@ -167,12 +169,13 @@ ce qui la prouve, de l'air (`Say`, `Numbers`, `.pv-ruled`) ; le technique est re
 se compare jamais aux autres fonds** : plus de « cheque for cheque with the best » (« c'est ridicule »),
 aucun fonds nommé ; on propose tout ce que proposent les meilleurs, la table retournée, et on prouve
 l'alignement par ce qu'on signe. **Accueil** : les règles, `TheFew` (« The companies that define this
-era will be built by very few people. »), le capital (« Funded like the leaders. Diluted like no
-one. » : equity, crédit, cap table, « Another lead? Take both. » ; les trois étages visibles, l'ordre du capital replié),
+era will be built by very few people. »), le capital (« Diluted like no one. », un chemin : on agit comme le Chief Fundraising Officer interne
+du fondateur, lever tout ce qu'il faut, dans l'ordre qui dilue le moins ; les quatre étapes à
+l'horizontale, les chiffres du fonds, « Another lead? Take both. » ; étages et tickets repliés, c'est une
+lecture de LP ; posture humble et alignée, jamais faible),
 ce qu'ils gardent (`StakeChart` visible : les deux chemins dits en clair, une ligne droite contre un
 escalier, Deliveroo à part ; term sheet et calculateur repliés ; plus de tableau « What you take home »
-ni de colonne Deliveroo sur l'accueil, il reste illustratif sur /pitch et la fiche), les moteurs (étapes repliées), « If this was written for you, you
-already know. ». **/lp** : plus de plan numéroté (« le plan 1 2 3 4 alourdit »), un seul raisonnement,
+ni de colonne Deliveroo sur l'accueil, il reste illustratif sur /pitch et la fiche), les moteurs (étapes repliées), « Exceptional numbers deserve exceptional terms. ». **/lp** : plus de plan numéroté (« le plan 1 2 3 4 alourdit »), un seul raisonnement,
 chaque phrase appelle la suivante : « The kingmakers. » (les équipes AI-native, l'éloge, trois chiffres
 sourcés) → « Capital is no longer scarce. Ownership is. » (ils ont le choix ; 11,4 %, 6,3 %, sous les
 20 %) → « Every fund says founders come first. We wrote it down. » (ce qu'on rend aux fondateurs, ce
@@ -209,8 +212,7 @@ GP : `profund.vc/lp/?gp`). Barrière côté client : le texte reste dans le bund
 mettre sur /lp qui doive rester secret. Sur l'accueil, les LPs n'ont
 qu'un lien « LPs » en pied de page ; le popup du deal flow reste monté pour
 `profund.vc/#dealflow` (le QR de la fiche), sans bouton visible. **L'equity complémentaire**
-(si la dette ne suffit pas) se fait au choix du fondateur, aux conditions du pacte, avec la
-même préférence 1× que notre premier chèque (clause 2 ; champ du calculateur). Plus de formulaire « Reserve your round » ni de page /sell : le
+(si la dette ne suffit pas) se fait au choix du fondateur, aux conditions du pacte, avec au plus une préférence 1× (clause 2 ; champ du calculateur). Plus de formulaire « Reserve your round » ni de page /sell : le
 parcours fondateur s'arrête au calculateur (« Send these numbers to the partner », un
 mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
 /lp a été retiré le 06/11 (`LeadForm.tsx` reste, inutilisé ; il n'avait PAS de backend, il

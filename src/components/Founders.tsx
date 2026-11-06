@@ -154,13 +154,13 @@ export function TheFew() {
   );
 }
 
-// ── Le capital (v3.9 ; 06/11 (6) : l'essentiel visible, tickets et étapes repliés) ──
-// Tout ce que proposent les meilleurs, sans le dire : aucun « cheque for cheque », aucun
-// nom de fonds. Chaque ligne reste une clause du pacte. Si un autre fonds mène, on devient un
-// co-investisseur classique (clause 9) : ne jamais y promettre prêts, rachats ni moteurs.
+// ── Le capital (v3.9 ; 06/11 (8)) : un chemin, celui d'un Chief Fundraising Officer interne ──
+// La philosophie : lever tout ce qu'il faut pour tirer le maximum de la société, dans l'ordre
+// qui dilue le moins. Humble, aligné, jamais faible (ni « You decide what you take »), aucune
+// comparaison. Les étages et leurs tickets sont une lecture de LP : repliés. Si un autre fonds
+// mène, on devient un co-investisseur classique (clause 9) : ne jamais y promettre prêts,
+// rachats ni moteurs.
 const CAPITAL: { t: string; d: string }[] = [
-  { t: 'Equity, when you choose.', d: 'From your first round to your largest, with SPVs and co-investors alongside the fund for the biggest.' },
-  { t: 'Credit, before equity.', d: 'A loan line reserved from day one, with our fund and partner lenders. Your revenue can carry what equity used to pay for.' },
   { t: 'A cap table that gets cleaner.', d: 'We buy out angels and early funds, only with your agreement. Their votes move to your side.' },
   { t: 'Another lead? Take both.', d: 'When another fund leads your round, we invest alongside, on its terms.' },
 ];
@@ -185,30 +185,30 @@ export function CapitalStack() {
     { b: `Beyond ${eur(F.company_cap, 'tile')}`, s: 'SPVs and co-investors alongside the fund' },
   ];
   return (
-    <Say id="capital" tone="tint" title="Funded like the leaders. Diluted like no one."
-      lead={<p className="pv-say-p pv-say-one">From your first cheque to your largest round. You decide what you take, and when.</p>}>
+    <Say id="capital" tone="tint" title="Diluted like no one."
+      lead={<p className="pv-say-p">Think of us as your in-house Chief Fundraising Officer. Our job: raise everything the company needs to reach its full size, in the order that dilutes you least. Every share you don’t issue protects your stake, and ours.</p>}>
+      <ol ref={ref} className={`pv-stack${seen ? ' in' : ''}`}>
+        {steps.map((x, i) => (
+          <li key={x.t} className="pv-stack-s" style={{ ['--d' as string]: `${i * 0.14}s` }}>
+            <div className="pv-stack-top">
+              <span className="pv-stack-n">{i + 1}</span>
+              <span className={`pv-stack-tag${x.tag === 'Your call' ? ' call' : ''}`}>{x.tag}</span>
+            </div>
+            <span className="pv-ic"><Icon name={x.icon} /></span>
+            <h3>{x.t}</h3>
+            <p>{x.d}</p>
+          </li>
+        ))}
+      </ol>
+      <div className="pv-figs pv-say-figs">
+        {figs.map((x) => <div key={x.s}><b>{x.b}</b><span>{x.s}</span></div>)}
+      </div>
       <ul className="pv-ruled">
         {CAPITAL.map((c) => <li key={c.t}><h3>{c.t}</h3><p>{c.d}</p></li>)}
       </ul>
-      <div className="pv-say-stages"><StagesGrid /></div>
       <div className="pv-say-folds">
-        <Fold id="capital-detail" title="The order of capital" sub="Your growth, the loan line, equity, mega rounds: the cheapest source first">
-          <div className="pv-figs">
-            {figs.map((x) => <div key={x.s}><b>{x.b}</b><span>{x.s}</span></div>)}
-          </div>
-          <ol ref={ref} className={`pv-stack${seen ? ' in' : ''}`}>
-            {steps.map((x, i) => (
-              <li key={x.t} className="pv-stack-s" style={{ ['--d' as string]: `${i * 0.14}s` }}>
-                <div className="pv-stack-top">
-                  <span className="pv-stack-n">{i + 1}</span>
-                  <span className={`pv-stack-tag${x.tag === 'Your call' ? ' call' : ''}`}>{x.tag}</span>
-                </div>
-                <span className="pv-ic"><Icon name={x.icon} /></span>
-                <h3>{x.t}</h3>
-                <p>{x.d}</p>
-              </li>
-            ))}
-          </ol>
+        <Fold id="stages" title="Stages and tickets" sub="What we write at each stage, from pre-seed to growth">
+          <StagesGrid />
         </Fold>
       </div>
     </Say>
@@ -416,7 +416,7 @@ export function FounderTable({ investor = false }: { investor?: boolean }) {
 const A_ = (href: string, t: string) => <a href={href} target="_blank" rel="noopener noreferrer">{t}</a>;
 
 /** Sur l'accueil : le calculateur et le term sheet se déplient ici. */
-export function TheMath({ calcOpen = false, onCalc, onPact }: { calcOpen?: boolean; onCalc: () => void; onPact: () => void }) {
+export function TheMath({ calcOpen = false, onCalc }: { calcOpen?: boolean; onCalc: () => void }) {
   return (
     <Say id="math" title="The capital you don’t raise is the company you keep."
       lead={<p className="pv-say-p">Most founding teams end up with a fraction of what they built. On our path, your stake today is your stake at exit. When credit cannot carry your growth, we bring the equity on the same terms.</p>}>
@@ -428,8 +428,8 @@ export function TheMath({ calcOpen = false, onCalc, onPact }: { calcOpen?: boole
         share capital, at the mid-point of the price range, after about £1.3bn raised; he kept control through 20-vote shares, for three years).
       </p>
       <div className="pv-say-folds">
-        <Fold id="term-sheet" title="The term sheet, rewritten" sub="What a classic term sheet takes, what our pact gives back">
-          <TermSheetGrid onPact={onPact} />
+        <Fold id="term-sheet" title="The term sheet, rewritten" sub={`The ${N_CLAUSES} clauses of our pact, next to a classic term sheet`}>
+          <TermSheetGrid />
         </Fold>
       </div>
       {/* le calculateur garde son ancre : /#calculator, le pied de page, le bandeau final */}
@@ -449,21 +449,25 @@ export function TheMath({ calcOpen = false, onCalc, onPact }: { calcOpen?: boole
 }
 
 // ── Le term sheet, réécrit (v3.15, 06/11) ────────────────────────────────────
-// Ce qu'un term sheet VC classique prend, ce que le pacte rend : chaque ligne ProFund est
-// une clause du pacte (Pact.tsx) ; ne rien promettre de plus.
+// Ce qu'un term sheet VC classique prend, ce que le pacte rend : UNE LIGNE PAR CLAUSE du
+// pacte, dans son ordre (Pact.tsx, 12 clauses depuis la v3.15) ; ne rien promettre de plus. Une
+// clause qui change change aussi ici. Le texte contractuel reste le pacte, en haut de l'accueil.
 const TERMS: { k: string; vc: string; pf: string }[] = [
-  { k: 'Rounds', vc: 'A new round every 18 months, on their terms', pf: 'When you choose, on your terms' },
-  { k: 'Your stake', vc: 'Down at every round: 11.4% after the Series D, at the median', pf: 'Diluted only when you choose. Every cancellation lifts it' },
-  { k: 'Board', vc: 'A seat for every lead. Your majority erodes', pf: 'One seat. The majority stays yours' },
-  { k: 'Votes', vc: 'Every investor votes its own shares', pf: 'Our shares vote with you' },
-  { k: 'Vetoes', vc: 'Consent on the budget, key hires, new rounds, the sale', pf: 'Only on what would change our shares behind our back' },
-  { k: 'Preference', vc: 'Stacked at every round, sometimes participating', pf: '1× non-participating, once' },
-  { k: 'Exit', vc: 'Investor consent on the sale', pf: 'No veto on a sale. Same terms for everyone' },
-  { k: 'Leavers', vc: 'Bad leaver for resigning during vesting', pf: 'Bad leaver only for fraud, misconduct or competing. Vested shares stay yours' },
-  { k: 'Angels, early funds', vc: 'Stay on your cap table, with their votes', pf: 'Bought out with your agreement. Their votes move to your side' },
+  { k: 'Equity', vc: 'A new round every 18 months, a preference stacked at each one, sometimes participating', pf: 'Only when you choose. At most a 1× non-participating preference. No ratchet, no cumulative dividend' },
+  { k: 'Follow-on', vc: 'A new fundraise at every stage', pf: 'Reserved from day one: a loan line, then equity on the same terms when you ask, SPVs for the largest rounds' },
+  { k: 'Loans', vc: 'None. Venture debt elsewhere, often with warrants', pf: 'Lender terms: monthly figures, no new senior debt without our consent, repaid if control changes. A missed payment suspends the voting agreement' },
+  { k: 'Angels, early funds', vc: 'Stay on your cap table, with their votes', pf: 'Bought out with your agreement, priced by an independent valuer. Their votes move to your side' },
+  { k: 'Your stake', vc: 'Down at every round: 11.4% after the Series D, at the median', pf: 'A yearly buyback: cancelled shares lift your stake, or refill your pool without new shares' },
+  { k: 'Votes', vc: 'Every investor votes its own shares', pf: 'Our shares vote with you, with multiple voting rights where the law allows. Both end if you leave or sell control' },
+  { k: 'Board and vetoes', vc: 'A seat for every lead. Consent on the budget, key hires, new rounds, the sale', pf: 'One seat, the majority stays yours. Consent only on what would change our shares behind our back' },
+  { k: 'Conflicts', vc: 'Left to company law', pf: 'Neither of us votes on ourselves: not us on our loans or buybacks, not our shares with you on your pay' },
+  { k: 'Raising elsewhere', vc: 'Investor consent on new rounds', pf: 'Free, from anyone, at any time. We have a right of first offer. If another investor leads, the voting agreement ends and we hold the same rights, never more' },
+  { k: 'Exit', vc: 'Investor consent on the sale', pf: 'No veto. Ever. We can sell alongside you, you can drag us, on the same terms for everyone. Loans repaid at closing' },
+  { k: 'Vesting, leavers', vc: 'Bad leaver for resigning during vesting', pf: 'Four years, with credit for time served. Bad leaver only for fraud, gross misconduct or competing. Vested shares stay yours' },
+  { k: 'Fallback', vc: 'Investor rights apply at all times', pf: 'The voting agreement ends only for fraud, gross misconduct, a material breach or insolvency' },
 ];
 
-function TermSheetGrid({ onPact }: { onPact: () => void }) {
+function TermSheetGrid() {
   return (
     <>
       <p className="lp-read lp-fold-lead">We keep what protects the capital, never the control.</p>
@@ -480,9 +484,6 @@ function TermSheetGrid({ onPact }: { onPact: () => void }) {
             <span className="pf" role="cell"><small>ProFund</small><Icon name="check" />{t.pf}</span>
           </div>
         ))}
-      </div>
-      <div className="pv-ctas pv-ts-cta">
-        <button type="button" className="pv-btn" onClick={onPact}>Read the {N_CLAUSES} clauses <Icon name="arrow" /></button>
       </div>
     </>
   );
@@ -584,8 +585,8 @@ export function FinalCall({ onOpen }: { onOpen?: (panel: 'pact' | 'calculator') 
       <div className="pv-wrap">
         <div className="pv-band pv-final">
           <div>
-            <h2>If this was written for you, you already know.</h2>
-            <p>See what you keep. Read what we sign.</p>
+            <h2>Exceptional numbers deserve exceptional terms.</h2>
+            <p>See what you keep, round after round.</p>
           </div>
           <div className="pv-band-ctas">
             {onOpen ? (

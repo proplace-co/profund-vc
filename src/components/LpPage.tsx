@@ -202,7 +202,7 @@ const GIVE: { t: string; d: string }[] = [
   { t: 'The exit.', d: 'No veto on a sale. Ever.' },
 ];
 const KEEP: { t: string; d: string }[] = [
-  { t: 'A 1× preference.', d: 'On every cheque, first or follow-on.' },
+  { t: 'A 1× preference.', d: 'On every cheque, first or follow-on, outside small seed rounds.' },
   { t: 'Loans repaid first.', d: 'Before any equity, and on any change of control.' },
   { t: 'Eyes on the company.', d: 'A board seat, monthly figures, quarterly accounts.' },
   { t: 'Consent where it counts.', d: 'Nothing can rank ahead of our shares or change their rights without us.' },
@@ -255,7 +255,7 @@ function Ledgers({ sides }: { sides: (exit: number) => [Side, Side] }) {
 
 // Les règles de protection, vues des LPs (pacte à 12 clauses, Pact.tsx).
 const PROTECTION: { icon: IconName; t: string; d: string }[] = [
-  { icon: 'shield', t: '1× preference', d: 'On every cheque, first or follow-on. No ratchet, no cumulative dividend.' },
+  { icon: 'shield', t: '1× preference', d: 'On every cheque, first or follow-on, outside small seed rounds. No ratchet, no cumulative dividend.' },
   { icon: 'banknote', t: 'Loans first', d: 'Lender covenants; repaid before any equity and on any change of control.' },
   { icon: 'file', t: 'A board seat', d: 'Monthly figures, quarterly accounts, and consent on anything that would change our shares.' },
   { icon: 'scale', t: 'Independent pricing', d: 'Every buyback is priced by an independent valuer.' },

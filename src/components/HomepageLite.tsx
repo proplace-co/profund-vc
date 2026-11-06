@@ -81,7 +81,7 @@ export default function HomepageLite() {
       <TheRules hero pactOpen={pact} onPact={() => toggle('pact')} onRun={() => reveal('calculator')} />
       <TheFew />
       <CapitalStack />
-      <TheMath calcOpen={calc} onCalc={() => toggle('calculator')} onPact={() => reveal('pact')} />
+      <TheMath calcOpen={calc} onCalc={() => toggle('calculator')} />
       <FounderEngines />
       <FinalCall onOpen={reveal} />
       <DealFlowModal open={open} onClose={closeModal} />

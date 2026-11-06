@@ -416,7 +416,7 @@ LAWS = (
 )
 
 PACT = (
-    ("Equity, when the founder chooses.", "In new shares, 1× non-participating; never a pushed round."),
+    ("Equity, when the founder chooses.", "At most a 1× non-participating preference; never a pushed round."),
     ("Follow-on capital, reserved.", "Loans first, then equity on the same terms when the founder asks, "
                                      "SPVs for the largest rounds."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
@@ -1074,8 +1074,8 @@ def net_note():
         f"Buybacks priced {pct(min(winners))}–{pct(max(winners))} below the valuation of the time on winners "
         f"and angels, {pct(structural)} below from structural sellers (end-of-life funds). "
         f"When a founder raises elsewhere, ProFund follows in new shares ({', '.join(followed)}). "
-        f"{lst(fresh)} are fresh growth rounds in new shares; every first cheque carries a 1× non-participating "
-        "preference. "
+        f"{lst(fresh)} are fresh growth rounds in new shares; first cheques carry a 1× non-participating "
+        "preference, outside small seed rounds. "
         + "".join(f"{ln['id']} is a block bought in {ln['company']}, counted as one company with it. " for ln in brk)
         + f"Zombies return {mult(zombie[0])} of the equity invested. "
         f"Any growth position can be topped up to {eur(FUND['company_max_with_spv'], 'tile')} with SPVs, "

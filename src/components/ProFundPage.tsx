@@ -183,7 +183,7 @@ function Alignment() {
         </div>
         <div className="pv-card">
           <h3>Downside</h3>
-          <p>Loans are repaid before equity, and our first cheque carries a 1× preference.</p>
+          <p>Loans are repaid before equity, and our first cheque carries a 1× preference, outside small seed rounds.</p>
         </div>
         <div className="pv-card">
           <h3>Conflicts policy</h3>
@@ -541,7 +541,7 @@ export function PerformanceTables() {
           Base: every exit value ×{pct(C.base.exit_mult)}. Stress: every exit value ×{pct(C.stress.exit_mult)}. Loans priced at {pct(fund.loan_rate)} a year on healthy companies ({mult(fund.loan_multiples.performing_min, 2)} to {mult(fund.loan_multiples.performing_max, 2)} by tenor, no warrants), drawn in tranches;
           zombies repay {mult(fund.loan_multiples.zombie)}, plus {loanLoss('target')}, {loanLoss('base')} and {loanLoss('stress')} further losses on every loan by case. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
           and angels, {pct(STRUCT_DISC)} below from structural sellers (end-of-life funds). When a founder raises elsewhere, ProFund follows in new shares ({ALL_LINES.filter((l) => l.follow).map((l) => l.id).join(', ')}). G-02 and G-04 are fresh growth rounds in new shares;
-          every first cheque carries a 1× non-participating preference. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
+          first cheques carry a 1× non-participating preference, outside small seed rounds. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
           topped up to {eur(F.company_max_with_spv, 'tile')} with SPVs, outside the fund. Net TVPI on paid-in capital. Loan recycling not included. Targets are model outputs, not a forecast or a guarantee.
         </p>
     </>

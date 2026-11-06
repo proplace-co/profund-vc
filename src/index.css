@@ -1401,9 +1401,8 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   .pv-path-real > span { font-size: 11.5px; }
 }
 .pv-say-stages { position: relative; margin-top: clamp(32px, 4vw, 56px); }
-@media (min-width: 601px) {
-  .pv-say-one { font-size: min(clamp(19px, 1.75vw, 24px), 2.3vw); white-space: nowrap; }
-}
+.pv-say .pv-stack { position: relative; margin-top: clamp(40px, 5vw, 72px); }
+.pv-say-figs { position: relative; margin: 14px 0 0; }
 @media (max-width: 760px) {
   .pv-paths { grid-template-columns: minmax(0, 1fr); }
   .pv-path-pf em { display: none; }
