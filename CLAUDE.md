@@ -133,7 +133,11 @@ SaaStr, sources en note, ne pas les changer sans relire les sources ; le graphiq
 stake, round after round » montre chaque étape, levées intermédiaires comprises, la ligne
 ProFund à 37,5 % et une dernière colonne rouge, le cas réel Deliveroo à l'IPO ; la part par
 fondateur, 5,7 % chacun après la D pour deux cofondateurs à parts égales, est dite comme une
-hypothèse : ne jamais afficher une MÉDIANE plus basse que ce que Carta mesure),
+hypothèse : ne jamais afficher une MÉDIANE plus basse que ce que Carta mesure ; le tableau de
+l'accueil a une colonne « At 6.3%, the Deliveroo case » : les fondateurs ramenés à 6,3 %,
+mêmes tours, mêmes préférences, calculée par `atFounderStake` de `founderMath.js` ; sous les
+moteurs, « Running today » : Proplace et Maximum Insurance, dont la corp dev, l'inbound et
+l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11),
 (v3.14) le fonds en chiffres (taille, tickets, suivi, au-delà de 10 M€), les étages, les
 chiffres sans phrase contestable (« When debt can carry your growth… When it cannot, we bring
 the equity on the same terms »), les deux moteurs côté fondateur (« Two AI engines, working

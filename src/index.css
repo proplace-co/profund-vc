@@ -881,6 +881,44 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   background: var(--red-soft); box-shadow: inset 0 0 0 1px #f3d4cf; }
 .pv-real-duo b { flex: none; font-size: clamp(26px, 2.6vw, 36px); font-weight: 750; letter-spacing: -.035em; line-height: 1; color: var(--red); }
 .pv-real-duo span { font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+
+/* Le tableau, avec le cas réel (accueil) : une colonne rouge entre VC et ProFund */
+.pv-math:has(.real) .pv-math-head, .pv-math-row.real { grid-template-columns: 130px repeat(3, minmax(0, 1fr)); gap: 28px; }
+.pv-math-head .real { color: var(--red); }
+.pv-math-v.real b { color: var(--red); }
+.pv-math-v.real i { background: linear-gradient(90deg, #e8a49c, var(--red)); }
+@media (max-width: 700px) {
+  .pv-math-row.real { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 12px; }
+  .pv-math-row.real .pv-math-v b { font-size: 21px; }
+  .pv-math-row.real small { font-size: 9.5px; letter-spacing: .04em; }
+}
+
+/* Les moteurs : les sociétés qu'ils font tourner aujourd'hui */
+.pv-run { position: relative; margin-top: 16px; padding: clamp(22px, 2.6vw, 32px); border-radius: var(--r-xl);
+  background: var(--night-2); box-shadow: inset 0 0 0 1px var(--night-line); }
+.pv-run-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-bottom: 20px; }
+.pv-run-head .pv-kick { color: var(--blue-glow); }
+.pv-run-head p:not(.pv-kick) { margin: 0; font-size: 16.5px; font-weight: 600; color: #fff; }
+.pv-run-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.pv-run-co { display: flex; flex-direction: column; gap: 14px; padding: 22px 24px; border-radius: var(--r-lg); background: #fff;
+  color: var(--ink); text-decoration: none; box-shadow: 0 24px 48px -30px rgba(0, 0, 0, .8); transition: transform .18s; }
+.pv-run-co:hover { transform: translateY(-2px); }
+.pv-run-lg { display: flex; align-items: center; height: 34px; }
+.pv-run-lg img { display: block; max-height: 30px; width: auto; }
+.pv-run-lg img.wide { max-height: 17px; }
+.pv-run-co > p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
+.pv-run-co ul { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.pv-run-co li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 11px 0;
+  border-bottom: 1px solid var(--line); font-size: 14.5px; font-weight: 600; color: var(--ink); }
+.pv-run-co li svg { width: 18px; height: 18px; color: var(--blue-dk); }
+.pv-run-co li b { font-size: 12.5px; font-weight: 700; color: var(--blue-dk); text-align: right; }
+.pv-run-go { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; font-size: 14px; font-weight: 600; color: var(--blue-dk); }
+.pv-run-go svg { width: 14px; height: 14px; }
+@media (max-width: 900px) { .pv-run-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+  .pv-run-co li { grid-template-columns: 20px minmax(0, 1fr); }
+  .pv-run-co li b { grid-column: 2; text-align: left; }
+}
 @media (max-width: 600px) {
   .pv-calc-dock .pv-btn, .pv-rules-foot .pv-toggle { width: 100%; justify-content: space-between; padding-left: 22px; }
   /* calculateur : à 390 px, une case de tour fait ~80 px ; l'unité ne doit plus cacher le chiffre */

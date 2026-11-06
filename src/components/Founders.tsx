@@ -5,6 +5,7 @@ import { N_CLAUSES, PACT_LEAD, PactList } from './Pact';
 import { Calculator } from './CalculatorPage';
 import { Drawer, DrawerToggle } from './Drawer';
 import { eur, eurRange, fund, mult, pct } from '../lib/fund';
+import { atFounderStake, millions, payout, vcCapTable } from '../lib/founderMath.js';
 
 // LA PROPOSITION FONDATEURS (v3, Antoine, 05/11) : un seul tour en actions, puis des
 // prêts et des rachats. v3.8 : l'accueil ne parle qu'aux fondateurs et se construit
@@ -230,7 +231,12 @@ const PER_FOUNDER_D = pct(AFTER_D / 2, 1);
  *  VC, levées intermédiaires comprises (elle fond) ; le chemin ProFund est une ligne (elle
  *  ne bouge pas) ; la dernière colonne est un cas réel, sourcé dans RealDilution : le
  *  fondateur de Deliveroo à l'IPO, après des tours jusqu'à la série H. */
+// Le cas réel : la part de Will Shu dans Deliveroo à l'IPO de 2021 (sources dans RealDilution).
 const REAL_IPO = 0.063;
+// Ce que toucheraient les fondateurs à ce niveau : même chemin VC, mêmes préférences.
+const CAP_REAL = atFounderStake(vcCapTable({ founders: FM.founders, holders: FM.holders, rounds: FM.vc_rounds }), REAL_IPO);
+const realAt = (exit: number) => millions(payout(exit, CAP_REAL).founders);
+
 function StakeChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
   const cols: { label: string; v: number; kind: 'now' | 'bridge' | 'round' | 'real' }[] = [
@@ -273,26 +279,36 @@ function StakeChart() {
   );
 }
 
-/** Le tableau « The capital you don't raise » ; `investor` ajoute la colonne Series A (deck). */
-export function FounderTable({ investor = false }: { investor?: boolean }) {
+/** Le tableau « The capital you don't raise » ; `investor` ajoute la colonne Series A (deck) ;
+ *  `real` (accueil) ajoute le cas réel : les fondateurs à 6,3 %, mêmes tours, mêmes préférences. */
+export function FounderTable({ investor = false, real = false }: { investor?: boolean; real?: boolean }) {
   const [ref, seen] = useInView<HTMLDivElement>();
   const top = Math.max(...FM.rows.map((r) => r.founders_profund));
   const bar = (v: number) => ({ ['--w' as string]: `${Math.max(1.5, (v / top) * 100)}%` });
   return (
     <div ref={ref} className={`pv-math${seen ? ' in' : ''}`}>
       <div className="pv-math-head" aria-hidden="true">
-        <span>Exit</span><span>Founders, VC path</span><span>Founders, ProFund path</span>
+        <span>Exit</span><span>Founders, VC path</span>
+        {real && <span className="real">At {pct(REAL_IPO, 1)}, the Deliveroo case</span>}
+        <span>Founders, ProFund path</span>
         {investor && <span>Series A investor, VC path</span>}
         {investor && <span>ProFund, equity</span>}
       </div>
       {FM.rows.map((r) => (
-        <div key={r.exit} className={`pv-math-row${investor ? ' wide' : ''}`}>
+        <div key={r.exit} className={`pv-math-row${investor ? ' wide' : ''}${real ? ' real' : ''}`}>
           <span className="pv-math-exit"><small>Exit</small>{eur(r.exit, 'val')}</span>
           <span className="pv-math-v vc">
             <small>VC path</small>
             <b>{eur(r.founders_vc, 'tile')}</b>
             <i style={bar(r.founders_vc)} />
           </span>
+          {real && (
+            <span className="pv-math-v real">
+              <small>At {pct(REAL_IPO, 1)}, Deliveroo</small>
+              <b>{eur(realAt(r.exit), 'tile')}</b>
+              <i style={bar(realAt(r.exit))} />
+            </span>
+          )}
           <span className="pv-math-v pf">
             <small>ProFund path</small>
             <b>{eur(r.founders_profund, 'tile')}</b>
@@ -310,11 +326,12 @@ export function FounderTable({ investor = false }: { investor?: boolean }) {
 // Un cas public et les médianes Carta, sourcés en note : ne pas les modifier sans relire
 // les sources (CNBC du 23/03/2021, d'après le prospectus ; Tech.eu du 17/01/2021 ;
 // Carta, Founder Ownership Report 2026 ; la D, 11,4 % : donnée Carta citée par SaaStr).
-const CARTA = [
+const CARTA: { v: number; l: string; s: string }[] = [
   { v: 0.375, l: 'After the Series A', s: 'Digital companies' },
   { v: 0.273, l: 'After the Series B', s: 'AI teams' },
   { v: 0.161, l: 'After the Series C', s: 'Less than the employee pool' },
   { v: 0.114, l: 'After the Series D', s: 'Carta data, via SaaStr' },
+  { v: REAL_IPO, l: 'Deliveroo’s founder, at IPO', s: 'A real case' },
 ];
 
 function RealDilution() {
@@ -342,7 +359,7 @@ function RealDilution() {
             ))}
           </ol>
           <p className="pv-real-duo">
-            <b>{pct(CARTA[CARTA.length - 1].v / 2, 1)}</b>
+            <b>{pct(0.114 / 2, 1)}</b>
             <span>each, for two co-founders sharing equally after the Series D. Less than Deliveroo’s founder at IPO.</span>
           </p>
           <p className="pv-real-pf"><Icon name="shield" />On our path, your stake today is your stake at exit.</p>
@@ -370,7 +387,13 @@ export function TheMath({ tint = true, calcOpen = false, onCalc }: { tint?: bool
         {onCalc && <RealDilution />}
         <StakeChart />
         <h3 className="pv-h3 pv-math-t">What you take home</h3>
-        <FounderTable />
+        <FounderTable real={!!onCalc} />
+        {onCalc && (
+          <p className="pv-fine">
+            At {pct(REAL_IPO, 1)}: the founders brought down to the stake Deliveroo’s founder held at IPO, with the same rounds and
+            preferences as the VC path. A scenario, not a forecast.
+          </p>
+        )}
         {onCalc ? (
           <>
             {/* 06/11 : de l'air entre la ligne à 1 Md€ et le bouton */}
@@ -569,6 +592,14 @@ const ENGINES: { icon: IconName; name: string; d: string; steps: { k: string; d:
     ] },
 ];
 
+// La preuve (06/11, Antoine) : deux sociétés que les moteurs font tourner aujourd'hui.
+const RUN = [
+  { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', wide: false,
+    d: 'Autonomous AI operating system for corporate development and M&A.' },
+  { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', wide: true,
+    d: 'Travel insurance and duty of care for companies and their teams abroad.' },
+];
+
 export function FounderEngines() {
   return (
     <section className="pv-sec night" id="engines">
@@ -594,6 +625,25 @@ export function FounderEngines() {
               </ol>
             </div>
           ))}
+        </div>
+        <div className="pv-run">
+          <div className="pv-run-head">
+            <p className="pv-kick">Running today</p>
+            <p>Their corporate development, inbound and outbound are run entirely by these two engines.</p>
+          </div>
+          <div className="pv-run-grid">
+            {RUN.map((c) => (
+              <a key={c.name} className="pv-run-co" href={c.href} target="_blank" rel="noopener noreferrer">
+                <span className="pv-run-lg"><img src={c.logo} alt={c.name} className={c.wide ? 'wide' : undefined} /></span>
+                <p>{c.d}</p>
+                <ul>
+                  <li><Icon name="radar" />Corporate development<b>External AI Growth Engine</b></li>
+                  <li><Icon name="bot" />Inbound and outbound<b>Internal AI Growth Engine</b></li>
+                </ul>
+                <span className="pv-run-go">{c.href.replace(/^https:\/\/(www\.)?/, '')} <Icon name="out" /></span>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </section>

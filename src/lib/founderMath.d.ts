@@ -18,3 +18,11 @@ export function founderPaths(input: {
 };
 
 export function millions(v: number): number;
+
+export function vcCapTable(input: {
+  founders: number;
+  holders: Holder[];
+  rounds: { amount: number; post: number; pool?: number }[];
+}): Holder[];
+
+export function atFounderStake(cap: Holder[], stake: number): Holder[];

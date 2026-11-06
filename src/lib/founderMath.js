@@ -91,6 +91,38 @@ export function founderPaths({ founders, holders, rounds, loans, loanMultiple, e
   };
 }
 
+/**
+ * La cap table du chemin VC après les tours prévus (mêmes règles que founderPaths).
+ * @param {{founders: number, holders: {id: string, stake: number, pref: number}[],
+ *          rounds: {amount: number, post: number, pool?: number}[]}} input
+ */
+export function vcCapTable({ founders, holders, rounds }) {
+  const vc = [{ id: 'founders', stake: founders, pref: 0 }, ...holders.map((h) => ({ ...h }))];
+  if (!vc.some((h) => h.id === 'pool')) vc.push({ id: 'pool', stake: 0, pref: 0 });
+  rounds.forEach((r, i) => {
+    const p = r.pool > 0 ? Math.min(0.5, r.pool) : 0;
+    if (p) {
+      for (const h of vc) h.stake *= 1 - p;
+      vc.find((h) => h.id === 'pool').stake += p;
+    }
+    const k = r.post > 0 ? Math.min(1, r.amount / r.post) : 0;
+    for (const h of vc) h.stake *= 1 - k;
+    vc.push({ id: `round${i}`, stake: k, pref: r.amount });
+  });
+  return vc;
+}
+
+/**
+ * Le cas réel (v3.15, 06/11) : la même cap table, les mêmes préférences, mais les
+ * fondateurs ramenés à `stake` (les autres porteurs au prorata).
+ * @param {{id: string, stake: number, pref: number}[]} cap  cap table, fondateurs en tête
+ * @param {number} stake
+ */
+export function atFounderStake(cap, stake) {
+  const k = (1 - stake) / (1 - cap[0].stake);
+  return cap.map((h, i) => (i === 0 ? { ...h, stake } : { ...h, stake: h.stake * k }));
+}
+
 /** Arrondi au million, comme le tableau publié. */
 export function millions(v) {
   return Math.round(v / 1e6) * 1e6;
