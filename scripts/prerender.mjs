@@ -92,7 +92,7 @@ const ROUTES = [
   {
     path: 'lp',
     // v3.15 : page réservée aux candidats acceptés (même candidature que le deal flow)
-    title: 'ProFund · Where pure vision directs recursive AI. | LPs',
+    title: 'ProFund · Backing AI-native teams building self-improving AI systems | LPs',
     desc: 'ProFund Fund I, closed-ended EuVECA fund. Private LP page, on application: the thesis, the model, the engines and the live deal flow. For professional and eligible investors.',
   },
   {

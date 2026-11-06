@@ -33,7 +33,10 @@ const FUND_SIZE = eur(F.commitments, 'tile');
 const T = fund.terms;
 const C = fund.cases;
 const TARGET = C.target;
-const FR = fund.fund_returner;
+const UNICORN = fund.stress_tests.find((s) => s.id === 'unicorn')!;
+const BIG_UNICORN = fund.stress_tests.find((s) => s.id === 'big_unicorn')!;
+const UNICORN_EXIT = UNICORN.label.replace(/^One unicorn: /, '');
+const BIG_UNICORN_EXIT = BIG_UNICORN.label.replace(/^A big unicorn: /, '');
 
 // Le modèle, vu du fonds : quatre moteurs de détention.
 const MODEL: { icon: IconName; t: string; d: string }[] = [
@@ -105,7 +108,7 @@ function LpGate() {
         <div>
           <Link to="/" className="pv-terms-logo" aria-label="ProFund"><img src="/logo.png" alt="ProFund" width={150} height={40} /></Link>
           <p className="pv-kick pv-gate-kick"><Icon name="lock" />LPs · Private access</p>
-          <h1 className="pv-rules-h">Where pure vision directs recursive AI.</h1>
+          <h1 className="pv-rules-h">Backing AI-native teams building self-improving AI systems.</h1>
           <p className="pv-terms-lead">
             This page is for the investors we accept. Apply once. When we accept you, your private link
             opens this page and our live deal flow.
@@ -147,10 +150,10 @@ function AtAGlance() {
     { b: pct(TARGET.net_irr), l: 'Target net IRR', s: `Base case ${pct(C.base.net_irr)}, stress case ${pct(C.stress.net_irr)}.` },
     { b: mult(TARGET.net_tvpi), l: 'Target net TVPI', s: `Base case ${mult(C.base.net_tvpi)}, stress case ${mult(C.stress.net_tvpi)}.` },
     { b: mult(TARGET.dpi_year7), l: 'Net DPI by year 7', s: 'Capital back by year 7 in the target case, loan losses included.' },
-    { b: eur(TARGET.largest_exit, 'val'), l: 'Largest exit in the model', s: `No unicorn needed: ${FR.company} returns the fund on its own at ${eur(FR.fund_returning_exit, 'val')}.` },
+    { b: mult(UNICORN.net_tvpi), l: 'With one unicorn', s: `${UNICORN_EXIT}: ${pct(UNICORN.net_irr)} net IRR. ${BIG_UNICORN_EXIT}: ${mult(BIG_UNICORN.net_tvpi)}.` },
   ];
   const terms: [string, string][] = [
-    ['Vehicle', 'Closed-ended EuVECA fund, Luxembourg'],
+    ['Vehicle', 'Closed-ended EuVECA fund'],
     ['Size', `${FUND_SIZE}, first close ${eurRange(F.first_close_min, F.first_close_max, 'tile', '–')}, closings over ${F.closing_months} months`],
     ['Term', `${F.term_years} years, ${F.investment_period_years}-year investment period`],
     ['Fees', `${pct(T.fee_ip_pct)} on commitments for ${F.investment_period_years} years (${pct(T.fee_loan_pct)} on the loan sleeve), then ${pct(T.fee_post_pct, 1)} on invested capital`],
@@ -164,7 +167,7 @@ function AtAGlance() {
       <div className="pv-wrap">
         <div className="pv-head">
           <p className="pv-kick">Fund I at a glance</p>
-          <h2 className="pv-h2">Returns built on ownership, not on unicorns.</h2>
+          <h2 className="pv-h2">We hunt the outliers, and own more of them.</h2>
         </div>
         <div className="pv-figs pv-glance-figs">
           {tiles.map((t) => <div key={t.l}><b>{t.b}</b><span><strong>{t.l}.</strong> {t.s}</span></div>)}
@@ -200,7 +203,7 @@ function TheShift() {
         </div>
         <div className="pv-duo-txt pv-shift-txt">
           <p className="big">The best AI companies no longer need €50M.</p>
-          <p>Tight teams reach growth-stage revenue with a fraction of the capital and the people software used to need. Yet the venture model still sells them a Series B, C and D, and needs a unicorn to make its returns. <b>Capital is abundant. Ownership is scarce.</b></p>
+          <p>Tight teams reach growth-stage revenue with a fraction of the capital and the people software used to need. Yet the venture model still sells them a Series B, C and D, and dilutes them at every round. <b>Capital is abundant. Ownership is scarce.</b></p>
         </div>
         <div className="pv-shift-stats">
           {SHIFT.map((x) => (
@@ -223,9 +226,9 @@ function TheShift() {
 // moteur du site (founderMath.js), le même que le tableau publié : la société de
 // l'exemple, vendue à la taille de chaque cession réelle.
 const EXIT_MARKET: { b: string; t: string; n: number }[] = [
-  { b: '70%+', t: 'of European VC-backed exits are acquisitions, not IPOs.', n: 1 },
-  { b: '77%', t: 'of European tech M&A deals in 2023 were worth less than $100M.', n: 2 },
-  { b: '0.7%', t: 'of European M&A deals over the past decade were worth $1B or more.', n: 3 },
+  { b: '0.7% → 68%', t: '$1B+ deals were 0.7% of European tech M&A over the past decade, and 68% of its value.', n: 1 },
+  { b: '13% → 86%', t: '$1B+ IPOs were 13% of European tech IPOs over the decade, and 86% of their value.', n: 1 },
+  { b: '77%', t: 'of European tech M&A deals in 2023 were worth less than $100M. The outliers make the returns.', n: 2 },
 ];
 
 const EXIT_BANDS: { h: string; items: { co: string; v: string; d: string }[] }[] = [
@@ -253,14 +256,15 @@ const EXIT_BANDS: { h: string; items: { co: string; v: string; d: string }[] }[]
   ] },
 ];
 
-// La société du tableau fondateurs, vendue aux tailles des cessions réelles ci-dessus.
-const EXIT_ROWS: { exit: number; eg: string }[] = [
-  { exit: 40e6, eg: 'AdCreative.ai, $38.7M' },
-  { exit: 60e6, eg: 'Sentronics, ~$60M' },
-  { exit: 160e6, eg: 'Freetrade, £160M' },
-  { exit: 500e6, eg: 'InstaDeep, ~€500M' },
-  { exit: 700e6, eg: 'Peakon, ~$700M' },
-  { exit: 1800e6, eg: 'Tink, €1.8B' },
+// La société du tableau fondateurs, vendue à la taille de vraies cessions européennes,
+// de la vente de raison à la licorne (06/11 : le tableau refait, plus lisible).
+const EXIT_ROWS: { exit: number; co: string; d: string }[] = [
+  { exit: 40e6, co: 'AdCreative.ai', d: 'Appier, 2025 · $38.7M' },
+  { exit: 60e6, co: 'Sentronics', d: 'Nova, 2025 · ~$60M' },
+  { exit: 160e6, co: 'Freetrade', d: 'IG Group, 2025 · £160M' },
+  { exit: 500e6, co: 'InstaDeep', d: 'BioNTech, 2023 · ~€500M' },
+  { exit: 1800e6, co: 'Tink', d: 'Visa, 2021 · €1.8B' },
+  { exit: 7000e6, co: 'Wolt', d: 'DoorDash, 2021 · ~€7.0B' },
 ];
 const CAP_VC = vcCapTable({ founders: FM.founders, holders: FM.holders, rounds: FM.vc_rounds });
 const CAP_PF = [{ id: 'founders', stake: FM.founders, pref: 0 }, ...FM.holders.map((h) => ({ ...h }))];
@@ -272,45 +276,79 @@ const atExit = (exit: number) => {
   return { fVc: millions(v.founders), fPf: millions(p.founders), aVc: v.series_a / A_COST, aPf: p.series_a / A_COST };
 };
 const m2 = (x: number) => `${x.toFixed(x < 10 ? 1 : 0)}×`;
+const money = (v: number) => eur(v, v >= 1e9 ? 'val' : 'tile');
+const UNICORN_MIN = 1e9;
 
 function Exits() {
+  const rows = EXIT_ROWS.map((r) => ({ ...r, ...atExit(r.exit) }));
+  const tie = atExit(40e6);
+  const tink = rows.find((r) => r.co === 'Tink')!;
   return (
     <section className="pv-sec" id="exits">
       <div className="pv-wrap">
         <div className="pv-head">
           <p className="pv-kick">Exits</p>
-          <h2 className="pv-h2">Built for the exits Europe actually has.</h2>
-          <p className="sub">Most European exits are trade sales well below $1B. A model that needs a unicorn misses most of the market. Ours is built to pay across it.</p>
+          <h2 className="pv-h2">From a trade sale to a unicorn.</h2>
+          <p className="sub">In Europe as everywhere, the outliers make the returns. We hunt them like the best funds do. The difference: when one comes, we still own our full stake, and so does the founder.</p>
         </div>
         <div className="pv-exit-stats">
           {EXIT_MARKET.map((x) => <div key={x.b}><b>{x.b}</b><span>{x.t}<sup>{x.n}</sup></span></div>)}
         </div>
 
-        <h3 className="pv-h3 pv-exit-t">The same company, sold at the size of real European exits</h3>
-        <div className="table-scroll pv-ts"><table className="fund-table pv-exit-table">
-          <thead><tr>
-            <th>Exit</th><th>A real exit of that size</th><th>Founders, VC path</th><th className="pf">Founders, ProFund path</th>
-            <th>Series A investor, VC path</th><th className="pf">ProFund, equity</th>
-          </tr></thead>
-          <tbody>
-            {EXIT_ROWS.map((r) => {
-              const x = atExit(r.exit);
-              return (
-                <tr key={r.exit}>
-                  <td>{eur(r.exit, 'val')}</td><td>{r.eg}</td>
-                  <td>{eur(x.fVc, 'tile')}</td><td className="pf">{eur(x.fPf, 'tile')}</td>
-                  <td>{m2(x.aVc)}</td><td className="pf">{m2(x.aPf)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table></div>
+        <div className="pv-xt-head">
+          <h3 className="pv-h3">The same company, sold at the price of real European exits</h3>
+          <p>
+            One company, {eur(FM.raised_before, 'tile')} raised up to its Series A. Then, on the VC path, {eur(FM.vc_equity, 'tile')} of
+            equity over three more rounds; on ours, {eur(FM.loans, 'tile')} of loans. Sold at the price of six real exits.
+          </p>
+          <div className="pv-xt-legend">
+            <span className="vc">VC path</span><span className="pf">ProFund path</span><span className="up">ProFund’s edge</span>
+          </div>
+        </div>
+        <div className="pv-xt" role="table" aria-label="The same company on both paths, at real European exit sizes">
+          <div className="pv-xt-row head" role="row">
+            <span role="columnheader">Sold at</span>
+            <span role="columnheader">Founders take home</span>
+            <span role="columnheader">Series A cheque, multiple</span>
+            <span role="columnheader">ProFund’s edge</span>
+          </div>
+          {rows.map((r) => {
+            const top = Math.max(r.fPf, r.fVc, 1);
+            const w = (v: number) => ({ ['--w' as string]: `${Math.max(v > 0 ? 3 : 0, (v / top) * 100)}%` });
+            const edge = r.aVc > 0 ? r.aPf / r.aVc : null;
+            return (
+              <div key={r.exit} className={`pv-xt-row${r.exit >= UNICORN_MIN ? ' uni' : ''}`} role="row">
+                <span className="pv-xt-exit" role="cell">
+                  <b>{eur(r.exit, 'val')}</b>
+                  <span>{r.co}<small>{r.d}</small></span>
+                  {r.exit >= UNICORN_MIN && <em>Unicorn</em>}
+                </span>
+                <span className="pv-xt-bars" role="cell">
+                  <span className="vc"><small>VC</small><i style={w(r.fVc)} /><b>{money(r.fVc)}</b></span>
+                  <span className="pf"><small>ProFund</small><i style={w(r.fPf)} /><b>{money(r.fPf)}</b></span>
+                </span>
+                <span className="pv-xt-mult" role="cell">
+                  <span className="vc"><small>VC path</small>{m2(r.aVc)}</span>
+                  <Icon name="arrow" />
+                  <span className="pf"><small>ProFund</small>{m2(r.aPf)}</span>
+                </span>
+                <span className="pv-xt-edge" role="cell">
+                  {edge !== null && <b>{edge.toFixed(1)}×</b>}
+                  <small>the VC path’s multiple</small>
+                  <span className="f">{r.fVc > 0 ? `Founders: ${(r.fPf / r.fVc).toFixed(1)}× more` : r.fPf > 0 ? `Founders: ${money(r.fPf)} instead of €0` : 'Founders: €0 on both paths'}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
         <p className="pv-exit-read">
-          <b>Our equity is back at 1× from a {eur(60e6, 'val')} sale; on the VC path, the Series A needs {eur(250e6, 'val')}.</b> Our
-          loans come first, repaid in full from a {eur(DEBT, 'val')} sale. From {eur(60e6, 'val')}, founders take home more on our path at
-          every size; below, nobody does, and our equity still recovers {m2(atExit(40e6).aPf)} where the VC path’s Series A gets {m2(atExit(40e6).aVc)}.
+          <b>The same unicorn, three times the multiple.</b> Sold at Tink’s {eur(tink.exit, 'val')}, the company returns {m2(tink.aPf)} on
+          our Series A cheque, against {m2(tink.aVc)} on the VC path, and leaves its founders {money(tink.fPf)} instead
+          of {money(tink.fVc)}: no round after ours dilutes either of us. At the low end, our loans come first, repaid in full
+          from a {eur(DEBT, 'val')} sale; our equity is back at 1× from {eur(60e6, 'val')}, where the VC path’s Series A needs {eur(250e6, 'val')};
+          below, nobody gains, and our equity still recovers {m2(tie.aPf)} against {m2(tie.aVc)}.
         </p>
-        <p className="pv-fine">{founderNote()} Exit sizes rounded from the real exits below, whose values are shown as disclosed, in their own currency.</p>
+        <p className="pv-fine">{founderNote()} Sale prices rounded from the real exits listed, whose values are shown as disclosed, in their own currency.</p>
 
         <h3 className="pv-h3 pv-exit-t">Real European exits, at every size</h3>
         <div className="pv-exit-bands">
@@ -326,10 +364,9 @@ function Exits() {
           ))}
         </div>
         <p className="pf-fine pv-src">
-          ¹ PitchBook, Q3 2025 European Venture Report, 9 October 2025 (“over 70% of exits YTD”; PitchBook’s Europe includes Israel).
-          ² Atomico, State of European Tech 2023. ³ Atomico, State of European Tech 2025 (S&amp;P data to 24 October 2025): $1B+ deals were
-          0.7% of M&amp;A deals over the decade, and 68% of the value. Exits: Sonos 10-K 2019; Appier; Nova; IG Group (RNS); Zynga; Xero (ASX);
-          BioNTech; AMD; Workday; NICE; Etsy; Visa; DoorDash. Values as disclosed by the buyer.
+          ¹ Atomico, State of European Tech 2025 (S&amp;P data to 24 October 2025), over the past decade. ² Atomico, State of
+          European Tech 2023. Exits: Sonos 10-K 2019; Appier; Nova; IG Group (RNS); Zynga; Xero (ASX); BioNTech; AMD; Workday; NICE;
+          Etsy; Visa; DoorDash. Values as disclosed by the buyer.
         </p>
       </div>
     </section>
@@ -350,11 +387,11 @@ function LpContent() {
           <div className="pv-hero-copy">
             <Link to="/" className="pv-lp-logo" aria-label="ProFund"><img src="/logo.png" alt="ProFund" width={150} height={40} /></Link>
             <span className="pv-eyebrow caps"><b />LPs · Pre-marketing phase · EuVECA</span>
-            <h1 className="pv-h1 pv-h1-one">Where pure vision directs recursive AI.</h1>
-            <p className="pv-lead pv-lead-k">Fund I. {FUND_SIZE}, pre-seed to growth, Luxembourg.</p>
+            <h1 className="pv-h1 pv-h1-one">Backing AI-native teams building self-improving AI systems.</h1>
+            <p className="pv-lead pv-lead-k">Fund I. {FUND_SIZE}, pre-seed to growth.</p>
             <p className="pv-lead">
-              We don’t fund headcount. We back tight-knit, AI-native teams building <span className="nw">self-improving</span> systems
-              across the world’s largest markets.
+              We don’t fund headcount. We back the clearest minds directing the most autonomous machines, in the
+              world’s largest markets, and we compete for them with the best funds in the world.
             </p>
             <div className="pv-ctas">
               <button type="button" className="pv-btn" onClick={follow}><span className="pv-dot" />Follow our deal flow live</button>
@@ -398,7 +435,7 @@ function LpContent() {
               <h3>Equity too, and a follower’s discipline.</h3>
             </div>
             <ul>
-              <li><Icon name="target" /><span><b>We bring equity, not only debt.</b> We compete for the rounds an Index Ventures or a Balderton would lead, with a first cheque in new shares.</span></li>
+              <li><Icon name="target" /><span><b>We compete for the same founders as the best.</b> The rounds an Index Ventures or a Sequoia would lead, with equity, not only debt. Founders choose us because our terms are aligned with them, by contract.</span></li>
               <li><Icon name="handshake" /><span><b>When a top-tier fund leads, we follow its terms.</b> A co-investor does not renegotiate the lead’s term sheet: we invest alongside, on the same terms, and our pact applies only where we lead.</span></li>
               <li><Icon name="banknote" /><span><b>Then we add what they don’t.</b> The loan line, the buybacks of angels and early funds, and the two engines.</span></li>
             </ul>

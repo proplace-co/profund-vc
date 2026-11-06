@@ -433,10 +433,10 @@ PACT = (
 def page_one(F):
     tw = 366.0
     y = 84.0
-    y += title(F, M, y, tw, "", 33, lead=1.04, markup=x("Where pure vision directs recursive AI."))
+    y += title(F, M, y, tw, "", 27, lead=1.04, markup=x("Backing AI-native teams building self-improving AI systems."))
     y += 11 + F.para(M, y + 11, tw, x(f"Pre-seed to Growth. {FUND_SIZE}."), 13, "gras", INK, 1.4)
-    y += 5 + F.para(M, y + 5, tw, x("We don't fund headcount. We back tight-knit, AI-native teams building "
-                                    "self-improving systems across the world's largest markets."), 11.4, "reg", INK2, 1.48)
+    y += 5 + F.para(M, y + 5, tw, x("We don't fund headcount. We back the clearest minds directing the most "
+                                    "autonomous machines, in the world's largest markets."), 11.4, "reg", INK2, 1.48)
     # la ligne forte, en gras sous le sous-titre (v3)
     y += 12
     strong = (f"<b>{x('One round. Then never diluted again.')}</b> "
@@ -445,7 +445,7 @@ def page_one(F):
     hs = F.para(M + 13, y, tw - 13, strong, 11.4, "reg", INK, 1.45)
     F.rr(M, y + 1, 3.2, hs - 2, 1.6, fill=BLUE)
     y += hs
-    y += 10 + micro(F, M, y + 12, tw, ["EuVECA fund, Luxembourg"])
+    y += 10 + micro(F, M, y + 12, tw, ["EuVECA fund"])
 
     # le visuel : la carte du deal flow dans la fenetre, le pipeline pose devant
     vw = 252.0
@@ -638,7 +638,7 @@ def page_two(F):
     half = (W - 16) / 2
     ip = FUND["investment_period_years"]
     terms = [
-        ("Closed-ended EuVECA fund (Lux.)", f"{FUND['term_years']} years"),
+        ("Closed-ended EuVECA fund", f"{FUND['term_years']} years"),
         ("Successive closings", f"{FUND['closing_months']} months"),
         (f"Management fee, years 1–{ip}", pct(TERMS["fee_ip_pct"])),
         (f"On the loan sleeve, years 1–{ip}", pct(TERMS["fee_loan_pct"])),

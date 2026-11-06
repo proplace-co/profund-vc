@@ -1002,7 +1002,7 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
 .pv-lp-perf { margin-top: 32px; }
 .pv-lp-perf .two-col-grid { gap: 24px !important; }
 .pv-lp-band { margin-bottom: 20px; }
-.pv-lp-notice { max-width: 60em; }
+.pv-lp-notice { max-width: none; }
 .pv-run-cta { margin-top: 20px; }
 /* les sorties européennes */
 .pv-exit-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 40px; }
@@ -1047,6 +1047,69 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
 .pv-exit-table td:nth-child(2) { color: var(--muted); }
 @media (max-width: 1080px) { .pv-shift-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .pv-shift-stats { grid-template-columns: minmax(0, 1fr); } }
+
+/* « The same company, sold at the price of real European exits » (06/11) : un tableau
+   lisible. VC en gris, ProFund en nuit, l'avantage en vert ; les licornes surlignées. */
+.pv-xt-head { display: grid; gap: 10px; margin: 48px 0 18px; }
+.pv-xt-head .pv-h3 { margin: 0; }
+.pv-xt-head p { margin: 0; max-width: 60em; font-size: 16px; line-height: 1.6; color: var(--muted); }
+.pv-xt-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 4px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
+.pv-xt-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.pv-xt-legend span::before { content: ""; width: 14px; height: 10px; border-radius: 4px; }
+.pv-xt-legend .vc::before { background: #d3d8de; }
+.pv-xt-legend .pf::before { background: linear-gradient(90deg, #4a6080, #0f1216); }
+.pv-xt-legend .up::before { background: var(--green); }
+.pv-xt { overflow: hidden; border-radius: var(--r-xl); background: #fff; box-shadow: var(--sh-2); }
+.pv-xt-row { display: grid; grid-template-columns: 230px minmax(0, 1.35fr) minmax(0, 1fr) 190px; gap: 28px; align-items: center;
+  padding: 20px 28px; border-bottom: 1px solid var(--line); }
+.pv-xt-row:last-child { border-bottom: 0; }
+.pv-xt-row.head { padding-top: 16px; padding-bottom: 14px; font-size: 11.5px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); background: var(--blue-tint); }
+.pv-xt-row.uni { background: linear-gradient(90deg, rgba(98, 124, 153, .1), rgba(98, 124, 153, 0) 70%); }
+.pv-xt-exit { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: 2px 12px; }
+.pv-xt-exit > b { grid-row: span 2; font-size: 26px; font-weight: 750; letter-spacing: -.03em; color: var(--ink); }
+.pv-xt-exit > span { font-size: 14.5px; font-weight: 700; color: var(--ink); }
+.pv-xt-exit small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+.pv-xt-exit em { grid-column: 2; justify-self: start; margin-top: 4px; padding: 2px 9px; border-radius: 999px; font-style: normal;
+  font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--grad); }
+.pv-xt-bars { display: grid; gap: 8px; }
+.pv-xt-bars > span { display: grid; grid-template-columns: 58px minmax(0, 1fr) 70px; align-items: center; gap: 12px; }
+.pv-xt-bars small { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.pv-xt-bars .vc small { color: var(--soft); }
+.pv-xt-bars .pf small { color: var(--blue-dk); }
+.pv-xt-bars i { display: block; height: 12px; width: var(--w); border-radius: 999px; }
+.pv-xt-bars .vc i { background: #d3d8de; }
+.pv-xt-bars .pf i { background: linear-gradient(90deg, #627c99, #0f1216); box-shadow: 0 6px 14px -8px rgba(15, 18, 22, .7); }
+.pv-xt-bars b { font-size: 15px; font-weight: 750; text-align: right; }
+.pv-xt-bars .vc b { color: var(--soft); }
+.pv-xt-bars .pf b { color: var(--ink); }
+.pv-xt-mult { display: flex; align-items: center; gap: 12px; }
+.pv-xt-mult > span { display: grid; gap: 2px; font-size: 22px; font-weight: 750; letter-spacing: -.02em; line-height: 1.1; }
+.pv-xt-mult small { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.pv-xt-mult .vc { color: var(--soft); }
+.pv-xt-mult .vc small { color: var(--soft); }
+.pv-xt-mult .pf { padding: 8px 14px; border-radius: 14px; background: var(--night); color: #fff; }
+.pv-xt-mult .pf small { color: var(--blue-glow); }
+.pv-xt-mult > svg { width: 18px; height: 18px; flex: none; color: var(--soft); }
+.pv-xt-edge { display: grid; gap: 2px; }
+.pv-xt-edge b { font-size: 30px; font-weight: 750; letter-spacing: -.035em; line-height: 1; color: var(--green); }
+.pv-xt-edge small { font-size: 12.5px; color: var(--muted); }
+.pv-xt-edge .f { margin-top: 6px; font-size: 13px; font-weight: 650; color: var(--ink-2); }
+@media (max-width: 1080px) { .pv-xt-row { grid-template-columns: 190px minmax(0, 1fr) minmax(0, 1fr) 150px; gap: 18px; padding: 18px 20px; } }
+@media (max-width: 900px) {
+  .pv-xt-row.head { display: none; }
+  .pv-xt-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 18px; }
+  .pv-xt-exit, .pv-xt-bars { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .pv-xt-row { padding: 16px; }
+  .pv-xt-exit > b { font-size: 22px; }
+  .pv-xt-mult > span { font-size: 18px; }
+  .pv-xt-mult .pf { padding: 6px 10px; }
+  .pv-xt-mult small { font-size: 9px; letter-spacing: .04em; }
+  .pv-xt-bars > span { grid-template-columns: 50px minmax(0, 1fr) 62px; gap: 8px; }
+  .pv-xt-edge b { font-size: 24px; }
+}
 
 /* /pitch : les slides */
 .pv-slide-n { display: inline-grid; place-items: center; min-width: 32px; height: 22px; margin-right: 12px; padding: 0 7px;

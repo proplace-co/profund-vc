@@ -64,7 +64,7 @@ function TitleSlide() {
         <div className="pv-hero-copy">
           <span className="pv-eyebrow"><b />Pre-marketing phase · EuVECA</span>
           <h1 className="pv-h1 pv-h1-one">ProFund. One round. Then never diluted again.</h1>
-          <p className="pv-lead pv-lead-k">{FUND_SIZE} · EuVECA, Luxembourg · Pre-seed to growth · Europe</p>
+          <p className="pv-lead pv-lead-k">{FUND_SIZE} · EuVECA · Pre-seed to growth · Europe</p>
           <p className="pv-lead">
             We don’t fund headcount. We back tight-knit, AI-native teams building <span className="nw">self-improving</span> systems
             across the world’s largest markets.
@@ -300,7 +300,7 @@ export function TermsTables() {
           <thead><tr><th>Term</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td>Target fund size</td><td>{FUND_SIZE}, first close {eurRange(F.first_close_min, F.first_close_max, 'tile', '–')}</td></tr>
-            <tr><td>Closed-ended EuVECA fund (Lux.)</td><td>{F.term_years} years, successive closings over {F.closing_months} months</td></tr>
+            <tr><td>Closed-ended EuVECA fund</td><td>{F.term_years} years, successive closings over {F.closing_months} months</td></tr>
             <tr><td>Management fee, years 1–{F.investment_period_years}</td><td>{pct(T.fee_ip_pct)} ({pct(T.fee_loan_pct)} on the loan sleeve)</td></tr>
             <tr><td>Then, on invested capital incl. loans until repaid</td><td>{pct(T.fee_post_pct, 1)}</td></tr>
             <tr><td>Carried interest, European</td><td>{pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, with GP catch-up</td></tr>

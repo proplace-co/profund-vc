@@ -67,7 +67,8 @@ qui dépend à la fois de `--border` dans le `:root` du CSS **et** de
 **Le contenu textuel est dans les composants**, en dur. Les pages Legal et
 Privacy sont l'exception : leur texte est dans un tableau en haut du fichier
 (`CLAUSES`, `SECTIONS`), c'est là qu'il faut le modifier. **Le texte de la
-thèse** (Antoine, 31/10 : « Where pure vision directs recursive AI. », manifeste et
+thèse** (Antoine, 31/10 ; le titre « Where pure vision directs recursive AI. » est remplacé le 06/11
+par « Backing AI-native teams building self-improving AI systems. » sur /lp et la fiche ; manifeste et
 sa chute v3 « Capital is no longer scarce. Ownership is. », quatre lois, deux moteurs,
 proof of work) vit dans `Thesis.tsx`, rendu à l'identique par l'accueil et /pitch ;
 la fiche PDF en porte une copie (`factsheet.py`, chute en variante LP « …we lend and
@@ -173,7 +174,12 @@ le process, puis Proplace et Maximum Insurance) ; le Founding Partner ; les term
 performance complets (`TermsTables`, `PerformanceTables` et `Downloads` exportés de
 `ProFundPage.tsx` : un seul texte pour /pitch et /lp) ; l'accès et la mention de
 pré-commercialisation. « Our LPs are mainly high-net-worth individuals and family offices »
-(06/11). **/lp est fermée
+(06/11). **Positionnement (06/11, Antoine)** : on chasse les licornes comme Index Ventures ou
+Sequoia, et les meilleurs fondateurs nous choisissent parce que nos termes sont réellement
+alignés (pas une posture). Plus de « returns built on ownership, not on unicorns » ni de
+« no unicorn needed » en accès LP ; plus de « Luxembourg » dans la copie (site, fiche).
+« Exits » s'intitule « From a trade sale to a unicorn » ; son tableau (`pv-xt`) vend la
+société à six prix réels, de 40 M€ à 7 Md€ (Wolt), licornes surlignées, avantage en vert. **/lp est fermée
 (v3.15)** derrière la MÊME candidature que le deal flow (`DealFlowModal` avec `lp`) : elle
 s'ouvre quand ce navigateur a l'accès retenu par /dealflow (`lib/access.ts`, lien magique
 vérifié une fois ; /dealflow porte un lien « LP page »), ou avec `?gp` dans l'URL (aperçu du
