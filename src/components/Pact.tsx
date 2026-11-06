@@ -11,8 +11,8 @@
 // à la demande du fondateur, aux mêmes termes, SPV pour les plus gros tours).
 // v3.15 (06/11, Antoine) : 12 clauses. Une logique : on rend le contrôle de la gestion,
 // on garde la protection du capital, et ce qui protège ne joue que si le fondateur quitte
-// notre chemin ou se conduit mal. Un siège au conseil (seul « a veto » est barré à
-// l'accueil) ; consentement limité à l'anti-spoliation ; prêts aux conditions d'un prêteur ;
+// notre chemin ou se conduit mal. Un siège au conseil (barré en entier à
+// l'accueil depuis le 06/11) ; consentement limité à l'anti-spoliation ; prêts aux conditions d'un prêteur ;
 // conflits dans les deux sens ; la convention de vote tombe si un tiers mène un tour (droits
 // du nouveau lead, jamais plus), si le fondateur part ou cède le contrôle, et dans les cas
 // de repli ; sortie conjointe, sortie forcée aux mêmes conditions ; vesting et leavers

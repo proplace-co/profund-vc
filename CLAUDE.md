@@ -84,8 +84,8 @@ rachats ; le nombre de clauses se lit dans `N_CLAUSES`, jamais en dur, et `prere
 fait échouer le build si le titre de /terms ne dit pas le même nombre ; **v3.15 (06/11,
 Antoine) : 12 clauses**, une logique : on rend le contrôle de la gestion, on garde la
 protection du capital, et ce qui protège ne joue que si le fondateur quitte notre chemin ou
-se conduit mal. UN siège au conseil (seul « and a veto » est barré dans les règles de
-l'accueil : « One seat. Our shares vote with you. ») ; consentement limité à
+se conduit mal. UN siège au conseil (règles de l'accueil : « Their seats, their votes, their veto », barré en
+entier, devient « One seat. Our shares vote with you. ») ; consentement limité à
 l'anti-spoliation (« No veto on how you run, raise or sell ») ; prêts aux conditions d'un
 prêteur (un impayé suspend la convention de vote) ; conflits dans les deux sens ; la
 convention de vote tombe si un tiers mène un tour (on prend alors les droits du nouveau lead,
@@ -168,10 +168,10 @@ se compare jamais aux autres fonds** : plus de « cheque for cheque with the bes
 aucun fonds nommé ; on propose tout ce que proposent les meilleurs, la table retournée, et on prouve
 l'alignement par ce qu'on signe. **Accueil** : les règles, `TheFew` (« The companies that define this
 era will be built by very few people. »), le capital (« Funded like the leaders. Diluted like no
-one. » : equity, crédit, cap table, « Another lead? Take both. » ; figures, étapes et tickets repliés),
-ce qu'ils gardent (trois vrais chiffres, puis repliés : la part étape par étape, le term sheet, le
-calculateur ; plus de tableau « What you take home » ni de colonne Deliveroo sur l'accueil, il reste
-illustratif sur /pitch et la fiche), les moteurs (étapes repliées), « If this was written for you, you
+one. » : equity, crédit, cap table, « Another lead? Take both. » ; les trois étages visibles, l'ordre du capital replié),
+ce qu'ils gardent (`StakeChart` visible : les deux chemins dits en clair, une ligne droite contre un
+escalier, Deliveroo à part ; term sheet et calculateur repliés ; plus de tableau « What you take home »
+ni de colonne Deliveroo sur l'accueil, il reste illustratif sur /pitch et la fiche), les moteurs (étapes repliées), « If this was written for you, you
 already know. ». **/lp** : plus de plan numéroté (« le plan 1 2 3 4 alourdit »), un seul raisonnement,
 chaque phrase appelle la suivante : « The kingmakers. » (les équipes AI-native, l'éloge, trois chiffres
 sourcés) → « Capital is no longer scarce. Ownership is. » (ils ont le choix ; 11,4 %, 6,3 %, sous les
@@ -214,7 +214,8 @@ même préférence 1× que notre premier chèque (clause 2 ; champ du calculateu
 parcours fondateur s'arrête au calculateur (« Send these numbers to the partner », un
 mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
 /lp a été retiré le 06/11 (`LeadForm.tsx` reste, inutilisé ; il n'avait PAS de backend, il
-ouvrait un email pré-rempli). Sur l'accueil : « Another lead? Take both. » (on investit aux termes du lead, sans nommer de fonds). Au-delà
+ouvrait un email pré-rempli). Sur l'accueil : « Another lead? Take both. » (on investit aux termes du lead, sans nommer de fonds ;
+ON DEVIENT ALORS UN CO-INVESTISSEUR CLASSIQUE, clause 9 : ne jamais y promettre prêts, rachats, moteurs ni vote avec le fondateur). Au-delà
 de la dette, la copie dit qu'on apporte de l'equity aux mêmes conditions, avec des SPV
 (« Your call », pour rester cohérent avec « never create a new share »).
 

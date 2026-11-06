@@ -71,14 +71,12 @@ export function Numbers({ items, four = false }: { items: { b: string; t: ReactN
 
 // ── Les règles : ce que le VC prenait, ce que le pacte rend ──────────────────
 // Chaque ligne nouvelle est une clause du pacte (/terms) : ne rien promettre de plus.
-// `keep` : le début de la ligne, NON barré (v3.15, 06/11 : on garde un siège au conseil,
-// seul « and a veto » est barré).
-const RULES: { keep?: string; old: string; now: string }[] = [
+const RULES: { old: string; now: string }[] = [
   // 06/11 (Antoine) : plus de « One round. Then never again. », ni de comparaison aux
   // autres fonds : on propose tout, la table retournée.
   { old: 'Big cheques, on their terms', now: 'Big cheques. Your terms.' },
   { old: 'A slice of your company at every round', now: 'You dilute only when you choose.' },
-  { keep: 'A board seat', old: 'and a veto', now: 'One seat. Our shares vote with you.' },
+  { old: 'Their seats, their votes, their veto', now: 'One seat. Our shares vote with you.' },
   // (v3.10 : la ligne « No new preference on top of you » est retirée : l'equity
   // complémentaire, au choix du fondateur, porte une préférence 1×.)
   { old: 'Their exit, on their timing', now: 'Your exit. No veto. Ever.' },
@@ -115,7 +113,7 @@ export function TheRules({ hero = false, pactOpen = false, onPact, onRun }: {
         <ol className="pv-rules-list">
           {RULES.map((r, i) => (
             <li key={r.old} className="pv-rule" style={{ ['--d' as string]: `${0.15 + i * 0.18}s` }}>
-              <span className="old">{r.keep && <em>{r.keep} </em>}<span>{r.old}</span></span>
+              <span className="old"><span>{r.old}</span></span>
               <span className="arrow" aria-hidden="true"><Icon name="arrow" /></span>
               <span className="now">{r.now}</span>
             </li>
@@ -158,12 +156,13 @@ export function TheFew() {
 
 // ── Le capital (v3.9 ; 06/11 (6) : l'essentiel visible, tickets et étapes repliés) ──
 // Tout ce que proposent les meilleurs, sans le dire : aucun « cheque for cheque », aucun
-// nom de fonds. Chaque ligne reste une clause du pacte.
+// nom de fonds. Chaque ligne reste une clause du pacte. Si un autre fonds mène, on devient un
+// co-investisseur classique (clause 9) : ne jamais y promettre prêts, rachats ni moteurs.
 const CAPITAL: { t: string; d: string }[] = [
   { t: 'Equity, when you choose.', d: 'From your first round to your largest, with SPVs and co-investors alongside the fund for the biggest.' },
   { t: 'Credit, before equity.', d: 'A loan line reserved from day one, with our fund and partner lenders. Your revenue can carry what equity used to pay for.' },
   { t: 'A cap table that gets cleaner.', d: 'We buy out angels and early funds, only with your agreement. Their votes move to your side.' },
-  { t: 'Another lead? Take both.', d: 'When another fund leads your round, we invest alongside on its terms. The loan line, the buybacks and the engines come on top.' },
+  { t: 'Another lead? Take both.', d: 'When another fund leads your round, we invest alongside, on its terms.' },
 ];
 
 export function CapitalStack() {
@@ -187,12 +186,13 @@ export function CapitalStack() {
   ];
   return (
     <Say id="capital" tone="tint" title="Funded like the leaders. Diluted like no one."
-      lead={<p className="pv-say-p">From your first cheque to your largest round. You decide what you take, and when.</p>}>
+      lead={<p className="pv-say-p pv-say-one">From your first cheque to your largest round. You decide what you take, and when.</p>}>
       <ul className="pv-ruled">
         {CAPITAL.map((c) => <li key={c.t}><h3>{c.t}</h3><p>{c.d}</p></li>)}
       </ul>
+      <div className="pv-say-stages"><StagesGrid /></div>
       <div className="pv-say-folds">
-        <Fold id="capital-detail" title="Stages, tickets, structures" sub="What we write at each stage, and in what order the capital comes">
+        <Fold id="capital-detail" title="The order of capital" sub="Your growth, the loan line, equity, mega rounds: the cheapest source first">
           <div className="pv-figs">
             {figs.map((x) => <div key={x.s}><b>{x.b}</b><span>{x.s}</span></div>)}
           </div>
@@ -209,7 +209,6 @@ export function CapitalStack() {
               </li>
             ))}
           </ol>
-          <StagesGrid />
         </Fold>
       </div>
     </Say>
@@ -270,54 +269,99 @@ export function HowWeBack() {
 /** La note sous le tableau : chaque montant lu dans fund.json. */
 // v3.15 : le chemin VC est calé sur les parts médianes de Carta par étape (fund_model.py).
 const AFTER = (id: string) => pct(FM.vc_stakes.find((s) => s.round === id)!.founders, 1);
-export function founderNote() {
-  return `Typical path, calibrated on Carta medians (not specific to Europe): ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr.`;
+export function founderNote(sources = true) {
+  return `Typical path, calibrated on Carta medians (not specific to Europe): ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast.${sources ? ' Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr.' : ''}`;
 }
 
-/** La part des fondateurs, étape après étape (v3.15, 06/11) : toutes les étapes du chemin
- *  VC, levées intermédiaires comprises (elle fond) ; le chemin ProFund est une ligne (elle
- *  ne bouge pas) ; la dernière colonne est un cas réel, sourcé dans RealDilution : le
- *  fondateur de Deliveroo à l'IPO, après des tours jusqu'à la série H. */
-// Le cas réel : la part de Will Shu dans Deliveroo à l'IPO de 2021 (sources dans RealDilution).
+/** La part des fondateurs, étape après étape (06/11, 7e passe : visible sur l'accueil).
+ *  Deux chemins, dits en clair au-dessus du tracé : ProFund, une ligne droite ; VC, un escalier
+ *  (levées intermédiaires comprises, calé sur les parts Carta par étape). Ce que l'écart coûte
+ *  se lit dans la zone teintée. La colonne à part est un cas réel, sourcé sous le graphique :
+ *  le fondateur de Deliveroo à l'IPO, jamais mêlé au calcul. */
+// Le cas réel : la part de Will Shu dans Deliveroo à l'IPO de 2021 (prospectus, relu le 06/11).
 const REAL_IPO = 0.063;
 
 export function StakeChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
-  const cols: { label: string; v: number; kind: 'now' | 'bridge' | 'round' | 'real' }[] = [
-    { label: 'Today', v: FM.founders, kind: 'now' },
-    ...FM.vc_stakes.map((s) => ({ label: s.bridge ? 'Bridge' : s.label, v: s.founders, kind: s.bridge ? 'bridge' as const : 'round' as const })),
-    { label: 'Deliveroo, at IPO', v: REAL_IPO, kind: 'real' },
+  const start = FM.founders;
+  const stages = [
+    { label: 'Today', v: start, bridge: false },
+    ...FM.vc_stakes.map((s) => ({ label: s.bridge ? 'Bridge' : s.label, v: s.founders, bridge: s.bridge })),
   ];
-  const h = (v: number) => `${(v / FM.founders) * 100}%`;
+  const end = stages[stages.length - 1].v;
+  const n = stages.length;
+  const x = (i: number) => ((i + 0.5) / n) * 100;
+  const y = (v: number) => 100 - (v / start) * 88;   // 12 % de marge en haut, pour l'étiquette
+  // L'escalier du chemin VC, d'un bord à l'autre du tracé.
+  const pts = stages.flatMap((s, i) => (i === 0 ? [[0, y(s.v)]] : [[x(i), y(stages[i - 1].v)], [x(i), y(s.v)]]));
+  pts.push([100, y(end)]);
+  const line = pts.map((p) => p.join(',')).join(' ');
+  const top = y(start);
   return (
-    <div ref={ref} className={`pv-card pv-stake${seen ? ' in' : ''}`}>
-      <div className="pv-stake-top">
-        <h3 className="pv-h3">Your stake, round after round</h3>
-        <div className="pv-legend">
-          <span className="pf">ProFund path</span>
-          <span className="vc">VC path, Carta medians</span>
-          <span className="lost">Taken by the VC rounds</span>
-          <span className="real">A real case</span>
+    <div ref={ref} className={`pv-card pv-path${seen ? ' in' : ''}`}>
+      <h3 className="pv-h3">Your stake, round after round</h3>
+      <div className="pv-paths">
+        <div className="pf">
+          <p className="k"><i aria-hidden="true" />ProFund path</p>
+          <p className="v"><b>{pct(start, 1)}</b> at exit</p>
+          <p>Credit carries your growth. No new shares unless you choose, and your option pool refills with bought-back shares.</p>
+        </div>
+        <div className="vc">
+          <p className="k"><i aria-hidden="true" />VC path, on Carta’s medians</p>
+          <p className="v"><b>{pct(end, 1)}</b> after the Series D</p>
+          <p>Equity pays for your growth. Every round and every bridge issues new shares, and the option pool is topped up along the way.</p>
         </div>
       </div>
-      <div className="pv-stake-plot">
-        <div className="pv-stake-pf" aria-hidden="true">
-          <span>ProFund path: {pct(FM.founders, 1)}<em>, from today to exit</em></span>
-        </div>
-        {/* la colonne du cas réel est plus large : son nom tient sur mobile */}
-        <div className="pv-stake-grid" style={{ gridTemplateColumns: `repeat(${cols.length - 1}, minmax(0, 1fr)) minmax(0, 1.6fr)` }}>
-          {cols.map((c, i) => (
-            <div key={`${c.label}${i}`} className={`pv-stake-col ${c.kind}`} style={{ ['--d' as string]: `${i * 0.1}s` }}>
-              <div className="pv-stake-bars">
-                {/* 06/11 : ce que le chemin VC a pris, de la barre jusqu'à la ligne ProFund */}
-                {c.kind !== 'now' && <s style={{ ['--h' as string]: h(c.v) }} aria-hidden="true" />}
-                <i style={{ ['--h' as string]: h(c.v) }}><b>{pct(c.v, 1)}</b></i>
-              </div>
-              <span className="pv-stake-l">{c.label}</span>
+      <div className="pv-path-wrap" aria-hidden="true">
+        <div className="pv-path-main">
+          <div className="pv-path-plot">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+              <polygon className="keep" points={`${line} 100,100 0,100`} />
+              <polygon className="gap" points={`0,${top} 100,${top} ${[...pts].reverse().map((p) => p.join(',')).join(' ')}`} />
+              <polyline className="vc" points={line} vectorEffect="non-scaling-stroke" />
+              <line className="pf" x1="0" y1={top} x2="100" y2={top} vectorEffect="non-scaling-stroke" />
+            </svg>
+            <span className="pv-path-pf" style={{ bottom: `${100 - top}%` }}>ProFund path: {pct(start, 1)}<em>, from today to exit</em></span>
+            <span className="pv-path-gap" style={{ top: `${top}%` }}>Taken by the VC rounds</span>
+            <span className="pv-path-keep">What you keep on the VC path</span>
+            {stages.map((s, i) => (
+              <span key={`${s.label}${i}`} className={`pv-path-pt${s.bridge ? ' bridge' : ''}`} style={{ left: `${x(i)}%`, top: `${y(s.v)}%` }}>
+                <i /><b>{pct(s.v, 1)}</b>
+              </span>
+            ))}
+            {/* au survol d'une étape : les deux chemins, côte à côte */}
+            <div className="pv-path-hits" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+              {stages.map((s, i) => (
+                <div key={`${s.label}${i}`} className={i < n / 2 ? 'l' : 'r'}>
+                  <span className="pv-path-tip">
+                    <b>{s.label}</b>
+                    <span><i className="pf" />ProFund path<b>{pct(start, 1)}</b></span>
+                    <span><i className="vc" />VC path<b>{pct(s.v, 1)}</b></span>
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+          <div className="pv-path-x" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+            {stages.map((s, i) => <span key={`${s.label}${i}`} className={s.bridge ? 'bridge' : undefined}>{s.label}</span>)}
+          </div>
+        </div>
+        <div className="pv-path-real">
+          <div className="pv-path-plot">
+            <i style={{ height: `${(REAL_IPO / start) * 88}%` }}><b>{pct(REAL_IPO, 1)}</b></i>
+          </div>
+          <span>Deliveroo’s founder, at IPO</span>
         </div>
       </div>
+      {/* le même contenu, pour un lecteur d'écran */}
+      <table className="pv-vh">
+        <caption>Founders’ stake at each stage, on the VC path and on the ProFund path</caption>
+        <thead><tr><th>Stage</th><th>VC path</th><th>ProFund path</th></tr></thead>
+        <tbody>
+          {stages.map((s, i) => <tr key={`${s.label}${i}`}><td>{s.label}</td><td>{pct(s.v, 1)}</td><td>{pct(start, 1)}</td></tr>)}
+          <tr><td>Deliveroo’s founder, at IPO (a real case)</td><td>{pct(REAL_IPO, 1)}</td><td>–</td></tr>
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -365,7 +409,7 @@ export function FounderTable({ investor = false }: { investor?: boolean }) {
   );
 }
 
-// ── Les chiffres (06/11 (6)) : trois vrais chiffres, le reste replié ─────────
+// ── Les chiffres (06/11 (7)) : le graphique visible, le term sheet et le calculateur repliés ──
 // Un cas public et les médianes Carta : ne pas les modifier sans relire les sources
 // (prospectus de Deliveroo du 22/03/2021, relu le 06/11 ; Carta, Founder Ownership Report
 // 2026 ; la D, 11,4 % : donnée Carta citée par SaaStr, relue le 06/11).
@@ -376,21 +420,14 @@ export function TheMath({ calcOpen = false, onCalc, onPact }: { calcOpen?: boole
   return (
     <Say id="math" title="The capital you don’t raise is the company you keep."
       lead={<p className="pv-say-p">Most founding teams end up with a fraction of what they built. On our path, your stake today is your stake at exit. When credit cannot carry your growth, we bring the equity on the same terms.</p>}>
-      <Numbers items={[
-        { b: '37.5%', t: 'The median founding team, after a Series A' },
-        { b: '11.4%', t: 'The median founding team, after a Series D' },
-        { b: '6.3%', t: 'Deliveroo’s founder at its IPO, after about £1.3bn raised' },
-      ]} />
+      <StakeChart />
+      <p className="pv-fine">{founderNote(false)}</p>
       <p className="pv-fine pv-three-src">
         Fully diluted, not specific to Europe: {A_('https://carta.com/data/founder-ownership-2026/', 'Carta, Founder Ownership Report 2026')}; Series D, Carta data
         reported by {A_('https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/', 'SaaStr')}. Deliveroo: {A_('https://lexismarkettracker.lexisnexis.com/documents/0035/35079/167313/MT_Deliveroo%20plc_prospectus_22%20March%202021.pdf', 'IPO prospectus, 22 March 2021')} (6.3% of the
-        share capital, at the mid-point of the price range; he kept control through 20-vote shares, for three years).
+        share capital, at the mid-point of the price range, after about £1.3bn raised; he kept control through 20-vote shares, for three years).
       </p>
       <div className="pv-say-folds">
-        <Fold id="stake" title="What the usual path takes" sub="Every step, bridges included, on Carta’s medians">
-          <StakeChart />
-          <p className="pv-fine">{founderNote()}</p>
-        </Fold>
         <Fold id="term-sheet" title="The term sheet, rewritten" sub="What a classic term sheet takes, what our pact gives back">
           <TermSheetGrid onPact={onPact} />
         </Fold>
@@ -496,7 +533,7 @@ export function EveryStage({ tint = false, kicker = true }: { tint?: boolean; ki
         {/* 06/11 : avec un fonds de premier plan en lead, on suit ses termes (pratique usuelle d'un co-investisseur) */}
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="handshake" /></span>
-          <p><b>Raising from a top-tier fund? Take both.</b> When another fund leads your round, we invest alongside on its terms, not ours, and the loan line, the buybacks and the engines come on top.</p>
+          <p><b>Raising from a top-tier fund? Take both.</b> When another fund leads your round, we invest alongside, on its terms.</p>
         </div>
       </div>
     </section>
