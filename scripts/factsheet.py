@@ -416,10 +416,9 @@ LAWS = (
 )
 
 PACT = (
-    ("One round.", "We invest once in new shares, then never create a new share while the founder "
-                   "grows with us."),
-    ("A reserved loan line.", "Hiring, go-to-market, working capital, acquisitions, drawn in tranches. "
-                              "No more fundraising. Need more? Equity on the same terms, with SPVs."),
+    ("Equity, when the founder chooses.", "Cheque for cheque with the best funds; never a pushed round."),
+    ("Follow-on capital, reserved.", "Loans first, then equity on the same terms when the founder asks, "
+                                     "SPVs for the largest rounds."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
                                     "agreement, and the company cancels shares every year. Founder and "
                                     "fund own more at every stage."),
@@ -533,7 +532,7 @@ def page_one(F):
         (FUND_SIZE, f"Target Fund I, closed-ended, closings over {FUND['closing_months']} months"),
         (f"{len(LAYER_IDS)} layers", f"Seed, Venture, Growth: {eur(LAYERS['seed']['ticket_min'])} to "
                                      f"{eur(FUND['company_cap'], 'tile')} per company"),
-        ("1 round", "Equity round per company, then loans and buybacks. 1 board seat"),
+        (pct(DATA["allocation"]["after_first_pct"]), "Invested after the first cheque: follow-ons, buybacks, loans"),
         ("Every", "European seed round tracked by the Seed Radar, weekly"),
         ("6–18mo", "Detection lead before announcement"),
     ]

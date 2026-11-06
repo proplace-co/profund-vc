@@ -438,7 +438,7 @@ function LpContent() {
               <p className="pv-coinv-lead">Exceptional founders have every option. We compete with Index Ventures, Balderton or Sequoia for the same rounds, and we win them on terms.</p>
             </div>
             <ul>
-              <li><Icon name="target" /><span><b>Cheque for cheque, in the rounds that matter.</b> Seed, pre-Series A, Series A, Series B: the fund writes up to {eur(F.company_cap, 'tile')} per company, and SPVs alongside take us to the size of the round.</span></li>
+              <li><Icon name="target" /><span><b>Cheque for cheque, in the rounds that matter.</b> Seed, pre-Series A, Series A, Series B: the fund writes up to {eur(F.company_cap, 'tile')} per company, and SPVs alongside take us to the size of the round. {pct(fund.allocation.after_first_pct)} of the capital we invest goes in after the first cheque: follow-ons, buybacks and loans, in the form the founder chooses.</span></li>
               <li><Icon name="trend" /><span><b>Mega rounds, without giving up the upside.</b> When a company needs far more to stay ahead of over-capitalised rivals, we raise SPVs with our LPs alongside the fund: the round is financed, the upside stays with our LPs, and the founder keeps our terms.</span></li>
               <li><Icon name="handshake" /><span><b>When a top-tier fund leads, we follow its terms.</b> A co-investor does not renegotiate the lead’s term sheet: we invest alongside, on the same terms. Our pact applies where we lead.</span></li>
               <li><Icon name="shield" /><span><b>We win on terms, not on posture.</b> Written into a public pact: the founder’s votes, no veto on how they run, raise or sell, their exit. Then the loan line, the buybacks and the two engines on top.</span></li>

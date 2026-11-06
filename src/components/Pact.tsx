@@ -5,6 +5,10 @@
 // porte un résumé. Le modèle (scripts/fund_model.py) suit ces clauses : prêts (2, 3),
 // rachats (4), recharge du pool par des titres rachetés (5), suivi en actions nouvelles
 // quand le fondateur lève ailleurs (9). Le nombre se lit dans N_CLAUSES, jamais en dur.
+// 06/11 (2) : clauses 1 et 2 réécrites, « Equity, only when you choose » et « Follow-on
+// capital, reserved for you » : plus de « We invest once », qui laissait croire qu'on ne
+// suivrait pas ; le fond ne change pas (pas de tour poussé par nous, l'equity complémentaire
+// à la demande du fondateur, aux mêmes termes, SPV pour les plus gros tours).
 // v3.15 (06/11, Antoine) : 12 clauses. Une logique : on rend le contrôle de la gestion,
 // on garde la protection du capital, et ce qui protège ne joue que si le fondateur quitte
 // notre chemin ou se conduit mal. Un siège au conseil (seul « a veto » est barré à
@@ -16,8 +20,8 @@
 // fait un bad leaver, les titres acquis restent au fondateur). La phrase sur la politique
 // de conflits du FONDS (comité consultatif des LPs) reste côté LPs (/lp, fiche p. 2).
 export const CLAUSES: { t: string; d: string }[] = [
-  { t: 'One equity round.', d: 'We invest once, in preferred shares with a 1× non-participating preference. Nothing more: no participation, no ratchet, no cumulative dividend. After that, we never create a new share while you grow with us, unless you ask for more equity.' },
-  { t: 'A reserved loan line, then equity if you need it.', d: 'Reserved from day one with our fund and partner lenders, drawn in tranches when you need it: hiring, go-to-market, working capital, acquisitions. If debt is not enough, or lenders cannot take the full line, we go and get the equity: we lead it ourselves, on these same terms (with the same 1× preference as our first cheque), with SPVs and co-investors alongside the fund. Every option stays open. It is always your call.' },
+  { t: 'Equity, only when you choose.', d: 'We invest in preferred shares with a 1× non-participating preference, cheque for cheque with the best funds. Nothing more: no participation, no ratchet, no cumulative dividend. After that, we never push for a new round: every follow-on, ours or anyone else’s, is your call.' },
+  { t: 'Follow-on capital, reserved for you.', d: 'From day one, we reserve what comes next. A loan line with our fund and partner lenders, drawn in tranches when you need it: hiring, go-to-market, working capital, acquisitions. And equity whenever you ask: we lead it ourselves, on these same terms (with the same 1× preference as our first cheque), with SPVs and co-investors alongside the fund for the largest rounds. Every option stays open. It is always your call.' },
   { t: 'Loans, on lender terms.', d: 'Our loans carry what any venture lender asks: monthly figures, no new senior debt without our consent, repayment if control of the company changes. If a payment is missed, the voting agreement is suspended until it is made.' },
   { t: 'Buybacks, only with you.', d: 'We buy shares from your angels, leavers and early funds, never without your agreement. Their votes move to your side. Every buyback is priced by an independent valuer.' },
   { t: 'Annual buyback.', d: 'Each year, the company can buy back shares. It cancels them, which lifts your stake, or uses them to refill your option pool, without creating new shares.' },

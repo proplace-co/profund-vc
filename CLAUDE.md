@@ -94,6 +94,11 @@ jamais plus), si le fondateur part ou cède le contrôle, et dans les cas de rep
 sortie conjointe, sortie forcée aux mêmes conditions, prêts remboursés à la cession ; 1×
 non participante sans ratchet ; vesting 4 ans et leavers (standard BVCA, esprit « be generous
 to leavers » d'Index : seul un départ fautif fait un bad leaver, les titres acquis restent).
+Clauses 1 et 2 réécrites le 06/11 (2) : « Equity, only when you choose. » (plus de « We invest
+once », on ne pousse jamais de tour) et « Follow-on capital, reserved for you. » (prêts, puis
+equity aux mêmes termes dès que le fondateur la demande, SPV pour les plus gros tours) ; la
+réserve se lit dans `allocation.after_first_pct` (46 % de l'investi après le premier chèque :
+suivis, rachats, prêts), dite sur /lp et dans le bandeau de la fiche p. 1.
 « The term sheet, rewritten » (`TermSheet`, accueil) compare un term sheet VC classique au
 pacte, ligne à ligne : chaque ligne ProFund doit rester une clause. Aussi en v3.15 : la phrase
 sur les conflits, « our shares don't vote… LP advisory committee », quitte le pacte des

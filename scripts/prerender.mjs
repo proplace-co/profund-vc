@@ -82,7 +82,7 @@ const ROUTES = [
     path: 'terms',
     // v3.15 : 12 clauses (N_CLAUSES dans src/components/Pact.tsx : les changer ensemble)
     title: 'The founders’ pact · 12 clauses | ProFund',
-    desc: 'One equity round, a reserved loan line, buybacks only with you, your votes, one board seat and no veto on how you run, raise or sell, your exit. The 12 clauses ProFund signs with every company it backs.',
+    desc: 'Equity only when you choose, follow-on capital reserved for you, buybacks only with you, your votes, one board seat and no veto on how you run, raise or sell, your exit. The 12 clauses ProFund signs with every company it backs.',
   },
   {
     path: 'calculator',

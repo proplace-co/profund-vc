@@ -168,8 +168,8 @@ export function CapitalStack() {
 
 // ── How we back them ─────────────────────────────────────────────────────────
 const BLOCKS: { icon: IconName; t: string; d: string }[] = [
-  { icon: 'target', t: 'One round. That’s it.',
-    d: 'We invest once in new shares. After that, we never create a new share while you grow with us.' },
+  { icon: 'target', t: 'Equity, when you choose.',
+    d: 'Cheque for cheque with the best funds, in new shares. After that, we never push for a new round.' },
   { icon: 'banknote', t: 'No more fundraising.',
     d: 'A reserved loan line covers what comes next: hiring, go-to-market, working capital, acquisitions.' },
   // 05/11 : « Every cancellation lifts your stake » (la copie disait « buyback ») :
