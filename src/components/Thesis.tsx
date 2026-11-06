@@ -62,18 +62,18 @@ export function SiteHeader({ links, children }: { links: { href: string; label: 
   );
 }
 
-// Le visuel du héros : deux vraies captures du deal flow ProFund, la carte et ses
-// encadrés dans une fenêtre, le pipeline posé devant. Captures 3x de la vue LP
-// (profund.vc/dealflow), 30/10 : jamais de rotation CSS, elle rend le texte flou.
+// Le visuel du héros : une vraie capture du deal flow ProFund, la carte et ses encadrés
+// dans une fenêtre. Capture 3x de la vue LP (profund.vc/dealflow), 30/10 : jamais de
+// rotation CSS, elle rend le texte flou. 06/11 : la capture du pipeline posée devant est
+// retirée du site (elle surchargeait) ; la fiche p. 1 garde les deux.
 export function HeroVisual() {
   return (
-    <div className="pv-visual" aria-hidden="true">
+    <div className="pv-visual solo" aria-hidden="true">
       <div className="pv-shot">
         <div className="pv-shot-bar"><i /><i /><i /><span className="pv-shot-url">profund.vc/dealflow</span></div>
         <img src="/dealflow-map.jpg" alt="" width={2000} height={1212} />
         <span className="pv-live pv-shot-live"><span className="pv-dot" />Live deal flow</span>
       </div>
-      <div className="pv-snap pv-snap-pipe"><img src="/dealflow-pipeline.jpg" alt="" width={1500} height={937} /></div>
     </div>
   );
 }

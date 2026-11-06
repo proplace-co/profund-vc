@@ -100,10 +100,10 @@ the loan book (to be recruited) » (le poste n'est pas pourvu). **Ton de la copi
 « — » dans les textes visibles (accueil, /pitch, fiche, meta ; virgule, deux-points
 ou parenthèses à la place ; cellules vides des tableaux : « – »), et titres en
 casse de phrase, pas en Title Case (« Self-improving systems »). /legal et
-/privacy n'ont pas été retouchés (texte juridique). Le visuel du héros (site et
-fiche p. 1) : deux captures du deal flow (`public/dealflow-map.jpg` et
-`-pipeline.jpg`), prises en 3x sur la vue LP marque blanche et affichées SANS
-rotation CSS (une rotation rend le texte des captures flou).
+/privacy n'ont pas été retouchés (texte juridique). Le visuel du héros : sur le site (/lp,
+/pitch), une seule capture du deal flow, la carte (`public/dealflow-map.jpg`), depuis le
+06/11 ; la fiche p. 1 garde aussi `-pipeline.jpg`. Captures prises en 3x sur la vue LP
+marque blanche et affichées SANS rotation CSS (une rotation rend le texte flou).
 
 **Le style reprend la grammaire de Maximum Insurance V5** (maximum-insurance.com,
 `landing_v5.py` du dépôt Maximum) dans les couleurs ProFund (30/10, Antoine) :
@@ -153,14 +153,27 @@ déplient DANS l'accueil (`Drawer.tsx`) : le pacte sous les règles du héros (�
 bouton du héros et le bandeau final ouvrent le panneau et y défilent ; `/#pact` et
 `/#calculator` aussi (liens du pied de page). /terms et /calculator restent en ligne.
 Plus de Founding Partner ni de mention de pré-commercialisation sur l'accueil (le
-partner reste sur /lp). L'exigence ne se dit pas, elle se lit. **La thèse et la vision sont sur /lp, écrites pour les LPs** (v3.10, rien qui s'adresse
-aux fondateurs) : le héros « Where pure vision directs recursive AI. » et la capture du
-deal flow, le manifeste (chute LP), « The shift » (pourquoi le marché impose ce modèle),
-les lois, « The model » (un tour, rachats avec décote, prêts, annulations ; les trois
-étages), le tableau fondateurs côté investisseur, « Everyone wins », « Protection »
-(préférence 1×, prêts avant les fonds propres, valorisation indépendante, conflits,
-fallback), moteurs, proof of work, Founding Partner, demande d'accès et deal flow live ; « Our
-LPs are mainly high-net-worth individuals and family offices » (06/11). **/lp est fermée
+partner reste sur /lp). L'exigence ne se dit pas, elle se lit. **/lp est écrite pour un LP exigeant** (réécrite le 06/11 : il doit tout trouver dès la
+première visite ; rien qui s'adresse aux fondateurs). Pas de barre du haut ni de menu, pas
+de formulaire, pas de « Request LP access » : le seul bouton est « Follow our deal flow
+live » (direct vers /dealflow si ce navigateur a l'accès, sinon le popup de candidature),
+plus la fiche. Dans l'ordre : le héros et la capture du deal flow ; « Fund I at a glance »
+(TRI, TVPI, DPI 7 ans, plus grosse sortie, termes clés dont frais, carry et engagement du
+GP, les trois documents) ; le manifeste (chute LP) ; « The shift » en six chiffres sourcés
+(Lovable, Stripe, Bessemer) ; les lois ; « The model », avec « Competing for the best
+rounds » (on apporte aussi de l'equity ; quand un fonds de premier plan mène, on suit ses
+termes, comme tout co-investisseur, et le pacte ne s'applique que là où on mène ; Index
+Ventures et Balderton cités comme référence, jamais comme partenaires) ; « Exits » (le
+marché européen réel, PitchBook et Atomico ; la société du tableau vendue à la taille de
+vraies cessions européennes, calculée par `founderMath.js` ; notre equity revient à 1× dès
+60 M€, la série A VC à 250 M€ ; en dessous de 60 M€ personne ne gagne : ne jamais écrire
+« ça marche à tous les coups » ; 15 cessions réelles par taille, valeurs telles que
+publiées, sources en note) ; « Protection » ; les moteurs version LP (`FounderEngines lp` :
+le process, puis Proplace et Maximum Insurance) ; le Founding Partner ; les termes et la
+performance complets (`TermsTables`, `PerformanceTables` et `Downloads` exportés de
+`ProFundPage.tsx` : un seul texte pour /pitch et /lp) ; l'accès et la mention de
+pré-commercialisation. « Our LPs are mainly high-net-worth individuals and family offices »
+(06/11). **/lp est fermée
 (v3.15)** derrière la MÊME candidature que le deal flow (`DealFlowModal` avec `lp`) : elle
 s'ouvre quand ce navigateur a l'accès retenu par /dealflow (`lib/access.ts`, lien magique
 vérifié une fois ; /dealflow porte un lien « LP page »), ou avec `?gp` dans l'URL (aperçu du
@@ -172,7 +185,9 @@ qu'un lien « LPs » en pied de page ; le popup du deal flow reste monté pour
 même préférence 1× que notre premier chèque (clause 2 ; champ du calculateur). Plus de formulaire « Reserve your round » ni de page /sell : le
 parcours fondateur s'arrête au calculateur (« Send these numbers to the partner », un
 mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
-/lp (`LeadForm.tsx`) n'a PAS de backend : il ouvre un email pré-rempli (mailto). Au-delà
+/lp a été retiré le 06/11 (`LeadForm.tsx` reste, inutilisé ; il n'avait PAS de backend, il
+ouvrait un email pré-rempli). Sur l'accueil, sous les étapes : « Raising from a top-tier
+fund? Take both. » (on investit aux termes du lead, sans nommer de fonds côté fondateurs). Au-delà
 de la dette, la copie dit qu'on apporte de l'equity aux mêmes conditions, avec des SPV
 (« Your call », pour rester cohérent avec « never create a new share »).
 
@@ -227,7 +242,8 @@ remplace la règle « un seul montant » du 30/08) : l'accueil et les pages fond
 dans `fund.json` : la taille du fonds (héros, loi 04), les tickets des étages (Every
 stage, sans les SPV : ils sont hors du fonds, documents LP seulement) et le tableau fondateurs, illustratif (`founder_math`). Frais, carry,
 construction détaillée et rendements cibles vivent **uniquement** derrière /lp :
-fiche PDF, modèle Excel, /pitch. La règle couvre aussi le shell `index.html` (meta
+/lp elle-même (fermée aux candidats acceptés depuis le 06/11), fiche PDF, modèle Excel,
+/pitch. La règle couvre aussi le shell `index.html` (meta
 description et `<noscript>`), servi sur TOUTES les routes et sur `404.html` :
 `prerender.mjs` fait échouer le build s'il y trouve un montant. Exception : les
 fourchettes de souscription des LPs de `DealFlowModal.tsx` (contrat avec

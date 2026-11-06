@@ -247,7 +247,7 @@ function StakeChart() {
         <div className="pv-legend">
           <span className="pf">ProFund path</span>
           <span className="vc">VC path, Carta medians</span>
-          <span className="lost">Lost to dilution</span>
+          <span className="lost">Taken by the VC rounds</span>
           <span className="real">A real case</span>
         </div>
       </div>
@@ -498,6 +498,11 @@ export function EveryStage({ tint = false, kicker = true }: { tint?: boolean; ki
             </div>
           ))}
         </div>
+        {/* 06/11 : avec un fonds de premier plan en lead, on suit ses termes (pratique usuelle d'un co-investisseur) */}
+        <div className="pv-callout pv-pact-row">
+          <span className="pv-tick soft"><Icon name="handshake" /></span>
+          <p><b>Raising from a top-tier fund? Take both.</b> When another fund leads your round, we invest alongside on its terms, not ours, and the loan line, the buybacks and the engines come on top.</p>
+        </div>
       </div>
     </section>
   );
@@ -597,16 +602,64 @@ const RUN = [
     d: 'Travel insurance and duty of care for companies and their teams abroad.' },
 ];
 
-export function FounderEngines() {
+// Les mêmes moteurs, vus des LPs (06/11) : le fonds s'en sert pour trouver ses sociétés,
+// puis les branche dans chacune. Le process, pas le slogan.
+const ENGINES_LP: typeof ENGINES = [
+  { icon: 'radar', name: 'The External AI Growth Engine',
+    d: 'Our sourcing, and each company’s corporate development.',
+    steps: [
+      { k: 'For the fund', d: 'Every European seed round, scored each week against our four laws; inflection points flagged before they become consensus. It feeds the live deal flow our LPs follow.' },
+      { k: 'For each company', d: 'With the founder, we set up the company’s investment thesis. Every day, the engine scans the web, then sources, assesses and qualifies the startups with the strongest synergies.' },
+    ] },
+  { icon: 'bot', name: 'The Internal AI Growth Engine',
+    d: 'Each company’s content, inbound and outbound, prepared every day and approved by the founder.',
+    steps: [
+      { k: 'Set up', d: 'With the founder, we set up the company’s ideal customer profiles.' },
+      { k: 'Inbound', d: 'A daily editorial feed of LinkedIn and X posts in the company’s voice, written for those customers. The founder approves or declines each one.' },
+      { k: 'Outbound', d: 'A daily feed of intent-based leads with personalised sequences, sent from the founder’s LinkedIn account and our cold email infrastructure once approved.' },
+    ] },
+];
+
+/** La preuve : les sociétés que les deux moteurs font tourner aujourd'hui (accueil et /lp). */
+function EnginesRunning() {
+  return (
+    <div className="pv-run">
+      <div className="pv-run-head">
+        <p className="pv-kick">Running today</p>
+        <p>Their corporate development, inbound and outbound are run entirely by these two engines.</p>
+      </div>
+      <div className="pv-run-grid">
+        {RUN.map((c) => (
+          <a key={c.name} className="pv-run-co" href={c.href} target="_blank" rel="noopener noreferrer">
+            <span className="pv-run-lg"><img src={c.logo} alt={c.name} className={c.wide ? 'wide' : undefined} /></span>
+            <p>{c.d}</p>
+            <ul>
+              <li><Icon name="radar" />Corporate development<b>External AI Growth Engine</b></li>
+              <li><Icon name="bot" />Inbound and outbound<b>Internal AI Growth Engine</b></li>
+            </ul>
+            <span className="pv-run-go">{c.href.replace(/^https:\/\/(www\.)?/, '')} <Icon name="out" /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Les deux moteurs. `lp` : la version des LPs (/lp), avec le deal flow en direct. */
+export function FounderEngines({ lp = false, onFollow }: { lp?: boolean; onFollow?: () => void }) {
+  const engines = lp ? ENGINES_LP : ENGINES;
   return (
     <section className="pv-sec night" id="engines">
       <div className="pv-wrap">
         <div className="pv-head">
-          <h2 className="pv-h2">Two AI engines, working for you.</h2>
-          <p className="sub">The engines that already run ProFund, Proplace, Maximum Insurance and Sosuites.</p>
+          {lp && <p className="pv-kick">Our edge</p>}
+          <h2 className="pv-h2">{lp ? 'Two AI engines. A process, not a pitch.' : 'Two AI engines, working for you.'}</h2>
+          <p className="sub">{lp
+            ? 'They already run ProFund, Proplace, Maximum Insurance and Sosuites, and they plug into every company we back.'
+            : 'The engines that already run ProFund, Proplace, Maximum Insurance and Sosuites.'}</p>
         </div>
         <div className="pv-edge">
-          {ENGINES.map((e) => (
+          {engines.map((e) => (
             <div key={e.name} className="pv-eng">
               <span className="pv-ic"><Icon name={e.icon} /></span>
               <h3>{e.name}</h3>
@@ -623,25 +676,12 @@ export function FounderEngines() {
             </div>
           ))}
         </div>
-        <div className="pv-run">
-          <div className="pv-run-head">
-            <p className="pv-kick">Running today</p>
-            <p>Their corporate development, inbound and outbound are run entirely by these two engines.</p>
+        <EnginesRunning />
+        {lp && onFollow && (
+          <div className="pv-ctas pv-run-cta">
+            <button type="button" className="pv-btn light" onClick={onFollow}><span className="pv-dot" />Follow our deal flow live</button>
           </div>
-          <div className="pv-run-grid">
-            {RUN.map((c) => (
-              <a key={c.name} className="pv-run-co" href={c.href} target="_blank" rel="noopener noreferrer">
-                <span className="pv-run-lg"><img src={c.logo} alt={c.name} className={c.wide ? 'wide' : undefined} /></span>
-                <p>{c.d}</p>
-                <ul>
-                  <li><Icon name="radar" />Corporate development<b>External AI Growth Engine</b></li>
-                  <li><Icon name="bot" />Inbound and outbound<b>Internal AI Growth Engine</b></li>
-                </ul>
-                <span className="pv-run-go">{c.href.replace(/^https:\/\/(www\.)?/, '')} <Icon name="out" /></span>
-              </a>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );

@@ -275,9 +275,6 @@ function TrackRecord() {
 
 // 11 · Terms and targets
 function TermsAndTargets() {
-  const sd = L.seed;
-  const vt = L.venture;
-  const gr = L.growth;
   return (
     <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. One equity round per company.`}>
       <div className="impact-grid">
@@ -286,6 +283,18 @@ function TermsAndTargets() {
         <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">LPs get their capital back by year 7, with loan losses in every case</p></div>
         <div className="imp"><span className="imp-n">{eur(TARGET.largest_exit, 'val')}</span><span className="imp-h">Largest exit</span><p className="imp-p">No unicorn needed: {FR.company} returns the whole fund at {eur(FR.fund_returning_exit, 'val')}</p></div>
       </div>
+      <TermsTables />
+    </Slide>
+  );
+}
+
+/** Les termes, l'allocation et pourquoi le TRI tient : /pitch (slide 11) et /lp. */
+export function TermsTables() {
+  const sd = L.seed;
+  const vt = L.venture;
+  const gr = L.growth;
+  return (
+    <>
       <div className="pv-terms-grid">
         <div className="table-scroll"><table className="fund-table">
           <thead><tr><th>Term</th><th>Value</th></tr></thead>
@@ -295,6 +304,7 @@ function TermsAndTargets() {
             <tr><td>Management fee, years 1–{F.investment_period_years}</td><td>{pct(T.fee_ip_pct)} ({pct(T.fee_loan_pct)} on the loan sleeve)</td></tr>
             <tr><td>Then, on invested capital incl. loans until repaid</td><td>{pct(T.fee_post_pct, 1)}</td></tr>
             <tr><td>Carried interest, European</td><td>{pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, with GP catch-up</td></tr>
+            <tr><td>GP commitment, minimum</td><td>{pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {FUND_SIZE}</td></tr>
             <tr><td>Per company: fund / with SPVs</td><td>{eur(F.company_cap, 'tile')} / {eur(F.company_max_with_spv, 'tile')}</td></tr>
             <tr><td>Loans</td><td>Up to {pct(F.loan_cap_pct)} of commitments (EuVECA)</td></tr>
             <tr><td>Tickets</td><td>Up to {eur(sd.ticket_max, 'tile')} at seed, {eurRange(vt.first_cheque_range[0], vt.first_cheque_range[1], 'table', '–')} at Series A, {eurRange(gr.position_range[0], gr.position_range[1], 'tile', '–')} at growth ({eur(F.company_max_with_spv, 'tile')} with SPVs)</td></tr>
@@ -326,7 +336,7 @@ function TermsAndTargets() {
           exit, a {eur(FR.fund_returning_exit, 'val')} sale returns the entire fund on its own.
         </p>
       </div>
-    </Slide>
+    </>
   );
 }
 
@@ -470,6 +480,20 @@ function Simulation() {
 }
 
 function Performance() {
+  return (
+    <div className="pf-section" id="performance">
+      <div className="pf-wrap-wide">
+        <span className="eyebrow">Appendix · Fund performance</span>
+        <h2 className="h2">Target returns, built line by line.<br /><em>Net of fees, expenses and carry.</em></h2>
+        <PerformanceTables />
+        <Downloads />
+      </div>
+    </div>
+  );
+}
+
+/** Les trois cas et les tests de résistance, avec leur note : /pitch (annexe) et /lp. */
+export function PerformanceTables() {
   const cell = (i: number) => (i === 0 ? 'hl' : undefined);
   const rows: [string, (id: 'target' | 'base' | 'stress') => string][] = [
     ['Fund size', () => FUND_SIZE],
@@ -482,10 +506,7 @@ function Performance() {
     ['Largest exit', (id) => eur(C[id].largest_exit, 'val')],
   ];
   return (
-    <div className="pf-section" id="performance">
-      <div className="pf-wrap-wide">
-        <span className="eyebrow">Appendix · Fund performance</span>
-        <h2 className="h2">Target returns, built line by line.<br /><em>Net of fees, expenses and carry.</em></h2>
+    <>
         <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}>
           <div className="table-scroll" style={{ marginTop: 0 }}><table className="perf-table">
             <thead><tr><th>Metric</th><th className="hl">Target</th><th>Base</th><th>Stress</th></tr></thead>
@@ -513,15 +534,13 @@ function Performance() {
           every first cheque carries a 1× non-participating preference. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
           topped up to {eur(F.company_max_with_spv, 'tile')} with SPVs, outside the fund. Net TVPI on paid-in capital. Loan recycling not included. Targets are model outputs, not a forecast or a guarantee.
         </p>
-        <Downloads />
-      </div>
-    </div>
+    </>
   );
 }
 
 // Le modèle Excel (scripts/fund_xlsx.py) et la fiche PDF (scripts/factsheet.py),
 // régénérés depuis fund.json ; leurs ?v= vivent dans src/lib/links.ts.
-function Downloads() {
+export function Downloads({ deck = false }: { deck?: boolean }) {
   return (
     <div className="pv-dls">
       <a className="pv-dl" href={MODEL_XLSX_URL} download>
@@ -532,6 +551,12 @@ function Downloads() {
         <span className="pv-dl-ic"><Icon name="file" /></span>
         <span><b>Fact sheet (PDF)</b><small>Four pages, fund simulation included</small></span>
       </a>
+      {deck && (
+        <Link className="pv-dl" to="/pitch">
+          <span className="pv-dl-ic"><Icon name="out" /></span>
+          <span><b>The LP deck</b><small>Every slide, the line-by-line simulation, the stress tests</small></span>
+        </Link>
+      )}
     </div>
   );
 }
