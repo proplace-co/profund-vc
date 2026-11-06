@@ -874,13 +874,6 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   .pv-stake-pf span { font-size: 11.5px; }
 }
 @media (prefers-reduced-motion: reduce) { .pv-stake-pf::before, .pv-stake-pf span { transition: none; } }
-/* la part par fondateur (deux cofondateurs à parts égales) */
-.pv-stake-note { margin: 18px 0 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
-.pv-stake-note b { color: var(--red); }
-.pv-real-duo { display: flex; align-items: baseline; gap: 14px; margin: 0; padding: 14px 16px; border-radius: var(--r-md);
-  background: var(--red-soft); box-shadow: inset 0 0 0 1px #f3d4cf; }
-.pv-real-duo b { flex: none; font-size: clamp(26px, 2.6vw, 36px); font-weight: 750; letter-spacing: -.035em; line-height: 1; color: var(--red); }
-.pv-real-duo span { font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
 
 /* Le tableau, avec le cas réel (accueil) : une colonne rouge entre VC et ProFund */
 .pv-math:has(.real) .pv-math-head, .pv-math-row.real { grid-template-columns: 130px repeat(3, minmax(0, 1fr)); gap: 28px; }

@@ -131,9 +131,10 @@ au-dessus, `RealDilution`, un cas réel sourcé, Will Shu à 6,3 % de Deliveroo 
 et les médianes Carta 37,5 / 27,3 / 16,1 / 11,4 %, la D étant une donnée Carta reprise par
 SaaStr, sources en note, ne pas les changer sans relire les sources ; le graphique « Your
 stake, round after round » montre chaque étape, levées intermédiaires comprises, la ligne
-ProFund à 37,5 % et une dernière colonne rouge, le cas réel Deliveroo à l'IPO ; la part par
-fondateur, 5,7 % chacun après la D pour deux cofondateurs à parts égales, est dite comme une
-hypothèse : ne jamais afficher une MÉDIANE plus basse que ce que Carta mesure ; le tableau de
+ProFund à 37,5 % et une dernière colonne rouge, le cas réel Deliveroo à l'IPO ; tout se dit
+au niveau de l'ÉQUIPE fondatrice (la part « par fondateur », 5,7 %, retirée le 06/11 :
+elle mélangeait deux unités et faisait passer Deliveroo pour mieux que la médiane) ; ne
+jamais afficher une MÉDIANE plus basse que ce que Carta mesure ; le tableau de
 l'accueil a une colonne « At 6.3%, the Deliveroo case » : les fondateurs ramenés à 6,3 %,
 mêmes tours, mêmes préférences, calculée par `atFounderStake` de `founderMath.js` ; sous les
 moteurs, « Running today » : Proplace et Maximum Insurance, dont la corp dev, l'inbound et

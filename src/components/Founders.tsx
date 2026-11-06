@@ -222,11 +222,6 @@ export function founderNote() {
   return `Typical European path, calibrated on Carta medians: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr.`;
 }
 
-// La part PAR FONDATEUR (06/11) : les médianes Carta portent sur l'équipe fondatrice ; pour
-// deux cofondateurs à parts égales, chacun en détient la moitié. Hypothèse dite en clair.
-const AFTER_D = FM.vc_stakes.find((s) => s.round === 'D')!.founders;
-const PER_FOUNDER_D = pct(AFTER_D / 2, 1);
-
 /** La part des fondateurs, étape après étape (v3.15, 06/11) : toutes les étapes du chemin
  *  VC, levées intermédiaires comprises (elle fond) ; le chemin ProFund est une ligne (elle
  *  ne bouge pas) ; la dernière colonne est un cas réel, sourcé dans RealDilution : le
@@ -271,10 +266,6 @@ function StakeChart() {
           ))}
         </div>
       </div>
-      <p className="pv-stake-note">
-        The whole founding team. Split equally between two co-founders: <b>{PER_FOUNDER_D} each</b> after the Series D,
-        less than Deliveroo’s founder at IPO.
-      </p>
     </div>
   );
 }
@@ -358,10 +349,6 @@ function RealDilution() {
               </li>
             ))}
           </ol>
-          <p className="pv-real-duo">
-            <b>{pct(0.114 / 2, 1)}</b>
-            <span>each, for two co-founders sharing equally after the Series D. Less than Deliveroo’s founder at IPO.</span>
-          </p>
           <p className="pv-real-pf"><Icon name="shield" />On our path, your stake today is your stake at exit.</p>
         </div>
       </div>
@@ -424,7 +411,7 @@ export function TheMath({ tint = true, calcOpen = false, onCalc }: { tint?: bool
 // une clause du pacte (Pact.tsx) ; ne rien promettre de plus.
 const TERMS: { k: string; vc: string; pf: string }[] = [
   { k: 'Rounds', vc: 'A new round every 18 months', pf: 'One. Then a reserved loan line' },
-  { k: 'Your stake', vc: 'Down at every round: 11.4% for the team after the Series D, 5.7% each for two co-founders', pf: 'Never goes down. Every cancellation lifts it' },
+  { k: 'Your stake', vc: 'Down at every round: 11.4% after the Series D, at the median', pf: 'Never goes down. Every cancellation lifts it' },
   { k: 'Board', vc: 'A seat for every lead. Your majority erodes', pf: 'One seat. The majority stays yours' },
   { k: 'Votes', vc: 'Every investor votes its own shares', pf: 'Our shares vote with you' },
   { k: 'Vetoes', vc: 'Consent on the budget, key hires, new rounds, the sale', pf: 'Only on what would change our shares behind our back' },
