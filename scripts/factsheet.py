@@ -423,8 +423,10 @@ PACT = (
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
                                     "agreement, and the company cancels shares every year. Founder and "
                                     "fund own more at every stage."),
-    ("Founder control.", "Our shares vote with the founder. No board seat, no veto, no veto on a sale."),
-    ("Fair both ways.", "If a founder raises elsewhere, we can follow or lead the round in new shares."),
+    ("Founder control.", "Our shares vote with the founder. One board seat, no veto on how they run, "
+                         "raise or sell."),
+    ("Fair both ways.", "If a founder raises elsewhere, we follow or lead, then hold the new lead's rights. "
+                        "Loans on lender terms, four-year founder vesting."),
 )
 
 
@@ -489,7 +491,7 @@ def page_one(F):
 
     # les quatre lois
     kick(F, M, y, "What we back")
-    title(F, M, y + 17, W, "Four laws drive our thesis and our Deal Engine every morning.", 17)
+    title(F, M, y + 17, W, "Four laws drive our thesis and our engines every morning.", 17)
     y += 44
     gap = 12.0
     cw = (W - 3 * gap) / 4
@@ -532,7 +534,7 @@ def page_one(F):
         (FUND_SIZE, f"Target Fund I, closed-ended, closings over {FUND['closing_months']} months"),
         (f"{len(LAYER_IDS)} layers", f"Seed, Venture, Growth: {eur(LAYERS['seed']['ticket_min'])} to "
                                      f"{eur(FUND['company_cap'], 'tile')} per company"),
-        ("1 round", "Equity round per company, then loans and buybacks. 0 board seats"),
+        ("1 round", "Equity round per company, then loans and buybacks. 1 board seat"),
         ("Every", "European seed round tracked by the Seed Radar, weekly"),
         ("6–18mo", "Detection lead before announcement"),
     ]
@@ -690,9 +692,10 @@ def page_two(F):
 
     # conflits et filet de securite
     txt = (f"<b>{x('Conflicts and fallback.')}</b> " + x(
-        "Every buyback is priced by an independent valuer. When a decision involves ProFund itself (a loan, a "
-        "buyback, the price of our shares), our shares don't vote. Conflicts of interest on the fund side go to "
-        "the LP advisory committee. In case of fraud or gross misconduct, the voting agreement ends."))
+        "Every buyback is priced by an independent valuer. ProFund's shares abstain on its own loans and "
+        "buybacks; the voting agreement does not apply to a founder's personal interest. Fund-side conflicts go "
+        "to the LP advisory committee. Fraud, gross misconduct, a material breach of the pact or insolvency "
+        "end the voting agreement."))
     hb = F.hpara(W - 72, txt, 9.6, "reg", 1.5) + 30
     F.rr(M, y, W, hb, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
     F.rr(M + 14, y + (hb - 30) / 2, 30, 30, 9, fill=BLUE_SOFT)
@@ -709,14 +712,14 @@ def page_three(F):
 
     y = 164.0
     engines = (
-        ("radar", "The Deal Engine",
+        ("radar", "The External AI Growth Engine",
          "Scores every company against our thesis and flags inflection points before they become consensus. "
-         "Autonomously detects the right targets for our portfolio companies, and the angels, leavers and "
-         "early funds ready to sell.",
+         "For our founders, it sources, assesses and qualifies every day the startups that could create the "
+         "strongest synergies with their company.",
          ("ProFund", "Proplace", "Portfolio companies")),
-        ("bot", "The Growth Engine",
-         "Autonomous AI agents running content, inbound, and outbound end-to-end. They operate our fund and "
-         "companies today and can be plugged directly into the founders we back tomorrow.",
+        ("bot", "The Internal AI Growth Engine",
+         "Autonomous AI agents running content, inbound and outbound. For our founders: a daily feed of "
+         "LinkedIn and X posts and of intent-based leads with personalised sequences, ready to approve.",
          ("ProFund", "Proplace", "Maximum Insurance", "Sosuites", "Portfolio companies")),
     )
     gap = 16.0
@@ -732,15 +735,18 @@ def page_three(F):
         F.icon(ic, ex + pad + 6.5, y + pad + 6.5, 17, WHITE)
         F.text(ex + pad + 42, y + pad + 7, name, "gras", 14, INK)
         F.para(ex + pad, y + pad + 42, ew - 2 * pad, x(text), 9.8, "reg", MUTED, 1.48)
-        if i == 0:
-            # le lien du deal flow en direct, sur la ligne du titre
-            lx = ex + ew - pad - 12 - 5 - F.tw("Follow live deal flow", "semi", 9.6)
-            F.circle(lx - 10, y + pad + 12.5, 5.5, fill=GREEN, alpha=0.18)
-            F.circle(lx - 10, y + pad + 12.5, 3, fill=GREEN)
-            wl = F.text(lx, y + pad + 7.5, "Follow live deal flow", "semi", 9.6, BLUE_DK)
-            F.svg(ARROW, lx + wl + 5, y + pad + 8, 12, BLUE_DK)
-            F.link(lx - 18, y + pad + 2, wl + 40, 20, DEALFLOW)
         fy = y + eh - pad - chips
+        if i == 0:
+            # le lien du deal flow en direct, sur la ligne des pastilles (v3.15 : le nom du
+            # moteur, plus long, occupe toute la ligne du titre)
+            # (sur la seconde ligne de pastilles, vide pour ce moteur)
+            ly = fy + chips - 15
+            lx = ex + ew - pad - 12 - 5 - F.tw("Follow live deal flow", "semi", 9.6)
+            F.circle(lx - 10, ly + 5, 5.5, fill=GREEN, alpha=0.18)
+            F.circle(lx - 10, ly + 5, 3, fill=GREEN)
+            wl = F.text(lx, ly, "Follow live deal flow", "semi", 9.6, BLUE_DK)
+            F.svg(ARROW, lx + wl + 5, ly + 0.5, 12, BLUE_DK)
+            F.link(lx - 18, ly - 5, wl + 40, 20, DEALFLOW)
         F.line(ex + pad, fy - 9, ex + ew - pad, fy - 9, LINE, 1)
         powers(F, ex + pad, fy, ew - 2 * pad, names)
     y += eh + 32
@@ -1085,15 +1091,20 @@ def page_four(F):
     fm = FOUNDERS
     seed_pref = next(h["pref"] for h in fm["holders"] if h["id"] == "seed")
     a_pref = next(h["pref"] for h in fm["holders"] if h["id"] == "series_a")
+
+    def after(rid):
+        return f"{next(st['founders'] for st in fm['vc_stakes'] if st['round'] == rid) * 100:.1f}%"
     kick(F, M, 80, "The capital you don't raise is the company you keep")
     fw = 446.0
     fh = founder_table(F, M, 98, fw)
     F.para(M + fw + 16, 98, W - fw - 16, x(
-        f"Typical European path, on Carta medians: {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} Series A, "
-        f"founders at {fm['founders'] * 100:.1f}% after the Series A, then {eur(fm['vc_equity'], 'tile')} of equity "
-        "across Series B to D at median dilution, with option pool top-ups and 1× non-participating preferences. "
-        f"ProFund path: same seed and Series A, then {eur(fm['loans'], 'tile')} of loans; the pool is refilled "
-        "with bought-back shares. Illustrative, not a forecast. Source: Carta."), 7.6, "reg", MUTED, 1.38)
+        f"Typical European path, calibrated on Carta medians: {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} "
+        f"Series A, founders at {fm['founders'] * 100:.1f}% after the Series A, then {eur(fm['vc_equity'], 'tile')} "
+        f"of equity over two bridges and Series B to D, with pool refreshes and 1× non-participating preferences: "
+        f"founders at {after('B')} after the B and {after('C')} after the C, Carta's medians. ProFund path: same "
+        f"seed and Series A, then {eur(fm['loans'], 'tile')} of loans; the pool is refilled with bought-back "
+        "shares. Illustrative, not a forecast. Source: Carta, Founder Ownership Report 2026."),
+        7.6, "reg", MUTED, 1.38)
     y = 98 + fh + 12
 
     # la simulation ligne a ligne

@@ -1453,43 +1453,80 @@
     ],
     "vc_rounds": [
       {
+        "id": "A2",
+        "label": "Bridge to B",
+        "bridge": true,
+        "amount": 5000000,
+        "post": 60000000,
+        "pool": 0.0
+      },
+      {
         "id": "B",
+        "label": "Series B",
         "amount": 25000000,
         "post": 150000000,
-        "pool": 0.04
+        "pool": 0.05
+      },
+      {
+        "id": "B2",
+        "label": "Bridge to C",
+        "bridge": true,
+        "amount": 24000000,
+        "post": 160000000,
+        "pool": 0.0
       },
       {
         "id": "C",
-        "amount": 40000000,
-        "post": 275000000,
-        "pool": 0.03
+        "label": "Series C",
+        "amount": 60000000,
+        "post": 260000000,
+        "pool": 0.09
       },
       {
         "id": "D",
-        "amount": 70000000,
-        "post": 700000000,
-        "pool": 0.02
+        "label": "Series D",
+        "amount": 80000000,
+        "post": 600000000,
+        "pool": 0.04
       }
     ],
     "loans": 25000000,
     "loan_life": 1.6,
     "loan_rate": 0.12,
     "loan_multiple": 1.2,
-    "vc_equity": 135000000,
+    "vc_equity": 194000000,
     "raised_before": 12000000,
-    "founders_after_vc": 0.219,
+    "founders_after_vc": 0.135,
     "vc_stakes": [
       {
+        "round": "A2",
+        "label": "Bridge to B",
+        "bridge": true,
+        "founders": 0.344
+      },
+      {
         "round": "B",
-        "founders": 0.3
+        "label": "Series B",
+        "bridge": false,
+        "founders": 0.272
+      },
+      {
+        "round": "B2",
+        "label": "Bridge to C",
+        "bridge": true,
+        "founders": 0.231
       },
       {
         "round": "C",
-        "founders": 0.249
+        "label": "Series C",
+        "bridge": false,
+        "founders": 0.162
       },
       {
         "round": "D",
-        "founders": 0.219
+        "label": "Series D",
+        "bridge": false,
+        "founders": 0.135
       }
     ],
     "rows": [
@@ -1497,28 +1534,28 @@
         "exit": 100000000,
         "founders_vc": 0,
         "founders_profund": 26000000,
-        "series_a_vc": 0.7,
+        "series_a_vc": 0.5,
         "series_a_profund": 1.4
       },
       {
         "exit": 250000000,
-        "founders_vc": 39000000,
+        "founders_vc": 15000000,
         "founders_profund": 83000000,
-        "series_a_vc": 2.1,
+        "series_a_vc": 1.0,
         "series_a_profund": 4.4
       },
       {
         "exit": 500000000,
-        "founders_vc": 105000000,
+        "founders_vc": 65000000,
         "founders_profund": 176000000,
-        "series_a_vc": 5.6,
+        "series_a_vc": 3.5,
         "series_a_profund": 9.4
       },
       {
         "exit": 1000000000,
-        "founders_vc": 219000000,
+        "founders_vc": 135000000,
         "founders_profund": 364000000,
-        "series_a_vc": 11.7,
+        "series_a_vc": 7.2,
         "series_a_profund": 19.4
       }
     ]

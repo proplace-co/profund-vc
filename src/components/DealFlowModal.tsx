@@ -45,13 +45,25 @@ function OpenDealFlow() {
   );
 }
 
-export default function DealFlowModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+// `lp` (v3.15, 06/11) : la même candidature ouvre aussi la page LP (/lp, réservée aux
+// candidats acceptés) ; seuls les textes changent, l'appel au proxy est le même.
+// `startPane` : « returning » ouvre directement « Get your access link ».
+export default function DealFlowModal({ open, onClose, lp = false, startPane = 'apply' }: {
+  open: boolean;
+  onClose: () => void;
+  lp?: boolean;
+  startPane?: 'apply' | 'returning';
+}) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [ticket, setTicket] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState('');
-  const [pane, setPane] = useState<'apply' | 'returning'>('apply');
+  const [pane, setPane] = useState<'apply' | 'returning'>(startPane);
+  // À chaque ouverture, le volet demandé (sauf après un envoi : on garde le message).
+  useEffect(() => {
+    if (open) setPane((p) => (status === 'done' ? p : startPane));
+  }, [open, startPane]);
   const [doneKind, setDoneKind] = useState<'pending' | 'resent'>('pending');
   const firstRef = useRef<HTMLInputElement>(null);
   // 31/10 — ce navigateur a déjà ouvert le deal flow : on l'ouvre sans email.
@@ -177,7 +189,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
             ) : (
               <p>
                 We review every application. Once accepted, you receive a private
-                link to the live deal flow and, every evening at {HOUR}:00 Paris time,
+                link to {lp ? 'the LP page and ' : ''}the live deal flow and, every evening at {HOUR}:00 Paris time,
                 the companies we reviewed that day. One-click unsubscribe.
               </p>
             )}
@@ -187,7 +199,7 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
           <form onSubmit={resend}>
             {hasAccess && <OpenDealFlow />}
             <h3 className="pfm-h">Get your access link.</h3>
-            <p className="pfm-sub">We email a private link to the live deal flow.</p>
+            <p className="pfm-sub">We email a private link to {lp ? 'the LP page and ' : ''}the live deal flow.</p>
             <div className="pfm-fld">
               <label className="pfm-lbl" htmlFor="pfm-email">Email</label>
               <input id="pfm-email" ref={firstRef} className="pfm-in" type="email" required
@@ -205,8 +217,9 @@ export default function DealFlowModal({ open, onClose }: { open: boolean; onClos
         ) : (
           <form onSubmit={submit}>
             {hasAccess && <OpenDealFlow />}
-            <h3 className="pfm-h">Follow our deal flow.</h3>
+            <h3 className="pfm-h">{lp ? 'Apply for LP access.' : 'Follow our deal flow.'}</h3>
             <p className="pfm-sub">
+              {lp && 'One application opens the LP page and our live deal flow. '}
               Every evening at {HOUR}:00 Paris time: the companies we reviewed that day,
               the ones we kept, and why.
             </p>

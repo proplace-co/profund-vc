@@ -125,7 +125,7 @@ export interface FounderMath {
   exits: number[];
   founders: number;
   holders: { id: string; label: string; stake: number; pref: number }[];
-  vc_rounds: { id: string; amount: number; post: number; pool: number }[];
+  vc_rounds: { id: string; label: string; bridge?: boolean; amount: number; post: number; pool: number }[];
   loans: number;
   loan_rate: number;
   loan_life: number;
@@ -133,7 +133,7 @@ export interface FounderMath {
   vc_equity: number;
   raised_before: number;
   founders_after_vc: number;
-  vc_stakes: { round: string; founders: number }[];
+  vc_stakes: { round: string; label: string; bridge: boolean; founders: number }[];
   rows: FounderRow[];
 }
 

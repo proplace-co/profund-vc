@@ -29,7 +29,7 @@ const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
 const BASE_TITLE = 'ProFund · Control was always yours.';
-const BASE_DESC = 'Venture capital for founders, pre-seed to growth. One round, then never diluted again. Your shares, your votes, your exit. Funded like the leaders, diluted like no one.';
+const BASE_DESC = 'Venture capital for the AI era. Pre-seed to growth: one round, then never diluted again. Your shares, your votes, your exit. Funded like the leaders, diluted like no one.';
 
 // Le titre de /pitch porte la taille du fonds : lue dans le modèle
 // (scripts/fund_model.py → src/data/fund.json), jamais tapée ici.
@@ -43,9 +43,9 @@ const FUND_SIZE = `€${FUND.fund.commitments / 1e6}M`;
   const fm = FUND.founder_math;
   const inv = fm.holders.filter((h) => h.pref > 0);
   const others = fm.holders.filter((h) => !(h.pref > 0));
-  // la cap table du calculateur : une classe d'investisseurs, le reste en ordinaires
+  // la cap table du calculateur (v3.15) : les classes d'investisseurs telles quelles, puis le pool
   const holders = [
-    { id: 'investors', stake: inv.reduce((s, h) => s + h.stake, 0), pref: inv.reduce((s, h) => s + h.pref, 0) },
+    ...inv.map((h) => ({ id: h.id, stake: h.stake, pref: h.pref })),
     { id: 'pool', stake: others.reduce((s, h) => s + h.stake, 0), pref: 0 },
   ];
   for (const row of fm.rows) {
@@ -80,8 +80,9 @@ const ROUTES = [
   },
   {
     path: 'terms',
-    title: 'The founders’ pact · 9 clauses | ProFund',
-    desc: 'One equity round, a reserved loan line, buybacks only with you, your votes, no board seat, no veto, your exit. The 9 clauses ProFund signs with every company it backs.',
+    // v3.15 : 12 clauses (N_CLAUSES dans src/components/Pact.tsx : les changer ensemble)
+    title: 'The founders’ pact · 12 clauses | ProFund',
+    desc: 'One equity round, a reserved loan line, buybacks only with you, your votes, one board seat and no veto on how you run, raise or sell, your exit. The 12 clauses ProFund signs with every company it backs.',
   },
   {
     path: 'calculator',
@@ -90,8 +91,9 @@ const ROUTES = [
   },
   {
     path: 'lp',
+    // v3.15 : page réservée aux candidats acceptés (même candidature que le deal flow)
     title: 'ProFund · Where pure vision directs recursive AI. | LPs',
-    desc: 'ProFund Fund I, closed-ended EuVECA fund, Luxembourg. The thesis, the engines, the founding partner. Fact sheet, fund model and data room on request, for professional and eligible investors.',
+    desc: 'ProFund Fund I, closed-ended EuVECA fund. Private LP page, on application: the thesis, the model, the engines and the live deal flow. For professional and eligible investors.',
   },
   {
     path: 'legal',
@@ -104,6 +106,16 @@ const ROUTES = [
     desc: 'How ProFund collects, uses and protects personal data, in accordance with Regulation (EU) 2016/679 (GDPR).',
   },
 ];
+
+// Le titre de /terms dit le nombre de clauses : il doit suivre CLAUSES (Pact.tsx).
+{
+  const pact = readFileSync(join(here, '..', 'src', 'components', 'Pact.tsx'), 'utf8');
+  const n = (pact.match(/^\s*\{ t: '/gm) || []).length;
+  const terms = ROUTES.find((r) => r.path === 'terms');
+  if (!terms.title.includes(`${n} clauses`) || !terms.desc.includes(`${n} clauses`)) {
+    throw new Error(`/terms : le titre et la description doivent dire « ${n} clauses » (CLAUSES de Pact.tsx)`);
+  }
+}
 
 const escapeAttr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 

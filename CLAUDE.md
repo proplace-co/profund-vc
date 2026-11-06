@@ -14,19 +14,22 @@ src/
   components/
     Thesis.tsx          LE TEXTE DE LA THÈSE (manifeste, 4 lois, 2 moteurs, proof of work),
                         barre du haut, visuel du héros — rendus par / ET /pitch
-    Founders.tsx        LA PROPOSITION FONDATEURS v3 (the rules, the math et la part animée, how we
-                        back + lien vers le pacte, every stage, Founding Partner, final call) — rendus par /, /calculator, /pitch
-    HomepageLite.tsx    route /
-    Pact.tsx            LE PACTE DES FONDATEURS (CLAUSES, N_CLAUSES, CONFLICTS) — rendu par /terms
+    Founders.tsx        LA PROPOSITION FONDATEURS v3 (the rules + le pacte dépliable, the math + le
+                        calculateur dépliable, how we back, every stage, les moteurs côté fondateur,
+                        Founding Partner, final call) — rendus par /, /lp, /pitch
+    HomepageLite.tsx    route / (état des deux panneaux, ancres /#pact et /#calculator)
+    Drawer.tsx          le panneau dépliable (Drawer) et son bouton « + » qui tourne en « × »
+    Pact.tsx            LE PACTE DES FONDATEURS (CLAUSES, N_CLAUSES, PACT_LEAD, PactList) — /terms et accueil
     TermsPage.tsx       route /terms — le pacte, page sombre sans barre du haut (texte dans Pact.tsx)
-    CalculatorPage.tsx  route /calculator — « Run your numbers »
-    LpPage.tsx          route /lp — l'accès LP (mention de pré-commercialisation)
+    CalculatorPage.tsx  route /calculator — « Run your numbers » ; exporte `Calculator` (aussi dans l'accueil)
+    LpPage.tsx          route /lp — la page LP, fermée par une porte (LpGate) sauf accès accepté ou ?gp
     SubPage.tsx         coquille de /terms, /calculator, /lp
     LeadForm.tsx        le formulaire de /lp → email préparé
     ProFundPage.tsx     route /pitch — le deck LP, une section par slide + annexe
     LegalPage.tsx       route /legal — le texte vit dans le tableau CLAUSES
     PrivacyPage.tsx     route /privacy — le texte vit dans le tableau SECTIONS
-    Footer.tsx          pied de page commun (sauf /dealflow)
+    Footer.tsx          pied de page commun (sauf /dealflow) : « Venture capital for the AI era » ; Privacy
+                        et Legal Notice masqués depuis le 06/11 (les pages restent en ligne)
     CookieBanner.tsx    bandeau, monté globalement dans App.tsx
     ErrorBoundary.tsx   filet anti-page-blanche
   lib/fund.ts           types de fund.json + formateurs (€, ×, %)
@@ -70,11 +73,27 @@ proof of work) vit dans `Thesis.tsx`, rendu à l'identique par l'accueil et /pit
 la fiche PDF en porte une copie (`factsheet.py`, chute en variante LP « …we lend and
 we buy ») : les changer ensemble. **La proposition fondateurs v3** (Antoine, 05/11 :
 « One round. Then never diluted again. ») vit dans `Founders.tsx` et `TermsPage.tsx`
-(le pacte, 10 clauses, dans `Pact.tsx` : texte contractuel public, ne pas le reformuler ;
+(le pacte, 12 clauses depuis la v3.15, dans `Pact.tsx` : texte contractuel public, ne pas le reformuler ;
 v3.11 : clauses 1 et 2, l'equity complémentaire dite en clair, « Every option stays open » ;
 v3.12 : 9 clauses, la liquidité partielle supprimée, « Their votes move to your side » sur les
-rachats ; le nombre de clauses se lit dans `N_CLAUSES`, jamais en dur) ; la fiche
-p. 1 et 2 en porte une copie. Deux écarts volontaires à la copie du 05/11 :
+rachats ; le nombre de clauses se lit dans `N_CLAUSES`, jamais en dur, et `prerender.mjs`
+fait échouer le build si le titre de /terms ne dit pas le même nombre ; **v3.15 (06/11,
+Antoine) : 12 clauses**, une logique : on rend le contrôle de la gestion, on garde la
+protection du capital, et ce qui protège ne joue que si le fondateur quitte notre chemin ou
+se conduit mal. UN siège au conseil (seul « and a veto » est barré dans les règles de
+l'accueil : « One seat. Our shares vote with you. ») ; consentement limité à
+l'anti-spoliation (« No veto on how you run, raise or sell ») ; prêts aux conditions d'un
+prêteur (un impayé suspend la convention de vote) ; conflits dans les deux sens ; la
+convention de vote tombe si un tiers mène un tour (on prend alors les droits du nouveau lead,
+jamais plus), si le fondateur part ou cède le contrôle, et dans les cas de repli objectifs ;
+sortie conjointe, sortie forcée aux mêmes conditions, prêts remboursés à la cession ; 1×
+non participante sans ratchet ; vesting 4 ans et leavers (standard BVCA, esprit « be generous
+to leavers » d'Index : seul un départ fautif fait un bad leaver, les titres acquis restent).
+« The term sheet, rewritten » (`TermSheet`, accueil) compare un term sheet VC classique au
+pacte, ligne à ligne : chaque ligne ProFund doit rester une clause. Aussi en v3.15 : la phrase
+sur les conflits, « our shares don't vote… LP advisory committee », quitte le pacte des
+fondateurs : c'est la politique de conflits du fonds, gardée côté LPs, /lp « Protection » et
+fiche p. 2) ; la fiche p. 1 et 2 en porte une copie. Deux écarts volontaires à la copie du 05/11 :
 « Every cancellation lifts your stake » (et non « buyback » : quand ProFund rachète
 un angel, la part du fondateur ne bouge pas) et « A partner from venture debt will run
 the loan book (to be recruited) » (le poste n'est pas pourvu). **Ton de la copie (Antoine, 30/10)** : pas de tiret long
@@ -107,19 +126,37 @@ always yours. », les anciennes règles du VC barrées à l'écran), puis le cap
 (`CapitalStack` : « Funded like the leaders. Diluted like no one. », revenus, un tour, la
 ligne de prêt avec nos prêteurs partenaires, puis l'equity seulement si le fondateur la
 demande), les chiffres (« The capital you don't raise is the company you keep. » : le
-tableau compare 135 M€ d'equity à 25 M€ de dette, l'hypothèse est dite en clair),
+tableau compare 194 M€ d'equity à 25 M€ de dette, l'hypothèse est dite en clair ; v3.15 :
+au-dessus, `RealDilution`, un cas réel sourcé, Will Shu à 6,3 % de Deliveroo à l'IPO de 2021,
+et les médianes Carta 37,5 / 27,3 / 16,1 %, sources en note, ne pas les changer sans relire
+les sources ; pas de médiane après la D, non vérifiée),
 (v3.14) le fonds en chiffres (taille, tickets, suivi, au-delà de 10 M€), les étages, les
 chiffres sans phrase contestable (« When debt can carry your growth… When it cannot, we bring
 the equity on the same terms »), les deux moteurs côté fondateur (« Two AI engines, working
-for you. ») ; le pacte est sur /terms (page sombre), pas sur l'accueil ; Founding Partner (sans Dreamzer ni Fadparis sur le site) et un seul bouton,
-« Run your numbers ». L'exigence ne se dit pas, elle se
-lit. **La thèse et la vision sont sur /lp, écrites pour les LPs** (v3.10, rien qui s'adresse
+for you. » ; v3.15 : « The External AI Growth Engine », la thèse d'investissement paramétrée
+ensemble puis les startups à plus forte synergie sourcées chaque jour, et « The Internal AI
+Growth Engine », les ICP, l'inbound (posts LinkedIn et X quotidiens à approuver) et l'outbound
+(leads quotidiens à intention, séquences envoyées depuis LinkedIn et notre infrastructure de
+cold email) ; mêmes noms côté LPs depuis la v3.15, `OurEdge` et fiche p. 3, dits pour les LPs) et un
+seul bouton, « Run your numbers ». **v3.15 (06/11)** : le pacte et le calculateur se
+déplient DANS l'accueil (`Drawer.tsx`) : le pacte sous les règles du héros (« Read the pact,
+9 clauses »), le calculateur sous le tableau, avec de l'air sous la ligne à 1 Md€ ; le
+bouton du héros et le bandeau final ouvrent le panneau et y défilent ; `/#pact` et
+`/#calculator` aussi (liens du pied de page). /terms et /calculator restent en ligne.
+Plus de Founding Partner ni de mention de pré-commercialisation sur l'accueil (le
+partner reste sur /lp). L'exigence ne se dit pas, elle se lit. **La thèse et la vision sont sur /lp, écrites pour les LPs** (v3.10, rien qui s'adresse
 aux fondateurs) : le héros « Where pure vision directs recursive AI. » et la capture du
 deal flow, le manifeste (chute LP), « The shift » (pourquoi le marché impose ce modèle),
 les lois, « The model » (un tour, rachats avec décote, prêts, annulations ; les trois
 étages), le tableau fondateurs côté investisseur, « Everyone wins », « Protection »
 (préférence 1×, prêts avant les fonds propres, valorisation indépendante, conflits,
-fallback), moteurs, proof of work, Founding Partner, demande d'accès et deal flow live. Sur l'accueil, les LPs n'ont
+fallback), moteurs, proof of work, Founding Partner, demande d'accès et deal flow live ; « Our
+LPs are mainly high-net-worth individuals and family offices » (06/11). **/lp est fermée
+(v3.15)** derrière la MÊME candidature que le deal flow (`DealFlowModal` avec `lp`) : elle
+s'ouvre quand ce navigateur a l'accès retenu par /dealflow (`lib/access.ts`, lien magique
+vérifié une fois ; /dealflow porte un lien « LP page »), ou avec `?gp` dans l'URL (aperçu du
+GP : `profund.vc/lp/?gp`). Barrière côté client : le texte reste dans le bundle JS, ne rien
+mettre sur /lp qui doive rester secret. Sur l'accueil, les LPs n'ont
 qu'un lien « LPs » en pied de page ; le popup du deal flow reste monté pour
 `profund.vc/#dealflow` (le QR de la fiche), sans bouton visible. **L'equity complémentaire**
 (si la dette ne suffit pas) se fait au choix du fondateur, aux conditions du pacte, avec la
@@ -230,11 +267,18 @@ navigateurs reprennent les nouveaux fichiers.
 `factsheet.py` et `fund_xlsx.py` refusent aussi de tourner dans ce cas. Les frais
 du fonds du modèle sont une estimation en attendant le devis du gestionnaire EuVECA.
 
-**Le tableau des fondateurs est calé sur les médianes Carta** (v3.13, `FOUNDER_MATH`) :
-fondateurs à 37,5 % après la série A (Founder Ownership Report 2026, sociétés « digital »),
-séries B à D à la dilution médiane par tour, recharge du pool avant chaque tour ; côté
-ProFund, le pool se recharge avec des titres rachetés (pacte, clause 4). Ne pas revenir à
-des hypothèses plus flatteuses sans source.
+**Le tableau des fondateurs est calé sur les médianes Carta** (`FOUNDER_MATH`) :
+fondateurs à 37,5 % après la série A (Founder Ownership Report 2026, sociétés « digital »).
+**v3.15 (06/11)** : le chemin VC est calé sur les parts médianes PAR ÉTAPE (et non plus sur
+la seule dilution médiane par tour, qui oubliait tout ce qui se passe entre deux tours) :
+une levée intermédiaire avant la B et avant la C (`bridge: true`, « Bridge to B/C »), des
+recharges de pool plus fortes ; 27,2 % après la B (Carta, équipes IA : 27,3 %), 16,2 % après
+la C avec un pool à 16,5 % (Carta : 16,1 % et 16,8 %), 13,5 % après la D ; 194 M€ de fonds
+propres après la A. Le graphique n'a pas de colonne pour les levées intermédiaires ; le
+calculateur les montre, et garde les classes d'investisseurs séparées (seed, Series A),
+comme le modèle, sinon il s'écarte du tableau publié. Côté ProFund, le pool se recharge
+avec des titres rachetés (pacte, clause 5). Ne pas revenir à des hypothèses plus flatteuses
+pour le VC sans source.
 
 **Le Seed est en haltère** (01/11, Alexandre ; v3.4 du 05/11) : 50 sociétés, 10 leads
 de conviction S-01..S-10 et 40 tickets radar de 150 K€ S-11..S-50 (`SEED_TRACKS`,
@@ -277,7 +321,11 @@ les LPs), `v3.11` (le pacte sur l'accueil, l'equity complémentaire dans les cla
 `v3.12` (clause 9 supprimée, conflits et rachats en clair) et `v3.13` (le tableau fondateurs
 sur les médianes Carta : 37,5 % après la série A, dilution médiane B-D, recharges du pool ;
 clause 4 : le pool se recharge avec des titres rachetés) et `v3.14` (accueil : le fonds en
-chiffres, les étages, les moteurs côté fondateur ; le pacte sur une page /terms sombre). Pour revenir à une version : partir du tag
+chiffres, les étages, les moteurs côté fondateur ; le pacte sur une page /terms sombre) et
+`v3.15` (06/11, non tagué à ce jour : pacte et calculateur dépliables dans l'accueil, /lp
+fermée, pacte à 12 clauses avec un siège au conseil, chemin VC calé sur les parts Carta par
+étape, cas Deliveroo, « The term sheet, rewritten », moteurs « External / Internal AI Growth
+Engine » partout, signature « Venture capital for the AI era »). Pour revenir à une version : partir du tag
 (`git checkout v2 -- .` sur une branche), vérifier, puis fusionner sur `main`.
 
 **Chaque section de `/pitch` est un composant local** dans `ProFundPage.tsx`
@@ -319,7 +367,8 @@ inséré par le règlement 2019/1156 ; passage depuis l'art. 30a AIFMD le 29/10,
 demandé par Alexandre) et `/pitch` contient des chiffres de performance cible.
 Ne jamais reformuler, arrondir ou « améliorer » un chiffre, une date ou une
 clause de ces pages sans demande explicite. La même mention figure en tête et
-en pied de la fiche (`factsheet.py`), dans le pied de l'accueil et du popup :
+en pied de la fiche (`factsheet.py`), sur la porte de /lp et dans le pied du popup
+(retirée de l'accueil le 06/11) :
 les changer ensemble. Destinataires : investisseurs professionnels et
 investisseurs éligibles de l'art. 6(1) EuVECA (100 000 € minimum, déclaration
 écrite des risques). Les chiffres de tiers cités sur `/pitch` (Lovable, Stripe) sont

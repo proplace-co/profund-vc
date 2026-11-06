@@ -121,6 +121,8 @@ export default function DealFlowPage() {
         {state === 'ok' && (
           <span className="pfd-who">
             Deal flow{first ? ` · ${first}` : ''}
+            {/* v3.15 : l'accès accepté ouvre aussi la page LP (même jeton, lib/access.ts) */}
+            <a className="pfd-out" href="/lp/">LP page</a>
             <button type="button" className="pfd-out" onClick={signOut}>Sign out</button>
           </span>
         )}

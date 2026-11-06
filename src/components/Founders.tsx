@@ -1,13 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, type IconName } from './Thesis';
-import { N_CLAUSES } from './Pact';
+import { N_CLAUSES, PACT_LEAD, PactList } from './Pact';
+import { Calculator } from './CalculatorPage';
+import { Drawer, DrawerToggle } from './Drawer';
 import { eur, eurRange, fund, mult, pct } from '../lib/fund';
 
 // LA PROPOSITION FONDATEURS (v3, Antoine, 05/11) : un seul tour en actions, puis des
 // prêts et des rachats. v3.8 : l'accueil ne parle qu'aux fondateurs et se construit
 // autour d'une idée, le contrôle revient au fondateur. L'exigence ne se dit pas, elle
 // se lit : peu de mots, des chiffres, un seul bouton (« Run your numbers »).
+// v3.15 (06/11) : le pacte et le calculateur se déplient DANS l'accueil (Drawer.tsx) :
+// le pacte sous les règles du héros, le calculateur sous le tableau. Les boutons
+// lointains (héros, bandeau final) les ouvrent et y défilent ; /#pact et /#calculator
+// aussi (pied de page). /terms et /calculator restent en ligne.
 // Tous les montants viennent de src/data/fund.json : tickets des étages
 // (layers.*) et tableau des fondateurs (founder_math, même calcul que
 // src/lib/founderMath.js). Pas de frais, de carry ni de rendement cible ici :
@@ -37,10 +43,12 @@ function useInView<T extends Element>() {
 
 // ── Les règles : ce que le VC prenait, ce que le pacte rend ──────────────────
 // Chaque ligne nouvelle est une clause du pacte (/terms) : ne rien promettre de plus.
-const RULES: { old: string; now: string }[] = [
+// `keep` : le début de la ligne, NON barré (v3.15, 06/11 : on garde un siège au conseil,
+// seul « and a veto » est barré).
+const RULES: { keep?: string; old: string; now: string }[] = [
   { old: 'A new round every 18 months', now: 'One round. Then never again.' },
   { old: 'A slice of your company at every round', now: 'Your stake never goes down.' },
-  { old: 'A board seat and a veto', now: 'Our shares vote with you.' },
+  { keep: 'A board seat', old: 'and a veto', now: 'One seat. Our shares vote with you.' },
   // (v3.10 : la ligne « No new preference on top of you » est retirée : l'equity
   // complémentaire, au choix du fondateur, porte une préférence 1×.)
   { old: 'Their exit, on their timing', now: 'Your exit. No veto. Ever.' },
@@ -48,25 +56,36 @@ const RULES: { old: string; now: string }[] = [
   { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Their votes move to your side.' },
 ];
 
-/** Les règles. `hero` : en ouverture de l'accueil (titre h1, bouton) ; sinon une section (/lp). */
-export function TheRules({ hero = false }: { hero?: boolean }) {
+/** Les règles. `hero` : en ouverture de l'accueil (titre h1, bouton) ; sinon une section.
+ *  `onPact` : le pacte se déplie sous les règles ; `onRun` : le bouton ouvre le calculateur. */
+export function TheRules({ hero = false, pactOpen = false, onPact, onRun }: {
+  hero?: boolean; pactOpen?: boolean; onPact?: () => void; onRun?: () => void;
+}) {
   const [ref, seen] = useInView<HTMLDivElement>();
   const H = hero ? 'h1' : 'h2';
   return (
     <section className={`pv-sec night pv-rules-sec${hero ? ' pv-rules-hero' : ''}`} id="rules">
       <div ref={ref} className={`pv-wrap pv-rules${seen ? ' in' : ''}`}>
-        {hero && <img className="pv-rules-logo" src="/logo.png" alt="ProFund" width={150} height={40} />}
+        {/* v3.15 (06/11) : la signature « Venture capital for the AI era » à côté du logo */}
+        {hero && (
+          <div className="pv-rules-brand">
+            <img className="pv-rules-logo" src="/logo.png" alt="ProFund" width={150} height={40} />
+            <span>Venture capital for the AI era</span>
+          </div>
+        )}
         {!hero && <p className="pv-kick">The rules</p>}
         <H className="pv-rules-h">Control was always yours.</H>
         {hero && (
           <div className="pv-ctas">
-            <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
+            {onRun
+              ? <button type="button" className="pv-btn light" onClick={onRun}>Run your numbers <Icon name="arrow" /></button>
+              : <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>}
           </div>
         )}
         <ol className="pv-rules-list">
           {RULES.map((r, i) => (
             <li key={r.old} className="pv-rule" style={{ ['--d' as string]: `${0.15 + i * 0.18}s` }}>
-              <span className="old"><span>{r.old}</span></span>
+              <span className="old">{r.keep && <em>{r.keep} </em>}<span>{r.old}</span></span>
               <span className="arrow" aria-hidden="true"><Icon name="arrow" /></span>
               <span className="now">{r.now}</span>
             </li>
@@ -74,10 +93,20 @@ export function TheRules({ hero = false }: { hero?: boolean }) {
         </ol>
         {/* la conclusion des règles barrées (Antoine, 05/11 : en bas, pas sous le titre) */}
         <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Now you get the capital without giving the company away.</p>
-        <div className="pv-rules-foot">
+        <div className="pv-rules-foot" id="pact-dock">
           <span>Written into the pact. The same for every founder. Raise elsewhere whenever you want: we follow or lead.</span>
-          <Link to="/terms" className="pv-link">Read the pact, {N_CLAUSES} clauses <Icon name="arrow" /></Link>
+          {onPact
+            ? <DrawerToggle open={pactOpen} controls="pact" onClick={onPact} className="ghost-light"
+                            label={`Read the pact, ${N_CLAUSES} clauses`} closeLabel="Close the pact" />
+            : <Link to="/terms" className="pv-link">Read the pact, {N_CLAUSES} clauses <Icon name="arrow" /></Link>}
         </div>
+        {onPact && (
+          <Drawer id="pact" open={pactOpen} label="The pact" className="pv-pact-drawer">
+            <span className="pv-drawer-glow" aria-hidden="true" />
+            <p className="pv-terms-lead">{PACT_LEAD}</p>
+            <PactList heading="h3" />
+          </Drawer>
+        )}
       </div>
     </section>
   );
@@ -146,7 +175,7 @@ const BLOCKS: { icon: IconName; t: string; d: string }[] = [
   { icon: 'trend', t: 'Your stake goes up.',
     d: 'We buy back your angels, leavers and early funds, only with your agreement, and the company cancels shares every year. Every cancellation lifts your stake.' },
   { icon: 'shield', t: 'You keep control.',
-    d: 'No board seat. No veto. Our shares vote with you.' },
+    d: 'One board seat for us, the majority for you. No veto on how you run, raise or sell. Our shares vote with you.' },
   { icon: 'door', t: 'You choose your exit.',
     d: 'No veto on a sale. Ever.' },
 ];
@@ -176,7 +205,7 @@ export function HowWeBack() {
         </div>
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="scale" /></span>
-          <p>If you raise elsewhere, we can follow or lead the round. Fair both ways.</p>
+          <p>If you raise elsewhere, we can follow or lead the round, and we hold the same rights as your new lead. Fair both ways.</p>
           <Link to="/terms" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></Link>
         </div>
       </div>
@@ -186,8 +215,10 @@ export function HowWeBack() {
 
 // ── The math ─────────────────────────────────────────────────────────────────
 /** La note sous le tableau : chaque montant lu dans fund.json. */
+// v3.15 : le chemin VC est calé sur les parts médianes de Carta par étape (fund_model.py).
+const AFTER = (id: string) => pct(FM.vc_stakes.find((s) => s.round === id)!.founders, 1);
 export function founderNote() {
-  return `Typical European path, on Carta medians: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A, then ${eur(FM.vc_equity, 'tile')} of equity across Series B to D at median dilution, with option pool top-ups and 1× non-participating preferences. ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Carta, dilution by round.`;
+  return `Typical European path, calibrated on Carta medians: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over a bridge, the Series B, a second bridge, the Series C and the Series D, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B and ${AFTER('C')} after the Series C, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Source: Carta, Founder Ownership Report 2026.`;
 }
 
 /** La part des fondateurs, tour après tour : VC (elle fond) contre ProFund (elle tient). */
@@ -195,7 +226,8 @@ function StakeChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
   const cols = [
     { label: 'Today', vc: FM.founders },
-    ...FM.vc_stakes.map((s) => ({ label: `After Series ${s.round}`, vc: s.founders })),
+    // les levées intermédiaires comptent dans la part, pas dans les colonnes
+    ...FM.vc_stakes.filter((s) => !s.bridge).map((s) => ({ label: `After ${s.label}`, vc: s.founders })),
   ];
   const h = (v: number) => `${(v / FM.founders) * 100}%`;
   return (
@@ -252,19 +284,131 @@ export function FounderTable({ investor = false }: { investor?: boolean }) {
   );
 }
 
-export function TheMath({ tint = true }: { tint?: boolean }) {
+// ── La dilution réelle (v3.15, 06/11) ────────────────────────────────────────
+// Un cas public et les médianes Carta, sourcés en note : ne pas les modifier sans relire
+// les sources (CNBC du 23/03/2021, d'après le prospectus ; Tech.eu du 17/01/2021 ;
+// Carta, Founder Ownership Report 2026). Pas de médiane Carta après la D : non vérifiée.
+const CARTA = [
+  { v: 0.375, l: 'After the Series A', s: 'Digital companies' },
+  { v: 0.273, l: 'After the Series B', s: 'AI teams' },
+  { v: 0.161, l: 'After the Series C', s: 'Less than the employee pool' },
+];
+
+function RealDilution() {
+  const [ref, seen] = useInView<HTMLDivElement>();
+  return (
+    <>
+      <div ref={ref} className={`pv-real${seen ? ' in' : ''}`}>
+        <div className="pv-real-case">
+          <p className="pv-kick">A real case</p>
+          <b className="pv-real-big">6.3%</b>
+          <p>
+            Will Shu’s stake in Deliveroo, the company he co-founded, at its 2021 IPO. After rounds up to a
+            Series H and more than $1.5bn raised, he kept control only through 20-vote shares, for three years.
+          </p>
+        </div>
+        <div className="pv-real-carta">
+          <p className="pv-kick">The median founding team</p>
+          <ol>
+            {CARTA.map((c, i) => (
+              <li key={c.l} style={{ ['--w' as string]: `${(c.v / CARTA[0].v) * 100}%`, ['--d' as string]: `${0.1 + i * 0.15}s` }}>
+                <span className="l">{c.l}<small>{c.s}</small></span>
+                <b>{pct(c.v, 1)}</b>
+                <i />
+              </li>
+            ))}
+          </ol>
+          <p className="pv-real-pf"><Icon name="shield" />On our path, your stake today is your stake at exit.</p>
+        </div>
+      </div>
+      <p className="pv-fine pv-real-src">
+        Deliveroo: CNBC, 23 March 2021, from the IPO prospectus (6.3% of the share capital; Class B shares with 20 votes,
+        converting three years after the IPO); Tech.eu, 17 January 2021 (Series H). Median founding-team ownership, fully
+        diluted: Carta, Founder Ownership Report 2026.
+      </p>
+    </>
+  );
+}
+
+/** `onCalc` : le calculateur se déplie sous le tableau (accueil) ; sinon un lien vers /calculator. */
+export function TheMath({ tint = true, calcOpen = false, onCalc }: { tint?: boolean; calcOpen?: boolean; onCalc?: () => void }) {
   return (
     <section className={`pv-sec${tint ? ' tint' : ''}`} id="math">
       <div className="pv-wrap">
         <div className="pv-head">
           <h2 className="pv-h2">The capital you don’t raise is the company you keep.</h2>
-          <p className="sub">When debt can carry your growth, this is what you keep. When it cannot, we bring the equity on the same terms, and the calculator shows your real path.</p>
+          <p className="sub">On the VC path, the median founding team holds 16.1% of its company after the Series C. On ours, your stake today is your stake at exit. When debt cannot carry your growth, we bring the equity on the same terms.</p>
         </div>
+        {onCalc && <RealDilution />}
         <StakeChart />
         <h3 className="pv-h3 pv-math-t">What you take home</h3>
         <FounderTable />
-        <div className="pv-ctas">
-          <Link to="/calculator" className="pv-btn">Run your numbers <Icon name="arrow" /></Link>
+        {onCalc ? (
+          <>
+            {/* 06/11 : de l'air entre la ligne à 1 Md€ et le bouton */}
+            <div className="pv-calc-dock" id="calculator-dock">
+              <div>
+                <h3>Your numbers, your path.</h3>
+                <p>Your stake today, the rounds you plan, your expected exit: what you keep on each path.</p>
+              </div>
+              <DrawerToggle open={calcOpen} controls="calculator" onClick={onCalc}
+                            label="Run your numbers" closeLabel="Close the calculator" />
+            </div>
+            <Drawer id="calculator" open={calcOpen} label="Run your numbers">
+              <Calculator className="pv-calc-home" />
+            </Drawer>
+          </>
+        ) : (
+          <div className="pv-ctas pv-math-cta">
+            <Link to="/calculator" className="pv-btn">Run your numbers <Icon name="arrow" /></Link>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Le term sheet, réécrit (v3.15, 06/11) ────────────────────────────────────
+// Ce qu'un term sheet VC classique prend, ce que le pacte rend : chaque ligne ProFund est
+// une clause du pacte (Pact.tsx) ; ne rien promettre de plus.
+const TERMS: { k: string; vc: string; pf: string }[] = [
+  { k: 'Rounds', vc: 'A new round every 18 months', pf: 'One. Then a reserved loan line' },
+  { k: 'Your stake', vc: 'Down at every round: 16.1% after the Series C, at the median', pf: 'Never goes down. Every cancellation lifts it' },
+  { k: 'Board', vc: 'A seat for every lead. Your majority erodes', pf: 'One seat. The majority stays yours' },
+  { k: 'Votes', vc: 'Every investor votes its own shares', pf: 'Our shares vote with you' },
+  { k: 'Vetoes', vc: 'Consent on the budget, key hires, new rounds, the sale', pf: 'Only on what would change our shares behind our back' },
+  { k: 'Preference', vc: 'Stacked at every round, sometimes participating', pf: '1× non-participating, once' },
+  { k: 'Exit', vc: 'Investor consent on the sale', pf: 'No veto on a sale. Same terms for everyone' },
+  { k: 'Leavers', vc: 'Bad leaver for resigning during vesting', pf: 'Bad leaver only for fraud, misconduct or competing. Vested shares stay yours' },
+  { k: 'Angels, early funds', vc: 'Stay on your cap table, with their votes', pf: 'Bought out with your agreement. Their votes move to your side' },
+];
+
+export function TermSheet({ onPact }: { onPact?: () => void }) {
+  return (
+    <section className="pv-sec tint" id="term-sheet">
+      <div className="pv-wrap">
+        <div className="pv-head">
+          <h2 className="pv-h2">The term sheet, rewritten.</h2>
+          <p className="sub">What a classic term sheet takes from you, and what our pact gives back. We keep what protects the capital, never the control.</p>
+        </div>
+        <div className="pv-ts-grid" role="table" aria-label="Classic VC term sheet against the ProFund pact">
+          <div className="pv-ts-row head" role="row">
+            <span role="columnheader" />
+            <span role="columnheader">Classic VC term sheet</span>
+            <span role="columnheader">The ProFund pact</span>
+          </div>
+          {TERMS.map((t) => (
+            <div key={t.k} className="pv-ts-row" role="row">
+              <span className="k" role="rowheader">{t.k}</span>
+              <span className="vc" role="cell"><small>Classic VC</small>{t.vc}</span>
+              <span className="pf" role="cell"><small>ProFund</small><Icon name="check" />{t.pf}</span>
+            </div>
+          ))}
+        </div>
+        <div className="pv-ctas pv-ts-cta">
+          {onPact
+            ? <button type="button" className="pv-btn" onClick={onPact}>Read the {N_CLAUSES} clauses <Icon name="arrow" /></button>
+            : <Link to="/terms" className="pv-btn">Read the {N_CLAUSES} clauses <Icon name="arrow" /></Link>}
         </div>
       </div>
     </section>
@@ -348,7 +492,8 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
 }
 
 // ── La fin : une phrase, un bouton ───────────────────────────────────────────
-export function FinalCall() {
+/** `onOpen` : les boutons déplient le calculateur ou le pacte de l'accueil et y défilent. */
+export function FinalCall({ onOpen }: { onOpen?: (panel: 'pact' | 'calculator') => void }) {
   return (
     <section className="pv-sec pv-reserve-sec" id="final">
       <div className="pv-wrap">
@@ -358,8 +503,17 @@ export function FinalCall() {
             <p>See what you keep, round after round.</p>
           </div>
           <div className="pv-band-ctas">
-            <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
-            <Link to="/terms" className="pv-btn ghost-light">Read the pact</Link>
+            {onOpen ? (
+              <>
+                <button type="button" className="pv-btn light" onClick={() => onOpen('calculator')}>Run your numbers <Icon name="arrow" /></button>
+                <button type="button" className="pv-btn ghost-light" onClick={() => onOpen('pact')}>Read the pact</button>
+              </>
+            ) : (
+              <>
+                <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
+                <Link to="/terms" className="pv-btn ghost-light">Read the pact</Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -367,8 +521,26 @@ export function FinalCall() {
   );
 }
 
-// ── Les moteurs, pour les fondateurs (v3.14) ─────────────────────────────────
-// Même faits que OurEdge (Thesis.tsx), dits du côté du fondateur.
+// ── Les moteurs, pour les fondateurs (v3.14 ; v3.15, 06/11) ──────────────────
+// Deux noms côté fondateur : la croissance externe (l'ancien Deal Engine : cibles et
+// partenaires) et la croissance interne (l'ancien Growth Engine : inbound, outbound).
+// Côté LPs, OurEdge (Thesis.tsx) et la fiche p. 3 portent les mêmes noms, dits pour les LPs.
+const ENGINES: { icon: IconName; name: string; d: string; steps: { k: string; d: string }[] }[] = [
+  { icon: 'radar', name: 'The External AI Growth Engine',
+    d: 'The acquisitions and partnerships that could move your company, found before anyone else.',
+    steps: [
+      { k: 'Set up', d: 'Together, we set up your investment thesis.' },
+      { k: 'Every day', d: 'We scan the web, then source, assess and qualify the startups that could create the strongest synergies with your company.' },
+    ] },
+  { icon: 'bot', name: 'The Internal AI Growth Engine',
+    d: 'Your content, inbound and outbound, prepared every day. You keep the last word.',
+    steps: [
+      { k: 'Set up', d: 'Together, we set up your ideal customer profiles.' },
+      { k: 'Inbound', d: 'A daily editorial feed: LinkedIn and X posts in your brand voice, written for your ideal customers. You approve or decline each one.' },
+      { k: 'Outbound', d: 'A daily feed of intent-based leads that match your ideal customer profiles, each with a personalised sequence. You approve, and it goes out automatically from your LinkedIn account and our cold email infrastructure.' },
+    ] },
+];
+
 export function FounderEngines() {
   return (
     <section className="pv-sec night" id="engines">
@@ -378,16 +550,22 @@ export function FounderEngines() {
           <p className="sub">The engines that already run ProFund, Proplace, Maximum Insurance and Sosuites.</p>
         </div>
         <div className="pv-edge">
-          <div className="pv-eng">
-            <span className="pv-ic"><Icon name="radar" /></span>
-            <h3>The Deal Engine</h3>
-            <p>Detects the right acquisition targets for your company before they become consensus, and the angels, leavers and early funds ready to sell, so your cap table stays clean.</p>
-          </div>
-          <div className="pv-eng">
-            <span className="pv-ic"><Icon name="bot" /></span>
-            <h3>The Growth Engine</h3>
-            <p>Autonomous AI agents running content, inbound and outbound end-to-end. They run our fund and our companies today, and plug directly into yours.</p>
-          </div>
+          {ENGINES.map((e) => (
+            <div key={e.name} className="pv-eng">
+              <span className="pv-ic"><Icon name={e.icon} /></span>
+              <h3>{e.name}</h3>
+              <p>{e.d}</p>
+              <ol className="pv-eng-steps">
+                {e.steps.map((st, i) => (
+                  <li key={st.k}>
+                    <span className="n">{String(i + 1).padStart(2, '0')}</span>
+                    <b>{st.k}</b>
+                    <p>{st.d}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
         </div>
       </div>
     </section>

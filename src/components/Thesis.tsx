@@ -140,7 +140,7 @@ export function FourLaws({ tint = true }: { tint?: boolean }) {
       <div className="pv-wrap">
         <div className="pv-head">
           <p className="pv-kick">What we back</p>
-          <h2 className="pv-h2">Four laws drive our thesis and our Deal Engine every morning.</h2>
+          <h2 className="pv-h2">Four laws drive our thesis and our engines every morning.</h2>
         </div>
         <ol className="pv-laws">
           {LAWS.map((l, i) => (
@@ -178,11 +178,11 @@ export function OurEdge({ onFollow }: { onFollow?: () => void }) {
         <div className="pv-edge">
           <div className="pv-eng">
             <span className="pv-ic"><Icon name="radar" /></span>
-            <h3>The Deal Engine</h3>
+            <h3>The External AI Growth Engine</h3>
             <p>
               Scores every company against our thesis and flags inflection points before they
-              become consensus. Autonomously detects the right targets for our portfolio companies,
-              and the angels, leavers and early funds ready to sell.
+              become consensus. For our founders, it sources, assesses and qualifies every day the
+              startups that could create the strongest synergies with their company.
             </p>
             <Powers names={['ProFund', 'Proplace', 'Portfolio companies']} />
             {onFollow && (
@@ -193,11 +193,11 @@ export function OurEdge({ onFollow }: { onFollow?: () => void }) {
           </div>
           <div className="pv-eng">
             <span className="pv-ic"><Icon name="bot" /></span>
-            <h3>The Growth Engine</h3>
+            <h3>The Internal AI Growth Engine</h3>
             <p>
-              Autonomous AI agents running content, inbound, and outbound end-to-end. They operate
-              our fund and companies today and can be plugged directly into the founders we back
-              tomorrow.
+              Autonomous AI agents running content, inbound and outbound. For our founders: a daily
+              feed of LinkedIn and X posts and of intent-based leads with personalised sequences,
+              built on their ideal customer profiles, ready to approve.
             </p>
             <Powers names={['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites', 'Portfolio companies']} />
           </div>

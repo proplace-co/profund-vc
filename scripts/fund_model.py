@@ -305,14 +305,22 @@ FOUNDER_MATH = {
         {"id": "pool", "label": "Option pool", "stake": 0.165, "pref": 0},
         {"id": "series_a", "label": "Series A investor", "stake": 0.20, "pref": 10 * M},
     ],
-    # Chemin VC : 135 M EUR de fonds propres de la Serie B a la D, a la dilution mediane
-    # Carta par tour (B 16,7 %, C 14,6 %, D 10 %, T1 2024), plus une recharge du pool
-    # avant chaque tour (4 %, 3 %, 2 %, estimations de marche). Preferences 1x non
-    # participantes, pari passu.
+    # Chemin VC (v3.15, 06/11 : recale sur les parts MEDIANES PAR ETAPE de Carta, et non
+    # plus sur la seule dilution mediane par tour, qui oubliait tout ce qui se passe entre
+    # deux tours) : une levee intermediaire avant la B et avant la C, des recharges de
+    # pool plus fortes. Cibles (Founder Ownership Report 2026) : 27,3 % pour les
+    # fondateurs d'une equipe IA apres la Serie B (le modele : 27,2 %) ; 16,1 % apres
+    # la Serie C, le pool (16,8 %) passant devant les fondateurs (le modele : 16,2 % et
+    # 16,5 %). La Serie D suit (13,5 %) : pas de mediane Carta verifiee, on ne la cite pas.
+    # 194 M EUR de fonds propres apres la Serie A. Preferences 1x non participantes,
+    # pari passu. `bridge` : levee intermediaire (absente du graphique, presente au
+    # calculateur).
     "vc_rounds": [
-        {"id": "B", "amount": 25 * M, "post": 150 * M, "pool": 0.04},
-        {"id": "C", "amount": 40 * M, "post": 275 * M, "pool": 0.03},
-        {"id": "D", "amount": 70 * M, "post": 700 * M, "pool": 0.02},
+        {"id": "A2", "label": "Bridge to B", "bridge": True, "amount": 5 * M, "post": 60 * M, "pool": 0.0},
+        {"id": "B", "label": "Series B", "amount": 25 * M, "post": 150 * M, "pool": 0.05},
+        {"id": "B2", "label": "Bridge to C", "bridge": True, "amount": 24 * M, "post": 160 * M, "pool": 0.0},
+        {"id": "C", "label": "Series C", "amount": 60 * M, "post": 260 * M, "pool": 0.09},
+        {"id": "D", "label": "Series D", "amount": 80 * M, "post": 600 * M, "pool": 0.04},
     ],
     # Chemin ProFund : le pool se recharge avec des titres rachetes (pacte, clause 4),
     # sans action nouvelle.
@@ -325,10 +333,11 @@ FOUNDER_MATH = {
 }
 FOUNDER_MATH["loan_rate"] = LOAN_RATE
 FOUNDER_MATH["loan_multiple"] = loan_price(0, FOUNDER_MATH["loan_life"])
+# v3.15 (06/11) : le chemin VC recale sur Carta (ci-dessus) ; le chemin ProFund ne bouge pas.
 PUBLISHED_FOUNDER_MATH = {
-    "founders_vc": [0, 39 * M, 105 * M, 219 * M],
+    "founders_vc": [0, 15 * M, 65 * M, 135 * M],
     "founders_profund": [26 * M, 83 * M, 176 * M, 364 * M],
-    "series_a_vc": [0.7, 2.1, 5.6, 11.7],
+    "series_a_vc": [0.5, 1.0, 3.5, 7.2],
     "series_a_profund": [1.4, 4.4, 9.4, 19.4],
 }
 
@@ -708,7 +717,8 @@ def founder_math() -> dict:
         for h in vc:
             h["stake"] *= 1 - k
         vc.append({"id": r["id"], "stake": k, "pref": r["amount"]})
-        stakes.append({"round": r["id"], "founders": ratio(vc[0]["stake"], 3)})
+        stakes.append({"round": r["id"], "label": r.get("label", f"Series {r['id']}"),
+                       "bridge": bool(r.get("bridge")), "founders": ratio(vc[0]["stake"], 3)})
     debt = fm["loans"] * fm["loan_multiple"]
     a_cost = next(h["pref"] for h in fm["holders"] if h["id"] == "series_a")
     rows = []

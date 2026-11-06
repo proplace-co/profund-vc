@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { SubHeader } from './SubPage';
 import DealFlowModal from './DealFlowModal';
 import LeadForm, { CONTACT, type Field } from './LeadForm';
@@ -15,6 +16,11 @@ import { eur, eurRange, fund, mult } from '../lib/fund';
 // Chiffres de tiers (Lovable, Stripe) sourcés en note : ne pas les modifier sans relire
 // la source. La mention de pré-commercialisation est celle de /legal, de la fiche et du
 // popup : les changer ensemble.
+// v3.15 (06/11) : la page est réservée aux candidats acceptés, derrière la MÊME
+// candidature que le deal flow (DealFlowModal, `lp`). Elle s'ouvre quand ce navigateur
+// a l'accès retenu par /dealflow (lib/access.ts : lien magique vérifié une fois), ou
+// avec ?gp dans l'URL (aperçu du GP : profund.vc/lp/?gp). Barrière côté client : le
+// texte reste dans le bundle JS, ne rien mettre ici qui doive rester secret.
 const F = fund.fund;
 const L = fund.layers;
 const FM = fund.founder_math;
@@ -60,13 +66,17 @@ const LAYERS = [
     d: 'Blocks bought from end-of-life funds, fresh growth rounds, and more of our own winners.' },
 ];
 
+// v3.15 (06/11) : les protections du pacte à 12 clauses (Pact.tsx), vues des LPs.
 const PROTECTION: { icon: IconName; t: string; d: string }[] = [
-  { icon: 'shield', t: '1× preference', d: 'Every first cheque, and any extra equity a founder asks for, carries a 1× non-participating preference.' },
-  { icon: 'banknote', t: 'Loans before equity', d: 'Loans are repaid before any equity, from the company’s growth.' },
+  { icon: 'shield', t: '1× preference', d: 'Every first cheque, and any extra equity a founder asks for, carries a 1× non-participating preference. No ratchet, no cumulative dividend.' },
+  { icon: 'banknote', t: 'Loans, on lender terms', d: 'Covenants, no new senior debt without our consent, repaid before any equity and on any change of control. A missed payment suspends the voting agreement.' },
+  { icon: 'file', t: 'A board seat', d: 'One seat in every company, with monthly figures and quarterly accounts. Our consent for anything that would change our shares: senior shares, our rights, dividends while a loan runs, the IP, a dissolution.' },
   { icon: 'scale', t: 'Independent pricing', d: 'Every buyback is priced by an independent valuer.' },
-  { icon: 'lock', t: 'Conflicts', d: 'When a decision involves ProFund itself (a loan, a buyback, the price of our shares), our shares don’t vote. Conflicts of interest on the fund side go to the LP advisory committee.' },
-  { icon: 'check', t: 'Fallback', d: 'In case of fraud or gross misconduct, the voting agreement ends.' },
-  { icon: 'file', t: 'Information, not control', d: 'Information rights and a right of first offer in every company. An investment committee and a key-person clause in the fund.' },
+  { icon: 'trend', t: 'If a founder raises elsewhere', d: 'A right of first offer; we follow or lead. If another investor leads a priced round, the voting agreement ends and we hold the same rights as the new lead.' },
+  { icon: 'door', t: 'Exit', d: 'Tag-along on any sale of control, drag-along only on the same terms for every shareholder, our loans repaid at closing.' },
+  { icon: 'handshake', t: 'Vesting and leavers', d: 'Four-year founder vesting; a bad leaver gives back unvested shares at nominal value. The voting agreement ends when a founder leaves or sells control.' },
+  { icon: 'lock', t: 'Conflicts', d: 'ProFund’s shares abstain on its own loans and buybacks; the voting agreement does not apply to a founder’s personal interest. Fund-side conflicts go to the LP advisory committee.' },
+  { icon: 'check', t: 'Fallback', d: 'Fraud, gross misconduct, a material breach of the pact or insolvency proceedings end the voting agreement. An investment committee and a key-person clause in the fund.' },
 ];
 
 function Cards({ items, cols = 4 }: { items: { icon: IconName; t: string; d: string }[]; cols?: 3 | 4 }) {
@@ -83,7 +93,63 @@ function Cards({ items, cols = 4 }: { items: { icon: IconName; t: string; d: str
   );
 }
 
+/** L'accès à la page : l'aperçu du GP (?gp), ou l'accès au deal flow de ce navigateur. */
+function lpAccess(): boolean {
+  try {
+    if (new URLSearchParams(window.location.search).has('gp')) return true;
+  } catch { /* URL illisible : on retombe sur l'accès retenu */ }
+  return !!savedAccess();
+}
+
+// Ce que la page ouvre, montré fermé (pas de chiffre : la porte est publique).
+const BEHIND = ['The thesis and the shift', 'The model, layer by layer', 'Founder math, investor side',
+  'How LPs are protected', 'The engines and the team', 'Fact sheet and fund model, on request'];
+
+function LpGate() {
+  const [modal, setModal] = useState<'apply' | 'returning' | null>(null);
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+  return (
+    <>
+    <div className="pv-terms-page pv-gate">
+      <div className="pv-wrap pv-gate-grid">
+        <div>
+          <Link to="/" className="pv-terms-logo" aria-label="ProFund"><img src="/logo.png" alt="ProFund" width={150} height={40} /></Link>
+          <p className="pv-kick pv-gate-kick"><Icon name="lock" />LPs · Private access</p>
+          <h1 className="pv-rules-h">Where pure vision directs recursive AI.</h1>
+          <p className="pv-terms-lead">
+            This page is for the investors we accept. Apply once. When we accept you, your private link
+            opens this page and our live deal flow.
+          </p>
+          <p className="pv-terms-lead pv-gate-who">Our LPs are mainly high-net-worth individuals and family offices.</p>
+          <div className="pv-ctas">
+            <button type="button" className="pv-btn light" onClick={() => setModal('apply')}>Apply for LP access <Icon name="arrow" /></button>
+            <button type="button" className="pv-btn ghost-light" onClick={() => setModal('returning')}>Already accepted? Get my link</button>
+          </div>
+        </div>
+        <div className="pv-gate-card" aria-label="What the LP page holds">
+          <p className="pv-gate-card-h">Behind the door</p>
+          <ul>
+            {BEHIND.map((b) => <li key={b}><Icon name="lock" />{b}</li>)}
+            <li className="live"><span className="pv-dot" />Live deal flow, every evening</li>
+          </ul>
+        </div>
+        <p className="pv-gate-note">
+          EuVECA pre-marketing communication, professional and eligible investors only. Not an offer to subscribe.
+        </p>
+      </div>
+    </div>
+    {/* hors du fond sombre : la boîte garde ses couleurs */}
+    <DealFlowModal lp open={modal !== null} startPane={modal ?? 'apply'} onClose={() => setModal(null)} />
+    </>
+  );
+}
+
 export default function LpPage() {
+  const [access] = useState(lpAccess);
+  return access ? <LpContent /> : <LpGate />;
+}
+
+function LpContent() {
   // Le deal flow live : directement si ce navigateur en a l'accès, sinon la candidature.
   const [open, setOpen] = useState(false);
   const follow = () => { if (savedAccess()) window.location.href = '/dealflow/'; else setOpen(true); };
@@ -203,7 +269,7 @@ export default function LpPage() {
           <div className="pv-head">
             <p className="pv-kick">Protection</p>
             <h2 className="pv-h2">Founders get control. LPs keep the protection.</h2>
-            <p className="sub">We give up the board seat and the veto. We keep every right that protects capital.</p>
+            <p className="sub">We give up the veto on how founders run, raise or sell. We keep a board seat and every right that protects capital.</p>
           </div>
           <Cards items={PROTECTION} cols={3} />
         </div>
@@ -218,7 +284,7 @@ export default function LpPage() {
           <div className="pv-head">
             <p className="pv-kick">LP access</p>
             <h2 className="pv-h2">ProFund Fund I. {FUND_SIZE}, EuVECA, Luxembourg.</h2>
-            <p className="sub">Closed-ended fund. Fact sheet, fund model (Excel) and data room on request, for professional and eligible investors.</p>
+            <p className="sub">Closed-ended fund. Our LPs are mainly high-net-worth individuals and family offices. Fact sheet, fund model (Excel) and data room on request, for professional and eligible investors.</p>
           </div>
           <div className="pv-split">
             <div>
