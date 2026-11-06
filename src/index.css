@@ -875,6 +875,52 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
 }
 @media (prefers-reduced-motion: reduce) { .pv-stake-pf::before, .pv-stake-pf span { transition: none; } }
 
+/* 06/11 : ProFund en contraste. ProFund = la nuit (barre d'aujourd'hui, ligne, bande du
+   tableau, chiffres blancs) ; le chemin VC en gris pâle ; ce qu'il a pris, en hachures
+   rouges au-dessus de chaque barre ; le cas réel en rouge plein. */
+.pv-stake .pv-stake-bars { position: relative; }
+.pv-stake .pv-stake-bars i { background: #e3e6ea; }
+.pv-stake-col.round .pv-stake-bars i { background: #d3d8de; }
+.pv-stake-col.bridge .pv-stake-bars i { background: #e6e9ed; }
+.pv-stake-col.now .pv-stake-bars i { background: linear-gradient(180deg, #2c3440, #0f1216); box-shadow: 0 14px 28px -16px rgba(15, 18, 22, .8); }
+.pv-stake-col.now b { color: var(--ink); }
+.pv-stake-col.real .pv-stake-bars i { background: linear-gradient(180deg, #e8a49c, var(--red)); }
+.pv-stake .pv-stake-bars s { position: absolute; left: 50%; top: 0; bottom: var(--h); z-index: 1; width: min(64px, 72%);
+  transform: translateX(-50%); border-radius: 10px 10px 0 0; text-decoration: none;
+  background: repeating-linear-gradient(135deg, rgba(192, 57, 43, .2) 0 6px, rgba(192, 57, 43, .05) 6px 12px);
+  box-shadow: inset 0 0 0 1px rgba(192, 57, 43, .28); opacity: 0; transition: opacity .6s calc(var(--d, 0s) + .9s); }
+.pv-stake-col.bridge .pv-stake-bars s { width: min(40px, 48%); }
+.pv-stake.in .pv-stake-bars s { opacity: 1; }
+.pv-stake-pf::before { top: -2px; border-top: 4px solid var(--ink); }
+.pv-stake-pf span { bottom: calc(100% + 10px); padding: 5px 12px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 13px; }
+.pv-legend .pf::before { height: 4px; background: var(--ink); }
+.pv-stake-pf em { font-style: normal; }
+.pv-legend .vc::before { background: #d3d8de; }
+.pv-legend .lost::before { background: repeating-linear-gradient(135deg, rgba(192, 57, 43, .45) 0 3px, rgba(192, 57, 43, .1) 3px 6px); }
+
+/* Le tableau : la colonne ProFund en bande de nuit, chiffres blancs, l'écart en pastille */
+.pv-math-head span.pf { align-self: stretch; margin: -20px 0 -15px; padding: 20px 22px 15px; border-radius: 18px 18px 0 0;
+  background: var(--night); color: #fff; }
+.pv-math-v.pf { align-self: stretch; align-content: center; margin: -22px 0 -25px; padding: 22px 22px 25px;
+  background: linear-gradient(180deg, #171c23, #10141a); }
+.pv-math-row:last-child .pv-math-v.pf { margin-bottom: -24px; padding-bottom: 24px; border-radius: 0 0 18px 18px; }
+.pv-math-v.pf b { color: #fff; font-size: clamp(28px, 2.8vw, 42px); }
+.pv-math-v.pf i { background: linear-gradient(90deg, #6f8aa8, #e4edf6); box-shadow: 0 0 18px rgba(159, 182, 207, .45); }
+.pv-math-v.vc b { color: var(--soft); font-size: clamp(21px, 1.9vw, 27px); }
+.pv-math-v.vc i { background: #eceef1; }
+.pv-math-x { justify-self: start; display: inline-flex; padding: 3px 10px; border-radius: 999px; font-style: normal;
+  background: rgba(159, 182, 207, .16); color: #d3e1ef; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+@media (max-width: 700px) {
+  .pv-math-v.pf, .pv-math-row:last-child .pv-math-v.pf { margin: 0; padding: 10px 12px 12px; border-radius: 14px; }
+  .pv-math-v.pf small { color: var(--blue-glow); }
+  .pv-math-v.pf b { font-size: 24px; }
+  .pv-math-x { font-size: 11px; padding: 2px 8px; white-space: normal; }
+  .pv-stake .pv-stake-bars s, .pv-stake-col.bridge .pv-stake-bars s { width: 70%; border-radius: 6px 6px 0 0; }
+  .pv-stake-pf span { font-size: 11px; padding: 4px 9px; }
+  .pv-stake-pf em { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .pv-stake .pv-stake-bars s { transition: none; } }
+
 /* Le tableau, avec le cas réel (accueil) : une colonne rouge entre VC et ProFund */
 .pv-math:has(.real) .pv-math-head, .pv-math-row.real { grid-template-columns: 130px repeat(3, minmax(0, 1fr)); gap: 28px; }
 .pv-math-head .real { color: var(--red); }

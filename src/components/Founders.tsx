@@ -245,20 +245,23 @@ function StakeChart() {
       <div className="pv-stake-top">
         <h3 className="pv-h3">Your stake, round after round</h3>
         <div className="pv-legend">
-          <span className="vc">VC path, Carta medians</span>
-          <span className="real">A real case</span>
           <span className="pf">ProFund path</span>
+          <span className="vc">VC path, Carta medians</span>
+          <span className="lost">Lost to dilution</span>
+          <span className="real">A real case</span>
         </div>
       </div>
       <div className="pv-stake-plot">
         <div className="pv-stake-pf" aria-hidden="true">
-          <span>ProFund path: {pct(FM.founders, 1)}, from today to exit</span>
+          <span>ProFund path: {pct(FM.founders, 1)}<em>, from today to exit</em></span>
         </div>
         {/* la colonne du cas réel est plus large : son nom tient sur mobile */}
         <div className="pv-stake-grid" style={{ gridTemplateColumns: `repeat(${cols.length - 1}, minmax(0, 1fr)) minmax(0, 1.6fr)` }}>
           {cols.map((c, i) => (
             <div key={`${c.label}${i}`} className={`pv-stake-col ${c.kind}`} style={{ ['--d' as string]: `${i * 0.1}s` }}>
               <div className="pv-stake-bars">
+                {/* 06/11 : ce que le chemin VC a pris, de la barre jusqu'à la ligne ProFund */}
+                {c.kind !== 'now' && <s style={{ ['--h' as string]: h(c.v) }} aria-hidden="true" />}
                 <i style={{ ['--h' as string]: h(c.v) }}><b>{pct(c.v, 1)}</b></i>
               </div>
               <span className="pv-stake-l">{c.label}</span>
@@ -276,12 +279,18 @@ export function FounderTable({ investor = false, real = false }: { investor?: bo
   const [ref, seen] = useInView<HTMLDivElement>();
   const top = Math.max(...FM.rows.map((r) => r.founders_profund));
   const bar = (v: number) => ({ ['--w' as string]: `${Math.max(1.5, (v / top) * 100)}%` });
+  // 06/11 : l'écart, dit dans la colonne ProFund (accueil)
+  const gain = (r: { founders_vc: number; founders_profund: number }) => {
+    if (!(r.founders_vc > 0)) return `VC path: ${eur(0)}`;
+    const x = r.founders_profund / r.founders_vc;
+    return `${x >= 10 ? Math.round(x) : x.toFixed(1)}× the VC path`;
+  };
   return (
     <div ref={ref} className={`pv-math${seen ? ' in' : ''}`}>
       <div className="pv-math-head" aria-hidden="true">
         <span>Exit</span><span>Founders, VC path</span>
         {real && <span className="real">At {pct(REAL_IPO, 1)}, the Deliveroo case</span>}
-        <span>Founders, ProFund path</span>
+        <span className="pf">Founders, ProFund path</span>
         {investor && <span>Series A investor, VC path</span>}
         {investor && <span>ProFund, equity</span>}
       </div>
@@ -304,6 +313,7 @@ export function FounderTable({ investor = false, real = false }: { investor?: bo
             <small>ProFund path</small>
             <b>{eur(r.founders_profund, 'tile')}</b>
             <i style={bar(r.founders_profund)} />
+            {!investor && <em className="pv-math-x">{gain(r)}</em>}
           </span>
           {investor && <span className="pv-math-m"><small>Series A, VC path</small>{mult(r.series_a_vc)}</span>}
           {investor && <span className="pv-math-m pf"><small>ProFund, equity</small>{mult(r.series_a_profund)}</span>}
