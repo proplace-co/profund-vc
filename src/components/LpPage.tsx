@@ -4,10 +4,11 @@ import DealFlowModal from './DealFlowModal';
 import { CONTACT } from './LeadForm';
 import { HeroVisual, Icon, type IconName } from './Thesis';
 import { FounderEngines, StakeChart, TheTeam, founderNote } from './Founders';
-import { Downloads, PerformanceTables, TermsTables } from './ProFundPage';
+import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
+import { Drawer } from './Drawer';
 import { savedAccess } from '../lib/access';
 import { eur, eurRange, fund, mult, pct } from '../lib/fund';
-import { millions, payout, vcCapTable } from '../lib/founderMath.js';
+import { millions, payout, payoutDetail, vcCapTable } from '../lib/founderMath.js';
 import { FACTSHEET_URL } from '../lib/links';
 
 // /lp — LA PAGE DES LPs. Réécrite le 06/11 (Antoine) en sept chapitres numérotés, un seul
@@ -104,6 +105,52 @@ const ROWS: Row[] = [
   { exit: 1800e6, e: EXITS.tink },
   { exit: 7000e6, e: EXITS.wolt },
 ].map((r) => ({ ...r, ...atExit(r.exit) }));
+// L'explication de chaque ligne (06/11) : calculée par le même moteur, jamais écrite à la main.
+const PREFS_PF = FM.raised_before;                  // les préférences sur le chemin ProFund (seed + série A)
+const A_STAKE0 = FM.holders.find((h) => h.id === 'series_a')!.stake;
+const A_STAKE_VC = CAP_VC.find((h) => h.id === 'series_a')!.stake;
+const F_STAKE_VC = CAP_VC[0].stake;
+const WHO: Record<string, string> = { seed: 'the seed investors', series_a: 'the Series A' };
+const who = (ids: string[]) => ids.map((id) => WHO[id] ?? id).join(' and ');
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+type Calc = { vc: string; pf: string };
+function founderCalc(r: Row): Calc {
+  const v = payoutDetail(r.exit, CAP_VC);
+  const vc = v.rest <= 1
+    ? `${eur(PREFS_VC, 'tile')} of 1× preferences come before the founders. A ${eur(r.exit, 'val')} sale does not cover them: it all goes to the investors. Founders: €0.`
+    : v.kept.length === 0
+      ? `Every investor is better off converting into shares. The founders keep their ${pct(F_STAKE_VC, 1)} of ${eur(r.exit, 'val')}: ${money(r.fVc)}.`
+      : `${cap(who(v.kept))} take back ${money(v.prefsPaid)} first; the ${money(v.rest)} left is shared by the other shareholders: ${money(r.fVc)} for the founders.`;
+  const left = Math.max(0, r.exit - DEBT);
+  const p = payoutDetail(left, CAP_PF);
+  const head = `Our loans are repaid first: ${eur(DEBT, 'tile')}, leaving ${money(left)}. `;
+  const pf = left <= 0 ? 'The loans take the whole sale. Founders: €0.'
+    : p.rest <= 1
+      ? `${head}The seed investors and the Series A take it back, within their ${eur(PREFS_PF, 'tile')} of 1× preferences. Founders: €0.`
+      : p.kept.length === 0
+        ? `${head}Every investor converts into shares; the founders keep their ${pct(FM.founders, 1)}: ${money(r.fPf)}.`
+        : `${head}${cap(who(p.kept))} take${p.kept.length === 1 ? 's' : ''} back ${money(p.prefsPaid)} (1× preference); the ${money(p.rest)} left is shared by the other shareholders: ${money(r.fPf)} for the founders.`;
+  return { vc, pf };
+}
+function lpCalc(r: Row): Calc {
+  const v = payoutDetail(r.exit, CAP_VC);
+  const av = v.out.series_a ?? 0;
+  const vc = v.kept.includes('series_a')
+    ? (v.rest <= 1
+      ? `The sale is below the ${eur(PREFS_VC, 'tile')} of preferences: investors share it pro rata to what they put in. ${money(av)} back on the ${eur(A_COST, 'tile')} cheque: ${x1(r.aVc)}.`
+      : `It takes back its ${eur(A_COST, 'tile')} preference: ${x1(r.aVc)}.`)
+    : `Diluted from ${pct(A_STAKE0)} to ${pct(A_STAKE_VC, 1)} by the later rounds, it converts: ${pct(A_STAKE_VC, 1)} of ${eur(r.exit, 'val')} is ${money(av)}, ${x1(r.aVc)}.`;
+  const left = Math.max(0, r.exit - DEBT);
+  const p = payoutDetail(left, CAP_PF);
+  const ap = p.out.series_a ?? 0;
+  const head = `Our loans are repaid first (${eur(DEBT, 'tile')}). `;
+  const pf = p.kept.includes('series_a')
+    ? (ap < A_COST - 1
+      ? `${head}The Series A takes back what is left of its ${eur(A_COST, 'tile')} preference: ${money(ap)}, ${x1(r.aPf)}.`
+      : `${head}The Series A takes back its ${eur(A_COST, 'tile')} (1× preference): ${x1(r.aPf)}.`)
+    : `${head}Still ${pct(A_STAKE0)}, since no round after ours dilutes it, the Series A converts: ${pct(A_STAKE0)} of the ${money(left)} left is ${money(ap)}, ${x1(r.aPf)}.`;
+  return { vc, pf };
+}
 const WHY = ROWS.find((r) => r.e === EXITS.freetrade)!;
 const TINK = ROWS.find((r) => r.e === EXITS.tink)!;
 const money = (v: number) => eur(v, v >= 1e9 ? 'val' : 'tile');
@@ -139,9 +186,21 @@ function Stats({ items }: { items: { b: string; t: ReactNode }[] }) {
   );
 }
 
-/** Un tableau à une seule question : VC contre ProFund, à des prix de vente réels. */
-function Compare({ head, vc, pf }: { head: [string, string]; vc: (r: Row) => string; pf: (r: Row) => ReactNode }) {
+/** Un tableau à une seule question : VC contre ProFund, à des prix de vente réels.
+ *  `calc` : le calcul de chaque ligne, déplié d'un clic (06/11). */
+function Compare({ id, head, vc, pf, calc }: {
+  id: string; head: [string, string]; vc: (r: Row) => string; pf: (r: Row) => ReactNode; calc: (r: Row) => Calc;
+}) {
+  const [open, setOpen] = useState(false);
   return (
+    <>
+    <div className="lp-cmp-tools">
+      <button type="button" className={`pv-btn line pv-toggle lp-cmp-toggle${open ? ' open' : ''}`} aria-expanded={open}
+              onClick={() => setOpen((o) => !o)}>
+        <span>{open ? 'Hide the calculations' : 'Show the calculation, line by line'}</span>
+        <span className="pv-toggle-ic" aria-hidden="true" />
+      </button>
+    </div>
     <div className="lp-cmp" role="table">
       <div className="lp-cmp-row head" role="row">
         <span role="columnheader">Sold at</span>
@@ -155,8 +214,29 @@ function Compare({ head, vc, pf }: { head: [string, string]; vc: (r: Row) => str
           <span className="lp-cmp-eg" role="cell"><ExitLink e={r.e} /><small>{r.e.d} · {r.e.v}</small></span>
           <span className="lp-cmp-vc" role="cell"><small>{head[0]}</small>{vc(r)}</span>
           <span className="lp-cmp-pf" role="cell"><small>{head[1]}</small>{pf(r)}</span>
+          <Drawer id={`${id}-${r.exit}`} open={open} label={`How the ${eur(r.exit, 'val')} line is calculated`} className="lp-cmp-calc">
+            <div className="lp-calc">
+              <p><b>{head[0]}.</b> {calc(r).vc}</p>
+              <p className="pf"><b>{head[1]}.</b> {calc(r).pf}</p>
+            </div>
+          </Drawer>
         </div>
       ))}
+    </div>
+    </>
+  );
+}
+
+/** Un bloc repliable : un titre, un « + » qui tourne, le contenu en dessous (06/11). */
+function Fold({ id, title, sub, children }: { id: string; title: string; sub?: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`lp-fold${open ? ' open' : ''}`}>
+      <button type="button" className="lp-fold-bar" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)}>
+        <span><b>{title}</b>{sub && <small>{sub}</small>}</span>
+        <span className="pv-toggle-ic" aria-hidden="true" />
+      </button>
+      <Drawer id={id} open={open} label={title}>{children}</Drawer>
     </div>
   );
 }
@@ -326,10 +406,12 @@ function LpContent() {
         </div>
 
         <h3 className="pv-h3 lp-t">What the founders take home, at real European exit prices</h3>
-        <Compare head={['VC path', 'ProFund path']}
+        <Compare id="calc-founders" head={['VC path', 'ProFund path']} calc={founderCalc}
           vc={(r) => money(r.fVc)}
-          pf={(r) => <>{money(r.fPf)}<i>{r.fVc > 0 ? `${(r.fPf / r.fVc).toFixed(1)}× more` : r.fPf > 0 ? 'from €0' : 'nobody gains'}</i></>} />
-        <p className="pv-fine">{founderNote()}</p>
+          pf={(r) => <>{money(r.fPf)}<i>{r.fVc > 0 ? `${(r.fPf / r.fVc).toFixed(1)}× more` : r.fPf > 0 ? 'from €0' : 'also €0'}</i></>} />
+        <Fold id="assumptions" title="The assumptions behind these figures" sub="Carta medians, rounds, preferences, loans">
+          <p className="pv-fine lp-fold-text">{founderNote()}</p>
+        </Fold>
       </Chapter>
 
       {/* ── 04 · Ce que gagnent les LPs ── */}
@@ -337,7 +419,7 @@ function LpContent() {
         title="The same unicorn, three times the multiple."
         sub={`No round after ours dilutes us. When a company we back becomes a unicorn, we still own our full stake: ${pct(FR.stake_at_exit, 1)} of our best company at exit, in the model.`}>
         <h3 className="pv-h3 lp-t">What a Series A cheque returns, at the same prices</h3>
-        <Compare head={['Series A on the VC path', 'ProFund']}
+        <Compare id="calc-lp" head={['Series A on the VC path', 'ProFund']} calc={lpCalc}
           vc={(r) => x1(r.aVc)}
           pf={(r) => <>{x1(r.aPf)}<i>{(r.aPf / r.aVc).toFixed(1)}× more</i></>} />
         <p className="lp-read">
@@ -352,19 +434,21 @@ function LpContent() {
           { b: '13% → 86%', t: <>$1B+ IPOs were 13% of European tech IPOs, and 86% of their value.<Ref s={SRC.atomico25} /></> },
           { b: '77%', t: <>Of European tech M&amp;A deals in 2023 were under $100M.<Ref s={SRC.atomico23} /></> },
         ]} />
-        <div className="pv-exit-bands lp-bands">
-          {EXIT_BANDS.map((band) => (
-            <div key={band.h} className="pv-exit-band">
-              <h4>{band.h}</h4>
-              <ul>
-                {band.items.map((it) => (
-                  <li key={it.co}><b><ExitLink e={it} /></b><em>{it.v}</em><small>{it.d}</small></li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <p className="pv-fine">Every company links to the buyer’s announcement or filing. Values as disclosed, in their own currency; the table above rounds them to the nearest sale price in euros.</p>
+        <Fold id="exits" title="15 real European exits, at every size" sub="Each one links to the buyer’s announcement or filing">
+          <div className="pv-exit-bands lp-bands">
+            {EXIT_BANDS.map((band) => (
+              <div key={band.h} className="pv-exit-band">
+                <h4>{band.h}</h4>
+                <ul>
+                  {band.items.map((it) => (
+                    <li key={it.co}><b><ExitLink e={it} /></b><em>{it.v}</em><small>{it.d}</small></li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <p className="pv-fine">Values as disclosed, in their own currency; the tables above round them to the nearest sale price in euros.</p>
+        </Fold>
       </Chapter>
 
       {/* ── 05 · Le fonds ── */}
@@ -390,9 +474,16 @@ function LpContent() {
             </div>
           ))}
         </div>
-        <div className="lp-fund-tables">
-          <TermsTables />
-          <PerformanceTables />
+        <div className="lp-folds">
+          <Fold id="fund-terms" title="Terms and allocation" sub="Size, fees, carry, GP commitment, where the money goes, where 36% comes from">
+            <div className="lp-fund-tables"><TermsTables /></div>
+          </Fold>
+          <Fold id="fund-perf" title="Returns and stress tests" sub="Target, base and stress cases; without the unicorn; a bigger one">
+            <div className="lp-fund-tables"><PerformanceTables /></div>
+          </Fold>
+          <Fold id="fund-sim" title="The simulation, line by line" sub="Every position of the three layers: cheques, buybacks, loans, stake at exit, return">
+            <div className="lp-fund-tables lp-sim"><SimulationTables /></div>
+          </Fold>
         </div>
         <Downloads deck />
       </Chapter>

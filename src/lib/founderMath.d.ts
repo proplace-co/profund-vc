@@ -3,6 +3,10 @@ export interface Holder { id: string; stake: number; pref: number }
 
 export function payout(value: number, holders: Holder[]): Record<string, number>;
 
+export function payoutDetail(value: number, holders: Holder[]): {
+  out: Record<string, number>; kept: string[]; converted: string[]; prefsPaid: number; rest: number;
+};
+
 export function founderPaths(input: {
   founders: number;
   holders: Holder[];

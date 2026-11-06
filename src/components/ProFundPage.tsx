@@ -466,17 +466,26 @@ function Simulation() {
         <span className="eyebrow">Appendix · Fund simulation</span>
         <h2 className="h2">Line-by-line entry, buybacks, loans &amp; exit.<br /><em>Target case, every position of the three layers.</em></h2>
         <p className="pf-intro">Ownership at exit is higher than at entry on every line where the founder grows with us: buybacks and cancellations lift our stake with his.</p>
-        {LAYER_IDS.map((id) => <SimTable key={id} id={id} />)}
-        <div className="table-scroll pv-total"><table className="fund-table">
-          <tbody>
-            <tr className="sub"><td>Total</td><td>First cheques {eur(A.first)}</td><td>Buybacks {eur(LAYER_IDS.reduce((s, id) => s + L[id].buyback, 0))}</td><td>Follow-on {eur(LAYER_IDS.reduce((s, id) => s + L[id].follow, 0))}</td><td>Loans {eur(A.loans)}</td><td>Fund return {eur(TARGET.gross_proceeds)}</td><td className="moic">{mult(TARGET.gross_moic)}</td></tr>
-          </tbody>
-        </table></div>
-        <p className="pf-fine">
-          Fund return at exit value, equity plus loan repayment.
-        </p>
+        <SimulationTables />
       </div>
     </div>
+  );
+}
+
+/** Les trois étages ligne à ligne et le total, cas cible : /pitch (annexe) et /lp. */
+export function SimulationTables() {
+  return (
+    <>
+      {LAYER_IDS.map((id) => <SimTable key={id} id={id} />)}
+      <div className="table-scroll pv-total"><table className="fund-table">
+        <tbody>
+          <tr className="sub"><td>Total</td><td>First cheques {eur(A.first)}</td><td>Buybacks {eur(LAYER_IDS.reduce((s, id) => s + L[id].buyback, 0))}</td><td>Follow-on {eur(LAYER_IDS.reduce((s, id) => s + L[id].follow, 0))}</td><td>Loans {eur(A.loans)}</td><td>Fund return {eur(TARGET.gross_proceeds)}</td><td className="moic">{mult(TARGET.gross_moic)}</td></tr>
+        </tbody>
+      </table></div>
+      <p className="pf-fine">
+        Fund return at exit value, equity plus loan repayment.
+      </p>
+    </>
   );
 }
 

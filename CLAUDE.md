@@ -178,7 +178,12 @@ premier closing, co-investissement, deal flow) et la carte de contact du Foundin
 (téléphone, le même que la fiche, et email). Sources numérotées et cliquables en bas
 (`SRC`), chaque cession réelle renvoie au communiqué ou au dépôt de l'acheteur. Pas de barre
 du haut ni de formulaire ; le deal flow s'ouvre directement si le LP est accepté, sinon le
-popup. « Our LPs are mainly high-net-worth individuals and family offices »
+popup. Pour rester digeste (06/11) : chaque tableau a un bouton « Show the calculation, line
+by line » qui déplie, sous chaque ligne, le calcul des deux chemins, généré par
+`payoutDetail` (`founderMath.js` : qui garde sa préférence, ce qu'elle prend, ce qui reste),
+jamais écrit à la main ; les détails sont repliés (`Fold`) : hypothèses, 15 cessions,
+termes et allocation, performance et tests, la simulation ligne à ligne (`SimulationTables`,
+exportée de `ProFundPage.tsx`, la même que /pitch et la fiche p. 4). « Our LPs are mainly high-net-worth individuals and family offices »
 (06/11). **Positionnement (06/11, Antoine)** : on chasse les licornes comme Index Ventures ou
 Sequoia, et les meilleurs fondateurs nous choisissent parce que nos termes sont réellement
 alignés (pas une posture). Plus de « returns built on ownership, not on unicorns » ni de

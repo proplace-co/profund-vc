@@ -1240,6 +1240,35 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   .lp-cmp-pf { font-size: 19px; padding: 8px 12px; }
 }
 
+/* 06/11 (3) : les calculs dépliables, les blocs repliables, l'air sous le bandeau final */
+.lp-cmp-tools { display: flex; justify-content: flex-end; margin: -6px 0 12px; }
+.lp-cmp-toggle { height: 44px; font-size: 14.5px; }
+.pv-btn.line.pv-toggle .pv-toggle-ic, .lp-fold .pv-toggle-ic { background: var(--blue-soft); color: var(--blue-dk); }
+.lp-cmp-calc { grid-column: 1 / -1; }
+.lp-calc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 12px; }
+.lp-calc p { margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--bg); font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+.lp-calc p.pf { background: var(--blue-tint); box-shadow: inset 0 0 0 1px #dfe6ef; }
+.lp-calc b { color: var(--ink); }
+.lp-folds { display: grid; gap: 12px; margin: 8px 0 28px; }
+.lp-fold { border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
+.lp-fold + .lp-fold { margin-top: 0; }
+.lp-fold-bar { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px;
+  border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+.lp-fold-bar > span:first-child { display: grid; gap: 3px; }
+.lp-fold-bar b { font-size: 17px; font-weight: 750; letter-spacing: -.015em; color: var(--ink); }
+.lp-fold-bar small { font-size: 13.5px; color: var(--muted); }
+.lp-fold-bar:hover b { color: var(--blue-dk); }
+.lp-fold.open .pv-toggle-ic { transform: rotate(135deg); }
+.lp-fold .pv-drawer { margin-inline: 0; }
+.lp-fold .pv-drawer-in { padding-inline: 22px; }
+.lp-fold .pv-drawer-body { padding-bottom: 22px; }
+.lp-fold-text { margin: 0; }
+#founders .lp-fold, #returns .lp-fold { margin-top: 16px; }
+.lp-sim .pv-sim { margin-top: 8px; }
+.lp-alloc-sec .pv-lp-notice { margin-top: 28px; }
+@media (max-width: 900px) { .lp-calc { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) { .lp-cmp-tools { justify-content: stretch; } .lp-cmp-toggle { width: 100%; justify-content: space-between; } }
+
 /* /pitch : les slides */
 .pv-slide-n { display: inline-grid; place-items: center; min-width: 32px; height: 22px; margin-right: 12px; padding: 0 7px;
   border-radius: 999px; background: var(--blue-soft); color: var(--blue-dk); font-size: 11.5px; letter-spacing: .04em; vertical-align: 1px; }
