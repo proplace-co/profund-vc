@@ -19,19 +19,6 @@ export function payout(value, holders) {
   return equilibrium(value, holders).out;
 }
 
-/**
- * Le détail de la répartition (06/11, /lp : chaque ligne du tableau expliquée) : qui garde
- * sa préférence, ce qu'elle prend, ce qui reste aux actions ordinaires.
- * @param {number} value
- * @param {{id: string, stake: number, pref: number}[]} holders
- */
-export function payoutDetail(value, holders) {
-  const { out, conv } = equilibrium(value, holders);
-  const kept = holders.filter((h) => h.pref > 0 && !conv.has(h.id));
-  const prefsPaid = Math.min(value, kept.reduce((s, h) => s + h.pref, 0));
-  return { out, kept: kept.map((h) => h.id), converted: [...conv], prefsPaid, rest: value - prefsPaid };
-}
-
 function equilibrium(value, holders) {
   const alloc = (conv) => {
     const out = {};

@@ -168,21 +168,26 @@ seul fil : « j'ai compris, la stratégie tient, ils auront les meilleurs fondat
 ticket, je sais qui appeler »). Héros (titre, quatre chiffres : TVPI et TRI cibles, part de
 notre meilleure société à la sortie, premier closing) ; 01 Why now (quatre chiffres sourcés) ;
 02 How we win the best founders (chèque pour chèque, termes, moteurs ; puis les moteurs
-version LP et Proplace / Maximum Insurance) ; 03 What the founder gets (le graphique, « Why
-founders get €0 on the VC path » expliqué au prix de Freetrade, le tableau des gains à six
-prix de cessions réelles) ; 04 What our LPs get (le multiple d'un chèque de série A aux mêmes
-prix, la loi de puissance européenne, 15 cessions réelles) ; 05 The fund (cibles, étages,
-termes, performance, documents) ; 06 Protection and team ; 07 « What €10M would
+version LP et Proplace / Maximum Insurance) ; 03 What the founder gets (`LISTINGS` : sept introductions
+en bourse européennes, parts des fondateurs lues dans les prospectus, chaque chiffre cliquable ;
+les médianes Carta ; puis une multiplication aux prix de cessions réelles) ; 04 What our LPs get
+(la même multiplication pour un chèque de 10 M€ pour 20 %, hypothèse dite en clair ; la loi de
+puissance européenne, 15 cessions réelles) ; 05 The fund (le modèle, dit comme tel : cibles,
+étages, termes, performance, documents) ; 06 Protection and team ; 07 « What €10M would
 represent » (part du fonds et du premier closing, résultat net dans le modèle, frais du
 premier closing, co-investissement, deal flow) et la carte de contact du Founding Partner
 (téléphone, le même que la fiche, et email). Sources numérotées et cliquables en bas
 (`SRC`), chaque cession réelle renvoie au communiqué ou au dépôt de l'acheteur. Pas de barre
 du haut ni de formulaire ; le deal flow s'ouvre directement si le LP est accepté, sinon le
-popup. Pour rester digeste (06/11) : chaque tableau a un bouton « Show the calculation, line
-by line » qui déplie, sous chaque ligne, le calcul des deux chemins, généré par
-`payoutDetail` (`founderMath.js` : qui garde sa préférence, ce qu'elle prend, ce qui reste),
-jamais écrit à la main ; les détails sont repliés (`Fold`) : hypothèses, 15 cessions,
-termes et allocation, performance et tests, la simulation ligne à ligne (`SimulationTables`,
+popup. **Pas de société fictive sur /lp (06/11, Antoine : « fais des chiffres réels »)** : plus
+de tableau « €0 » à côté de noms de sociétés réelles, ça laissait croire que leurs fondateurs
+avaient touché 0 €. JAMAIS un nom de société réelle à côté d'un calcul fictif. Les calculs sont
+toujours visibles, jamais dépliables : prix réel × part, ce qui est réel et ce qui est notre
+hypothèse dit au-dessus. Aucun prix sous le dernier tour (500 M€, 1,8 Md€, 7 Md€). Ne pas écrire
+« lever moins, c'est garder plus » : ces cas ne le montrent pas (Criteo, 47 M€ levés, 8,4 %), et
+ces parts mêlent dilution et ventes de titres. La colonne ProFund reste une hypothèse : aucune
+société n'a encore suivi ce chemin. Carta n'a pas de coupe européenne : ne pas dire « européen »
+pour ses médianes. Restent repliés (`Fold`) : 15 cessions, termes et allocation, performance et tests, la simulation ligne à ligne (`SimulationTables`,
 exportée de `ProFundPage.tsx`, la même que /pitch et la fiche p. 4). « Our LPs are mainly high-net-worth individuals and family offices »
 (06/11). **Positionnement (06/11, Antoine)** : on chasse les licornes comme Index Ventures ou
 Sequoia, et les meilleurs fondateurs nous choisissent parce que nos termes sont réellement
@@ -194,8 +199,7 @@ dit « The new go-to fund for elite founders » : chèque pour chèque en seed, 
 A et B (jusqu'à 10 M€ du fonds, SPV pour la taille du tour), méga-tours en SPV avec nos LPs
 (l'upside reste aux LPs, le fondateur garde nos termes), on suit les termes d'un lead de
 premier plan, on gagne par les termes ; la fiche p. 1 porte cette ligne au lieu de « One
-round. Then never diluted again. » et n'a plus la capture du pipeline. « Exits » s'intitule « From a trade sale to a unicorn » ; son tableau (`pv-xt`) vend la
-société à six prix réels, de 40 M€ à 7 Md€ (Wolt), licornes surlignées, avantage en vert. **/lp est fermée
+round. Then never diluted again. » et n'a plus la capture du pipeline. **/lp est fermée
 (v3.15)** derrière la MÊME candidature que le deal flow (`DealFlowModal` avec `lp`) : elle
 s'ouvre quand ce navigateur a l'accès retenu par /dealflow (`lib/access.ts`, lien magique
 vérifié une fois ; /dealflow porte un lien « LP page »), ou avec `?gp` dans l'URL (aperçu du

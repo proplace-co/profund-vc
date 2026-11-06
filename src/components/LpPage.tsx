@@ -3,19 +3,19 @@ import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { CONTACT } from './LeadForm';
 import { HeroVisual, Icon, type IconName } from './Thesis';
-import { FounderEngines, StakeChart, TheTeam, founderNote } from './Founders';
+import { FounderEngines, TheTeam } from './Founders';
 import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
 import { Drawer } from './Drawer';
 import { savedAccess } from '../lib/access';
 import { eur, eurRange, fund, mult, pct } from '../lib/fund';
-import { millions, payout, payoutDetail, vcCapTable } from '../lib/founderMath.js';
 import { FACTSHEET_URL } from '../lib/links';
 
 // /lp — LA PAGE DES LPs. Réécrite le 06/11 (Antoine) en sept chapitres numérotés, un seul
 // fil : un LP exigeant doit se dire « j'ai compris, la stratégie tient, ils ont accès aux
 // meilleurs fondateurs, je mets un ticket, et je sais comment les joindre ».
-//   01 Why now · 02 How we win the best founders · 03 What the founder gets (le « pourquoi
-//   0 € » expliqué pas à pas) · 04 What our LPs get · 05 The fund · 06 Protection and team ·
+//   01 Why now · 02 How we win the best founders · 03 What the founder gets (de vraies
+//   introductions en bourse, de vraies médianes, puis une multiplication) · 04 What our LPs
+//   get · 05 The fund (le modèle, dit comme tel) · 06 Protection and team ·
 //   07 What €10M would represent (et le contact : téléphone, email).
 // Pas de barre du haut ni de formulaire. Chiffres du fonds lus dans fund.json (comme la
 // fiche et /pitch) ; chiffres de tiers numérotés et cliquables (SOURCES, en bas), cessions
@@ -37,6 +37,7 @@ const PHONE = '+33 6 83 10 72 86';           // le même que la fiche PDF (facts
 const PHONE_TEL = 'tel:+33683107286';
 const TICKET = 10_000_000;                    // l'allocation discutée au chapitre 07 (page, pas modèle)
 
+const DELIVEROO_PROSPECTUS = 'https://lexismarkettracker.lexisnexis.com/documents/0035/35079/167313/MT_Deliveroo%20plc_prospectus_22%20March%202021.pdf';
 // ── Les sources : numérotées, cliquables, listées en bas de page ──────────────
 type Src = { n: number; label: string; url: string };
 const SRC = {
@@ -46,7 +47,7 @@ const SRC = {
   bessemer: { n: 4, label: 'Bessemer Venture Partners, The State of AI 2025 (13 August 2025)', url: 'https://www.bvp.com/atlas/the-state-of-ai-2025' },
   carta: { n: 5, label: 'Carta, Founder Ownership Report 2026', url: 'https://carta.com/data/founder-ownership-2026/' },
   saastr: { n: 6, label: 'SaaStr on Carta data: founders hold 11.4% after the Series D', url: 'https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/' },
-  deliveroo: { n: 7, label: 'CNBC, 23 March 2021: Deliveroo’s IPO prospectus, Will Shu at 6.3%', url: 'https://www.cnbc.com/2021/03/23/deliveroo-ipo-who-stands-to-get-rich.html' },
+  deliveroo: { n: 7, label: 'Deliveroo plc, IPO prospectus, 22 March 2021: Will Shu’s stake, capital raised', url: DELIVEROO_PROSPECTUS },
   atomico25: { n: 8, label: 'Atomico, State of European Tech 2025: $1B+ exits, share of deals and of value', url: 'https://2025.stateofeuropeantech.com/chapters/unlocking-capital-and-liquidity' },
   atomico23: { n: 9, label: 'Atomico, State of European Tech 2023: 77% of M&A deals under $100M', url: 'https://2023.stateofeuropeantech.com/exits' },
 } satisfies Record<string, Src>;
@@ -84,78 +85,115 @@ function ExitLink({ e }: { e: Exit }) {
   return <a href={e.url} target="_blank" rel="noopener noreferrer">{e.co}</a>;
 }
 
-// ── La société du tableau fondateurs, vendue au prix de vraies cessions européennes ──
-// Même moteur que le tableau publié (founderMath.js, vérifié au build).
-const CAP_VC = vcCapTable({ founders: FM.founders, holders: FM.holders, rounds: FM.vc_rounds });
-const CAP_PF = [{ id: 'founders', stake: FM.founders, pref: 0 }, ...FM.holders.map((h) => ({ ...h }))];
+// ── Les vrais chiffres (06/11, Antoine : « fais des chiffres réels ») ─────────
+// Sept introductions en bourse européennes : parts lues dans les prospectus (sauf Spotify,
+// parts économiques citées par Fortune), chaque chiffre renvoie à sa source (tous relus dans
+// la source elle-même le 06/11). Ne rien modifier sans relire la source. Ne pas écrire « lever moins, c'est garder plus » : ces cas ne le
+// montrent pas (Criteo, 47 M€ levés, 8,4 %), et ces parts mêlent dilution et ventes de titres.
+// JAMAIS de nom de société réelle à côté d'un calcul fictif.
+type Cited = { t: string; u?: string };
+type Listing = { co: string; where: string; val: Cited; raised: Cited; stakes: string; stakeUrl: string; note?: string };
+const LISTINGS: Listing[] = [
+  { co: 'Deliveroo', where: 'UK · LSE, April 2021',
+    val: { t: '£7.6bn', u: 'https://www.rte.ie/news/business/2021/0331/1207132-deliveroos-london-ipo' },
+    raised: { t: 'about £1.3bn', u: DELIVEROO_PROSPECTUS },
+    stakes: 'Shu 6.3%', stakeUrl: DELIVEROO_PROSPECTUS,
+    note: 'Prospectus figure, at the mid-point of the price range; the IPO priced at the bottom. About 57% of the votes.' },
+  { co: 'Klarna', where: 'Sweden · NYSE, September 2025',
+    val: { t: '$15bn', u: 'https://www.americanbanker.com/payments/news/klarna-debuts-on-the-new-york-stock-exchange' },
+    raised: { t: '$4.8bn, per PitchBook', u: 'https://www.crowdfundinsider.com/2025/03/237414-swedish-fintech-firm-klarna-files-for-1bn-us-ipo/' },
+    stakes: 'Jacobsson 8.02%, Siemiatkowski 6.79%', stakeUrl: 'https://www.sec.gov/Archives/edgar/data/2003292/000200329225000052/klarnagroupplc424b4.htm',
+    note: 'Ordinary shares. Jacobsson with entities he may be deemed to control.' },
+  { co: 'Spotify', where: 'Sweden · NYSE direct listing, April 2018',
+    val: { t: '$26.5bn', u: 'https://fortune.com/2018/04/03/spotify-ipo-spot-winners' },
+    raised: { t: 'about $2.7bn, debt and equity', u: 'https://techcrunch.com/2018/02/28/spotify-has-filed-to-go-public/' },
+    stakes: 'Lorentzon 12.2%, Ek 8.8%', stakeUrl: 'https://fortune.com/2018/04/03/spotify-ipo-spot-winners',
+    note: 'Economic stakes, as reported by Fortune.' },
+  { co: 'Wise', where: 'Estonia, UK · LSE direct listing, July 2021',
+    val: { t: 'more than £8bn', u: 'https://www.cnbc.com/2021/07/07/wise-direct-listing-london.html' },
+    raised: { t: 'no published total' },
+    stakes: 'Käärmann 18.78%, Hinrikus 10.85%', stakeUrl: 'https://wise.com/imaginary-v2/images/66edcbaae5e13b596fd612fede0a9482-Wise_Prospectus.pdf',
+    note: 'Class A shares, before liquidity sales. Käärmann holds 40.75% of the votes.' },
+  { co: 'Elastic', where: 'Netherlands · NYSE, October 2018',
+    val: { t: 'around $2.5bn', u: 'https://news.crunchbase.com/public/elastic-prices-ipo-above-range-selling-7m-shares-at-36-apiece/' },
+    raised: { t: '$162M', u: 'https://siliconangle.com/2018/10/04/elastic-sets-share-price-33-35-ahead-friday-ipo/' },
+    stakes: 'Schuurman 18.9%, Banon 13.7%', stakeUrl: 'https://www.sec.gov/Archives/edgar/data/1707753/000119312518294675/d588632d424b4.htm' },
+  { co: 'Criteo', where: 'France · Nasdaq, October 2013',
+    val: { t: 'over $2bn', u: 'https://globalventuring.com/blog/2013/10/31/criteo-ipo-pops/' },
+    raised: { t: '€47.0M', u: 'https://www.sec.gov/Archives/edgar/data/1576427/000119312513416937/d541385d424b4.htm' },
+    stakes: 'Rudelle 8.4%, Niccoli 3.9%, Le Ouay 3.9%', stakeUrl: 'https://www.sec.gov/Archives/edgar/data/1576427/000119312513416937/d541385d424b4.htm' },
+  { co: 'Trustpilot', where: 'Denmark · LSE, March 2021',
+    val: { t: 'about £1.08bn', u: 'https://ipo.trustpilot.com/trustpilot-offer-price-announcement.pdf' },
+    raised: { t: 'no published total' },
+    stakes: 'Mühlmann 2.11%', stakeUrl: 'https://ipo.trustpilot.com/trustpilot-prospectus.pdf',
+    note: '4.39% before the IPO, where he sold shares.' },
+];
+function CitedLink({ c }: { c: Cited }) {
+  return c.u ? <a href={c.u} target="_blank" rel="noopener noreferrer">{c.t}</a> : <>{c.t}</>;
+}
+
+// Les médianes Carta (pas spécifiques à l'Europe). La D : donnée Carta citée par SaaStr.
+const MEDIAN_A = FM.founders;                       // 37,5 %, sociétés « digital »
+const MEDIAN_D = 0.114;
+const MEDIANS: { v: number; l: string; s: string; r: Src }[] = [
+  { v: MEDIAN_A, l: 'After the Series A', s: 'Digital companies', r: SRC.carta },
+  { v: 0.273, l: 'After the Series B', s: 'AI teams (21.8% for the others)', r: SRC.carta },
+  { v: 0.161, l: 'After the Series C', s: 'Less than the employee pool, at 16.8%', r: SRC.carta },
+  { v: MEDIAN_D, l: 'After the Series D', s: 'Carta data, as reported by SaaStr', r: SRC.saastr },
+];
+
+// Ce que nos termes changent : une multiplication, de vrais prix, une hypothèse dite en clair.
 const DEBT = FM.loans * FM.loan_multiple;
 const A_COST = FM.holders.find((h) => h.id === 'series_a')!.pref;
-const PREFS_VC = FM.raised_before + FM.vc_equity;   // tout ce qui passe avant les fondateurs, chemin VC
-const atExit = (exit: number) => {
-  const v = payout(exit, CAP_VC);
-  const p = payout(Math.max(0, exit - DEBT), CAP_PF);
-  return { fVc: millions(v.founders), fPf: millions(p.founders), aVc: v.series_a / A_COST, aPf: p.series_a / A_COST };
-};
-type Row = { exit: number; e: Exit; fVc: number; fPf: number; aVc: number; aPf: number };
-const ROWS: Row[] = [
-  { exit: 40e6, e: EXITS.adcreative },
-  { exit: 60e6, e: EXITS.sentronics },
-  { exit: 160e6, e: EXITS.freetrade },
+const A_STAKE0 = FM.holders.find((h) => h.id === 'series_a')!.stake;
+const A_STAKE_VC = A_STAKE0 * (MEDIAN_D / MEDIAN_A); // un chèque non renforcé, dilué comme les fondateurs
+const PRICES: { exit: number; e: Exit }[] = [
   { exit: 500e6, e: EXITS.instadeep },
   { exit: 1800e6, e: EXITS.tink },
   { exit: 7000e6, e: EXITS.wolt },
-].map((r) => ({ ...r, ...atExit(r.exit) }));
-// L'explication de chaque ligne (06/11) : calculée par le même moteur, jamais écrite à la main.
-const PREFS_PF = FM.raised_before;                  // les préférences sur le chemin ProFund (seed + série A)
-const A_STAKE0 = FM.holders.find((h) => h.id === 'series_a')!.stake;
-const A_STAKE_VC = CAP_VC.find((h) => h.id === 'series_a')!.stake;
-const F_STAKE_VC = CAP_VC[0].stake;
-const WHO: Record<string, string> = { seed: 'the seed investors', series_a: 'the Series A' };
-const who = (ids: string[]) => ids.map((id) => WHO[id] ?? id).join(' and ');
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-type Calc = { vc: string; pf: string };
-function founderCalc(r: Row): Calc {
-  const v = payoutDetail(r.exit, CAP_VC);
-  const vc = v.rest <= 1
-    ? `${eur(PREFS_VC, 'tile')} of 1× preferences come before the founders. A ${eur(r.exit, 'val')} sale does not cover them: it all goes to the investors. Founders: €0.`
-    : v.kept.length === 0
-      ? `Every investor is better off converting into shares. The founders keep their ${pct(F_STAKE_VC, 1)} of ${eur(r.exit, 'val')}: ${money(r.fVc)}.`
-      : `${cap(who(v.kept))} take back ${money(v.prefsPaid)} first; the ${money(v.rest)} left is shared by the other shareholders: ${money(r.fVc)} for the founders.`;
-  const left = Math.max(0, r.exit - DEBT);
-  const p = payoutDetail(left, CAP_PF);
-  const head = `Our loans are repaid first: ${eur(DEBT, 'tile')}, leaving ${money(left)}. `;
-  const pf = left <= 0 ? 'The loans take the whole sale. Founders: €0.'
-    : p.rest <= 1
-      ? `${head}The seed investors and the Series A take it back, within their ${eur(PREFS_PF, 'tile')} of 1× preferences. Founders: €0.`
-      : p.kept.length === 0
-        ? `${head}Every investor converts into shares; the founders keep their ${pct(FM.founders, 1)}: ${money(r.fPf)}.`
-        : `${head}${cap(who(p.kept))} take${p.kept.length === 1 ? 's' : ''} back ${money(p.prefsPaid)} (1× preference); the ${money(p.rest)} left is shared by the other shareholders: ${money(r.fPf)} for the founders.`;
-  return { vc, pf };
-}
-function lpCalc(r: Row): Calc {
-  const v = payoutDetail(r.exit, CAP_VC);
-  const av = v.out.series_a ?? 0;
-  const vc = v.kept.includes('series_a')
-    ? (v.rest <= 1
-      ? `The sale is below the ${eur(PREFS_VC, 'tile')} of preferences: investors share it pro rata to what they put in. ${money(av)} back on the ${eur(A_COST, 'tile')} cheque: ${x1(r.aVc)}.`
-      : `It takes back its ${eur(A_COST, 'tile')} preference: ${x1(r.aVc)}.`)
-    : `Diluted from ${pct(A_STAKE0)} to ${pct(A_STAKE_VC, 1)} by the later rounds, it converts: ${pct(A_STAKE_VC, 1)} of ${eur(r.exit, 'val')} is ${money(av)}, ${x1(r.aVc)}.`;
-  const left = Math.max(0, r.exit - DEBT);
-  const p = payoutDetail(left, CAP_PF);
-  const ap = p.out.series_a ?? 0;
-  const head = `Our loans are repaid first (${eur(DEBT, 'tile')}). `;
-  const pf = p.kept.includes('series_a')
-    ? (ap < A_COST - 1
-      ? `${head}The Series A takes back what is left of its ${eur(A_COST, 'tile')} preference: ${money(ap)}, ${x1(r.aPf)}.`
-      : `${head}The Series A takes back its ${eur(A_COST, 'tile')} (1× preference): ${x1(r.aPf)}.`)
-    : `${head}Still ${pct(A_STAKE0)}, since no round after ours dilutes it, the Series A converts: ${pct(A_STAKE0)} of the ${money(left)} left is ${money(ap)}, ${x1(r.aPf)}.`;
-  return { vc, pf };
-}
-const WHY = ROWS.find((r) => r.e === EXITS.freetrade)!;
-const TINK = ROWS.find((r) => r.e === EXITS.tink)!;
-const money = (v: number) => eur(v, v >= 1e9 ? 'val' : 'tile');
+];
 const x1 = (v: number) => `${v.toFixed(v < 10 ? 1 : 0)}×`;
 const UNICORN = 1e9;
+/** €94M, €30.4M, €2.61B : assez de précision pour refaire le calcul de tête. */
+function amt(v: number) {
+  if (v >= 1e9) return `€${(v / 1e9).toFixed(2).replace(/\.?0+$/, '')}B`;
+  if (v >= 100e6) return `€${Math.round(v / 1e6)}M`;
+  if (v <= 0) return '€0';
+  return `€${(v / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+}
+type Line = { l: string; v: string; k?: 'minus' | 'sub' };
+type Side = { name: string; lines: Line[]; label: string; result: string; edge?: string };
+const afterLoans = (exit: number): Line[] => [
+  { l: 'Sale price', v: amt(exit) },
+  { l: 'Loans and interest, repaid first', v: `−${amt(DEBT)}`, k: 'minus' },
+  { l: 'Left', v: amt(exit - DEBT), k: 'sub' },
+];
+
+function founderSides(exit: number): [Side, Side] {
+  const vc = MEDIAN_D * exit;
+  const pf = MEDIAN_A * (exit - DEBT);
+  return [
+    { name: 'Median founding team, after a Series D',
+      lines: [{ l: 'Sale price', v: amt(exit) }, { l: 'Founders’ stake', v: pct(MEDIAN_D, 1) }],
+      label: 'Founders take home', result: amt(vc) },
+    { name: 'ProFund path, our hypothesis',
+      lines: [...afterLoans(exit), { l: 'Founders’ stake, not diluted', v: pct(MEDIAN_A, 1) }],
+      label: 'Founders take home', result: amt(pf), edge: `${(pf / vc).toFixed(1)}× the median` },
+  ];
+}
+
+function lpSides(exit: number): [Side, Side] {
+  const vc = A_STAKE_VC * exit;
+  const pf = A_STAKE0 * (exit - DEBT);
+  return [
+    { name: 'A cheque that is not topped up',
+      lines: [{ l: 'Sale price', v: amt(exit) }, { l: `Stake: ${pct(A_STAKE0)}, diluted like the founders’`, v: pct(A_STAKE_VC, 2) }],
+      label: `On a ${amt(A_COST)} cheque`, result: `${amt(vc)} · ${x1(vc / A_COST)}` },
+    { name: 'ProFund path, our hypothesis',
+      lines: [...afterLoans(exit), { l: 'Stake, not diluted', v: pct(A_STAKE0) }],
+      label: `On a ${amt(A_COST)} cheque`, result: `${amt(pf)} · ${x1(pf / A_COST)}`, edge: `${(pf / vc).toFixed(1)}× the cheque on the left` },
+  ];
+}
 
 // ── Les briques de mise en page ──────────────────────────────────────────────
 function Chapter({ n, id, kicker, title, sub, tint = false, children }: {
@@ -186,44 +224,39 @@ function Stats({ items }: { items: { b: string; t: ReactNode }[] }) {
   );
 }
 
-/** Un tableau à une seule question : VC contre ProFund, à des prix de vente réels.
- *  `calc` : le calcul de chaque ligne, déplié d'un clic (06/11). */
-function Compare({ id, head, vc, pf, calc }: {
-  id: string; head: [string, string]; vc: (r: Row) => string; pf: (r: Row) => ReactNode; calc: (r: Row) => Calc;
-}) {
-  const [open, setOpen] = useState(false);
+function SideCard({ s }: { s: Side }) {
   return (
-    <>
-    <div className="lp-cmp-tools">
-      <button type="button" className={`pv-btn line pv-toggle lp-cmp-toggle${open ? ' open' : ''}`} aria-expanded={open}
-              onClick={() => setOpen((o) => !o)}>
-        <span>{open ? 'Hide the calculations' : 'Show the calculation, line by line'}</span>
-        <span className="pv-toggle-ic" aria-hidden="true" />
-      </button>
+    <div className={`lp-led-side${s.edge ? ' pf' : ''}`}>
+      <p className="lp-led-name">{s.name}</p>
+      <dl>
+        {s.lines.map((x) => (
+          <div key={x.l} className={x.k ?? undefined}><dt>{x.l}</dt><dd>{x.v}</dd></div>
+        ))}
+      </dl>
+      <p className="lp-led-res"><span>{s.label}</span><b>{s.result}</b></p>
+      {s.edge && <p className="lp-led-edge">{s.edge}</p>}
     </div>
-    <div className="lp-cmp" role="table">
-      <div className="lp-cmp-row head" role="row">
-        <span role="columnheader">Sold at</span>
-        <span role="columnheader">A real European exit at that price</span>
-        <span role="columnheader">{head[0]}</span>
-        <span role="columnheader" className="pf">{head[1]}</span>
-      </div>
-      {ROWS.map((r) => (
-        <div key={r.exit} className={`lp-cmp-row${r.exit >= UNICORN ? ' uni' : ''}`} role="row">
-          <span className="lp-cmp-exit" role="cell">{eur(r.exit, 'val')}{r.exit >= UNICORN && <em>Unicorn</em>}</span>
-          <span className="lp-cmp-eg" role="cell"><ExitLink e={r.e} /><small>{r.e.d} · {r.e.v}</small></span>
-          <span className="lp-cmp-vc" role="cell"><small>{head[0]}</small>{vc(r)}</span>
-          <span className="lp-cmp-pf" role="cell"><small>{head[1]}</small>{pf(r)}</span>
-          <Drawer id={`${id}-${r.exit}`} open={open} label={`How the ${eur(r.exit, 'val')} line is calculated`} className="lp-cmp-calc">
-            <div className="lp-calc">
-              <p><b>{head[0]}.</b> {calc(r).vc}</p>
-              <p className="pf"><b>{head[1]}.</b> {calc(r).pf}</p>
-            </div>
-          </Drawer>
-        </div>
-      ))}
+  );
+}
+
+/** Une ligne par prix de vente réel : le décompte des deux chemins, côte à côte, toujours visible. */
+function Ledgers({ sides }: { sides: (exit: number) => [Side, Side] }) {
+  return (
+    <div className="lp-led">
+      {PRICES.map((r) => {
+        const [vc, pf] = sides(r.exit);
+        return (
+          <article key={r.exit} className={`lp-led-row${r.exit >= UNICORN ? ' uni' : ''}`}>
+            <header>
+              <b>Sold for {eur(r.exit, 'val')}</b>
+              {r.exit >= UNICORN && <em>Unicorn</em>}
+              <span>The price of <ExitLink e={r.e} /> ({r.e.d.split(' · ')[1]}, {r.e.v})</span>
+            </header>
+            <div className="lp-led-grid"><SideCard s={vc} /><SideCard s={pf} /></div>
+          </article>
+        );
+      })}
     </div>
-    </>
   );
 }
 
@@ -333,7 +366,7 @@ function LpContent() {
             <div className="lp-kpis">
               <div><b>{mult(TARGET.net_tvpi)}</b><span>Target net TVPI</span></div>
               <div><b>{pct(TARGET.net_irr)}</b><span>Target net IRR</span></div>
-              <div><b>{pct(FR.stake_at_exit, 1)}</b><span>Of our best company, still ours at exit</span></div>
+              <div><b>{pct(FR.stake_at_exit, 1)}</b><span>Of our best company at exit, in the model</span></div>
               <div><b>{eurRange(F.first_close_min, F.first_close_max, 'tile', '–')}</b><span>First close</span></div>
             </div>
             <div className="pv-ctas">
@@ -383,50 +416,61 @@ function LpContent() {
 
       {/* ── 03 · Ce que gagne le fondateur ── */}
       <Chapter n="03" id="founders" kicker="What the founder gets"
-        title="Same company, same exit: three times more for the founders."
-        sub={<>That is why the best founders will choose us. The arithmetic, on Carta’s medians.<Ref s={SRC.carta} /><Ref s={SRC.saastr} /></>}>
-        <StakeChart />
-        <p className="pv-fine lp-under">Deliveroo’s founder held 6.3% of his company at its 2021 IPO.<Ref s={SRC.deliveroo} /></p>
+        title="What founders really keep."
+        sub="Real listings and real medians. Then what our terms change, as a plain multiplication.">
+        <h3 className="pv-h3 lp-t lp-t0">Seven European listings: what the founders held</h3>
+        <div className="lp-list" role="table">
+          <div className="lp-list-row head" role="row">
+            <span role="columnheader">Company</span>
+            <span role="columnheader">Valuation</span>
+            <span role="columnheader">Raised before</span>
+            <span role="columnheader">Founders’ stake at listing</span>
+          </div>
+          {LISTINGS.map((c) => (
+            <div key={c.co} className="lp-list-row" role="row">
+              <span className="co" role="cell"><b>{c.co}</b><small>{c.where}</small></span>
+              <span role="cell"><small>Valuation</small><CitedLink c={c.val} /></span>
+              <span role="cell"><small>Raised before</small><CitedLink c={c.raised} /></span>
+              <span className="st" role="cell"><small>Founders’ stake at listing</small><a href={c.stakeUrl} target="_blank" rel="noopener noreferrer">{c.stakes}</a>{c.note && <em>{c.note}</em>}</span>
+            </div>
+          ))}
+        </div>
+        <p className="lp-read"><b>In these seven listings, no founder holds 20% of the capital.</b> Every figure links to its source. Not a statistical sample: these stakes reflect dilution and, for some founders, shares sold along the way.</p>
 
-        <div className="lp-why">
-          <h3>Why founders get €0 on the VC path</h3>
-          <p className="lp-why-lead">Take the same company sold for {eur(WHY.exit, 'val')}, the price of <ExitLink e={WHY.e} />.</p>
-          <div className="lp-why-grid">
-            <div className="vc">
-              <p className="lp-why-k">VC path</p>
-              <b>{eur(WHY.fVc, 'tile')}</b>
-              <p>Investors put {eur(PREFS_VC, 'tile')} into the company over its rounds, each with a 1× preference: they are paid back first. A {eur(WHY.exit, 'val')} sale does not even cover that, so the founders and the team get nothing.</p>
-            </div>
-            <div className="pf">
-              <p className="lp-why-k">ProFund path</p>
-              <b>{eur(WHY.fPf, 'tile')}</b>
-              <p>The company raised {eur(FM.raised_before, 'tile')} of equity, then borrowed {eur(FM.loans, 'tile')}. The loans are repaid first ({eur(DEBT, 'tile')} with interest); the founders still own {pct(FM.founders, 1)} of what is left.</p>
-            </div>
+        <h3 className="pv-h3 lp-t">The median founding team</h3>
+        <div className="pv-real in lp-medians">
+          <div className="pv-real-carta">
+            <ol>
+              {MEDIANS.map((c) => (
+                <li key={c.l} style={{ ['--w' as string]: `${(c.v / MEDIANS[0].v) * 100}%` }}>
+                  <span className="l">{c.l}<Ref s={c.r} /><small>{c.s}</small></span>
+                  <b>{pct(c.v, 1)}</b>
+                  <i />
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
+        <p className="pv-fine lp-under">Carta’s data, fully diluted, is not specific to Europe. Deliveroo’s founder: 6.3% at its IPO, after about £1.3bn raised.<Ref s={SRC.deliveroo} /></p>
 
-        <h3 className="pv-h3 lp-t">What the founders take home, at real European exit prices</h3>
-        <Compare id="calc-founders" head={['VC path', 'ProFund path']} calc={founderCalc}
-          vc={(r) => money(r.fVc)}
-          pf={(r) => <>{money(r.fPf)}<i>{r.fVc > 0 ? `${(r.fPf / r.fVc).toFixed(1)}× more` : r.fPf > 0 ? 'from €0' : 'also €0'}</i></>} />
-        <Fold id="assumptions" title="The assumptions behind these figures" sub="Carta medians, rounds, preferences, loans">
-          <p className="pv-fine lp-fold-text">{founderNote()}</p>
-        </Fold>
+        <h3 className="pv-h3 lp-t">What our terms change, as a plain multiplication</h3>
+        <div className="lp-co">
+          <p className="lp-co-h"><b>Real: the sale prices and the medians. Our hypothesis: the right-hand column.</b> No company has followed this path yet. It assumes an AI-native company can grow on {amt(FM.loans)} of loans ({amt(DEBT)} to repay with interest) where the usual path sells far more equity. The founders then keep the {pct(MEDIAN_A, 1)} they hold after the Series A.</p>
+          <p className="lp-co-def">The prices are those paid for the companies named, not what happened to their founders: we do not know their cap tables. We assume every investor converts into shares at these prices. A company that needs no further capital keeps more by taking neither path.</p>
+        </div>
+        <Ledgers sides={founderSides} />
       </Chapter>
 
       {/* ── 04 · Ce que gagnent les LPs ── */}
       <Chapter n="04" id="returns" kicker="What our LPs get" tint
         title="The same unicorn, three times the multiple."
-        sub={`No round after ours dilutes us. When a company we back becomes a unicorn, we still own our full stake: ${pct(FR.stake_at_exit, 1)} of our best company at exit, in the model.`}>
-        <h3 className="pv-h3 lp-t">What a Series A cheque returns, at the same prices</h3>
-        <Compare id="calc-lp" head={['Series A on the VC path', 'ProFund']} calc={lpCalc}
-          vc={(r) => x1(r.aVc)}
-          pf={(r) => <>{x1(r.aPf)}<i>{(r.aPf / r.aVc).toFixed(1)}× more</i></>} />
-        <p className="lp-read">
-          <b>Sold at Tink’s price, our cheque returns {x1(TINK.aPf)}; the same cheque on the VC path, {x1(TINK.aVc)}.</b> At the low end,
-          our equity is back at 1× from a {eur(60e6, 'val')} sale, where a Series A on the VC path needs {eur(250e6, 'val')}, and our loans
-          are repaid first from {eur(DEBT, 'val')}.
-        </p>
+        sub={`A cheque that is not topped up is diluted like the founders’. Funds that follow on keep more, and pay for it at every round. On our path, no round after ours dilutes us: ${pct(FR.stake_at_exit, 1)} of our best company at exit, in the model.`}>
+        <h3 className="pv-h3 lp-t lp-t0">What a {amt(A_COST)} Series A cheque returns, as a plain multiplication</h3>
+        <div className="lp-co">
+          <p className="lp-co-h"><b>Real: the sale prices. Our hypothesis: a {amt(A_COST)} cheque for {pct(A_STAKE0)}.</b> Left, the cheque is not topped up and shrinks like the founders’ stake, from {pct(MEDIAN_A, 1)} to {pct(MEDIAN_D, 1)}: {pct(A_STAKE0)} × {(MEDIAN_D * 100).toFixed(1)} ÷ {(MEDIAN_A * 100).toFixed(1)} = {pct(A_STAKE_VC, 2)}. Right, no further equity round: it stays at {pct(A_STAKE0)}, behind {amt(DEBT)} of loans and interest repaid first.</p>
+          <p className="lp-co-def">The returns on the loans themselves are left out. These are the prices of the companies named, not what their investors received.</p>
+        </div>
+        <Ledgers sides={lpSides} />
 
         <h3 className="pv-h3 lp-t">Europe’s exits follow a power law</h3>
         <Stats items={[
@@ -454,7 +498,7 @@ function LpContent() {
       {/* ── 05 · Le fonds ── */}
       <Chapter n="05" id="fund" kicker="The fund"
         title={`${FUND_SIZE}, three layers, one power law.`}
-        sub="Like the best venture funds, one company carries the fund. Unlike them, we still own our full stake when it does.">
+        sub="A model, as for any fund before its launch. Like the best venture funds, one company carries it. Unlike them, our stake is not diluted when it does.">
         <div className="pv-figs lp-figs">
           <div><b>{pct(TARGET.net_irr)}</b><span><strong>Target net IRR.</strong> Base {pct(C.base.net_irr)}, stress {pct(C.stress.net_irr)}.</span></div>
           <div><b>{mult(TARGET.net_tvpi)}</b><span><strong>Target net TVPI.</strong> Base {mult(C.base.net_tvpi)}, stress {mult(C.stress.net_tvpi)}.</span></div>
@@ -551,7 +595,7 @@ function LpContent() {
               </li>
             ))}
           </ol>
-          <p className="pv-fine">Fund figures: the ProFund fund model, the same as the fact sheet and the Excel model. Founder figures: the company of the founders’ table, sold at the price of real exits, with the same engine as the published table.</p>
+          <p className="pv-fine">Fund figures: the ProFund fund model, the same as the fact sheet and the Excel model; a model, not a track record. Listings and exits: each figure links to its own source.</p>
         </div>
       </section>
       <DealFlowModal lp open={open} onClose={() => setOpen(false)} />

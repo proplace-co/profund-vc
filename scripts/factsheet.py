@@ -1097,7 +1097,7 @@ def page_four(F):
     fw = 446.0
     fh = founder_table(F, M, 98, fw)
     F.para(M + fw + 16, 98, W - fw - 16, x(
-        f"Typical European path, calibrated on Carta medians: {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} "
+        f"Typical path, calibrated on Carta medians (not specific to Europe): {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} "
         f"Series A, founders at {fm['founders'] * 100:.1f}% after the Series A, then {eur(fm['vc_equity'], 'tile')} "
         f"of equity over Series B to D, each after a bridge, with pool refreshes and 1× non-participating "
         f"preferences: founders at {after('B')}, {after('C')} and {after('D')} after the B, C and D, Carta's medians. "

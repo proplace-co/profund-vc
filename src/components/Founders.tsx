@@ -221,7 +221,7 @@ export function HowWeBack() {
 // v3.15 : le chemin VC est calé sur les parts médianes de Carta par étape (fund_model.py).
 const AFTER = (id: string) => pct(FM.vc_stakes.find((s) => s.round === id)!.founders, 1);
 export function founderNote() {
-  return `Typical European path, calibrated on Carta medians: ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr.`;
+  return `Typical path, calibrated on Carta medians (not specific to Europe): ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). ProFund path: same seed and Series A, then ${eur(FM.loans, 'tile')} of loans, for a company that needs far less capital; the pool is refilled with bought-back shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr.`;
 }
 
 /** La part des fondateurs, étape après étape (v3.15, 06/11) : toutes les étapes du chemin
@@ -327,7 +327,7 @@ export function FounderTable({ investor = false, real = false }: { investor?: bo
 
 // ── La dilution réelle (v3.15, 06/11) ────────────────────────────────────────
 // Un cas public et les médianes Carta, sourcés en note : ne pas les modifier sans relire
-// les sources (CNBC du 23/03/2021, d'après le prospectus ; Tech.eu du 17/01/2021 ;
+// les sources (prospectus de Deliveroo du 22/03/2021, relu le 06/11 ;
 // Carta, Founder Ownership Report 2026 ; la D, 11,4 % : donnée Carta citée par SaaStr).
 const CARTA: { v: number; l: string; s: string }[] = [
   { v: 0.375, l: 'After the Series A', s: 'Digital companies' },
@@ -346,8 +346,8 @@ function RealDilution() {
           <p className="pv-kick">A real case</p>
           <b className="pv-real-big">6.3%</b>
           <p>
-            Will Shu’s stake in Deliveroo, the company he co-founded, at its 2021 IPO. After rounds up to a
-            Series H and more than $1.5bn raised, he kept control only through 20-vote shares, for three years.
+            Will Shu’s stake in Deliveroo, the company he co-founded, at its 2021 IPO. After about £1.3bn
+            raised, he kept control only through 20-vote shares, for three years.
           </p>
         </div>
         <div className="pv-real-carta">
@@ -365,10 +365,10 @@ function RealDilution() {
         </div>
       </div>
       <p className="pv-fine pv-real-src">
-        Deliveroo: CNBC, 23 March 2021, from the IPO prospectus (6.3% of the share capital; Class B shares with 20 votes,
-        converting three years after the IPO); Tech.eu, 17 January 2021 (Series H). Median founding-team ownership, fully
-        diluted: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr (“The Real State of Seed
-        Today”).
+        Deliveroo: <a href="https://lexismarkettracker.lexisnexis.com/documents/0035/35079/167313/MT_Deliveroo%20plc_prospectus_22%20March%202021.pdf" target="_blank" rel="noopener noreferrer">IPO prospectus, 22 March 2021</a> (6.3% of the
+        share capital after the offering, at the mid-point of the price range; about £1.3bn raised; Class B
+        shares with 20 votes, converting three years after the IPO). Median founding-team ownership, fully diluted, not
+        specific to Europe: <a href="https://carta.com/data/founder-ownership-2026/" target="_blank" rel="noopener noreferrer">Carta, Founder Ownership Report 2026</a>; Series D, Carta data reported by <a href="https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/" target="_blank" rel="noopener noreferrer">SaaStr</a>.
       </p>
     </>
   );
