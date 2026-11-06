@@ -14,11 +14,11 @@ src/
   components/
     Thesis.tsx          LE TEXTE DE LA THÈSE (manifeste, 4 lois, 2 moteurs, proof of work),
                         barre du haut, visuel du héros — rendus par / ET /pitch
-    Founders.tsx        LA PROPOSITION FONDATEURS v3 (the rules + le pacte dépliable, the math + le
-                        calculateur dépliable, how we back, every stage, les moteurs côté fondateur,
-                        Founding Partner, final call) — rendus par /, /lp, /pitch
+    Founders.tsx        LA PROPOSITION FONDATEURS v3 (the rules + le pacte dépliable, the few, le capital,
+                        the math + le calculateur dépliable, les moteurs, final call ; `Say` et `Numbers`,
+                        les briques de la voix) — rendus par /, /lp, /pitch
     HomepageLite.tsx    route / (état des deux panneaux, ancres /#pact et /#calculator)
-    Drawer.tsx          le panneau dépliable (Drawer) et son bouton « + » qui tourne en « × »
+    Drawer.tsx          le panneau dépliable (Drawer), son bouton « + » qui tourne en « × », et `Fold`
     Pact.tsx            LE PACTE DES FONDATEURS (CLAUSES, N_CLAUSES, PACT_LEAD, PactList) — /terms et accueil
     TermsPage.tsx       route /terms — le pacte, page sombre sans barre du haut (texte dans Pact.tsx)
     CalculatorPage.tsx  route /calculator — « Run your numbers » ; exporte `Calculator` (aussi dans l'accueil)
@@ -74,10 +74,9 @@ proof of work) vit dans `Thesis.tsx`, rendu à l'identique par l'accueil et /pit
 la fiche PDF en porte une copie (`factsheet.py`, chute en variante LP « …we lend and
 we buy ») : les changer ensemble. **La proposition fondateurs v3** (Antoine, 05/11 :
 « One round. Then never diluted again. » ; **retirée de la copie le 06/11** : elle faisait
-passer le fonds pour incapable de suivre ; l'accueil joue la concurrence avec les meilleurs
-fonds, « The same cheques. Your terms. », « You dilute only when you choose. », « Equity,
-cheque for cheque », « Mega rounds, on your terms » ; la clause 1 du pacte, elle, ne change
-pas) vit dans `Founders.tsx` et `TermsPage.tsx`
+passer le fonds pour incapable de suivre ; depuis : « Big cheques. Your terms. », « You dilute
+only when you choose. », sans se comparer à aucun fonds, cf. « La voix » ; la comparaison quitte
+aussi la clause 1 du pacte le 06/11, à la demande du fondateur, le fond ne change pas) vit dans `Founders.tsx` et `TermsPage.tsx`
 (le pacte, 12 clauses depuis la v3.15, dans `Pact.tsx` : texte contractuel public, ne pas le reformuler ;
 v3.11 : clauses 1 et 2, l'equity complémentaire dite en clair, « Every option stays open » ;
 v3.12 : 9 clauses, la liquidité partielle supprimée, « Their votes move to your side » sur les
@@ -163,43 +162,46 @@ déplient DANS l'accueil (`Drawer.tsx`) : le pacte sous les règles du héros (�
 bouton du héros et le bandeau final ouvrent le panneau et y défilent ; `/#pact` et
 `/#calculator` aussi (liens du pied de page). /terms et /calculator restent en ligne.
 Plus de Founding Partner ni de mention de pré-commercialisation sur l'accueil (le
-partner reste sur /lp). L'exigence ne se dit pas, elle se lit. **/lp est écrite pour un LP exigeant** (refaite le 06/11 en sept chapitres numérotés, un
-seul fil : « j'ai compris, la stratégie tient, ils auront les meilleurs fondateurs, je mets un
-ticket, je sais qui appeler »). Héros (titre, quatre chiffres : TVPI et TRI cibles, part de
-notre meilleure société à la sortie, premier closing) ; 01 Why now (quatre chiffres sourcés) ;
-02 How we win the best founders (chèque pour chèque, termes, moteurs ; puis les moteurs
-version LP et Proplace / Maximum Insurance) ; 03 What the founder gets (`LISTINGS` : sept introductions
-en bourse européennes, parts des fondateurs lues dans les prospectus, chaque chiffre cliquable ;
-les médianes Carta ; puis une multiplication aux prix de cessions réelles) ; 04 What our LPs get
-(la même multiplication pour un chèque de 10 M€ pour 20 %, hypothèse dite en clair ; la loi de
-puissance européenne, 15 cessions réelles) ; 05 The fund (le modèle, dit comme tel : cibles,
-étages, termes, performance, documents) ; 06 Protection and team ; 07 « What €10M would
-represent » (part du fonds et du premier closing, résultat net dans le modèle, frais du
-premier closing, co-investissement, deal flow) et la carte de contact du Founding Partner
-(téléphone, le même que la fiche, et email). Sources numérotées et cliquables en bas
-(`SRC`), chaque cession réelle renvoie au communiqué ou au dépôt de l'acheteur. Pas de barre
-du haut ni de formulaire ; le deal flow s'ouvre directement si le LP est accepté, sinon le
-popup. **Pas de société fictive sur /lp (06/11, Antoine : « fais des chiffres réels »)** : plus
-de tableau « €0 » à côté de noms de sociétés réelles, ça laissait croire que leurs fondateurs
-avaient touché 0 €. JAMAIS un nom de société réelle à côté d'un calcul fictif. Les calculs sont
-toujours visibles, jamais dépliables : prix réel × part, ce qui est réel et ce qui est notre
-hypothèse dit au-dessus. Aucun prix sous le dernier tour (500 M€, 1,8 Md€, 7 Md€). Ne pas écrire
-« lever moins, c'est garder plus » : ces cas ne le montrent pas (Criteo, 47 M€ levés, 8,4 %), et
-ces parts mêlent dilution et ventes de titres. La colonne ProFund reste une hypothèse : aucune
-société n'a encore suivi ce chemin. Carta n'a pas de coupe européenne : ne pas dire « européen »
-pour ses médianes. Restent repliés (`Fold`) : 15 cessions, termes et allocation, performance et tests, la simulation ligne à ligne (`SimulationTables`,
-exportée de `ProFundPage.tsx`, la même que /pitch et la fiche p. 4). « Our LPs are mainly high-net-worth individuals and family offices »
+partner reste sur /lp). L'exigence ne se dit pas, elle se lit. **La voix (06/11, 6e passe, le fondateur)** : humble, puissant, élitiste sans le dire. Une phrase,
+ce qui la prouve, de l'air (`Say`, `Numbers`, `.pv-ruled`) ; le technique est replié (`Fold`). **On ne
+se compare jamais aux autres fonds** : plus de « cheque for cheque with the best » (« c'est ridicule »),
+aucun fonds nommé ; on propose tout ce que proposent les meilleurs, la table retournée, et on prouve
+l'alignement par ce qu'on signe. **Accueil** : les règles, `TheFew` (« The companies that define this
+era will be built by very few people. »), le capital (« Funded like the leaders. Diluted like no
+one. » : equity, crédit, cap table, « Another lead? Take both. » ; figures, étapes et tickets repliés),
+ce qu'ils gardent (trois vrais chiffres, puis repliés : la part étape par étape, le term sheet, le
+calculateur ; plus de tableau « What you take home » ni de colonne Deliveroo sur l'accueil, il reste
+illustratif sur /pitch et la fiche), les moteurs (étapes repliées), « If this was written for you, you
+already know. ». **/lp** : plus de plan numéroté (« le plan 1 2 3 4 alourdit »), un seul raisonnement,
+chaque phrase appelle la suivante : « The kingmakers. » (les équipes AI-native, l'éloge, trois chiffres
+sourcés) → « Capital is no longer scarce. Ownership is. » (ils ont le choix ; 11,4 %, 6,3 %, sous les
+20 %) → « Every fund says founders come first. We wrote it down. » (ce qu'on rend aux fondateurs, ce
+qui protège le capital : chaque ligne est une clause du pacte) → « What is right for them is what pays
+you. » (cibles et test sans licorne, dits comme des sorties du modèle) → « We run on what we back. » (un
+premier fonds qui ne fait pas semblant, Proplace, Maximum Insurance, le deal flow chaque soir) puis
+l'équipe → « The data room. » (huit `Fold` : introductions en bourse et médianes, multiplication aux
+prix réels, cessions, termes, performance, simulation, protection, moteurs ; les documents) → « What €10M
+would represent » et la carte de contact du Founding Partner (téléphone, le même que la fiche, et
+email) → mention de pré-commercialisation → sources numérotées et cliquables (`SRC`). Pas de barre du
+haut ni de formulaire ; le deal flow s'ouvre directement si le LP est accepté, sinon le popup. **Jamais
+de promesse** : l'« inévitable » vient du raisonnement, pas d'un adjectif ; tout chiffre du fonds se dit
+modèle, cible ou hypothèse, aucune société n'a encore suivi ce chemin.
+**Pas de société fictive sur /lp (06/11, Antoine : « fais des chiffres réels »)** : plus de tableau
+« €0 » à côté de noms de sociétés réelles, ça laissait croire que leurs fondateurs avaient touché 0 €.
+JAMAIS un nom de société réelle à côté d'un calcul fictif. Prix réel × part, ce qui est réel et ce qui
+est notre hypothèse dit au-dessus. Aucun prix sous le dernier tour (500 M€, 1,8 Md€, 7 Md€). Ne pas écrire
+« lever moins, c'est garder plus » : ces cas ne le montrent pas (Criteo, 47 M€ levés, 8,4 %), et ces parts
+mêlent dilution et ventes de titres. Carta n'a pas de coupe européenne : ne pas dire « européen » pour
+ses médianes. « Our LPs are mainly high-net-worth individuals and family offices »
 (06/11). **Positionnement (06/11, Antoine)** : on chasse les licornes comme Index Ventures ou
 Sequoia, et les meilleurs fondateurs nous choisissent parce que nos termes sont réellement
 alignés (pas une posture). Plus de « returns built on ownership, not on unicorns » ni de
 « no unicorn needed » en accès LP ; plus de « Luxembourg » dans la copie (site, fiche).
-Jamais de posture « petits bras » : « The shift » dit « Unicorn valuations, on a fraction of
-the capital » (plus de « no longer need €50M ») ; le bloc « Competing with the best » de /lp
-dit « The new go-to fund for elite founders » : chèque pour chèque en seed, pré-série A, série
-A et B (jusqu'à 10 M€ du fonds, SPV pour la taille du tour), méga-tours en SPV avec nos LPs
-(l'upside reste aux LPs, le fondateur garde nos termes), on suit les termes d'un lead de
-premier plan, on gagne par les termes ; la fiche p. 1 porte cette ligne au lieu de « One
-round. Then never diluted again. » et n'a plus la capture du pipeline. **/lp est fermée
+Jamais de posture « petits bras » : du seed à la série B (jusqu'à 10 M€ du fonds, SPV pour la
+taille du tour), méga-tours en SPV avec nos LPs (l'upside reste aux LPs, le fondateur garde nos
+termes), on suit les termes d'un lead de premier plan ; ces moyens se disent, la comparaison aux
+autres fonds non (cf. « La voix »). La fiche p. 1 porte « The new go-to fund for elite founders »
+au lieu de « One round. Then never diluted again. » et n'a plus la capture du pipeline. **/lp est fermée
 (v3.15)** derrière la MÊME candidature que le deal flow (`DealFlowModal` avec `lp`) : elle
 s'ouvre quand ce navigateur a l'accès retenu par /dealflow (`lib/access.ts`, lien magique
 vérifié une fois ; /dealflow porte un lien « LP page »), ou avec `?gp` dans l'URL (aperçu du
@@ -212,8 +214,7 @@ même préférence 1× que notre premier chèque (clause 2 ; champ du calculateu
 parcours fondateur s'arrête au calculateur (« Send these numbers to the partner », un
 mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
 /lp a été retiré le 06/11 (`LeadForm.tsx` reste, inutilisé ; il n'avait PAS de backend, il
-ouvrait un email pré-rempli). Sur l'accueil, sous les étapes : « Raising from a top-tier
-fund? Take both. » (on investit aux termes du lead, sans nommer de fonds côté fondateurs). Au-delà
+ouvrait un email pré-rempli). Sur l'accueil : « Another lead? Take both. » (on investit aux termes du lead, sans nommer de fonds). Au-delà
 de la dette, la copie dit qu'on apporte de l'equity aux mêmes conditions, avec des SPV
 (« Your call », pour rester cohérent avec « never create a new share »).
 

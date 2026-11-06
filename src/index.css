@@ -1341,6 +1341,89 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   .lp-list-row .co small { font-weight: 500; letter-spacing: 0; text-transform: none; font-size: 12.5px; color: var(--muted); }
 }
 
+/* ── 06/11 (6) : la voix. Une phrase, ce qui la prouve, de l'air. Accueil et /lp. ── */
+.pv-reveal { opacity: 0; transform: translateY(18px); transition: opacity .85s ease, transform .85s cubic-bezier(.2, .7, .2, 1); }
+.pv-reveal.in { opacity: 1; transform: none; }
+.pv-say { padding-block: clamp(88px, 12vw, 172px); }
+.pv-say-head { position: relative; }
+.pv-say-h { margin: 0; max-width: 16em; font-size: clamp(38px, 5.6vw, 84px); font-weight: 750; line-height: 1.01; letter-spacing: -.042em; color: var(--ink); }
+.pv-sec.night .pv-say-h { color: #fff; }
+.pv-say-p { margin: clamp(26px, 3.2vw, 42px) 0 0; max-width: 33em; font-size: clamp(19px, 1.75vw, 24px); line-height: 1.5; letter-spacing: -.012em; color: var(--ink-2); }
+.pv-say-p + .pv-say-p { margin-top: 18px; }
+.pv-say-p b { font-weight: 650; color: var(--ink); }
+.pv-sec.night .pv-say-p { color: var(--night-txt); }
+.pv-say-folds { position: relative; display: grid; gap: 12px; margin-top: clamp(36px, 4.4vw, 60px); }
+
+.pv-three { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px clamp(24px, 4vw, 56px); margin-top: clamp(48px, 6vw, 88px); }
+.pv-three.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pv-three > div { display: grid; gap: 12px; align-content: start; padding-top: 20px; border-top: 1px solid var(--line-2); }
+.pv-three b { font-size: clamp(40px, 4.8vw, 72px); font-weight: 750; line-height: 1; letter-spacing: -.045em; color: var(--ink); }
+.pv-three.four b { font-size: clamp(40px, 4.2vw, 62px); }
+.pv-three span { max-width: 24em; font-size: 16px; line-height: 1.5; color: var(--muted); }
+.pv-sec.night .pv-three > div { border-top-color: var(--night-line); }
+.pv-sec.night .pv-three b { color: #fff; }
+.pv-sec.night .pv-three span { color: var(--night-txt); }
+.pv-sec.night .lp-ref a { color: var(--blue-glow); }
+.pv-sec.night .lp-ref a:hover { background: rgba(159, 182, 207, .16); }
+.pv-three-src { margin-top: 24px; }
+.pv-three-src a { color: inherit; }
+
+.pv-ruled { margin: clamp(40px, 5vw, 72px) 0 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line-2); }
+.pv-ruled li { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 8px clamp(24px, 4vw, 64px); align-items: baseline;
+  padding: clamp(22px, 2.6vw, 34px) 0; border-top: 1px solid var(--line-2); }
+.pv-ruled h3 { margin: 0; font-size: clamp(22px, 2.2vw, 32px); font-weight: 700; line-height: 1.12; letter-spacing: -.028em; color: var(--ink); }
+.pv-ruled p { margin: 0; max-width: 32em; font-size: 17.5px; line-height: 1.55; color: var(--muted); }
+
+.pv-say .pv-calc-dock { margin-top: 12px; }
+.lp-fold-lead { margin: 0 0 16px; }
+.lp-fold .pv-figs, .lp-fold .pv-stack { margin-bottom: 16px; }
+.lp-fold .lp-layers { margin-bottom: 16px; }
+.lp-fold .pv-stake { margin-bottom: 0; }
+.pv-eng .pv-drawer { width: 100%; margin-inline: 0; }
+.pv-eng .pv-drawer-in { padding-inline: 0; }
+.pv-eng .pv-drawer-body { padding-bottom: 0; }
+.pv-eng-more { position: relative; display: flex; justify-content: flex-start; margin: 16px 0; }
+
+/* /lp */
+.lp-hero { padding-block: clamp(40px, 5vw, 64px) 0; }
+.lp-hero .pv-wrap { position: relative; }
+.lp-hero-logo { display: inline-block; line-height: 0; }
+.lp-hero-logo .pv-rules-logo { margin-bottom: clamp(44px, 6vw, 88px); }
+.lp-hero-eye { margin: 0 0 20px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue-glow); }
+.lp-hero-h { margin: 0; max-width: 15.5em; font-size: clamp(38px, 6vw, 88px); font-weight: 750; line-height: 1; letter-spacing: -.043em; color: #fff; }
+.lp-hero-lead { margin: clamp(24px, 3vw, 36px) 0 0; max-width: 31em; font-size: clamp(19px, 1.8vw, 24px); line-height: 1.5; letter-spacing: -.012em; color: var(--night-txt); }
+.lp-hero .pv-ctas { margin-top: clamp(28px, 3vw, 38px); }
+.lp-hero-shot { position: relative; max-height: clamp(210px, 33vw, 470px); margin-top: clamp(48px, 6vw, 84px); overflow: hidden;
+  -webkit-mask-image: linear-gradient(#000 62%, transparent); mask-image: linear-gradient(#000 62%, transparent); }
+
+.lp-deal { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: clamp(40px, 5vw, 72px); }
+.lp-deal > div { padding: clamp(26px, 3vw, 42px); border-radius: var(--r-xl); background: #fff; box-shadow: var(--sh-2); }
+.lp-deal > div.give { background: var(--night); box-shadow: none; }
+.lp-deal h3 { margin: 0 0 18px; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.lp-deal .give h3 { color: var(--blue-glow); }
+.lp-deal ul { margin: 0; padding: 0; list-style: none; }
+.lp-deal li { padding: 17px 0; border-top: 1px solid var(--line); font-size: 16.5px; line-height: 1.5; color: var(--muted); }
+.lp-deal li:last-child { padding-bottom: 0; }
+.lp-deal li b { display: block; margin-bottom: 3px; font-size: clamp(19px, 1.7vw, 23px); font-weight: 700; line-height: 1.2; letter-spacing: -.02em; color: var(--ink); }
+.lp-deal .give li { border-top-color: var(--night-line); color: var(--night-txt); }
+.lp-deal .give li b { color: #fff; }
+.lp-deal-end { max-width: 22em; margin: clamp(40px, 5vw, 72px) 0 0; font-size: clamp(26px, 3vw, 44px); font-weight: 750; line-height: 1.1; letter-spacing: -.033em; color: var(--ink); }
+.lp-deal-go { margin-top: 20px; }
+.lp-run { position: relative; margin-top: clamp(40px, 5vw, 72px); }
+.lp-night { padding: clamp(12px, 1.6vw, 18px); border-radius: var(--r-lg); background: var(--night); }
+.lp-room-dl { position: relative; margin-top: 24px; }
+@media (max-width: 900px) {
+  .pv-three, .pv-three.four { grid-template-columns: minmax(0, 1fr); }
+  .pv-ruled li { grid-template-columns: minmax(0, 1fr); }
+  .lp-deal { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 601px) and (max-width: 900px) {
+  .pv-three.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .pv-reveal { opacity: 1; transform: none; transition: none; }
+}
+
 /* /pitch : les slides */
 .pv-slide-n { display: inline-grid; place-items: center; min-width: 32px; height: 22px; margin-right: 12px; padding: 0 7px;
   border-radius: 999px; background: var(--blue-soft); color: var(--blue-dk); font-size: 11.5px; letter-spacing: .04em; vertical-align: 1px; }

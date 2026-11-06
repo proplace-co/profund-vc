@@ -51,3 +51,17 @@ export function DrawerToggle({ open, controls, onClick, label, closeLabel, class
     </button>
   );
 }
+
+/** Un bloc repliable : un titre, un « + » qui tourne, le détail en dessous (accueil et /lp). */
+export function Fold({ id, title, sub, children }: { id: string; title: string; sub?: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`lp-fold${open ? ' open' : ''}`}>
+      <button type="button" className="lp-fold-bar" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)}>
+        <span><b>{title}</b>{sub && <small>{sub}</small>}</span>
+        <span className="pv-toggle-ic" aria-hidden="true" />
+      </button>
+      <Drawer id={id} open={open} label={title}>{children}</Drawer>
+    </div>
+  );
+}

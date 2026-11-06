@@ -416,7 +416,7 @@ LAWS = (
 )
 
 PACT = (
-    ("Equity, when the founder chooses.", "Cheque for cheque with the best funds; never a pushed round."),
+    ("Equity, when the founder chooses.", "In new shares, 1× non-participating; never a pushed round."),
     ("Follow-on capital, reserved.", "Loans first, then equity on the same terms when the founder asks, "
                                      "SPVs for the largest rounds."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
@@ -439,8 +439,8 @@ def page_one(F):
     # la ligne forte, en gras sous le sous-titre (06/11 : le positionnement LP)
     y += 12
     strong = (f"<b>{x('The new go-to fund for elite founders.')}</b> "
-              + x("We compete with the best funds for the best rounds, from the seed to the Series B, "
-                  "with SPVs alongside for the largest, and we win on terms."))
+              + x("From the seed to the Series B, with SPVs alongside for the largest. "
+                  "Every fund says founders come first: we wrote it down."))
     hs = F.para(M + 13, y, tw - 13, strong, 11.4, "reg", INK, 1.45)
     F.rr(M, y + 1, 3.2, hs - 2, 1.6, fill=BLUE)
     y += hs
@@ -484,7 +484,7 @@ def page_one(F):
         "the most autonomous machines."), sz, "semi", INK, ld)
     yy += F.para(rx, yy, rw, f"<b>{x('Capital is no longer scarce. Ownership is.')}</b> " + x(
         "A team that doesn't need an army doesn't need a round every 18 months. So we don't sell it one: "
-        "we invest once, then we lend and we buy."), sz, "reg", BLUE_DK, ld)
+        "we lend, we buy, and equity comes only when the founder chooses."), sz, "reg", BLUE_DK, ld)
     y = max(yy, y + 70) + 24
 
     # les quatre lois

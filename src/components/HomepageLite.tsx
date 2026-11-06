@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
-import { CapitalStack, EveryStage, FinalCall, FounderEngines, TermSheet, TheMath, TheRules } from './Founders';
+import { CapitalStack, FinalCall, FounderEngines, TheFew, TheMath, TheRules } from './Founders';
 
 const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
 
@@ -18,9 +18,9 @@ function hashIs(panel: Panel) {
 }
 
 // L'ACCUEIL v3.9 (Antoine, 05/11) : pour les fondateurs d'exception, et pour eux seuls.
-// Il s'ouvre sur les règles (le contrôle revient au fondateur), puis le capital
-// (financé comme les leaders, dilué comme personne), les chiffres, les moteurs, et un
-// seul bouton. La thèse, la vision et le deal flow sont pour les LPs : /lp.
+// 06/11 (6), la voix : les règles, les très rares qu'on attend, le capital (tout ce que
+// proposent les meilleurs, la table retournée, sans se comparer), ce qu'ils gardent, les
+// moteurs. Le technique est replié. La thèse et le deal flow sont pour les LPs : /lp.
 // Montants permis ici, tous lus dans src/data/fund.json : tickets et tableau des
 // fondateurs (illustratif). JAMAIS de frais, de carry ni de rendement cible. Le shell
 // index.html reste sans montant (scripts/prerender.mjs le vérifie).
@@ -79,10 +79,9 @@ export default function HomepageLite() {
   return (
     <div className="pfh">
       <TheRules hero pactOpen={pact} onPact={() => toggle('pact')} onRun={() => reveal('calculator')} />
+      <TheFew />
       <CapitalStack />
-      <EveryStage tint kicker={false} />
-      <TheMath tint={false} calcOpen={calc} onCalc={() => toggle('calculator')} />
-      <TermSheet onPact={() => reveal('pact')} />
+      <TheMath calcOpen={calc} onCalc={() => toggle('calculator')} onPact={() => reveal('pact')} />
       <FounderEngines />
       <FinalCall onOpen={reveal} />
       <DealFlowModal open={open} onClose={closeModal} />
