@@ -89,8 +89,8 @@ function TheShift() {
     <Slide id="shift" n={2} kick="The shift" title="AI collapsed the cost of building.">
       <div className="pv-duo">
         <div className="pv-duo-txt">
-          <p className="big">The best AI companies no longer need €50M.</p>
-          <p><b>The capital that wins the next decade buys ownership, not dilution.</b></p>
+          <p className="big">Unicorn valuations, on a fraction of the capital.</p>
+          <p><b>The best founders have every option. They will choose the terms.</b></p>
         </div>
         <div>
           <div className="fw-stats">

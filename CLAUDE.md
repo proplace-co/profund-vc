@@ -73,7 +73,11 @@ sa chute v3 « Capital is no longer scarce. Ownership is. », quatre lois, deux 
 proof of work) vit dans `Thesis.tsx`, rendu à l'identique par l'accueil et /pitch ;
 la fiche PDF en porte une copie (`factsheet.py`, chute en variante LP « …we lend and
 we buy ») : les changer ensemble. **La proposition fondateurs v3** (Antoine, 05/11 :
-« One round. Then never diluted again. ») vit dans `Founders.tsx` et `TermsPage.tsx`
+« One round. Then never diluted again. » ; **retirée de la copie le 06/11** : elle faisait
+passer le fonds pour incapable de suivre ; l'accueil joue la concurrence avec les meilleurs
+fonds, « The same cheques. Your terms. », « You dilute only when you choose. », « Equity,
+cheque for cheque », « Mega rounds, on your terms » ; la clause 1 du pacte, elle, ne change
+pas) vit dans `Founders.tsx` et `TermsPage.tsx`
 (le pacte, 12 clauses depuis la v3.15, dans `Pact.tsx` : texte contractuel public, ne pas le reformuler ;
 v3.11 : clauses 1 et 2, l'equity complémentaire dite en clair, « Every option stays open » ;
 v3.12 : 9 clauses, la liquidité partielle supprimée, « Their votes move to your side » sur les
@@ -178,7 +182,13 @@ pré-commercialisation. « Our LPs are mainly high-net-worth individuals and fam
 Sequoia, et les meilleurs fondateurs nous choisissent parce que nos termes sont réellement
 alignés (pas une posture). Plus de « returns built on ownership, not on unicorns » ni de
 « no unicorn needed » en accès LP ; plus de « Luxembourg » dans la copie (site, fiche).
-« Exits » s'intitule « From a trade sale to a unicorn » ; son tableau (`pv-xt`) vend la
+Jamais de posture « petits bras » : « The shift » dit « Unicorn valuations, on a fraction of
+the capital » (plus de « no longer need €50M ») ; le bloc « Competing with the best » de /lp
+dit « The new go-to fund for elite founders » : chèque pour chèque en seed, pré-série A, série
+A et B (jusqu'à 10 M€ du fonds, SPV pour la taille du tour), méga-tours en SPV avec nos LPs
+(l'upside reste aux LPs, le fondateur garde nos termes), on suit les termes d'un lead de
+premier plan, on gagne par les termes ; la fiche p. 1 porte cette ligne au lieu de « One
+round. Then never diluted again. » et n'a plus la capture du pipeline. « Exits » s'intitule « From a trade sale to a unicorn » ; son tableau (`pv-xt`) vend la
 société à six prix réels, de 40 M€ à 7 Md€ (Wolt), licornes surlignées, avantage en vert. **/lp est fermée
 (v3.15)** derrière la MÊME candidature que le deal flow (`DealFlowModal` avec `lp`) : elle
 s'ouvre quand ce navigateur a l'accès retenu par /dealflow (`lib/access.ts`, lien magique

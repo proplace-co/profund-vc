@@ -47,8 +47,10 @@ function useInView<T extends Element>() {
 // `keep` : le début de la ligne, NON barré (v3.15, 06/11 : on garde un siège au conseil,
 // seul « and a veto » est barré).
 const RULES: { keep?: string; old: string; now: string }[] = [
-  { old: 'A new round every 18 months', now: 'One round. Then never again.' },
-  { old: 'A slice of your company at every round', now: 'Your stake never goes down.' },
+  // 06/11 (Antoine) : plus de « One round. Then never again. » : on joue la concurrence
+  // avec les meilleurs fonds, chèque pour chèque, et on gagne par les termes.
+  { old: 'Big cheques, on their terms', now: 'The same cheques. Your terms.' },
+  { old: 'A slice of your company at every round', now: 'You dilute only when you choose.' },
   { keep: 'A board seat', old: 'and a veto', now: 'One seat. Our shares vote with you.' },
   // (v3.10 : la ligne « No new preference on top of you » est retirée : l'equity
   // complémentaire, au choix du fondateur, porte une préférence 1×.)
@@ -122,12 +124,12 @@ export function CapitalStack() {
   const steps: { icon: IconName; tag: string; t: string; d: string }[] = [
     { icon: 'trend', tag: 'No dilution', t: 'Your growth',
       d: 'Revenue funds what it can. That is what AI-native teams do best.' },
-    { icon: 'target', tag: 'Once', t: 'One equity round',
-      d: `From ${eur(L.seed.ticket_min)} at pre-seed to ${eur(F.company_cap, 'tile')} at growth. Then never again.` },
     { icon: 'banknote', tag: 'No dilution', t: 'The loan line',
       d: 'Reserved from day one, with our fund and partner lenders. Hiring, go-to-market, working capital, acquisitions. Drawn in tranches, repaid from growth.' },
-    { icon: 'shield', tag: 'Your call', t: 'Equity, when debt is not enough',
-      d: 'If debt cannot carry your growth, or lenders cannot take the full line, we go and get the equity: led by us, on the same terms, with SPVs and co-investors alongside the fund. Every option stays open.' },
+    { icon: 'target', tag: 'Your call', t: 'Equity, cheque for cheque',
+      d: `Seed, pre-Series A, Series A, Series B: from ${eur(L.seed.ticket_min)} to ${eur(F.company_cap, 'tile')} per company from the fund, the cheques the best funds write.` },
+    { icon: 'shield', tag: 'Your call', t: 'Mega rounds, on your terms',
+      d: 'When you need far more to stay ahead of over-capitalised rivals, we lead the round with SPVs and co-investors alongside the fund, on the same terms. Every option stays open.' },
   ];
   // Le fonds en quatre chiffres : taille, tickets, suivi, au-delà (montants de fund.json).
   const figs = [
@@ -141,7 +143,7 @@ export function CapitalStack() {
       <div className="pv-wrap">
         <div className="pv-head">
           <h2 className="pv-h2">Funded like the leaders. Diluted like no one.</h2>
-          <p className="sub">Every euro comes from the cheapest source first. When debt is not enough, the equity comes too, on the same terms.</p>
+          <p className="sub">Every euro comes from the cheapest source first. When you want equity, we write the cheques the best funds write, on terms they don’t.</p>
         </div>
         <div className="pv-figs">
           {figs.map((f) => <div key={f.s}><b>{f.b}</b><span>{f.s}</span></div>)}
@@ -420,8 +422,8 @@ export function TheMath({ tint = true, calcOpen = false, onCalc }: { tint?: bool
 // Ce qu'un term sheet VC classique prend, ce que le pacte rend : chaque ligne ProFund est
 // une clause du pacte (Pact.tsx) ; ne rien promettre de plus.
 const TERMS: { k: string; vc: string; pf: string }[] = [
-  { k: 'Rounds', vc: 'A new round every 18 months', pf: 'One. Then a reserved loan line' },
-  { k: 'Your stake', vc: 'Down at every round: 11.4% after the Series D, at the median', pf: 'Never goes down. Every cancellation lifts it' },
+  { k: 'Rounds', vc: 'A new round every 18 months, on their terms', pf: 'When you choose, cheque for cheque, on your terms' },
+  { k: 'Your stake', vc: 'Down at every round: 11.4% after the Series D, at the median', pf: 'Diluted only when you choose. Every cancellation lifts it' },
   { k: 'Board', vc: 'A seat for every lead. Your majority erodes', pf: 'One seat. The majority stays yours' },
   { k: 'Votes', vc: 'Every investor votes its own shares', pf: 'Our shares vote with you' },
   { k: 'Vetoes', vc: 'Consent on the budget, key hires, new rounds, the sale', pf: 'Only on what would change our shares behind our back' },
@@ -468,7 +470,7 @@ export function TermSheet({ onPact }: { onPact?: () => void }) {
 // du plafond par société) sont hors du fonds : documents LP seulement.
 const STAGES = [
   { layer: 'Seed', stage: 'Pre-seed, seed', ticket: eurRange(L.seed.ticket_min, L.seed.ticket_max),
-    what: 'Your first and only equity round, as lead or radar ticket' },
+    what: 'Your first equity round, as lead or radar ticket' },
   { layer: 'Venture', stage: 'Seed+, Series A', ticket: eurRange(L.venture.ticket_min, L.venture.ticket_max),
     what: 'First cheque at the inflection, or a buyback of your angels and leavers' },
   { layer: 'Growth', stage: 'Series B and beyond',
@@ -482,8 +484,8 @@ export function EveryStage({ tint = false, kicker = true }: { tint?: boolean; ki
       <div className="pv-wrap">
         <div className="pv-head">
           {kicker && <p className="pv-kick">Every stage</p>}
-          <h2 className="pv-h2">Pre-seed to growth. One equity round, wherever you are.</h2>
-          <p className="sub">Two ways in at every layer: a first equity cheque, or a buyback of existing shares. Then loans, and equity on the same terms only if you need it.</p>
+          <h2 className="pv-h2">Pre-seed to growth. Cheque for cheque with the best.</h2>
+          <p className="sub">At every layer, a first equity cheque or a buyback of existing shares. Then loans, and more equity whenever you choose, on the same terms.</p>
         </div>
         <div className="pv-stages">
           {STAGES.map((s, i) => (

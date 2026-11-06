@@ -41,8 +41,8 @@ const BIG_UNICORN = fund.stress_tests.find((s) => s.id === 'big_unicorn')!;
 
 // Le modèle, vu du fonds : quatre moteurs de détention.
 const MODEL: { icon: IconName; t: string; d: string }[] = [
-  { icon: 'target', t: 'One equity round per company',
-    d: 'A first cheque in new shares, from pre-seed to growth, with a 1× non-participating preference. Then no new shares while the founder grows with us.' },
+  { icon: 'target', t: 'Equity, cheque for cheque',
+    d: 'A first cheque in new shares, from pre-seed to growth, with a 1× non-participating preference. No new shares after that unless the founder asks.' },
   { icon: 'trend', t: 'Buybacks at a discount',
     d: 'Our exposure to the winners grows by buying existing shares from angels, leavers and end-of-life funds, with the founder’s agreement, at an independent valuation, below the price of the time.' },
   { icon: 'banknote', t: 'A loan book',
@@ -203,8 +203,8 @@ function TheShift() {
           <h2 className="pv-h2">AI collapsed the cost of building. Venture has not caught up.</h2>
         </div>
         <div className="pv-duo-txt pv-shift-txt">
-          <p className="big">The best AI companies no longer need €50M.</p>
-          <p>Tight teams reach growth-stage revenue with a fraction of the capital and the people software used to need. Yet the venture model still sells them a Series B, C and D, and dilutes them at every round. <b>Capital is abundant. Ownership is scarce.</b></p>
+          <p className="big">Unicorn valuations, on a fraction of the capital.</p>
+          <p>AI-native teams reach growth-stage revenue, and unicorn valuations, with far less capital and far fewer people than software used to need. The venture model has not changed: a round every 18 months, a slice of the company every time. <b>Capital is abundant. The best founders have every option, and they will choose the terms.</b></p>
         </div>
         <div className="pv-shift-stats">
           {SHIFT.map((x) => (
@@ -412,7 +412,7 @@ function LpContent() {
         <div className="pv-wrap">
           <div className="pv-head">
             <p className="pv-kick">The model</p>
-            <h2 className="pv-h2">One equity round. Then we lend and we buy.</h2>
+            <h2 className="pv-h2">Equity first. Then we lend and we buy.</h2>
             <p className="sub">Founders own more at every stage. So does the fund.</p>
           </div>
           <Cards items={MODEL} />
@@ -429,16 +429,19 @@ function LpContent() {
               </div>
             ))}
           </div>
-          {/* 06/11 : la concurrence pour les meilleurs tours, et le co-investissement */}
+          {/* 06/11 : concurrencer les meilleurs fonds sur les meilleurs tours, et gagner par les termes.
+              Index, Balderton, Sequoia : cités comme référence, jamais comme partenaires. */}
           <div className="pv-coinv">
             <div>
-              <p className="pv-kick">Competing for the best rounds</p>
-              <h3>Equity too, and a follower’s discipline.</h3>
+              <p className="pv-kick">Competing with the best</p>
+              <h3>The new go-to fund for elite founders.</h3>
+              <p className="pv-coinv-lead">Exceptional founders have every option. We compete with Index Ventures, Balderton or Sequoia for the same rounds, and we win them on terms.</p>
             </div>
             <ul>
-              <li><Icon name="target" /><span><b>We compete for the same founders as the best.</b> The rounds an Index Ventures or a Sequoia would lead, with equity, not only debt. Founders choose us because our terms are aligned with them, by contract.</span></li>
-              <li><Icon name="handshake" /><span><b>When a top-tier fund leads, we follow its terms.</b> A co-investor does not renegotiate the lead’s term sheet: we invest alongside, on the same terms, and our pact applies only where we lead.</span></li>
-              <li><Icon name="banknote" /><span><b>Then we add what they don’t.</b> The loan line, the buybacks of angels and early funds, and the two engines.</span></li>
+              <li><Icon name="target" /><span><b>Cheque for cheque, in the rounds that matter.</b> Seed, pre-Series A, Series A, Series B: the fund writes up to {eur(F.company_cap, 'tile')} per company, and SPVs alongside take us to the size of the round.</span></li>
+              <li><Icon name="trend" /><span><b>Mega rounds, without giving up the upside.</b> When a company needs far more to stay ahead of over-capitalised rivals, we raise SPVs with our LPs alongside the fund: the round is financed, the upside stays with our LPs, and the founder keeps our terms.</span></li>
+              <li><Icon name="handshake" /><span><b>When a top-tier fund leads, we follow its terms.</b> A co-investor does not renegotiate the lead’s term sheet: we invest alongside, on the same terms. Our pact applies where we lead.</span></li>
+              <li><Icon name="shield" /><span><b>We win on terms, not on posture.</b> Written into a public pact: the founder’s votes, no veto on how they run, raise or sell, their exit. Then the loan line, the buybacks and the two engines on top.</span></li>
             </ul>
           </div>
         </div>

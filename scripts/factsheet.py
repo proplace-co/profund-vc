@@ -437,22 +437,21 @@ def page_one(F):
     y += 11 + F.para(M, y + 11, tw, x(f"Pre-seed to Growth. {FUND_SIZE}."), 13, "gras", INK, 1.4)
     y += 5 + F.para(M, y + 5, tw, x("We don't fund headcount. We back the clearest minds directing the most "
                                     "autonomous machines, in the world's largest markets."), 11.4, "reg", INK2, 1.48)
-    # la ligne forte, en gras sous le sous-titre (v3)
+    # la ligne forte, en gras sous le sous-titre (06/11 : le positionnement LP)
     y += 12
-    strong = (f"<b>{x('One round. Then never diluted again.')}</b> "
-              + x("One equity round per company, then loans and buybacks: founders own more at every "
-                  "stage, and so do our LPs."))
+    strong = (f"<b>{x('The new go-to fund for elite founders.')}</b> "
+              + x("We compete with the best funds for the best rounds, from the seed to the Series B, "
+                  "with SPVs alongside for the largest, and we win on terms."))
     hs = F.para(M + 13, y, tw - 13, strong, 11.4, "reg", INK, 1.45)
     F.rr(M, y + 1, 3.2, hs - 2, 1.6, fill=BLUE)
     y += hs
     y += 10 + micro(F, M, y + 12, tw, ["EuVECA fund"])
 
-    # le visuel : la carte du deal flow dans la fenetre, le pipeline pose devant
+    # le visuel : la carte du deal flow dans la fenetre (06/11 : sans le pipeline pose devant)
     vw = 252.0
     vx = M + W - vw
     bh = browser(F, vx, 84, vw)
-    ph = snap(F, vx - 52, 84 + bh - 78, 140.0, PIPE_SHOT)
-    y = max(y, 84 + bh - 78 + ph + 4)
+    y = max(y, 84 + bh + 4)
 
     # l'encadre de pre-commercialisation, en tete de document
     y += 12
