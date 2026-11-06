@@ -163,26 +163,22 @@ déplient DANS l'accueil (`Drawer.tsx`) : le pacte sous les règles du héros (�
 bouton du héros et le bandeau final ouvrent le panneau et y défilent ; `/#pact` et
 `/#calculator` aussi (liens du pied de page). /terms et /calculator restent en ligne.
 Plus de Founding Partner ni de mention de pré-commercialisation sur l'accueil (le
-partner reste sur /lp). L'exigence ne se dit pas, elle se lit. **/lp est écrite pour un LP exigeant** (réécrite le 06/11 : il doit tout trouver dès la
-première visite ; rien qui s'adresse aux fondateurs). Pas de barre du haut ni de menu, pas
-de formulaire, pas de « Request LP access » : le seul bouton est « Follow our deal flow
-live » (direct vers /dealflow si ce navigateur a l'accès, sinon le popup de candidature),
-plus la fiche. Dans l'ordre : le héros et la capture du deal flow ; « Fund I at a glance »
-(TRI, TVPI, DPI 7 ans, plus grosse sortie, termes clés dont frais, carry et engagement du
-GP, les trois documents) ; le manifeste (chute LP) ; « The shift » en six chiffres sourcés
-(Lovable, Stripe, Bessemer) ; les lois ; « The model », avec « Competing for the best
-rounds » (on apporte aussi de l'equity ; quand un fonds de premier plan mène, on suit ses
-termes, comme tout co-investisseur, et le pacte ne s'applique que là où on mène ; Index
-Ventures et Balderton cités comme référence, jamais comme partenaires) ; « Exits » (le
-marché européen réel, PitchBook et Atomico ; la société du tableau vendue à la taille de
-vraies cessions européennes, calculée par `founderMath.js` ; notre equity revient à 1× dès
-60 M€, la série A VC à 250 M€ ; en dessous de 60 M€ personne ne gagne : ne jamais écrire
-« ça marche à tous les coups » ; 15 cessions réelles par taille, valeurs telles que
-publiées, sources en note) ; « Protection » ; les moteurs version LP (`FounderEngines lp` :
-le process, puis Proplace et Maximum Insurance) ; le Founding Partner ; les termes et la
-performance complets (`TermsTables`, `PerformanceTables` et `Downloads` exportés de
-`ProFundPage.tsx` : un seul texte pour /pitch et /lp) ; l'accès et la mention de
-pré-commercialisation. « Our LPs are mainly high-net-worth individuals and family offices »
+partner reste sur /lp). L'exigence ne se dit pas, elle se lit. **/lp est écrite pour un LP exigeant** (refaite le 06/11 en sept chapitres numérotés, un
+seul fil : « j'ai compris, la stratégie tient, ils auront les meilleurs fondateurs, je mets un
+ticket, je sais qui appeler »). Héros (titre, quatre chiffres : TVPI et TRI cibles, part de
+notre meilleure société à la sortie, premier closing) ; 01 Why now (quatre chiffres sourcés) ;
+02 How we win the best founders (chèque pour chèque, termes, moteurs ; puis les moteurs
+version LP et Proplace / Maximum Insurance) ; 03 What the founder gets (le graphique, « Why
+founders get €0 on the VC path » expliqué au prix de Freetrade, le tableau des gains à six
+prix de cessions réelles) ; 04 What our LPs get (le multiple d'un chèque de série A aux mêmes
+prix, la loi de puissance européenne, 15 cessions réelles) ; 05 The fund (cibles, étages,
+termes, performance, documents) ; 06 Protection and team ; 07 « What €10M would
+represent » (part du fonds et du premier closing, résultat net dans le modèle, frais du
+premier closing, co-investissement, deal flow) et la carte de contact du Founding Partner
+(téléphone, le même que la fiche, et email). Sources numérotées et cliquables en bas
+(`SRC`), chaque cession réelle renvoie au communiqué ou au dépôt de l'acheteur. Pas de barre
+du haut ni de formulaire ; le deal flow s'ouvre directement si le LP est accepté, sinon le
+popup. « Our LPs are mainly high-net-worth individuals and family offices »
 (06/11). **Positionnement (06/11, Antoine)** : on chasse les licornes comme Index Ventures ou
 Sequoia, et les meilleurs fondateurs nous choisissent parce que nos termes sont réellement
 alignés (pas une posture). Plus de « returns built on ownership, not on unicorns » ni de

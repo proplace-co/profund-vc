@@ -234,7 +234,7 @@ const REAL_IPO = 0.063;
 const CAP_REAL = atFounderStake(vcCapTable({ founders: FM.founders, holders: FM.holders, rounds: FM.vc_rounds }), REAL_IPO);
 const realAt = (exit: number) => millions(payout(exit, CAP_REAL).founders);
 
-function StakeChart() {
+export function StakeChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
   const cols: { label: string; v: number; kind: 'now' | 'bridge' | 'round' | 'real' }[] = [
     { label: 'Today', v: FM.founders, kind: 'now' },
@@ -623,7 +623,7 @@ const ENGINES_LP: typeof ENGINES = [
 ];
 
 /** La preuve : les sociétés que les deux moteurs font tourner aujourd'hui (accueil et /lp). */
-function EnginesRunning() {
+export function EnginesRunning() {
   return (
     <div className="pv-run">
       <div className="pv-run-head">
