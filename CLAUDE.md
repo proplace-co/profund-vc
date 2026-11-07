@@ -177,6 +177,11 @@ capital without giving the company away. » en grand.
 comprennent pas), purgée de ce qui répétait la page : plus les chemins de dilution ni la protection en
 double. Restent : ce que les fondateurs gardent vraiment (cotations, Carta), les sorties européennes,
 le fonds et ses termes, rendements et tests, la simulation ligne à ligne, les moteurs, les documents.
+**/lp, « The questions you will ask. » (07/11)** : dix questions dépliables (`FAQ`, LpPage.tsx), la
+part publiable de la FAQ de préparation (document Claude « ProFund Fund I : pitch et FAQ LP ») : pourquoi
+le fonds ne prête pas, qui décide, le GP seul et son successeur, les votes et la protection, les rachats,
+les appels de fonds, les frais, l'engagement du GP, qui peut investir, la revente des parts. JAMAIS la
+fiscalité (avis en attente), le domicile, le nom du successeur ni les questions « pièges » (coaching).
 **La cible présentée prudemment (07/11, Alexandre)** : partout (/lp, /pitch, fiche, Excel), la cible
 affichée est le cas prudent, chaque sortie à 60 % de sa valeur modélisée : 2,8x net, 24 % de TRI, DPI 0,5x
 à l'an 7 ; le cas modélisé (4,4x, 36 %) est présenté comme l'upside ; stress 2,0x. Les tests de

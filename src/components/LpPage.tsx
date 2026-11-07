@@ -16,7 +16,8 @@ import { FACTSHEET_URL } from '../lib/links';
 //   rare (Capital is no longer scarce) → on a écrit ce que tout le monde dit (We wrote it
 //   down) → ce qui est juste pour eux est ce qui paie le LP (What pays you) → un premier
 //   fonds ne cache rien, il se regarde travailler (We run on what we back) → tout le détail
-//   est là (Check every figure) → l'invitation (What €10M would represent).
+//   est là (Check every figure) → les questions des LPs (07/11, The questions you will ask) →
+//   l'invitation (What €10M would represent).
 // Humble et sans comparaison : on ne nomme aucun fonds. Tout chiffre du fonds lu dans
 // fund.json et dit comme un modèle ; chiffres de tiers numérotés et cliquables (SOURCES, en
 // bas). Ne pas modifier un chiffre de tiers sans relire sa source. Pas de barre du haut ni de
@@ -161,6 +162,39 @@ const KEEP: { t: string; d: string }[] = [
   { t: 'Founders stay in.', d: 'Vesting with a cliff, a lock-up on founder shares, and a bad leaver returns every share at no more than cost.' },
   { t: 'Consent where it counts.', d: 'A board seat and monthly figures. Nothing ranks ahead of our shares or changes their rights without us.' },
   { t: 'Protections that wake up.', d: 'Fraud, a payment default on the company’s debt or a breach of the pact ends the voting agreement and restores a classic lead’s consents.' },
+];
+
+// ── Les questions des LPs (07/11) : la part publiable de la FAQ de préparation (document Claude
+// « ProFund Fund I : pitch et FAQ LP »). Seulement ce qui est décidé : pas de fiscalité (avis en attente),
+// pas de domicile (plus de « Luxembourg » dans la copie), pas de nom de successeur, aucune question
+// « piège ». Tout chiffre du fonds lu dans fund.json ; dit comme une intention pour les documents du fonds.
+const ALL_LINES = (['seed', 'venture', 'growth'] as const).flatMap((id) => L[id].lines);
+const BUY_DISC = (ids: ('seed' | 'venture' | 'growth')[]) => ids.flatMap((id) => L[id].lines)
+  .filter((l) => l.buyback && l.discount !== null).map((l) => l.discount!);
+const WIN_DISC = BUY_DISC(['seed', 'venture']);
+const CALLED = (y: number) => TARGET.cashflows.calls.slice(0, y).reduce((s, v) => s + v, 0) / F.commitments;
+const IP = F.investment_period_years;
+const FAQ: { id: string; q: string; a: ReactNode }[] = [
+  { id: 'faq-debt', q: 'Why doesn’t the fund lend?',
+    a: <>Lending well is a profession of its own, and a fund that lends to the companies it owns sits on both sides of the table. So the fund holds equity only. When debt can carry a company’s growth, we raise it for the founders from our partner banks: we build the case, negotiate the terms and stay at the table. The loan is between the company and the bank, and ProFund takes no fee and no warrants on it.</> },
+  { id: 'faq-ic', q: 'Who decides an investment?',
+    a: <>An authorised manager (AIFM) runs the fund and keeps a veto on compliance and risk; its selection is under way. Every investment goes through an investment committee where external members, chosen among our LPs, sit alongside the Founding Partner, who never invests alone. An LP advisory committee approves every conflict of interest.</> },
+  { id: 'faq-key', q: 'You are a solo GP. What if something happens to you?',
+    a: <>The money never depends on one person: a depositary holds the assets, an authorised manager runs the fund, a committee invests. A successor, named in the fund documents, sits on the investment committee from day one. A key-person event suspends the investment period. If the LPs do not approve the successor, it ends: uncalled commitments are released, uninvested cash is returned, and the portfolio is managed to exit at reduced fees. A key-person insurance, paid by the management company, funds the transition.</> },
+  { id: 'faq-votes', q: 'Your shares vote with the founder. What protects our capital?',
+    a: <>The voting agreement covers how the company is run, never what protects capital: shares ranking ahead of ours, a change to our rights, related-party deals, founder pay beyond budget, and the terms of any sale. It lasts ten years at most and ends if the founder leaves, sells control, or another investor leads a priced round. Our classic protections sleep while the company is run in good faith; fraud, gross misconduct, a material breach of the pact, a payment default on the company’s debt or insolvency wake them up.</> },
+  { id: 'faq-buyback', q: 'Buying out angels at a discount: is it fair to them?',
+    a: <>No one has to sell. An angel who sells gets liquidity years before an exit, with the founder’s agreement, at a price set by an independent valuer. The model assumes {pct(Math.min(...WIN_DISC))} to {pct(Math.max(...WIN_DISC))} below the valuation of the time on winners and angels, {pct(Math.max(...BUY_DISC(['growth'])))} on blocks bought from end-of-life funds.</> },
+  { id: 'faq-calls', q: 'When is my money called?',
+    a: <>As we invest, never upfront. In the model, about {pct(CALLED(1))} of commitments is called by the end of year 1, {pct(CALLED(3))} by year 3 and {pct(CALLED(IP))} by year {IP}. Exits run from year {Math.min(...ALL_LINES.map((l) => l.exit_year))} to year {Math.max(...ALL_LINES.map((l) => l.exit_year))}.</> },
+  { id: 'faq-cost', q: 'What does the fund cost?',
+    a: <>A management fee of {pct(T.fee_ip_pct)} of commitments for {IP} years ({pct(T.fee_first_close_pct, 2)} for first-close LPs), then {pct(T.fee_post_pct, 1)} of invested capital: {eur(A.mgmt_fees)} over the fund’s life in the model, plus {eur(A.fund_expenses)} of fund expenses. Carried interest of {pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, on the whole fund: the team earns nothing before LPs have their paid-in capital and the hurdle back. Fees and expenses are estimates until the manager’s quote.</> },
+  { id: 'faq-gp', q: 'How much does the team put in?',
+    a: <>At least {pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {eur(F.commitments, 'tile')}, invested alongside you.</> },
+  { id: 'faq-who', q: 'Who can invest?',
+    a: <>Professional investors, and eligible investors who commit at least €100,000 and confirm in writing that they understand the risks (Article 6(1) of the EuVECA Regulation). The fund is in pre-marketing: no units can be subscribed yet.</> },
+  { id: 'faq-exit', q: 'Can I sell my units before the end?',
+    a: <>The fund is closed-ended, for {F.term_years} years. As in any such fund, units can be transferred to another eligible investor with the manager’s consent.</> },
 ];
 
 // ── Les briques de mise en page ──────────────────────────────────────────────
@@ -413,6 +447,15 @@ function LpContent() {
           </Fold>
         </div>
         <div className="lp-room-dl"><Downloads deck /></div>
+      </Say>
+
+      <Say id="faq" title="The questions you will ask."
+        lead={<p className="pv-say-p">Answered plainly. These are our intentions for the fund documents, which will settle each point; until then, terms may change.</p>}>
+        <div className="pv-say-folds">
+          {FAQ.map((f) => (
+            <Fold key={f.id} id={f.id} title={f.q}><p className="lp-read lp-fold-text">{f.a}</p></Fold>
+          ))}
+        </div>
       </Say>
 
       <section className="pv-sec lp-alloc-sec" id="allocation">

@@ -102,6 +102,8 @@ export interface FundCase {
   dpi_year7: number;
   largest_exit: number;
   horizon_years: number;
+  /** Flux annuels, année 1 en tête (appels, investissements, distributions). */
+  cashflows: { investments: number[]; calls: number[]; distributions: number[]; lp: number[]; gp: number[] };
 }
 
 export type FounderPathId = 'vc' | 'same' | 'half' | 'credit';
