@@ -266,14 +266,18 @@ export function TheFew() {
 // compose devient le leader que la loi de puissance récompense (04). « The clearest minds directing
 // the most autonomous machines » : la phrase du manifeste (Thesis.tsx). À l'écran, la chaîne se
 // dessine de gauche à droite (sur mobile, de haut en bas), puis s'anime : chaque impulsion part des
-// fondateurs, touche un client, revient au cœur de la boucle, s'y enroule en grossissant et allume
+// fondateurs, balaie le marché, revient au cœur de la boucle, s'y enroule en grossissant et allume
 // le sommet du leader. Les trois fondateurs sont ceux où s'arrête l'implosion (`CollapseVisual`).
 // Même ordre partout : LAWS de Thesis.tsx et la fiche (factsheet.py).
+// 10e passe (Alexandre) : le minimum headcount se voit, trois lignes seulement pour tout le marché
+// (les points restent) et une onde qui le balaie d'un coup ; la catégorie se gagne sous les yeux :
+// une foule de concurrents au coude à coude, puis le leader s'envole et la traîne retombe (loi de
+// puissance plus raide : le leader pèse plus que tous les autres réunis).
 const VF_ZONES = [
   { n: '01', w: 23, at: 0.3, t: 'Visionary founders.', d: 'Obsessive from day one. They direct, the machine executes.' },
-  { n: '02', w: 33, at: 1.3, t: 'Maximum impact, minimum headcount.', d: 'Whole markets, with near-zero marginal labor.' },
+  { n: '02', w: 33, at: 1.2, t: 'Maximum impact, minimum headcount.', d: 'Whole markets, with near-zero marginal labor.' },
   { n: '03', w: 34, at: 2.8, t: 'Self-improving systems.', d: 'Closed loops that compound with every run.' },
-  { n: '04', w: 30, at: 4.6, t: 'Category leaders.', d: 'Built to dominate their category. The power law rewards the leader.' },
+  { n: '04', w: 30, at: 5.5, t: 'Category leaders.', d: 'Built to dominate their category. The power law rewards the leader.' },
 ];
 
 /** F les fondateurs, O la machine d'où part le marché (arcs de R0 à R1), L le cœur de la boucle,
@@ -283,12 +287,21 @@ const VF_H: VfLayout = { vertical: false, F: 96, O: 236, R0: 64, R1: 254, L: 724
 const VF_V: VfLayout = { vertical: true, F: 60, O: 166, R0: 50, R1: 200, L: 596, B: 790, box: '0 0 360 1040', id: 'v' };
 const VF_RING = 122;
 const VF_SPIRAL = 100;
-/** Les impulsions : une durée, et le rayon du marché que chacune emprunte. */
-const VF_PULSE = { dur: 7.2, rays: [1, 6, 3, 4] };
+/** Les trois seules lignes du marché : ses deux bords et son axe (points de l'arc extérieur, 29 en tout). */
+const VF_REACH = [0, 14, 28];
+/** Les impulsions : une durée, et la ligne que chacune emprunte (l'axe, un bord, l'autre). */
+const VF_PULSE = { dur: 7.2, rays: [1, 2, 0] };
+/** La catégorie : la hauteur du leader, la pente de la loi de puissance, et la foule du départ (le
+ *  futur leader est au milieu du peloton). */
+const VF_BARS = { lead: 230, power: 1.6, crowd: [44, 50, 47, 53, 45, 49, 42, 48, 51, 44, 46, 43, 47] };
+const VF_BAR_BASE = -150;
+/** La course : son départ et sa durée (la foule en place à 35 %, l'envol du leader à partir de 55 %). */
+const VF_RACE = { at: 4.2, dur: 2.6 };
 /** Le moment où la chaîne a fini de se dessiner : les impulsions partent ensuite. */
-const VF_DRAWN_MS = 6000;
+const VF_DRAWN_MS = 7000;
 
 type Pt = [number, number];
+type Box = { x: number; y: number; width: number; height: number };
 const vfFmt = (p: Pt) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
 const vfLen = (pts: Pt[]) => pts.reduce((s, p, i) => (i ? s + Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0), 0);
 const vfCubic = (a: Pt, b: Pt, c: Pt, d: Pt, n = 24): Pt[] => Array.from({ length: n + 1 }, (_, i) => {
@@ -301,11 +314,15 @@ const vfAt = (d: number, t?: number) =>
   ({ ['--d' as string]: `${d}s`, ...(t ? { ['--t' as string]: `${t}s` } : {}) }) as CSSProperties;
 const vfKt = (xs: number[]) => xs.map((x) => x.toFixed(4)).join(';');
 
-function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
+function VisionArt({ lay, seen, motion, live }: { lay: VfLayout; seen: boolean; motion: boolean; live: boolean }) {
   const svg = useRef<SVGSVGElement>(null);
-  // Les impulsions partent des fondateurs au moment où elles apparaissent, quel que soit l'instant
-  // où la section arrive à l'écran : on remet l'horloge du dessin à zéro.
-  useEffect(() => { if (live) svg.current?.setCurrentTime?.(0); }, [live]);
+  // Les animations SVG comptent depuis l'insertion du dessin : on lit l'horloge quand la section
+  // arrive à l'écran (la course des sociétés) et quand la chaîne s'anime (les impulsions).
+  const [t0, setT0] = useState<number | null>(null);
+  const [t1, setT1] = useState<number | null>(null);
+  const clock = () => { try { return svg.current?.getCurrentTime() ?? 0; } catch { return 0; } };
+  useEffect(() => { if (seen && motion) setT0(clock()); }, [seen, motion]);
+  useEffect(() => { if (live) setT1(clock()); }, [live]);
   // (t, s) : t le long de la chaîne, s en travers (positif = vers le haut à l'horizontale)
   const P = (t: number, s: number): Pt => (lay.vertical ? [180 + s, 20 + t] : [t, 190 - s]);
   // 01 : les fondateurs, dans le triangle où s'arrête l'implosion (pointe en haut, en coordonnées
@@ -314,9 +331,10 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
   const founders: Pt[] = [[0, -15], [-13, 8], [13, 8]].map(([dx, dy]) => [fx + dx, fy + dy]);
   const start = P(lay.F + 34, 0);
   const O = P(lay.O, 0);
-  // 02 : un marché entier, atteint depuis un seul point (la machine), arc après arc
+  // 02 : un marché entier, arc après arc, atteint depuis un seul point (la machine) par trois lignes
   const market: { p: Pt; d: number }[] = [];
-  const front: Pt[] = [];
+  const outer: Pt[] = [];
+  const rim: { top: Pt[]; bottom: Pt[] } = { top: [], bottom: [] };
   for (let k = 0; k < 6; k++) {
     const R = lay.R0 + (k * (lay.R1 - lay.R0)) / 5;
     const amax = Math.asin(Math.min(0.92, 146 / R));
@@ -324,10 +342,20 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
     for (let i = 0; i < n; i++) {
       const a = -amax + (2 * amax * i) / (n - 1);
       const p = P(lay.O + Math.cos(a) * R, Math.sin(a) * R);
-      market.push({ p, d: 1.35 + k * 0.13 + (Math.abs(a) / amax) * 0.1 });
-      if (k === 5 && i % 4 === 0) front.push(p);
+      market.push({ p, d: 1.3 + k * 0.12 + (Math.abs(a) / amax) * 0.08 });
+      if (k === 5) outer.push(p);
     }
+    // le contour du marché, un peu élargi : l'onde ne déborde pas des points
+    rim.top.push(P(lay.O + Math.cos(amax * 1.06) * R * 1.05, Math.sin(amax * 1.06) * R * 1.05));
+    rim.bottom.push(P(lay.O + Math.cos(amax * 1.06) * R * 1.05, -Math.sin(amax * 1.06) * R * 1.05));
   }
+  const front = VF_REACH.map((i) => outer[i]);
+  const aOut = Math.asin(Math.min(0.92, 146 / lay.R1)) * 1.06;
+  const arc = Array.from({ length: 25 }, (_, i) => {
+    const a = aOut - (2 * aOut * i) / 24;
+    return P(lay.O + Math.cos(a) * lay.R1 * 1.05, Math.sin(a) * lay.R1 * 1.05);
+  });
+  const field = `M${vfFmt(O)} L${[...rim.top, ...arc, ...[...rim.bottom].reverse()].map(vfFmt).join(' L')} Z`;
   // 03 : chaque passage revient au cœur ; la boucle s'élargit à chaque tour (deux tours) et sort à
   // droite, vers le haut
   const C = P(lay.L, 0);
@@ -340,21 +368,28 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
     const a = (i / 10) * Math.PI * 2;
     return P(lay.L + Math.cos(a) * VF_RING, Math.sin(a) * VF_RING);
   });
-  // 04 : ce qui compose monte au sommet du leader ; derrière lui, la longue traîne
+  // 04 : ce qui compose monte au sommet du leader. La catégorie : une foule au coude à coude, puis le
+  // leader s'envole et la traîne retombe.
+  const leadS = VF_BAR_BASE + VF_BARS.lead;
   const out = spiral[spiral.length - 1];
-  const tip = P(lay.B - 8, 70);
-  const link = vfCubic(out, P(lay.L + VF_SPIRAL + 4, 46), P(lay.B - 64, 70), tip);
-  const top = P(lay.B, 70);
-  const bars = Array.from({ length: 13 }, (_, i) => {
+  const tip = P(lay.B - 10, leadS);
+  const link = vfCubic(out, P(lay.L + VF_SPIRAL + 4, 46), P(lay.B - 66, leadS), tip);
+  const top = P(lay.B, leadS);
+  const bars = VF_BARS.crowd.map((h0, i) => {
     const t = lay.B + i * 17;
-    const h = 220 / Math.pow(i + 1, 1.15);
-    const [x1, y1] = P(t - 4, -150);
-    const [x2, y2] = P(t + 4, -150 + h);
-    return { x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1) };
+    const half = i === 0 ? 5.5 : 4;
+    const box = (h: number): Box => {
+      const [x1, y1] = P(t - half, VF_BAR_BASE);
+      const [x2, y2] = P(t + half, VF_BAR_BASE + h);
+      return { x: Math.min(x1, x2), y: Math.min(y1, y2), width: Math.abs(x2 - x1), height: Math.abs(y2 - y1) };
+    };
+    const h = VF_BARS.lead / Math.pow(i + 1, VF_BARS.power);
+    return { lead: i === 0, frames: [box(0), box(h0), box(h0), box(h)] };
   });
-  const base = [P(lay.B - 20, -150), P(lay.B + 12 * 17 + 20, -150)];
-  // La chaîne de chaque impulsion, et les instants (en fraction du trajet) où elle touche son client,
-  // entre dans la boucle et en sort : la vitesse est constante (animateMotion « paced »).
+  const still = seen && !motion; // mouvement réduit : la catégorie déjà gagnée
+  const base = [P(lay.B - 20, VF_BAR_BASE), P(lay.B + 12 * 17 + 20, VF_BAR_BASE)];
+  // La chaîne de chaque impulsion, et les instants (en fraction du trajet) où elle quitte la machine,
+  // touche son client, entre dans la boucle et en sort : vitesse constante (animateMotion « paced »).
   const chains = VF_PULSE.rays.map((j) => {
     const m = front[j];
     const pts: Pt[] = [start, O, m, C, ...spiral, ...link.slice(1)];
@@ -362,6 +397,7 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
     return {
       m,
       d: `M${pts.map(vfFmt).join(' L')}`,
+      fO: vfLen([start, O]) / total,
       fM: vfLen([start, O, m]) / total,
       fL: vfLen([start, O, m, C]) / total,
       fS: vfLen([start, O, m, C, ...spiral]) / total,
@@ -370,24 +406,29 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
   const N = chains.length;
   const D = VF_PULSE.dur;
   const g = (k: string) => `pvVf${k}${lay.id}`;
+  const race = (i: number) => ({ dur: `${VF_RACE.dur}s`, begin: `${((t0 ?? 0) + VF_RACE.at + i * 0.03).toFixed(3)}s`, fill: 'freeze' });
   return (
     <svg ref={svg} viewBox={lay.box} className={lay.vertical ? 'v' : undefined} aria-hidden="true">
       <defs>
         <radialGradient id={g('Glow')}><stop offset="0" stopColor="#9fb6cf" stopOpacity=".5" /><stop offset="1" stopColor="#9fb6cf" stopOpacity="0" /></radialGradient>
-        <radialGradient id={g('Lead')}><stop offset="0" stopColor="#ffffff" stopOpacity=".35" /><stop offset="1" stopColor="#9fb6cf" stopOpacity="0" /></radialGradient>
+        <radialGradient id={g('Lead')}><stop offset="0" stopColor="#ffffff" stopOpacity=".42" /><stop offset="1" stopColor="#9fb6cf" stopOpacity="0" /></radialGradient>
         <radialGradient id={g('Flash')}><stop offset="0" stopColor="#ffffff" stopOpacity=".55" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
+        <clipPath id={g('Field')}><path d={field} /></clipPath>
       </defs>
       {/* 01 : les fondateurs, et leur intention jusqu'à la machine */}
       <circle className="vf-fade" style={vfAt(0.1, 1.4)} cx={P(lay.F, 0)[0]} cy={P(lay.F, 0)[1]} r="62" fill={`url(#${g('Glow')})`} />
       <path className="vf-line vf-draw" style={vfAt(0.5, 0.8)} d={`M${vfFmt(start)} L${vfFmt(O)}`} pathLength={1} />
-      {/* 02 : un marché entier, depuis un seul point */}
+      {/* 02 : un marché entier, trois lignes seulement, et une onde qui le balaie d'un coup */}
       {front.map((m, j) => (
-        <path key={`r${j}`} className="vf-ray vf-draw" style={vfAt(1.05 + j * 0.04, 0.9)} d={`M${vfFmt(O)} L${vfFmt(m)}`} pathLength={1} />
+        <path key={`r${j}`} className="vf-ray vf-draw" style={vfAt(1.05, 0.9)} d={`M${vfFmt(O)} L${vfFmt(m)}`} pathLength={1} />
       ))}
+      <g clipPath={`url(#${g('Field')})`}>
+        <circle className="vf-sweep" style={vfAt(1.1, 1.5)} cx={O[0]} cy={O[1]} r={lay.R1 * 1.05} vectorEffect="non-scaling-stroke" />
+      </g>
       {market.map((m, i) => <circle key={`m${i}`} className="vf-dot vf-fade" style={vfAt(m.d, 0.6)} cx={m.p[0]} cy={m.p[1]} r="2.1" />)}
       {/* 02 → 03 : chaque passage revient au cœur de la boucle */}
       {front.map((m, j) => (
-        <path key={`k${j}`} className="vf-ret vf-draw" style={vfAt(2.25 + j * 0.04, 1)} d={`M${vfFmt(m)} L${vfFmt(C)}`} pathLength={1} />
+        <path key={`k${j}`} className="vf-ret vf-draw" style={vfAt(2.25, 1)} d={`M${vfFmt(m)} L${vfFmt(C)}`} pathLength={1} />
       ))}
       {/* 03 : la boucle, qui s'élargit à chaque tour, et ses machines */}
       <circle className="vf-fade" style={vfAt(2.7, 1.4)} cx={C[0]} cy={C[1]} r="112" fill={`url(#${g('Glow')})`} />
@@ -396,23 +437,50 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
       <g className="vf-orbit vf-fade" style={vfAt(3.7, 1)}>
         {machines.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="3.4" />)}
       </g>
-      {/* 03 → 04 : ce qui compose monte au sommet du leader */}
-      <path className="vf-line vf-draw" style={vfAt(4.4, 0.8)} d={`M${link.map(vfFmt).join(' L')}`} pathLength={1} />
-      <line className="vf-base vf-fade" style={vfAt(4.6, 0.8)} x1={base[0][0]} y1={base[0][1]} x2={base[1][0]} y2={base[1][1]} />
-      <circle className="vf-fade" style={vfAt(5.4, 1.4)} cx={top[0]} cy={top[1]} r="56" fill={`url(#${g('Lead')})`} />
-      {bars.map((r, i) => (
-        <rect key={`b${i}`} className={`vf-bar${i === 0 ? ' hi' : ''}`} x={r.x} y={r.y} width={r.w} height={r.h} rx="3"
-              style={vfAt(4.8 + i * 0.05)} />
-      ))}
+      {/* 04 : la catégorie au coude à coude ; la chaîne arrive au-dessus de la foule, le leader monte
+          la chercher, les autres retombent */}
+      <line className="vf-base vf-fade" style={vfAt(4.1, 0.8)} x1={base[0][0]} y1={base[0][1]} x2={base[1][0]} y2={base[1][1]} />
+      <path className="vf-line vf-draw" style={vfAt(4.9, 0.8)} d={`M${link.map(vfFmt).join(' L')}`} pathLength={1} />
+      <circle className="vf-fade" style={vfAt(6.1, 1.4)} cx={top[0]} cy={top[1]} r="64" fill={`url(#${g('Lead')})`} />
+      {bars.map((b, i) => {
+        const at = still ? b.frames[3] : b.frames[0];
+        const won = still && b.lead;
+        return (
+          <rect key={`b${i}`} x={at.x} y={at.y} width={at.width} height={at.height} rx="3"
+                fill={won ? '#ffffff' : '#9fb6cf'} fillOpacity={won ? 1 : 0.42} opacity={still && !b.lead ? 0.5 : 1}>
+            {t0 !== null && (['x', 'y', 'width', 'height'] as const)
+              .filter((k) => new Set(b.frames.map((f) => f[k].toFixed(2))).size > 1)
+              .map((k) => (
+                <animate key={k} attributeName={k} values={b.frames.map((f) => f[k].toFixed(2)).join(';')} keyTimes="0;.35;.55;1"
+                         calcMode="spline" keySplines=".2 .8 .2 1;0 0 1 1;.6 0 .2 1" {...race(i)} />
+              ))}
+            {t0 !== null && b.lead && (
+              <>
+                <animate attributeName="fill" values="#9fb6cf;#9fb6cf;#ffffff" keyTimes="0;.55;1" {...race(i)} />
+                <animate attributeName="fill-opacity" values=".42;.42;1" keyTimes="0;.55;1" {...race(i)} />
+              </>
+            )}
+            {t0 !== null && !b.lead && <animate attributeName="opacity" values="1;1;.5" keyTimes="0;.55;1" {...race(i)} />}
+          </rect>
+        );
+      })}
       {founders.map(([x, y], i) => <circle key={`f${i}`} className="vf-hi" cx={x} cy={y} r="8" />)}
       <circle className="vf-node vf-fade" style={vfAt(0.95, 0.5)} cx={O[0]} cy={O[1]} r="3.4" />
       <circle className="vf-hi vf-fade" style={vfAt(2.8, 0.6)} cx={C[0]} cy={C[1]} r="4" />
-      {live && (
+      {live && t1 !== null && (
         <g className="vf-live">
           {chains.map((c, k) => {
-            const run = { dur: `${D}s`, begin: `${((k * D) / N).toFixed(2)}s`, repeatCount: 'indefinite' };
+            const run = { dur: `${D}s`, begin: `${(t1 + (k * D) / N).toFixed(3)}s`, repeatCount: 'indefinite' };
             return (
               <g key={k}>
+                {/* une seule action balaie tout le marché */}
+                <g clipPath={`url(#${g('Field')})`}>
+                  <circle className="vf-wave" cx={O[0]} cy={O[1]} r={lay.R0 * 0.4} opacity="0">
+                    <animate attributeName="r" values={`${lay.R0 * 0.4};${lay.R0 * 0.4};${lay.R1 * 1.05};${lay.R1 * 1.05}`}
+                             keyTimes={vfKt([0, c.fO, c.fM, 1])} {...run} />
+                    <animate attributeName="opacity" values="0;0;.6;0;0" keyTimes={vfKt([0, c.fO, c.fO + 0.012, c.fM + 0.01, 1])} {...run} />
+                  </circle>
+                </g>
                 {/* le client touché */}
                 <circle className="vf-ping" cx={c.m[0]} cy={c.m[1]} r="2" opacity="0">
                   <animate attributeName="r" values="2;2;14;14" keyTimes={vfKt([0, c.fM, c.fM + 0.06, 1])} {...run} />
@@ -438,9 +506,9 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
             );
           })}
           {/* le leader s'allume à chaque arrivée : une toutes les D / N secondes, dès la première */}
-          <circle cx={top[0]} cy={top[1]} r="44" fill={`url(#${g('Flash')})`} opacity="0">
+          <circle cx={top[0]} cy={top[1]} r="50" fill={`url(#${g('Flash')})`} opacity="0">
             <animate attributeName="opacity" values="0;1;0" keyTimes="0;.12;1" dur={`${(D / N).toFixed(2)}s`}
-                     begin={`${(D - (0.12 * D) / N).toFixed(3)}s`} repeatCount="indefinite" />
+                     begin={`${(t1 + D - (0.12 * D) / N).toFixed(3)}s`} repeatCount="indefinite" />
           </circle>
         </g>
       )}
@@ -450,21 +518,24 @@ function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
 
 export function WhatWeBack() {
   const [ref, seen] = useInView<HTMLElement>();
+  // lu une fois, avant l'arrivée à l'écran : la course ne doit pas partir si le mouvement est réduit
+  const [motion] = useState(() => {
+    try { return !window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return true; }
+  });
   const [live, setLive] = useState(false);
   useEffect(() => {
-    if (!seen) return;
-    try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch { /* rien */ }
+    if (!seen || !motion) return;
     const t = window.setTimeout(() => setLive(true), VF_DRAWN_MS);
     return () => window.clearTimeout(t);
-  }, [seen]);
+  }, [seen, motion]);
   return (
     <section className="pv-sec night pv-vf-sec" id="back">
       <div className="pv-wrap">
         <p className="pv-kick">What we back</p>
         <h2 className="pv-say-h">The clearest minds, directing the most autonomous machines.</h2>
         <figure ref={ref} className={`pv-vf${seen ? ' in' : ''}`}>
-          <div className="pv-vf-art h"><VisionArt lay={VF_H} live={live} /></div>
-          <div className="pv-vf-art v"><VisionArt lay={VF_V} live={live} /></div>
+          <div className="pv-vf-art h"><VisionArt lay={VF_H} seen={seen} motion={motion} live={live} /></div>
+          <div className="pv-vf-art v"><VisionArt lay={VF_V} seen={seen} motion={motion} live={live} /></div>
           <ol className="pv-vf-zones" style={{ gridTemplateColumns: VF_ZONES.map((z) => `${z.w}fr`).join(' ') }}>
             {VF_ZONES.map((z) => (
               <li key={z.n} style={vfAt(z.at)}><span className="n">{z.n}</span><h3>{z.t}</h3><p>{z.d}</p></li>
@@ -901,12 +972,15 @@ const ENGINES: { icon: IconName; name: string; d: string; steps: { k: string; d:
     ] },
 ];
 
-// La preuve (06/11, Antoine) : deux sociétés que les moteurs font tourner aujourd'hui.
+// La preuve (06/11, Antoine) : les sociétés que les moteurs font tourner aujourd'hui. 07/11
+// (Alexandre) : Sosuites les rejoint.
 const RUN = [
   { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', wide: false,
     d: 'Autonomous AI operating system for corporate development and M&A.' },
   { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', wide: true,
     d: 'Travel insurance and duty of care for companies and their teams abroad.' },
+  { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', wide: true,
+    d: 'AI-assisted personalised art prints to share.' },
 ];
 
 // Les mêmes moteurs, vus des LPs (06/11) : le fonds s'en sert pour trouver ses sociétés,

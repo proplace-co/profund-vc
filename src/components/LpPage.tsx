@@ -329,7 +329,7 @@ function LpContent() {
         lead={<p className="pv-say-p">Not on cheque size. Where size does not help.</p>}>
         <Numbers items={[
           { b: 'First.', t: 'Our deal flow engine tracks every European seed round, every week, and flags the inflection before it becomes consensus.' },
-          { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace and Maximum Insurance.' },
+          { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace, Maximum Insurance and Sosuites.' },
           { b: 'Aligned.', t: 'The terms the best founders negotiate, from their first cheque. In writing, in a public pact.' },
         ]} />
         <p className="pv-fine pv-three-src">The largest funds lead the largest rounds. We stay at the founder’s side, with SPVs that keep that upside for our LPs.</p>

@@ -155,7 +155,10 @@ headcount, 03 Self-improving systems, 04 Category leaders, le même dans `LAWS` 
 p. 1 ; une chaîne : les trois fondateurs (le triangle où s'arrête l'implosion), leur intention, un
 marché entier atteint depuis un point, chaque passage qui revient au cœur de la boucle, la boucle qui
 s'élargit, la loi de puissance et son leader ; puis des impulsions parcourent toute la chaîne (client
-touché, retour au cœur, l'impulsion grossit en s'enroulant, le leader s'allume) ; les quatre lois
+touché, retour au cœur, l'impulsion grossit en s'enroulant, le leader s'allume) ; 10e passe : le
+marché n'a que TROIS lignes (le minimum headcount), les points restent, une onde le balaie d'un coup ;
+la catégorie se gagne à l'écran (une foule au coude à coude, puis le leader s'envole et la traîne
+retombe, loi de puissance plus raide : le leader pèse plus que tous les autres réunis) ; les quatre lois
 dessous, alignées sur leur zone ; sur mobile, de haut en bas ; jamais de cartes tassées), puis « Your Chief Fundraising Officer. Perfectly aligned. » (`CapitalStack`, 8e passe : plus de
 plan de capital générique ; ce qu'un CFO aligné fait d'intelligent : « Raise from strength » et sa courbe,
 on lève au point d'inflexion et non à court de cash, puis la table nettoyée avant chaque tour, les
@@ -280,7 +283,8 @@ jamais afficher une MÉDIANE plus basse que ce que Carta mesure ; le tableau de
 l'accueil a une colonne « At 6.3%, the Deliveroo case » : les fondateurs ramenés à 6,3 %,
 mêmes tours, mêmes préférences, calculée par `atFounderStake` de `founderMath.js` ; sous les
 moteurs, « Running today » : Proplace et Maximum Insurance, dont la corp dev, l'inbound et
-l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11),
+l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11 ; Sosuites les rejoint le
+07/11, Alexandre, trois cartes en trois colonnes),
 (v3.14) le fonds en chiffres (taille, tickets, suivi, au-delà de 10 M€), les étages, les
 chiffres sans phrase contestable (« When debt can carry your growth… When it cannot, we bring
 the equity on the same terms »), les deux moteurs côté fondateur (« Two AI engines, working

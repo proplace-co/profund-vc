@@ -1936,10 +1936,12 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pv-vf .vf-orbit circle { fill: #9fb6cf; }
 .pv-vf .vf-dot { fill: #9fb6cf; }
 .pv-vf .vf-base { stroke: rgba(159, 182, 207, .22); stroke-width: 1; }
-.pv-vf .vf-bar { fill: rgba(159, 182, 207, .42); transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); transition: transform 1s cubic-bezier(.2, .8, .2, 1) var(--d, 0s); }
-.pv-vf svg.v .vf-bar { transform-origin: left; transform: scaleX(0); }
-.pv-vf .vf-bar.hi { fill: #fff; }
-.pv-vf.in .vf-bar, .pv-vf.in svg.v .vf-bar { transform: none; }
+/* la catégorie (les barres) s'anime en SVG (Founders.tsx, VF_RACE) : la foule, puis l'envol du leader */
+/* 02 : une onde balaie tout le marché, au dessin puis à chaque impulsion */
+.pv-vf .vf-sweep { fill: none; stroke: #e6eef7; stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.pv-vf.in .vf-sweep { animation: pv-vf-sweep var(--t, 1.5s) cubic-bezier(.3, 0, .3, 1) var(--d, 0s) both; }
+@keyframes pv-vf-sweep { 0% { transform: scale(.12); opacity: 0; } 12% { opacity: .65; } 100% { transform: scale(1); opacity: 0; } }
+.pv-vf .vf-wave { fill: none; stroke: #e6eef7; stroke-width: 1.2; }
 /* la chaîne vivante : l'impulsion, le client touché, le retour au cœur, le leader qui s'allume */
 .pv-vf .vf-live { animation: pv-vf-live 1.2s ease both; }
 .pv-vf .vf-pulse { fill: #fff; }
@@ -1957,8 +1959,8 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
   .pv-vf-zones { grid-template-columns: minmax(0, 1fr) !important; gap: 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pv-vf .vf-draw, .pv-vf .vf-fade, .pv-vf .vf-bar, .pv-vf-zones li { transition: none; }
-  .pv-vf .vf-ring, .pv-vf .vf-orbit { animation: none; }
+  .pv-vf .vf-draw, .pv-vf .vf-fade, .pv-vf-zones li { transition: none; }
+  .pv-vf .vf-ring, .pv-vf .vf-orbit, .pv-vf.in .vf-sweep { animation: none; }
 }
 
 /* ── Le Chief Fundraising Officer (07/11, 8e passe) : ce qu'il fait d'intelligent ─────────────── */
@@ -2047,5 +2049,27 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 @keyframes pv-run-beat { 0% { box-shadow: 0 0 0 0 rgba(143, 224, 174, .55); } 100% { box-shadow: 0 0 0 9px rgba(143, 224, 174, 0); } }
 .pv-run-go { position: relative; color: #fff; }
 .pv-run-go svg { color: var(--blue-glow); }
+/* 07/11 : trois sociétés (Sosuites rejoint Proplace et Maximum Insurance). Trois colonnes au-delà de
+   1080 px, le nom du moteur sous son intitulé ; une colonne en dessous, le moteur à droite ; sous
+   600 px, de nouveau dessous. */
+.pv-run-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pv-run-co li { grid-template-columns: 20px minmax(0, 1fr); row-gap: 3px; }
+.pv-run-co li b { grid-column: 2; text-align: left; }
+/* en colonnes, le badge passe au-dessus du logo (il couvrait le logo large) et les lignes des moteurs
+   s'alignent d'une carte à l'autre */
+.pv-run-live { position: relative; top: auto; right: auto; align-self: flex-start; }
+.pv-run-co > p { min-height: 3.1em; }
+@media (max-width: 1080px) {
+  .pv-run-grid { grid-template-columns: minmax(0, 1fr); }
+  .pv-run-co li { grid-template-columns: 20px minmax(0, 1fr) auto; }
+  .pv-run-co li b { grid-column: auto; text-align: right; }
+  .pv-run-live { position: absolute; top: clamp(24px, 2.8vw, 36px); right: clamp(24px, 2.8vw, 36px); }
+  .pv-run-co > p { min-height: 0; }
+}
+@media (max-width: 600px) {
+  .pv-run-co li { grid-template-columns: 20px minmax(0, 1fr); }
+  .pv-run-co li b { grid-column: 2; text-align: left; }
+  .pv-run-live { position: relative; top: auto; right: auto; }
+}
 @media (prefers-reduced-motion: reduce) { .pv-run-pulse::after, .pv-run-live i { animation: none; } }
 
