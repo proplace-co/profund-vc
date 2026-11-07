@@ -184,10 +184,16 @@ capital without giving the company away. » en grand.
 comprennent pas), purgée de ce qui répétait la page : plus les chemins de dilution ni la protection en
 double. Restent : ce que les fondateurs gardent vraiment (cotations, Carta), les sorties européennes,
 le fonds et ses termes, rendements et tests, la simulation ligne à ligne, les moteurs, les documents.
-**/lp, « The questions you will ask. » (07/11)** : dix questions dépliables (`FAQ`, LpPage.tsx), la
+**/lp, « Questions you might ask. » (07/11 ; titre d'abord « The questions you will ask. »)** : onze
+questions dépliables (`FAQ`, LpPage.tsx), la
 part publiable de la FAQ de préparation (document Claude « ProFund Fund I : pitch et FAQ LP ») : pourquoi
-le fonds ne prête pas, qui décide, le GP seul et son successeur, les votes et la protection, les rachats,
-les appels de fonds, les frais, l'engagement du GP, qui peut investir, la revente des parts. JAMAIS la
+le fonds ne prête pas, qui décide, le GP seul et son successeur, les votes et la protection, la liquidité
+sans le contrôle, les rachats, les appels de fonds, les frais, l'engagement du GP, qui peut investir
+(minimum 500 000 €, comme le popup du deal flow ; /legal garde les 100 000 € de l'art. 6(1), le plancher
+légal), la revente des parts. La liquidité (Alexandre, 07/11) : ce que le pacte signe (clauses 9 et 10),
+puis le marché, sourcé et relu le 07/11 (Jefferies, Schwab-Forge, SpaceX, SEC) ; JAMAIS « liquidité
+assurée » : un token ne change pas ce qu'est une action, un token de tiers ne donne aucun droit, et
+l'Innovation Exemption de la SEC (09/2026) ne couvre que les actions cotées. JAMAIS la
 fiscalité (avis en attente), le domicile, le nom du successeur ni les questions « pièges » (coaching).
 **L'engagement du GP (07/11, Alexandre : « j'ai pas cet argent »)** : au moins 1 % (1 M€ à 100 M€),
 appelé au fil des investissements comme celui des LPs (~50 K€ l'an 1, ~500 K€ l'an 3, lus dans les
@@ -283,8 +289,12 @@ jamais afficher une MÉDIANE plus basse que ce que Carta mesure ; le tableau de
 l'accueil a une colonne « At 6.3%, the Deliveroo case » : les fondateurs ramenés à 6,3 %,
 mêmes tours, mêmes préférences, calculée par `atFounderStake` de `founderMath.js` ; sous les
 moteurs, « Running today » : Proplace et Maximum Insurance, dont la corp dev, l'inbound et
-l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11 ; Sosuites les rejoint le
-07/11, Alexandre, trois cartes en trois colonnes),
+l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11 ; 07/11, Alexandre : quatre
+cartes en deux colonnes, chacune avec ses SEULES lignes (`RUN`, `caps`) : Proplace corp dev, inbound,
+outbound ; Maximum Insurance inbound et outbound, PAS de corp dev ; Sosuites inbound ; WinHealth Group
+outbound et corp dev ; puis des références en mini cartes, corp dev sur le moteur externe
+(`RUN_REFS` : Nexecur, logo sans celui du Crédit Agricole ; S4BT, sforbt.com) ; ne jamais y ajouter
+une ligne que la société ne fait pas tourner),
 (v3.14) le fonds en chiffres (taille, tickets, suivi, au-delà de 10 M€), les étages, les
 chiffres sans phrase contestable (« When debt can carry your growth… When it cannot, we bring
 the equity on the same terms »), les deux moteurs côté fondateur (« Two AI engines, working

@@ -973,14 +973,31 @@ const ENGINES: { icon: IconName; name: string; d: string; steps: { k: string; d:
 ];
 
 // La preuve (06/11, Antoine) : les sociétés que les moteurs font tourner aujourd'hui. 07/11
-// (Alexandre) : Sosuites les rejoint.
-const RUN = [
-  { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', wide: false,
-    d: 'Autonomous AI operating system for corporate development and M&A.' },
-  { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', wide: true,
-    d: 'Travel insurance and duty of care for companies and their teams abroad.' },
-  { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', wide: true,
-    d: 'AI-assisted personalised art prints to share.' },
+// (Alexandre) : chaque société ne montre que ce qui tourne vraiment chez elle (Maximum Insurance :
+// inbound et outbound, pas de corp dev ; Sosuites : inbound ; WinHealth Group : outbound et corp dev),
+// puis des références en mini cartes, dont la corp dev tourne sur le moteur externe.
+type RunCap = 'corpdev' | 'inbound' | 'outbound';
+const RUN_CAPS: Record<RunCap, { icon: IconName; t: string; engine: string }> = {
+  corpdev: { icon: 'radar', t: 'Corporate development', engine: 'External AI Growth Engine' },
+  inbound: { icon: 'bot', t: 'Inbound', engine: 'Internal AI Growth Engine' },
+  outbound: { icon: 'bot', t: 'Outbound', engine: 'Internal AI Growth Engine' },
+};
+/** `h` : la hauteur du logo en px (les logos n'ont pas les mêmes proportions). */
+const RUN: { name: string; logo: string; href: string; h: number; d: string; caps: RunCap[] }[] = [
+  { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', h: 32,
+    d: 'Autonomous AI operating system for corporate development and M&A.', caps: ['corpdev', 'inbound', 'outbound'] },
+  { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', h: 19,
+    d: 'Travel insurance and duty of care for companies and their teams abroad.', caps: ['inbound', 'outbound'] },
+  { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', h: 20,
+    d: 'AI-assisted personalised art prints to share.', caps: ['inbound'] },
+  { name: 'WinHealth Group', logo: '/portfolio-winhealth.png', href: 'https://winhealthgroup.com', h: 27,
+    d: 'Swiss broker in international health insurance for expatriates and their families.', caps: ['corpdev', 'outbound'] },
+];
+/** Les références : leur corp dev tourne sur le moteur externe (logo Nexecur sans celui du groupe ;
+ *  S4BT, Solutions for Business Travel, sforbt.com). */
+const RUN_REFS: { name: string; logo: string; href: string; h: number }[] = [
+  { name: 'Nexecur', logo: '/ref-nexecur.png', href: 'https://www.nexecur.fr', h: 21 },
+  { name: 'S4BT', logo: '/ref-s4bt.svg', href: 'https://sforbt.com', h: 40 },
 ];
 
 // Les mêmes moteurs, vus des LPs (06/11) : le fonds s'en sert pour trouver ses sociétés,
@@ -1007,19 +1024,31 @@ export function EnginesRunning() {
     <div className="pv-run">
       <div className="pv-run-head">
         <p className="pv-kick">Running today</p>
-        <p>Their corporate development, inbound and outbound are run entirely by these two engines.</p>
+        <p>Every line below runs on our two engines, every day.</p>
       </div>
       <div className="pv-run-grid">
         {RUN.map((c) => (
           <a key={c.name} className="pv-run-co" href={c.href} target="_blank" rel="noopener noreferrer">
             <span className="pv-run-live"><i />Running</span>
-            <span className="pv-run-lg"><img src={c.logo} alt={c.name} className={c.wide ? 'wide' : undefined} /></span>
+            <span className="pv-run-lg"><img src={c.logo} alt={c.name} style={{ maxHeight: c.h }} /></span>
             <p>{c.d}</p>
             <ul>
-              <li><Icon name="radar" />Corporate development<b>External AI Growth Engine</b><i className="pv-run-pulse" aria-hidden="true" /></li>
-              <li><Icon name="bot" />Inbound and outbound<b>Internal AI Growth Engine</b><i className="pv-run-pulse" aria-hidden="true" /></li>
+              {c.caps.map((k) => (
+                <li key={k}><Icon name={RUN_CAPS[k].icon} />{RUN_CAPS[k].t}<b>{RUN_CAPS[k].engine}</b><i className="pv-run-pulse" aria-hidden="true" /></li>
+              ))}
             </ul>
             <span className="pv-run-go">{c.href.replace(/^https:\/\/(www\.)?/, '')} <Icon name="out" /></span>
+          </a>
+        ))}
+      </div>
+      <p className="pv-run-refs-h">Their corporate development also runs on our External AI Growth Engine.</p>
+      <div className="pv-run-refs">
+        {RUN_REFS.map((r) => (
+          <a key={r.name} className="pv-run-ref" href={r.href} target="_blank" rel="noopener noreferrer">
+            <span className="pv-run-ref-dot" aria-hidden="true" />
+            <span className="pv-run-ref-lg"><img src={r.logo} alt={r.name} style={{ maxHeight: r.h }} /></span>
+            <span className="k"><Icon name="radar" />Corporate development</span>
+            <i className="pv-run-pulse" aria-hidden="true" />
           </a>
         ))}
       </div>
@@ -1061,7 +1090,7 @@ export function FounderEngines() {
       <div className="pv-wrap">
         <div className="pv-head">
           <h2 className="pv-h2">Two AI engines, working for you.</h2>
-          <p className="sub">The engines that already run ProFund, Proplace, Maximum Insurance and Sosuites.</p>
+          <p className="sub">The engines that already run ProFund and the companies below.</p>
         </div>
         <EngineCards engines={ENGINES} open={open} />
         <div className="pv-eng-more">

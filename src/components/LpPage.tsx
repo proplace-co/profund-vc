@@ -16,7 +16,7 @@ import { FACTSHEET_URL } from '../lib/links';
 //   rare (Capital is no longer scarce) → on a écrit ce que tout le monde dit (We wrote it
 //   down) → ce qui est juste pour eux est ce qui paie le LP (What pays you) → un premier
 //   fonds ne cache rien, il se regarde travailler (We run on what we back) → tout le détail
-//   est là (Check every figure) → les questions des LPs (07/11, The questions you will ask) →
+//   est là (Check every figure) → les questions des LPs (07/11, Questions you might ask) →
 //   l'invitation (What €10M would represent).
 // Humble et sans comparaison : on ne nomme aucun fonds. Tout chiffre du fonds lu dans
 // fund.json et dit comme un modèle ; chiffres de tiers numérotés et cliquables (SOURCES, en
@@ -53,6 +53,12 @@ const SRC = {
   deliveroo: { n: 6, label: 'Deliveroo plc, IPO prospectus, 22 March 2021: Will Shu’s stake, capital raised', url: DELIVEROO_PROSPECTUS },
   atomico25: { n: 7, label: 'Atomico, State of European Tech 2025: $1B+ exits, share of deals and of value', url: 'https://2025.stateofeuropeantech.com/chapters/unlocking-capital-and-liquidity' },
   atomico23: { n: 8, label: 'Atomico, State of European Tech 2023: 77% of M&A deals under $100M', url: 'https://2023.stateofeuropeantech.com/exits' },
+  // 07/11 : la question de la liquidité (FAQ), chaque source relue le 07/11/2026
+  jefferies: { n: 9, label: 'Jefferies, 2025 Global Secondary Market Review: $240 billion of secondary volume in 2025, up 48%, a record', url: 'https://www.jefferies.com/insights/the-big-picture/2025-global-secondary-market-review-another-record-breaking-year/' },
+  forge: { n: 10, label: 'Business Wire, 2 March 2026: Charles Schwab completes its acquisition of Forge Global', url: 'https://www.businesswire.com/news/home/20260302211827/en/Charles-Schwab-Completes-Acquisition-of-Forge-Global' },
+  spacex: { n: 11, label: 'Deseret News, 12 June 2026: SpaceX raises about $75 billion on Nasdaq, the largest IPO ever', url: 'https://www.deseret.com/business/2026/06/12/spacex-ipo-elon-musk-stock-market-debut-nasdaq-exchange-xai-tesla-star-trek-science-fiction-future/' },
+  secTokens: { n: 12, label: 'Morgan Lewis, February 2026: the SEC staff statement on tokenized securities', url: 'https://www.morganlewis.com/pubs/2026/02/sec-clarifies-federal-securities-law-treatment-of-tokenized-securities' },
+  secExempt: { n: 13, label: 'Troutman Pepper Locke, 26 October 2026: the SEC’s Innovation Exemption covers stock listed on a national exchange', url: 'https://www.troutman.com/insights/sec-innovation-exemption-opens-path-to-onchain-trading-of-listed-stock-subject-to-issuer-objection/' },
 } satisfies Record<string, Src>;
 const SOURCES: Src[] = Object.values(SRC).sort((a, b) => a.n - b.n);
 
@@ -183,7 +189,11 @@ const FAQ: { id: string; q: string; a: ReactNode }[] = [
     a: <>The money never depends on one person: a depositary holds the assets, an authorised manager runs the fund, a committee invests. A successor, named in the fund documents, sits on the investment committee from day one. A key-person event suspends the investment period. If the LPs do not approve the successor, it ends: uncalled commitments are released, uninvested cash is returned, and the portfolio is managed to exit at reduced fees. A key-person insurance, paid by the management company, funds the transition.</> },
   { id: 'faq-votes', q: 'Your shares vote with the founder. What protects our capital?',
     a: <>The voting agreement covers how the company is run, never what protects capital: shares ranking ahead of ours, a change to our rights, related-party deals, founder pay beyond budget, and the terms of any sale. It lasts ten years at most and ends if the founder leaves, sells control, or another investor leads a priced round. Our classic protections sleep while the company is run in good faith; fraud, gross misconduct, a material breach of the pact, a payment default on the company’s debt or insolvency wake them up.</> },
-  { id: 'faq-buyback', q: 'Buying out angels at a discount: is it fair to them?',
+  // 07/11 (Alexandre) : la liquidité sans le contrôle. Ce que le pacte signe, puis le marché, sourcé ;
+  // jamais « liquidité assurée » : les tokens ne couvrent pas encore les sociétés non cotées (SEC).
+  { id: 'faq-liquidity', q: 'Without control of the company, how do you get to liquidity?',
+    a: <>Control rarely creates liquidity: a sale or an IPO needs the founder anyway, so the pact puts us on the founder’s side of it. Whenever founders sell, in a round or in a sale of control, we can sell alongside them on the same terms (clauses 9 and 10). No one can drag our shares into a sale that returns less than we invested, and a sale we can be dragged into is to an independent buyer, for cash or listed shares. The ways out keep widening: secondaries reached a record $240 billion in 2025, up 48%<Ref s={SRC.jefferies} />; Schwab now owns Forge Global, a marketplace for private shares<Ref s={SRC.forge} />; SpaceX listed in June 2026 in the largest IPO ever, about $75 billion<Ref s={SRC.spacex} />. Tokens are not there yet for private companies: a token does not change what a share is, a third-party token gives no rights from the company<Ref s={SRC.secTokens} />, and the SEC’s path to onchain trading covers listed stock only<Ref s={SRC.secExempt} />. Our model counts on none of it: each company pays back only at its exit.</> },
+  { id: 'faq-buyback', q:'Buying out angels at a discount: is it fair to them?',
     a: <>No one has to sell. An angel who sells gets liquidity years before an exit, with the founder’s agreement, at a price set by an independent valuer. The model assumes {pct(Math.min(...WIN_DISC))} to {pct(Math.max(...WIN_DISC))} below the valuation of the time on winners and angels, {pct(Math.max(...BUY_DISC(['growth'])))} on blocks bought from end-of-life funds.</> },
   { id: 'faq-calls', q: 'When is my money called?',
     a: <>As we invest, never upfront. In the model, about {pct(CALLED(1))} of commitments is called by the end of year 1, {pct(CALLED(3))} by year 3 and {pct(CALLED(IP))} by year {IP}. Exits run from year {Math.min(...ALL_LINES.map((l) => l.exit_year))} to year {Math.max(...ALL_LINES.map((l) => l.exit_year))}.</> },
@@ -192,7 +202,7 @@ const FAQ: { id: string; q: string; a: ReactNode }[] = [
   { id: 'faq-gp', q: 'How much does the team put in?',
     a: <>At least {pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {eur(F.commitments, 'tile')}, in the fund alongside you. Like every LP’s commitment, it is called as we invest: about {eur(Math.round(T.gp_commit_min * CALLED(1) / 1e4) * 1e4)} in year 1 and {eur(Math.round(T.gp_commit_min * CALLED(3) / 1e4) * 1e4)} by year 3. We fund it by waiving part of our management fee: that part of the fee goes into the fund instead of to us, and the waiver is written in the fund documents.</> },
   { id: 'faq-who', q: 'Who can invest?',
-    a: <>Professional investors, and eligible investors who commit at least €100,000 and confirm in writing that they understand the risks (Article 6(1) of the EuVECA Regulation). The fund is in pre-marketing: no units can be subscribed yet.</> },
+    a: <>Professional investors, and eligible investors who confirm in writing that they understand the risks (Article 6(1) of the EuVECA Regulation), with a minimum commitment of €500,000. The fund is in pre-marketing: no units can be subscribed yet.</> },
   { id: 'faq-exit', q: 'Can I sell my units before the end?',
     a: <>The fund is closed-ended, for {F.term_years} years. As in any such fund, units can be transferred to another eligible investor with the manager’s consent.</> },
 ];
@@ -329,7 +339,7 @@ function LpContent() {
         lead={<p className="pv-say-p">Not on cheque size. Where size does not help.</p>}>
         <Numbers items={[
           { b: 'First.', t: 'Our deal flow engine tracks every European seed round, every week, and flags the inflection before it becomes consensus.' },
-          { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace, Maximum Insurance and Sosuites.' },
+          { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace, Maximum Insurance, Sosuites and WinHealth Group.' },
           { b: 'Aligned.', t: 'The terms the best founders negotiate, from their first cheque. In writing, in a public pact.' },
         ]} />
         <p className="pv-fine pv-three-src">The largest funds lead the largest rounds. We stay at the founder’s side, with SPVs that keep that upside for our LPs.</p>
@@ -449,7 +459,7 @@ function LpContent() {
         <div className="lp-room-dl"><Downloads deck /></div>
       </Say>
 
-      <Say id="faq" title="The questions you will ask."
+      <Say id="faq" title="Questions you might ask."
         lead={<p className="pv-say-p">Answered plainly. These are our intentions for the fund documents, which will settle each point; until then, terms may change.</p>}>
         <div className="pv-say-folds">
           {FAQ.map((f) => (
