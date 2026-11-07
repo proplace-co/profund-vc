@@ -272,6 +272,8 @@ def sheet_assumptions(bk: Book) -> None:
         "Information")
     calc("GP commitment, minimum", "GPCommitMin", xmoney("GPCommitPct*Commitments"),
          DATA["terms"]["gp_commit_min"], "eur")
+    put("LP commitment, minimum", "LPCommitMin", TERMS["lp_commit_min"], "eur",
+        "Information: high-net-worth investors; Article 6(1) EuVECA requires EUR 100K")
     ws.write(r, 0, "What if: partial secondary sale of a position (not in the pact; no line flagged)",
              bk.f(bold=True))
     r += 1

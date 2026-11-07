@@ -641,6 +641,7 @@ def page_two(F):
     terms = [
         ("Closed-ended EuVECA fund", f"{FUND['term_years']} years"),
         ("Successive closings", f"{FUND['closing_months']} months"),
+        ("Minimum commitment", eur(TERMS["lp_commit_min"], "tile")),
         (f"Management fee, years 1–{ip}", pct(TERMS["fee_ip_pct"])),
         ("Then, on invested capital", pct(TERMS["fee_post_pct"], 1)),
         ("Carried interest, European", pct(TERMS["carry_pct"])),
@@ -726,11 +727,11 @@ def page_three(F):
          "Scores every company against our thesis and flags inflection points before they become consensus. "
          "For our founders, it sources, assesses and qualifies every day the startups that could create the "
          "strongest synergies with their company.",
-         ("ProFund", "Proplace", "Portfolio companies")),
+         ("ProFund", "Proplace", "WinHealth Group", "Nexecur", "S4BT", "Portfolio companies")),
         ("bot", "The Internal AI Growth Engine",
          "Autonomous AI agents running content, inbound and outbound. For our founders: a daily feed of "
          "LinkedIn and X posts and of intent-based leads with personalised sequences, ready to approve.",
-         ("ProFund", "Proplace", "Maximum Insurance", "Sosuites", "Portfolio companies")),
+         ("ProFund", "Proplace", "Maximum Insurance", "Sosuites", "WinHealth Group", "Portfolio companies")),
     )
     gap = 16.0
     ew = (W - gap) / 2

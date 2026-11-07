@@ -303,6 +303,7 @@ export function TermsTables() {
           <tbody>
             <tr><td>Target fund size</td><td>{FUND_SIZE}, first close {eurRange(F.first_close_min, F.first_close_max, 'tile', '–')}</td></tr>
             <tr><td>Closed-ended EuVECA fund</td><td>{F.term_years} years, successive closings over {F.closing_months} months</td></tr>
+            <tr><td>Minimum commitment</td><td>{eur(T.lp_commit_min, 'tile')}, high-net-worth investors</td></tr>
             <tr><td>Management fee, years 1–{F.investment_period_years}</td><td>{pct(T.fee_ip_pct)} of commitments</td></tr>
             <tr><td>Then, on invested capital</td><td>{pct(T.fee_post_pct, 1)}</td></tr>
             <tr><td>Carried interest, European</td><td>{pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, with GP catch-up</td></tr>

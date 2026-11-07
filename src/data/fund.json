@@ -27,6 +27,7 @@
     "hurdle_pct": 0.08,
     "catch_up_pct": 1.0,
     "gp_commit_min_pct": 0.01,
+    "lp_commit_min": 500000,
     "gp_commit_min": 1000000
   },
   "secondary": {

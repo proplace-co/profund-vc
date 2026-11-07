@@ -349,8 +349,12 @@ JAMAIS un nom de société réelle à côté d'un calcul fictif. Prix réel × p
 est notre hypothèse dit au-dessus. Aucun prix sous le dernier tour (500 M€, 1,8 Md€, 7 Md€). Ne pas écrire
 « lever moins, c'est garder plus » : ces cas ne le montrent pas (Criteo, 47 M€ levés, 8,4 %), et ces parts
 mêlent dilution et ventes de titres. Carta n'a pas de coupe européenne : ne pas dire « européen » pour
-ses médianes. « Our LPs are mainly high-net-worth individuals and family offices »
-(06/11). **Positionnement (06/11, Antoine)** : on chasse les licornes comme Index Ventures ou
+ses médianes. **L'audience LP (07/11, Alexandre)** : on ne s'adresse qu'à des HNWI qui peuvent engager
+500 K€ au moins (`terms.lp_commit_min` de `fund_model.py`, lu par la porte de /lp « For high-net-worth
+individuals investing €500K or more. », la FAQ « Who can invest? », les termes de /pitch, la fiche p. 2 et
+l'Excel ; le popup du deal flow dit « minimum €500k ») ; plus de « family offices ». Les mentions
+réglementaires (« For professional and eligible investors only », /legal et ses 100 000 € de l'art. 6(1),
+le plancher légal) ne changent pas. **Positionnement (06/11, Antoine)** : on chasse les licornes comme Index Ventures ou
 Sequoia, et les meilleurs fondateurs nous choisissent parce que nos termes sont réellement
 alignés (pas une posture). Plus de « returns built on ownership, not on unicorns » ni de
 « no unicorn needed » en accès LP ; plus de « Luxembourg » dans la copie (site, fiche).

@@ -202,7 +202,7 @@ const FAQ: { id: string; q: string; a: ReactNode }[] = [
   { id: 'faq-gp', q: 'How much does the team put in?',
     a: <>At least {pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {eur(F.commitments, 'tile')}, in the fund alongside you. Like every LP’s commitment, it is called as we invest: about {eur(Math.round(T.gp_commit_min * CALLED(1) / 1e4) * 1e4)} in year 1 and {eur(Math.round(T.gp_commit_min * CALLED(3) / 1e4) * 1e4)} by year 3. We fund it by waiving part of our management fee: that part of the fee goes into the fund instead of to us, and the waiver is written in the fund documents.</> },
   { id: 'faq-who', q: 'Who can invest?',
-    a: <>Professional investors, and eligible investors who confirm in writing that they understand the risks (Article 6(1) of the EuVECA Regulation), with a minimum commitment of €500,000. The fund is in pre-marketing: no units can be subscribed yet.</> },
+    a: <>High-net-worth individuals who can commit at least {eur(T.lp_commit_min, 'tile')}: as professional investors, or as eligible investors who confirm in writing that they understand the risks (Article 6(1) of the EuVECA Regulation). The fund is in pre-marketing: no units can be subscribed yet.</> },
   { id: 'faq-exit', q: 'Can I sell my units before the end?',
     a: <>The fund is closed-ended, for {F.term_years} years. As in any such fund, units can be transferred to another eligible investor with the manager’s consent.</> },
 ];
@@ -244,7 +244,7 @@ function LpGate() {
             This page is for the investors we accept. Apply once. When we accept you, your private link
             opens this page and our live deal flow.
           </p>
-          <p className="pv-terms-lead pv-gate-who">Our LPs are mainly high-net-worth individuals and family offices.</p>
+          <p className="pv-terms-lead pv-gate-who">For high-net-worth individuals investing {eur(T.lp_commit_min, 'tile')} or more.</p>
           <div className="pv-ctas">
             <button type="button" className="pv-btn light" onClick={() => setModal('apply')}>Apply for LP access <Icon name="arrow" /></button>
             <button type="button" className="pv-btn ghost-light" onClick={() => setModal('returning')}>Already accepted? Get my link</button>

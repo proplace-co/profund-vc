@@ -104,6 +104,9 @@ TERMS = {
     "hurdle_pct": 0.08,              # compose annuellement, cascade europeenne (tout le fonds)
     "catch_up_pct": 1.0,
     "gp_commit_min_pct": 0.01,
+    # 07/11 (Alexandre) : on ne s'adresse qu'a des HNWI qui peuvent engager 500 K EUR au moins ; l'art.
+    # 6(1) EuVECA n'en exige que 100 K (plancher legal, garde sur /legal). Meme seuil que le popup.
+    "lp_commit_min": 500_000,
 }
 # Clause 9 du pacte : a partir de l'annee 6, la societe peut racheter jusqu'au
 # quart de notre ligne, avec decote, et l'annuler. v3.5 : c'est une OPTION de la

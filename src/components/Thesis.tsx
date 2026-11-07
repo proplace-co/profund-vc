@@ -189,7 +189,7 @@ export function OurEdge({ onFollow }: { onFollow?: () => void }) {
               become consensus. For our founders, it sources, assesses and qualifies every day the
               startups that could create the strongest synergies with their company.
             </p>
-            <Powers names={['ProFund', 'Proplace', 'Portfolio companies']} />
+            <Powers names={['ProFund', 'Proplace', 'WinHealth Group', 'Nexecur', 'S4BT', 'Portfolio companies']} />
             {onFollow && (
               <button type="button" className="pv-btn light" onClick={onFollow}>
                 Follow live deal flow <Icon name="arrow" />
@@ -204,7 +204,7 @@ export function OurEdge({ onFollow }: { onFollow?: () => void }) {
               feed of LinkedIn and X posts and of intent-based leads with personalised sequences,
               built on their ideal customer profiles, ready to approve.
             </p>
-            <Powers names={['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites', 'Portfolio companies']} />
+            <Powers names={['ProFund', 'Proplace', 'Maximum Insurance', 'Sosuites', 'WinHealth Group', 'Portfolio companies']} />
           </div>
         </div>
         <div className="pv-edge-figs">

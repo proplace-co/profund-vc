@@ -180,6 +180,8 @@ export interface FundData {
     catch_up_pct: number;
     gp_commit_min_pct: number;
     gp_commit_min: number;
+    /** L'engagement minimum d'un LP (07/11 : des HNWI, 500 K EUR). */
+    lp_commit_min: number;
   };
   secondary: { share: number; year: number; price_pct: number; lines: string[] };
   buyback_discount: number;
