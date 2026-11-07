@@ -182,6 +182,11 @@ part publiable de la FAQ de préparation (document Claude « ProFund Fund I : pi
 le fonds ne prête pas, qui décide, le GP seul et son successeur, les votes et la protection, les rachats,
 les appels de fonds, les frais, l'engagement du GP, qui peut investir, la revente des parts. JAMAIS la
 fiscalité (avis en attente), le domicile, le nom du successeur ni les questions « pièges » (coaching).
+**L'engagement du GP (07/11, Alexandre : « j'ai pas cet argent »)** : au moins 1 % (1 M€ à 100 M€),
+appelé au fil des investissements comme celui des LPs (~50 K€ l'an 1, ~500 K€ l'an 3, lus dans les
+appels du modèle), financé en partie par une renonciation à une part des frais de gestion (fee waiver) :
+dit sur /lp (FAQ) et dans le tableau des termes (/lp, /pitch) et l'Excel. Ne jamais le présenter comme
+un engagement 100 % en numéraire. La part et sa validité (avocat, avis fiscal) restent à fixer.
 **La cible présentée prudemment (07/11, Alexandre)** : partout (/lp, /pitch, fiche, Excel), la cible
 affichée est le cas prudent, chaque sortie à 60 % de sa valeur modélisée : 2,8x net, 24 % de TRI, DPI 0,5x
 à l'an 7 ; le cas modélisé (4,4x, 36 %) est présenté comme l'upside ; stress 2,0x. Les tests de

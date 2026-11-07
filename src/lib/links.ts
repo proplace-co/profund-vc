@@ -2,4 +2,4 @@
 // régénération (fiche : scripts/factsheet.py ; modèle : scripts/fund_xlsx.py),
 // sinon navigateurs et CDN resservent l'ancienne version.
 export const FACTSHEET_URL = '/profund-factsheet.pdf?v=2026-11-07-v324';
-export const MODEL_XLSX_URL = '/profund-fund-model.xlsx?v=2026-11-07-v324';
+export const MODEL_XLSX_URL = '/profund-fund-model.xlsx?v=2026-11-07-v326';

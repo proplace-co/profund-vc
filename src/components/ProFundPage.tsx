@@ -306,7 +306,7 @@ export function TermsTables() {
             <tr><td>Management fee, years 1–{F.investment_period_years}</td><td>{pct(T.fee_ip_pct)} of commitments</td></tr>
             <tr><td>Then, on invested capital</td><td>{pct(T.fee_post_pct, 1)}</td></tr>
             <tr><td>Carried interest, European</td><td>{pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, with GP catch-up</td></tr>
-            <tr><td>GP commitment, minimum</td><td>{pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {FUND_SIZE}</td></tr>
+            <tr><td>GP commitment, minimum</td><td>{pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {FUND_SIZE}, called as we invest; partly funded by waiving management fees</td></tr>
             <tr><td>Per company: fund / with SPVs</td><td>{eur(F.company_cap, 'tile')} / {eur(F.company_max_with_spv, 'tile')}</td></tr>
             <tr><td>Debt</td><td>None in the fund: raised for each company from our partner banks</td></tr>
             <tr><td>Tickets</td><td>Up to {eur(sd.ticket_max, 'tile')} at seed, {eurRange(vt.first_cheque_range[0], vt.first_cheque_range[1], 'table', '–')} at Series A, {eurRange(gr.position_range[0], gr.position_range[1], 'tile', '–')} at growth ({eur(F.company_max_with_spv, 'tile')} with SPVs)</td></tr>

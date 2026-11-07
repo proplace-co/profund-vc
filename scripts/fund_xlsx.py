@@ -268,7 +268,9 @@ def sheet_assumptions(bk: Book) -> None:
     put("Carried interest", "Carry", TERMS["carry_pct"], "pct0")
     put("Hurdle (compounded annually)", "Hurdle", TERMS["hurdle_pct"], "pct0", "European whole-of-fund waterfall")
     put("GP catch-up", "CatchUp", TERMS["catch_up_pct"], "pct0")
-    put("GP commitment, minimum (% of commitments)", "GPCommitPct", TERMS["gp_commit_min_pct"], "pct0", "Information")
+    put("GP commitment, minimum (% of commitments)", "GPCommitPct", TERMS["gp_commit_min_pct"], "pct0",
+        "Information. Called as the fund invests, like every commitment; partly funded by a management fee "
+        "waiver (that part of the fee goes into the fund), the split set in the fund documents")
     calc("GP commitment, minimum", "GPCommitMin", xmoney("GPCommitPct*Commitments"),
          DATA["terms"]["gp_commit_min"], "eur")
     ws.write(r, 0, "What if: partial secondary sale of a position (not in the pact; no line flagged)",
