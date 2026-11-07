@@ -687,7 +687,10 @@ def _dilute(lines, keep, company="S-01"):
 
 
 def stress_tests() -> list[dict]:
-    target = CASES[0]
+    # 07/11 : la cible PRÉSENTÉE est le cas prudent (« base » : chaque sortie à 60 % de sa valeur
+    # modélisée, 2,8x) ; le cas modélisé (« target », 4,4x) est présenté comme l'upside. Les tests de
+    # résistance tournent sur la cible présentée. Les clés internes restent target / base / stress.
+    target = CASES[1]
     # 07/11 : la cible suppose que la licorne grandit sur le credit. Si elle vend aussi de
     # l'equity, comme sur les chemins du tableau des fondateurs : voici ce qu'il reste au fonds.
     fm = founder_math()
@@ -702,8 +705,8 @@ def stress_tests() -> list[dict]:
          _dilute(LINES, path["same"]["stake"] / fm["founders"]), target),
         ("loan_losses", "30% more losses on every loan", LINES,
          replace(target, loan_repaid=ratio(target.loan_repaid - 0.30, 2))),
-        ("two_unicorns", "Two unicorns: V-01 also sold for €1B", _unicorn(LINES, 1000 * M, "V-01"), target),
-        ("big_unicorn", "A bigger unicorn: S-01 sold for €2B", _unicorn(LINES, 2000 * M), target),
+        ("two_unicorns", "Two unicorns: V-01 also modelled at €1B", _unicorn(LINES, 1000 * M, "V-01"), target),
+        ("big_unicorn", "A bigger unicorn: S-01 modelled at €2B", _unicorn(LINES, 2000 * M), target),
     ]
     out = []
     for key, label, lines, case in rows:

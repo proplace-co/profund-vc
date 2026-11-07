@@ -1390,51 +1390,51 @@
     {
       "id": "exits_plus_1",
       "label": "Every exit one year later",
-      "net_tvpi": 4.4,
-      "net_irr": 0.29,
-      "dpi_year7": 0.6
+      "net_tvpi": 2.8,
+      "net_irr": 0.19,
+      "dpi_year7": 0.4
     },
     {
       "id": "best_zombie",
       "label": "No unicorn: S-01 (both lines) becomes a zombie",
-      "net_tvpi": 2.0,
-      "net_irr": 0.18,
-      "dpi_year7": 0.7
+      "net_tvpi": 1.4,
+      "net_irr": 0.08,
+      "dpi_year7": 0.5
     },
     {
       "id": "unicorn_half",
       "label": "The unicorn also sells \u20ac85M of equity",
-      "net_tvpi": 3.3,
-      "net_irr": 0.29,
-      "dpi_year7": 0.7
+      "net_tvpi": 2.1,
+      "net_irr": 0.18,
+      "dpi_year7": 0.5
     },
     {
       "id": "unicorn_same",
       "label": "The unicorn also sells \u20ac199M of equity",
-      "net_tvpi": 2.8,
-      "net_irr": 0.26,
-      "dpi_year7": 0.7
+      "net_tvpi": 1.8,
+      "net_irr": 0.15,
+      "dpi_year7": 0.5
     },
     {
       "id": "loan_losses",
       "label": "30% more losses on every loan",
-      "net_tvpi": 4.4,
-      "net_irr": 0.35,
-      "dpi_year7": 0.6
+      "net_tvpi": 2.8,
+      "net_irr": 0.23,
+      "dpi_year7": 0.4
     },
     {
       "id": "two_unicorns",
-      "label": "Two unicorns: V-01 also sold for \u20ac1B",
-      "net_tvpi": 5.0,
-      "net_irr": 0.38,
-      "dpi_year7": 0.7
+      "label": "Two unicorns: V-01 also modelled at \u20ac1B",
+      "net_tvpi": 3.1,
+      "net_irr": 0.26,
+      "dpi_year7": 0.5
     },
     {
       "id": "big_unicorn",
-      "label": "A bigger unicorn: S-01 sold for \u20ac2B",
-      "net_tvpi": 7.0,
-      "net_irr": 0.45,
-      "dpi_year7": 0.7
+      "label": "A bigger unicorn: S-01 modelled at \u20ac2B",
+      "net_tvpi": 4.3,
+      "net_irr": 0.33,
+      "dpi_year7": 0.5
     }
   ],
   "founder_math": {

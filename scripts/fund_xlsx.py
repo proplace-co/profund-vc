@@ -53,7 +53,8 @@ import fund_model as fm  # noqa: E402
 FUND, TERMS, SEC = fm.FUND, fm.TERMS, fm.SECONDARY
 CASES = {c.id: c for c in fm.CASES}
 CASE_IDS = fm.CASE_IDS
-CASE_NAME = {"target": "Target", "base": "Base", "stress": "Stress"}
+# 07/11 : la cible présentée est le cas prudent (clé « base ») ; le cas modélisé (clé « target ») est l'upside.
+CASE_NAME = {"target": "Upside", "base": "Target", "stress": "Stress"}
 LAYER_NAME = dict(fm.MODEL_NAMES)          # Seed / Venture / Growth, comme le site et la fiche
 SITE_NAME = {"seed": "Seed", "venture": "Venture", "growth": "Growth"}
 HORIZON = max(x.exit_year for x in fm.LINES)
@@ -727,8 +728,8 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
         ("loans", "  of which loans",
          f'SUMIFS({L.col("loan")},{L.col("kind")},"new")+SUMIFS({L.col("loan")},{L.col("kind")},"breakout")',
          a["loans"], eur),
-        ("mgmt_fees", "Management fees (Target case)", cf_out["target"]["mgmt_fees"], a["mgmt_fees"], eur),
-        ("fund_expenses", "Fund expenses, incl. set-up (Target case)", cf_out["target"]["fund_expenses"],
+        ("mgmt_fees", "Management fees (upside case)", cf_out["target"]["mgmt_fees"], a["mgmt_fees"], eur),
+        ("fund_expenses", "Fund expenses, incl. set-up (upside case)", cf_out["target"]["fund_expenses"],
          a["fund_expenses"], eur),
         ("contingency", "Contingency", None, a["contingency"], eur),
         ("total", "Total commitments", "Commitments", a["total"], bold["eur"]),
@@ -774,7 +775,7 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
     bk.band(ws, r, "Exposure per company (all lines, per company) and fund returner", c1=6)
     r += 1
     for i, h in enumerate(("Company", "Invested by the fund", "Cap from the fund", "Within cap",
-                           "Proceeds · Target (all lines)", "SPV top-up to the max per company")):
+                           "Proceeds · Upside (all lines)", "SPV top-up to the max per company")):
         ws.write(r, i, h, hd)
     ws.set_row(r, 32)
     r += 1
@@ -806,7 +807,7 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
     r += 2
     fr = DATA["fund_returner"]
     for key, label, formula, value, fmt in (
-        ("company", "Fund returner (largest proceeds, Target)",
+        ("company", "Fund returner (largest proceeds, Upside)",
          f"INDEX(A{first + 1}:A{last + 1},MATCH(MAX(E{first + 1}:E{last + 1}),E{first + 1}:E{last + 1},0))",
          fr["company"], bk.f(bold=True, align="right")),
         ("proceeds", "  its proceeds, all lines", f"MAX(E{first + 1}:E{last + 1})", fr["proceeds"], eur),
@@ -960,7 +961,7 @@ def sheet_cashflows(bk: Book) -> dict:
     ws = bk.sheet("Cash flows", grid=True)
     bk.title(ws, "Cash flows — yearly, per case",
              "Year 1 = year of the first closing; all flows at year end. Columns after the horizon stay at zero. "
-             "Base and Stress apply a multiplier (and an optional cap) to every exit value; loans repay as modelled.")
+             "Target (60%) and Stress (40%) apply a multiplier (and an optional cap) to every modelled exit value; the Upside is the modelled portfolio; loans repay as modelled.")
     ws.set_column(0, 0, 64)
     ws.set_column(1, 1, 15)
     ws.set_column(2, 1 + len(YEARS), 13)
@@ -1209,9 +1210,9 @@ def sheet_performance(bk: Book, outs: dict) -> None:
                    "invested capital incl. loans until repaid), fund expenses and carried interest (European "
                    "whole-of-fund waterfall with a hurdle and GP catch-up), before tax. Investments over "
                    f"{FUND['investment_period_years']} years, exits from year {min(x.exit_year for x in fm.LINES)} to "
-                   f"year {HORIZON}. One portfolio in every case: Base and Stress multiply every exit value and lose "
+                   f"year {HORIZON}. One portfolio in every case: Target and Stress multiply every exit value and lose "
                    "more of the loans (Assumptions). No partial secondary sale (set Lines column " + lc("partial") +
-                   f" to 'yes' to test one). Largest exit in the Target case: {eur_txt(largest)}, the unicorn. Targets are "
+                   f" to 'yes' to test one). Largest exit in the Upside case: {eur_txt(largest)}, the unicorn. Targets are "
                    "model outputs, not a forecast or a guarantee.", note)
     ws.merge_range(r + 7, 0, r + 9, 3, PROJECTIONS, note)
 
@@ -1306,8 +1307,8 @@ def sheet_checks(bk: Book, outs: dict) -> list:
             if lj["exit_pct"] is not None:
                 items.append((f"{rid} · exit stake", ref("Lines", rr, COL["exit_pct"]), lj["exit_pct"], pct))
             items.append((f"{rid} · invested", ref("Lines", rr, COL["invested"]), lj["invested"], eur))
-            items.append((f"{rid} · proceeds · Target", ref("Lines", rr, COL["p_target"]), lj["proceeds"], eur))
-            items.append((f"{rid} · MOIC · Target", ref("Lines", rr, COL["m_target"]), lj["moic"], mult))
+            items.append((f"{rid} · proceeds · Upside", ref("Lines", rr, COL["p_target"]), lj["proceeds"], eur))
+            items.append((f"{rid} · MOIC · Upside", ref("Lines", rr, COL["m_target"]), lj["moic"], mult))
             for case in ("base", "stress"):
                 v = fm.proceeds(line, CASES[case])
                 items.append((f"{rid} · proceeds · {CASE_NAME[case]}", ref("Lines", rr, COL[f"p_{case}"]), v, eur))

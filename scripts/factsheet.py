@@ -600,8 +600,9 @@ def construction_rows():
          f"{g['companies']} direct entries + {g['breakouts']} of our breakout{'s' if g['breakouts'] > 1 else ''}, "
          f"{rng(*g['position_range'])} each"),
         ("Invested, loans included", eur(s["invested"]), eur(v["invested"]), eur(g["invested"])),
-        ("Target gross", f"{mult(s['moic']['target'])} MOIC", f"{mult(v['moic']['target'])} MOIC",
-         f"{mult(g['moic']['target'])} MOIC, {pct(g['gross_irr']['target'])} gross IRR over "
+        ("Target gross", f"{mult(s['moic']['base'])} MOIC, {mult(s['moic']['target'])} in the upside",
+         f"{mult(v['moic']['base'])} MOIC, {mult(v['moic']['target'])} in the upside",
+         f"{mult(g['moic']['base'])} MOIC, {pct(g['gross_irr']['base'])} gross IRR over "
          f"{min(holds)}–{max(holds)} year holds"),
     ]
 
@@ -663,7 +664,8 @@ def page_two(F):
     y += kh + 36
 
     # tout le monde y gagne (v3) : le texte a gauche, le tableau a 250 M EUR a droite
-    t = CASES["target"]
+    t = CASES["base"]        # 07/11 : la cible affichee (sorties a 60 %) ; CASES["target"] est l'upside
+    up = CASES["target"]
     # 07/11 : a 1 Md EUR, les memes tours sur tous les chemins ; chaque chemin dit ce qu'il leve
     row = next(r for r in FOUNDERS["rows"] if r["exit"] == 1_000_000_000)
     same_path = next(p for p in FOUNDERS["paths"] if p["id"] == "same")
@@ -688,9 +690,9 @@ def page_two(F):
          "paths (ProFund)"],
         ["Angels", "Wait for the exit", "Liquidity at year 2"],
         ["LPs", "A unicorn, diluted round after round",
-         f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target if the unicorn grows on credit, "
-         f"{DATA['fund_returner']['stake_at_exit'] * 100:.1f}% owned at exit; {mult(uni_same['net_tvpi'])} if it also "
-         f"sells {eur(same_path['equity'], 'tile')} of equity"],
+         f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target, {mult(up['net_tvpi'])} in the upside; the "
+         f"unicorn grows on credit, {DATA['fund_returner']['stake_at_exit'] * 100:.1f}% owned at exit; "
+         f"{mult(uni_same['net_tvpi'])} if it also sells {eur(same_path['equity'], 'tile')} of equity"],
     ]
     gh = grid(F, gx, y - 4, gw, [(1.0, "l"), (0.8, "l"), (1.9, "l")],
               [f"At a {eur(row['exit'], 'val')} exit", "VC path", "ProFund path"], rows, size=9.2,
@@ -1035,7 +1037,7 @@ def founder_table(F, u, v, w):
 
 def perf_table(F, u, v, w):
     """La table Fund performance : la colonne Target mise en avant."""
-    cases = [CASES[k] for k in CASE_IDS]
+    cases = [CASES[k] for k in ("base", "target", "stress")]   # 07/11 : la cible, l'upside, le stress
     sec = SECONDARY
     rows = [
         ["Fund size"] + [FUND_SIZE] * 3,
@@ -1047,7 +1049,7 @@ def perf_table(F, u, v, w):
         ["Loans: repaid ÷ lent"] + [mult(c["loans_multiple"], 2) for c in cases],
         ["Largest exit"] + [eur(c["largest_exit"], "val") for c in cases],
     ]
-    return grid(F, u, v, w, [(2.05, "l"), (1, "c"), (1, "c"), (1, "c")], ["Metric", "Target", "Base", "Stress"],
+    return grid(F, u, v, w, [(2.05, "l"), (1, "c"), (1, "c"), (1, "c")], ["Metric", "Target", "Upside", "Stress"],
                 rows, size=8.5, hsize=6.9, pad_y=2.5, hl=1, lead=1.2)
 
 
@@ -1074,7 +1076,7 @@ def net_note():
     fresh = [ln["id"] for ln in LAYERS["growth"]["lines"] if ln["first"]]
     brk = [ln for ln in ALL_LINES if ln["kind"] == "breakout"]
     zombie = sorted({ln["recovery"] for ln in ALL_LINES if ln["tone"] == "grey" and ln["recovery"]})
-    extra = lst([pct(round(1 - c["loan_repaid"], 2)) for c in (t, b, s)])
+    extra = lst([pct(round(1 - c["loan_repaid"], 2)) for c in (b, t, s)])
     ip = FUND["investment_period_years"]
     s_ = (
         f"Net = after management fees ({pct(TERMS['fee_ip_pct'])} on commitments for {ip} years, "
@@ -1083,10 +1085,11 @@ def net_note():
         f"({pct(TERMS['carry_pct'])} over an {pct(TERMS['hurdle_pct'])} hurdle, European whole-of-fund waterfall "
         "with GP catch-up), before tax. "
         f"Investments over {ip} years, exits from year {min(exits)} to year {max(exits)}. "
-        f"Base: every exit value ×{pct(b['exit_mult'])}. Stress: every exit value ×{pct(s['exit_mult'])}. "
+        f"Target: every exit at {pct(b['exit_mult'])} of its modelled value. Upside: modelled values. "
+        f"Stress: every exit at {pct(s['exit_mult'])}. "
         f"Loans priced at {pct(DATA['loan_rate'])} a year on healthy companies ({mult(lm['performing_min'], 2)}"
         f" to {mult(lm['performing_max'], 2)} by tenor, no warrants), drawn in tranches; zombies repay "
-        f"{mult(lm['zombie'])}, plus {extra} further losses on every loan by case. "
+        f"{mult(lm['zombie'])}, plus {extra} further losses on every loan in the target, upside and stress cases. "
         f"Buybacks priced {pct(min(winners))}–{pct(max(winners))} below the valuation of the time on winners "
         f"and angels, {pct(structural)} below from structural sellers (end-of-life funds). "
         f"When a founder raises elsewhere, ProFund follows in new shares ({', '.join(followed)}). "
@@ -1131,7 +1134,7 @@ def page_four(F):
     title(F, M, y + 16, W, "Line-by-line entry, buybacks, loans & exit.", 15.5)
     y += 37
     y += F.para(M, y, W, x(
-        "Target case, every position of the three layers. Ownership at exit is higher than at entry on every "
+        "Modelled exit values (the upside), every position of the three layers. Ownership at exit is higher than at entry on every "
         "line where the founder grows with us: buybacks and cancellations lift our stake with theirs."),
         8.6, "reg", MUTED, 1.4) + 7
     y += sim_table(F, M, y, W) + 5
@@ -1149,15 +1152,15 @@ def page_four(F):
     no_uni = next(x_ for x_ in STRESS if x_["id"] == "best_zombie")
     fr = DATA["fund_returner"]   # la loi 04 chiffree
     tiles = [
-        (pct(t["net_irr"]), "Target net IRR", f"Base case {pct(b['net_irr'])}, stress case {pct(s['net_irr'])}"),
-        (mult(t["net_tvpi"]), "Target net TVPI",
-         f"Base case {mult(b['net_tvpi'])}, stress case {mult(s['net_tvpi'])}"),
-        (mult(t["dpi_year7"]), f"Net DPI by year {sec['year'] + 1}",
+        (pct(b["net_irr"]), "Target net IRR", f"Upside {pct(t['net_irr'])}, stress case {pct(s['net_irr'])}"),
+        (mult(b["net_tvpi"]), "Target net TVPI",
+         f"Upside {mult(t['net_tvpi'])}, stress case {mult(s['net_tvpi'])}"),
+        (mult(b["dpi_year7"]), f"Net DPI by year {sec['year'] + 1}",
          "Loans and Growth exits bring cash back early; the unicorn sells in year "
          + str(max(l["exit_year"] for l in LAYERS["seed"]["lines"] if l.get("company") == fr["company"]))),
-        (eur(t["largest_exit"], "val"), "One unicorn",
-         f"{fr['company']}, {fr['stake_at_exit'] * 100:.1f}% owned at exit, returns {mult(fr['multiple_of_fund'])} "
-         f"the fund; without it, {mult(no_uni['net_tvpi'])} net"),
+        (eur(fr["fund_returning_exit"], "val"), "One company returns the fund",
+         f"A {eur(fr['fund_returning_exit'], 'val')} sale of {fr['company']} returns it alone; at its modelled "
+         f"{eur(t['largest_exit'], 'val')}, {mult(fr['multiple_of_fund'])}. Without it, {mult(no_uni['net_tvpi'])} net"),
     ]
     gap = 10.0
     tw_ = (W - 3 * gap) / 4

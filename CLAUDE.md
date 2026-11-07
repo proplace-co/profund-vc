@@ -165,6 +165,14 @@ capital without giving the company away. » en grand.
 comprennent pas), purgée de ce qui répétait la page : plus les chemins de dilution ni la protection en
 double. Restent : ce que les fondateurs gardent vraiment (cotations, Carta), les sorties européennes,
 le fonds et ses termes, rendements et tests, la simulation ligne à ligne, les moteurs, les documents.
+**La cible présentée prudemment (07/11, Alexandre)** : partout (/lp, /pitch, fiche, Excel), la cible
+affichée est le cas prudent, chaque sortie à 60 % de sa valeur modélisée : 2,8x net, 24 % de TRI, DPI 0,5x
+à l'an 7 ; le cas modélisé (4,4x, 36 %) est présenté comme l'upside ; stress 2,0x. Les tests de
+résistance tournent sur la cible affichée (sans licorne 1,4x, licorne qui vend 199 M EUR d'equity 1,8x,
+licorne à 2 Md EUR 4,3x). ATTENTION : les clés internes ne changent pas (« target » = valeurs modélisées,
+présenté « Upside » ; « base » = 60 %, présenté « Target »). Aucune hypothèse n'a été retouchée pour
+atteindre un chiffre rond. La tuile « One unicorn » devient « One company returns the fund » (une vente
+de S-01 à 320 M EUR rend le fonds).
 **Le dessin de l'accueil (07/11, trois passes ; Alexandre : « trop de texte », « les grandes icônes
 font cheap », « on se répète », « que l'on s'en souvienne après avoir quitté le site »)** : une idée
 par section, aucune répétition. `TheFew` : le titre, `CollapseVisual` (un organigramme de 250 points

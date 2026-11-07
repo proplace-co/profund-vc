@@ -28,7 +28,9 @@ const FM = fund.founder_math;
 const T = fund.terms;
 const C = fund.cases;
 const A = fund.allocation;
-const TARGET = C.target;
+// 07/11 : la cible affichée est le cas prudent (clé « base ») ; le cas modélisé est l'upside.
+const TARGET = C.base;
+const UPSIDE = C.target;
 const FR = fund.fund_returner;
 const NO_UNI = fund.stress_tests.find((s) => s.id === 'best_zombie')!;
 const UNI_SAME = fund.stress_tests.find((s) => s.id === 'unicorn_same')!;
@@ -299,14 +301,14 @@ function LpContent() {
       </Say>
 
       <Say id="returns" title="What is right for them is what pays you."
-        lead={<p className="pv-say-p">Every share a company does not issue protects the founders’ stake, and ours. The less equity a team needs, the more we both hold when it becomes a unicorn. One company can carry the fund. And if no unicorn comes, what we kept still works for you.</p>}>
+        lead={<p className="pv-say-p">Every share a company does not issue protects the founders’ stake, and ours. The less equity a team needs, the more we both hold when it becomes a unicorn. One company can carry the fund. And if no unicorn comes, the fund still returns more than your capital.</p>}>
         <Numbers four items={[
           { b: mult(TARGET.net_tvpi), t: 'Target net TVPI' },
           { b: pct(TARGET.net_irr), t: 'Target net IRR' },
-          { b: mult(FR.multiple_of_fund), t: `The fund, returned by our best company alone, at ${pct(FR.stake_at_exit, 1)} at exit` },
+          { b: mult(UPSIDE.net_tvpi), t: 'Net TVPI in the upside, at modelled exit values' },
           { b: mult(NO_UNI.net_tvpi), t: 'Net TVPI if no unicorn comes' },
         ]} />
-        <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}. The target assumes our best company grows on credit; if it also sold {eur(FM.paths[1].equity, 'tile')} of equity along the way: {mult(UNI_SAME.net_tvpi)}. No company has followed this path yet.</p>
+        <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values; our best company, sold for {eur(UPSIDE.largest_exit, 'val')} with {pct(FR.stake_at_exit, 1)} at exit, returns {mult(FR.multiple_of_fund)} the fund on its own, and a {eur(FR.fund_returning_exit, 'val')} sale already returns it. Stress: every exit at {pct(C.stress.exit_mult)}, {mult(C.stress.net_tvpi)}. The target assumes our best company grows on credit; if it also sold {eur(FM.paths[1].equity, 'tile')} of equity along the way: {mult(UNI_SAME.net_tvpi)}. No company has followed this path yet.</p>
       </Say>
 
       <Say id="engines" tone="night" title="We run on what we back."
@@ -420,7 +422,7 @@ function LpContent() {
               <h2>What {eur(TICKET, 'tile')} would represent.</h2>
               <ul className="lp-alloc-list">
                 <li><b>{pct(TICKET / F.commitments)} of Fund I</b>, and {pct(TICKET / F.first_close_max)} to {pct(TICKET / F.first_close_min)} of the first close ({eurRange(F.first_close_min, F.first_close_max, 'tile', '–')}).</li>
-                <li><b>In the model, net of fees, expenses and carry:</b> {eur(TICKET * TARGET.net_tvpi, 'tile')} in the target case, {eur(TICKET * C.base.net_tvpi, 'tile')} in the base case, {eur(TICKET * C.stress.net_tvpi, 'tile')} in the stress case.</li>
+                <li><b>In the model, net of fees, expenses and carry:</b> {eur(TICKET * TARGET.net_tvpi, 'tile')} in the target case, {eur(TICKET * UPSIDE.net_tvpi, 'tile')} in the upside, {eur(TICKET * C.stress.net_tvpi, 'tile')} in the stress case.</li>
                 <li><b>First-close terms:</b> a {pct(T.fee_first_close_pct, 2)} management fee, instead of {pct(T.fee_ip_pct)}.</li>
                 <li><b>Co-investment:</b> SPVs open to our LPs on the largest rounds.</li>
                 <li><b>Every company we review</b>, every evening, in the live deal flow.</li>
