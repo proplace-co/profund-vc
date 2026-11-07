@@ -100,6 +100,26 @@ réserve se lit dans `allocation.after_first_pct` (46 % de l'investi après le p
 suivis, rachats, prêts), dite sur /lp et dans le bandeau de la fiche p. 1.
 Sous chaque clause du pacte (`vc` dans `CLAUSES`, Pact.tsx), une ligne « Classic VC » : ce que dit un term
 sheet classique, notre résumé, pas une clause ni une citation (l'ancien tableau « The term sheet, rewritten », fondu dedans).
+**Le pacte v3.19 (07/11, Alexandre, relu côté LPs)** : toujours 12 clauses, la même logique (la
+gestion au fondateur, le capital protégé), sans naïveté : anti-dilution moyenne pondérée large et
+garanties usuelles (1) ; plus d'engagement ouvert, « we can lead », comité d'investissement, limites
+du fonds, prêts par tranches contre des jalons (2) ; impayé non réglé sous 30 jours : prêt exigible
+(3) ; les deux clauses de rachat fusionnées, rachat annuel sur réserves distribuables, jamais pendant
+un défaut, jamais auprès d'un fondateur sans nous (4) ; plus de droits de vote multiples, convention
+de vote à durée (dix ans au plus) et jamais sur ce qui protège le capital (5) ; rémunération hors
+budget, parties liées et rachat des titres d'un fondateur soumis à notre administrateur (7) ; droit
+au prorata, un lead tiers : nos titres gardent leurs droits et on investit à ses termes, jamais
+mieux (8) ; NOUVELLE clause 9, les titres des fondateurs (incessibilité, préemption, sortie
+conjointe) ; clause 10 renforcée : « We never block a sale that pays back what we invested », sortie
+forcée seulement vers un acheteur indépendant, en cash ou titres cotés, garanties plafonnées, tout
+avantage versé à un fondateur au-delà du marché compté dans le prix, et une vente sous notre mise
+demande notre accord (donc plus de « No veto. Ever. » nulle part) ; cliff d'un an, crédit
+d'ancienneté plafonné à un an, bad leaver = tous ses titres au plus bas du coût et de la valeur,
+non-concurrence d'un an (11) ; « If things go wrong » : les protections dormantes, ce qui les réveille
+et ce qui se réveille, les consentements d'un lead classique (12). /lp (GIVE, KEEP, PROTECTION),
+/pitch (slide 7), la fiche (PACT p. 1, encadré p. 2) et l'accueil (règles, HowWeBack) suivent.
+La durée et la validité de la convention de vote et la conformité EuVECA sont à faire valider par
+un avocat avant toute signature.
 **Préférence 1× (06/11)** : pas sur les petits tours de seed (clause 1 : « The most we ever ask is a 1×… ») ;
 aucun chiffre ne bouge, le plancher du modèle ne joue sur aucune ligne Seed (V-04, G-02, G-04 seulement). Aussi en v3.15 : la phrase
 sur les conflits, « our shares don't vote… LP advisory committee », quitte le pacte des
@@ -226,7 +246,7 @@ parcours fondateur s'arrête au calculateur (« Send these numbers to the partne
 mailto) et la fin de l'accueil dit « A handful of founders a year. ». Le formulaire de
 /lp a été retiré le 06/11 (`LeadForm.tsx` reste, inutilisé ; il n'avait PAS de backend, il
 ouvrait un email pré-rempli). Sur l'accueil : « Another lead? Take both. » (on investit aux termes du lead, sans nommer de fonds ;
-ON DEVIENT ALORS UN CO-INVESTISSEUR CLASSIQUE, clause 9 : ne jamais y promettre prêts, rachats, moteurs ni vote avec le fondateur). Au-delà
+ON DEVIENT ALORS UN CO-INVESTISSEUR CLASSIQUE, clause 8 : ne jamais y promettre prêts, rachats, moteurs ni vote avec le fondateur). Au-delà
 de la dette, la copie dit qu'on apporte de l'equity aux mêmes conditions, avec des SPV
 (« Your call », pour rester cohérent avec « never create a new share »).
 

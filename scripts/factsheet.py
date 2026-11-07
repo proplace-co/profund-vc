@@ -417,15 +417,15 @@ LAWS = (
 
 PACT = (
     ("Equity, when the founder chooses.", "At most a 1× non-participating preference; never a pushed round."),
-    ("Follow-on capital, reserved.", "Loans first, then equity on the same terms when the founder asks, "
-                                     "SPVs for the largest rounds."),
+    ("Follow-on capital, reserved.", "Loans in tranches, then equity on the same terms when the founder "
+                                     "asks and our committee agrees."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
-                                    "agreement, and the company cancels shares every year. Founder and "
-                                    "fund own more at every stage."),
+                                    "agreement, and the company can cancel shares every year: each "
+                                    "cancellation lifts both stakes."),
     ("Founder control.", "Our shares vote with the founder. One board seat, no veto on how they run, "
                          "raise or sell."),
-    ("Fair both ways.", "If a founder raises elsewhere, we follow or lead, then hold the new lead's rights. "
-                        "Loans on lender terms, four-year founder vesting."),
+    ("Capital protected.", "No sale below our money back without us, loans on lender terms, founder "
+                           "lock-up and vesting. Protections wake up on default."),
 )
 
 
@@ -700,9 +700,10 @@ def page_two(F):
     # conflits et filet de securite
     txt = (f"<b>{x('Conflicts and fallback.')}</b> " + x(
         "Every buyback is priced by an independent valuer. ProFund's shares abstain on its own loans and "
-        "buybacks; the voting agreement does not apply to a founder's personal interest. Fund-side conflicts go "
-        "to the LP advisory committee. Fraud, gross misconduct, a material breach of the pact or insolvency "
-        "end the voting agreement."))
+        "buybacks; founder pay beyond budget, related-party deals and buybacks of founder shares need our "
+        "director's approval. Fund-side conflicts go to the LP advisory committee. Fraud, gross misconduct, a "
+        "material breach of the pact, a loan default not cured within 30 days or insolvency end the voting "
+        "agreement and restore a classic lead's consents."))
     hb = F.hpara(W - 72, txt, 9.6, "reg", 1.5) + 30
     F.rr(M, y, W, hb, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
     F.rr(M + 14, y + (hb - 30) / 2, 30, 30, 9, fill=BLUE_SOFT)

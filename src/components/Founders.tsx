@@ -79,7 +79,8 @@ const RULES: { old: string; now: string }[] = [
   { old: 'Their seats, their votes, their veto', now: 'One seat. Our shares vote with you.' },
   // (v3.10 : la ligne « No new preference on top of you » est retirée : l'equity
   // complémentaire, au choix du fondateur, porte une préférence 1×.)
-  { old: 'Their exit, on their timing', now: 'Your exit. No veto. Ever.' },
+  // v3.19 : plus de « No veto. Ever. » : une vente qui ne rend pas notre mise demande notre accord (clause 10).
+  { old: 'Their exit, on their timing', now: 'Your exit, on your timing.' },
   // ProFund rachète : ce sont nos titres qui montent ; les votes passent du côté du fondateur.
   { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Their votes move to your side.' },
 ];
@@ -174,7 +175,7 @@ export function TheFew() {
 // La philosophie : lever tout ce qu'il faut pour tirer le maximum de la société, dans l'ordre
 // qui dilue le moins. Humble, aligné, jamais faible (ni « You decide what you take »), aucune
 // comparaison. Les étages et leurs tickets sont une lecture de LP : repliés. Si un autre fonds
-// mène, on devient un co-investisseur classique (clause 9) : ne jamais y promettre prêts,
+// mène, on devient un co-investisseur classique (clause 8) : ne jamais y promettre prêts,
 // rachats ni moteurs.
 const CAPITAL: { t: string; d: string }[] = [
   { t: 'A cap table that gets cleaner.', d: 'We buy out angels and early funds, only with your agreement. Their votes move to your side.' },
@@ -236,7 +237,7 @@ const BLOCKS: { icon: IconName; t: string; d: string }[] = [
   { icon: 'shield', t: 'You keep control.',
     d: 'One board seat for us, the majority for you. No veto on how you run, raise or sell. Our shares vote with you.' },
   { icon: 'door', t: 'You choose your exit.',
-    d: 'No veto on a sale. Ever.' },
+    d: 'We never block a sale that pays back what we invested.' },
 ];
 
 export function HowWeBack() {
@@ -264,7 +265,7 @@ export function HowWeBack() {
         </div>
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="scale" /></span>
-          <p>If you raise elsewhere, we can follow or lead the round, and we hold the same rights as your new lead. Fair both ways.</p>
+          <p>If you raise elsewhere, we can follow or lead the round. If another investor leads, we invest on its terms, never better. Fair both ways.</p>
           <Link to="/terms" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></Link>
         </div>
       </div>

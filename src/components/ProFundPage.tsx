@@ -183,11 +183,11 @@ function Alignment() {
         </div>
         <div className="pv-card">
           <h3>Downside</h3>
-          <p>Loans are repaid before equity, and our first cheque carries a 1× preference, outside small seed rounds.</p>
+          <p>Loans are repaid before equity. Our cheques carry a 1× preference outside small seed rounds, with standard anti-dilution, and no one can drag our shares into a sale below our money back.</p>
         </div>
         <div className="pv-card">
           <h3>Conflicts policy</h3>
-          <p>Buybacks priced by an independent valuer. When a decision involves ProFund itself, our shares don’t vote. Conflicts of interest go to the LP advisory committee.</p>
+          <p>Buybacks priced by an independent valuer. When a decision involves ProFund itself, our shares don’t vote; founder pay beyond budget and related-party deals need our approval. Conflicts of interest go to the LP advisory committee.</p>
         </div>
       </div>
       <div className="pv-ctas"><Link to="/terms" className="pv-link">Read the founders’ pact, {N_CLAUSES} clauses <Icon name="arrow" /></Link></div>

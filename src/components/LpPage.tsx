@@ -186,16 +186,20 @@ function chequeCell(p: FounderPath, exit: number): PathCell {
 
 // ── Ce qu'on rend, ce qu'on garde : chaque ligne reste une clause du pacte (Pact.tsx) ──
 const GIVE: { t: string; d: string }[] = [
-  { t: 'The votes.', d: 'Our shares vote with the founder.' },
+  { t: 'The votes.', d: 'Our shares vote with the founder on how the company is run.' },
   { t: 'The board.', d: 'One seat for us. The majority stays theirs.' },
   { t: 'The next round.', d: 'We never push for one. Every follow-on is their call.' },
-  { t: 'The exit.', d: 'No veto on a sale. Ever.' },
+  { t: 'The exit.', d: 'We never block a sale that pays back what we invested.' },
 ];
+// v3.19 (07/11) : ce que le pacte protège, clause par clause, vu par un LP exigeant.
 const KEEP: { t: string; d: string }[] = [
-  { t: 'A 1× preference.', d: 'On every cheque, first or follow-on, outside small seed rounds.' },
-  { t: 'Loans repaid first.', d: 'Before any equity, and on any change of control.' },
-  { t: 'Eyes on the company.', d: 'A board seat, monthly figures, quarterly accounts.' },
-  { t: 'Consent where it counts.', d: 'Nothing can rank ahead of our shares or change their rights without us.' },
+  { t: 'A 1× preference.', d: 'On every cheque, first or follow-on, outside small seed rounds, with standard anti-dilution.' },
+  { t: 'Loans repaid first.', d: 'Before any equity and on any change of control, with lender covenants.' },
+  { t: 'No sale on the cheap.', d: 'Below our money back, no one can drag our shares into a sale. What a buyer pays a founder on the side counts as price.' },
+  { t: 'Cash stays in the company.', d: 'Founder pay beyond budget, related-party deals and buybacks of founder shares need our approval.' },
+  { t: 'Founders stay in.', d: 'Vesting with a cliff, a lock-up on founder shares, and a bad leaver returns every share at no more than cost.' },
+  { t: 'Consent where it counts.', d: 'A board seat and monthly figures. Nothing ranks ahead of our shares or changes their rights without us.' },
+  { t: 'Protections that wake up.', d: 'Fraud, a loan default or a breach of the pact ends the voting agreement and restores a classic lead’s consents.' },
 ];
 
 // ── Les briques de mise en page ──────────────────────────────────────────────
@@ -241,15 +245,15 @@ function PathTable({ cell }: { cell: (p: FounderPath, exit: number) => PathCell 
 
 // Les règles de protection, vues des LPs (pacte à 12 clauses, Pact.tsx).
 const PROTECTION: { icon: IconName; t: string; d: string }[] = [
-  { icon: 'shield', t: '1× preference', d: 'On every cheque, first or follow-on, outside small seed rounds. No ratchet, no cumulative dividend.' },
-  { icon: 'banknote', t: 'Loans first', d: 'Lender covenants; repaid before any equity and on any change of control.' },
+  { icon: 'shield', t: '1× preference', d: 'On every cheque, first or follow-on, outside small seed rounds. Broad-based weighted-average anti-dilution; no full ratchet, no cumulative dividend.' },
+  { icon: 'banknote', t: 'Loans first', d: 'Lender covenants; repaid before any equity and on any change of control. A default not cured within 30 days makes the loan callable.' },
   { icon: 'file', t: 'A board seat', d: 'Monthly figures, quarterly accounts, and consent on anything that would change our shares.' },
-  { icon: 'scale', t: 'Independent pricing', d: 'Every buyback is priced by an independent valuer.' },
-  { icon: 'trend', t: 'The lead’s rights', d: 'If another investor leads a priced round, we hold the same rights as the new lead.' },
-  { icon: 'door', t: 'Exit', d: 'Tag-along on any sale of control; drag-along only on the same terms for everyone.' },
-  { icon: 'handshake', t: 'Vesting and leavers', d: 'Four-year founder vesting; the voting agreement ends if a founder leaves or sells control.' },
-  { icon: 'lock', t: 'Conflicts', d: 'Our shares abstain on our own loans and buybacks; fund-side conflicts go to the LP advisory committee.' },
-  { icon: 'check', t: 'Fallback', d: 'Fraud, misconduct, a breach of the pact or insolvency end the voting agreement. Investment committee, key-person clause.' },
+  { icon: 'scale', t: 'Independent pricing', d: 'Every buyback is priced by an independent valuer, out of distributable reserves, never from a founder without our consent.' },
+  { icon: 'trend', t: 'Pro-rata and the lead’s terms', d: 'Our pro-rata on every new issue. If another investor leads a priced round, our shares keep their rights and we invest on the lead’s terms.' },
+  { icon: 'door', t: 'Exit', d: 'Tag-along on any founder sale. No drag below our money back without our consent; independent buyer, cash or listed shares, warranties capped; side payments to founders count as price.' },
+  { icon: 'handshake', t: 'Vesting and leavers', d: 'Four years with a one-year cliff, a lock-up on founder shares, a one-year non-compete; a bad leaver returns every share at the lower of cost and fair value.' },
+  { icon: 'lock', t: 'Conflicts', d: 'Our shares abstain on our own loans and buybacks; founder pay beyond budget and related-party deals need our director; fund-side conflicts go to the LP advisory committee.' },
+  { icon: 'check', t: 'Fallback', d: 'Fraud, misconduct, a breach of the pact, a loan default or insolvency end the voting agreement and restore a classic lead’s consents. Investment committee, key-person clause.' },
 ];
 
 /** L'accès à la page : l'aperçu du GP (?gp), ou l'accès au deal flow de ce navigateur. */
