@@ -289,12 +289,14 @@ jamais afficher une MÉDIANE plus basse que ce que Carta mesure ; le tableau de
 l'accueil a une colonne « At 6.3%, the Deliveroo case » : les fondateurs ramenés à 6,3 %,
 mêmes tours, mêmes préférences, calculée par `atFounderStake` de `founderMath.js` ; sous les
 moteurs, « Running today » : Proplace et Maximum Insurance, dont la corp dev, l'inbound et
-l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11 ; 07/11, Alexandre : quatre
-cartes en deux colonnes, chacune avec ses SEULES lignes (`RUN`, `caps`) : Proplace corp dev, inbound,
-outbound ; Maximum Insurance inbound et outbound, PAS de corp dev ; Sosuites inbound ; WinHealth Group
-outbound et corp dev ; puis des références en mini cartes, corp dev sur le moteur externe
-(`RUN_REFS` : Nexecur, logo sans celui du Crédit Agricole ; S4BT, sforbt.com) ; ne jamais y ajouter
-une ligne que la société ne fait pas tourner),
+l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11 ; 07/11, Alexandre (11e passe) :
+SIX petites cartes identiques (`RUN`, `.pv-runc`), trois colonnes, deux sous 900 px, une sous 600 px ;
+une légende des deux moteurs et de leurs sous-moteurs (`RUN_ENGINES`) ; chaque carte : le logo, un
+point vert, puis les mêmes trois sous-moteurs dans le même ordre (External : Corp dev ; Internal :
+Inbound, Outbound), allumés si la société s'en sert (`caps`), éteints sinon ; la description en
+infobulle. Proplace corp dev, inbound, outbound ; Maximum Insurance inbound et outbound, PAS de corp dev ;
+Sosuites inbound ; WinHealth Group outbound et corp dev ; Nexecur (logo sans celui du Crédit Agricole)
+et S4BT (sforbt.com) corp dev ; ne jamais allumer un sous-moteur que la société ne fait pas tourner),
 (v3.14) le fonds en chiffres (taille, tickets, suivi, au-delà de 10 M€), les étages, les
 chiffres sans phrase contestable (« When debt can carry your growth… When it cannot, we bring
 the equity on the same terms »), les deux moteurs côté fondateur (« Two AI engines, working

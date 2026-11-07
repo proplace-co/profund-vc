@@ -973,31 +973,32 @@ const ENGINES: { icon: IconName; name: string; d: string; steps: { k: string; d:
 ];
 
 // La preuve (06/11, Antoine) : les sociétés que les moteurs font tourner aujourd'hui. 07/11
-// (Alexandre) : chaque société ne montre que ce qui tourne vraiment chez elle (Maximum Insurance :
-// inbound et outbound, pas de corp dev ; Sosuites : inbound ; WinHealth Group : outbound et corp dev),
-// puis des références en mini cartes, dont la corp dev tourne sur le moteur externe.
+// (Alexandre, 11e passe) : six petites cartes identiques, une grille. Chaque carte porte les mêmes trois
+// sous-moteurs dans le même ordre (corp dev sur le moteur externe ; inbound et outbound sur le moteur
+// interne), allumés quand la société s'en sert, éteints sinon : Maximum Insurance inbound et outbound,
+// pas de corp dev ; Sosuites inbound ; WinHealth Group outbound et corp dev ; Nexecur et S4BT corp dev
+// (logo Nexecur sans celui du groupe). Ne jamais allumer un sous-moteur que la société ne fait pas
+// tourner. La description de chaque société reste en infobulle.
 type RunCap = 'corpdev' | 'inbound' | 'outbound';
-const RUN_CAPS: Record<RunCap, { icon: IconName; t: string; engine: string }> = {
-  corpdev: { icon: 'radar', t: 'Corporate development', engine: 'External AI Growth Engine' },
-  inbound: { icon: 'bot', t: 'Inbound', engine: 'Internal AI Growth Engine' },
-  outbound: { icon: 'bot', t: 'Outbound', engine: 'Internal AI Growth Engine' },
-};
+const RUN_ENGINES: { icon: IconName; k: string; name: string; caps: { id: RunCap; t: string }[] }[] = [
+  { icon: 'radar', k: 'External', name: 'External AI Growth Engine', caps: [{ id: 'corpdev', t: 'Corp dev' }] },
+  { icon: 'bot', k: 'Internal', name: 'Internal AI Growth Engine', caps: [{ id: 'inbound', t: 'Inbound' }, { id: 'outbound', t: 'Outbound' }] },
+];
+const RUN_LABEL: Record<RunCap, string> = { corpdev: 'corporate development', inbound: 'inbound', outbound: 'outbound' };
 /** `h` : la hauteur du logo en px (les logos n'ont pas les mêmes proportions). */
 const RUN: { name: string; logo: string; href: string; h: number; d: string; caps: RunCap[] }[] = [
-  { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', h: 32,
+  { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', h: 27,
     d: 'Autonomous AI operating system for corporate development and M&A.', caps: ['corpdev', 'inbound', 'outbound'] },
-  { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', h: 19,
+  { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', h: 14,
     d: 'Travel insurance and duty of care for companies and their teams abroad.', caps: ['inbound', 'outbound'] },
-  { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', h: 20,
+  { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', h: 17,
     d: 'AI-assisted personalised art prints to share.', caps: ['inbound'] },
-  { name: 'WinHealth Group', logo: '/portfolio-winhealth.png', href: 'https://winhealthgroup.com', h: 27,
+  { name: 'WinHealth Group', logo: '/portfolio-winhealth.png', href: 'https://winhealthgroup.com', h: 23,
     d: 'Swiss broker in international health insurance for expatriates and their families.', caps: ['corpdev', 'outbound'] },
-];
-/** Les références : leur corp dev tourne sur le moteur externe (logo Nexecur sans celui du groupe ;
- *  S4BT, Solutions for Business Travel, sforbt.com). */
-const RUN_REFS: { name: string; logo: string; href: string; h: number }[] = [
-  { name: 'Nexecur', logo: '/ref-nexecur.png', href: 'https://www.nexecur.fr', h: 21 },
-  { name: 'S4BT', logo: '/ref-s4bt.svg', href: 'https://sforbt.com', h: 40 },
+  { name: 'Nexecur', logo: '/ref-nexecur.png', href: 'https://www.nexecur.fr', h: 18,
+    d: 'Home and business alarms with remote monitoring.', caps: ['corpdev'] },
+  { name: 'S4BT', logo: '/ref-s4bt.svg', href: 'https://sforbt.com', h: 34,
+    d: 'Solutions for Business Travel: booking, payment and travel technology.', caps: ['corpdev'] },
 ];
 
 // Les mêmes moteurs, vus des LPs (06/11) : le fonds s'en sert pour trouver ses sociétés,
@@ -1024,31 +1025,34 @@ export function EnginesRunning() {
     <div className="pv-run">
       <div className="pv-run-head">
         <p className="pv-kick">Running today</p>
-        <p>Every line below runs on our two engines, every day.</p>
+        <p>Live on our two engines, every day.</p>
       </div>
-      <div className="pv-run-grid">
-        {RUN.map((c) => (
-          <a key={c.name} className="pv-run-co" href={c.href} target="_blank" rel="noopener noreferrer">
-            <span className="pv-run-live"><i />Running</span>
-            <span className="pv-run-lg"><img src={c.logo} alt={c.name} style={{ maxHeight: c.h }} /></span>
-            <p>{c.d}</p>
-            <ul>
-              {c.caps.map((k) => (
-                <li key={k}><Icon name={RUN_CAPS[k].icon} />{RUN_CAPS[k].t}<b>{RUN_CAPS[k].engine}</b><i className="pv-run-pulse" aria-hidden="true" /></li>
-              ))}
-            </ul>
-            <span className="pv-run-go">{c.href.replace(/^https:\/\/(www\.)?/, '')} <Icon name="out" /></span>
-          </a>
+      <ul className="pv-run-key">
+        {RUN_ENGINES.map((e) => (
+          <li key={e.k}><Icon name={e.icon} /><b>{e.name}</b><span>{e.caps.map((x) => x.t).join(', ')}</span></li>
         ))}
-      </div>
-      <p className="pv-run-refs-h">Their corporate development also runs on our External AI Growth Engine.</p>
-      <div className="pv-run-refs">
-        {RUN_REFS.map((r) => (
-          <a key={r.name} className="pv-run-ref" href={r.href} target="_blank" rel="noopener noreferrer">
-            <span className="pv-run-ref-dot" aria-hidden="true" />
-            <span className="pv-run-ref-lg"><img src={r.logo} alt={r.name} style={{ maxHeight: r.h }} /></span>
-            <span className="k"><Icon name="radar" />Corporate development</span>
-            <i className="pv-run-pulse" aria-hidden="true" />
+      </ul>
+      <div className="pv-run-grid">
+        {RUN.map((c, i) => (
+          <a key={c.name} className="pv-runc" href={c.href} target="_blank" rel="noopener noreferrer" title={c.d}
+             aria-label={`${c.name}: ${c.caps.map((k) => RUN_LABEL[k]).join(', ')}, on our engines`}>
+            <span className="pv-runc-top">
+              <img src={c.logo} alt="" style={{ maxHeight: `min(${c.h}px, 100%)` }} />
+              <span className="pv-runc-dot" aria-hidden="true" />
+            </span>
+            <span className="pv-runc-eng" aria-hidden="true">
+              {RUN_ENGINES.map((e) => (
+                <span key={e.k} className="pv-runc-row">
+                  <span className="e"><Icon name={e.icon} />{e.k}</span>
+                  <span className="ps">
+                    {e.caps.map((x) => {
+                      const on = c.caps.includes(x.id);
+                      return <span key={x.id} className={`pv-runc-p${on ? ' on' : ''}`} style={vfAt(i * 0.55)}>{on && <i />}{x.t}</span>;
+                    })}
+                  </span>
+                </span>
+              ))}
+            </span>
           </a>
         ))}
       </div>
