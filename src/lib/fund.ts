@@ -113,27 +113,47 @@ export interface FundCase {
   horizon_years: number;
 }
 
+export type FounderPathId = 'vc' | 'same' | 'half' | 'credit';
+
 export interface FounderRow {
   exit: number;
   founders_vc: number;
-  founders_profund: number;
+  founders_same: number;
+  founders_half: number;
+  founders_credit: number;
   series_a_vc: number;
-  series_a_profund: number;
+  series_a_same: number;
+  series_a_half: number;
+  series_a_credit: number;
+}
+
+/** Un chemin du fondateur : ce qu'il vend, ce qu'il emprunte, ce qu'il garde après chaque tour. */
+export interface FounderPath {
+  id: FounderPathId;
+  label: string;
+  equity: number;
+  loans: number;
+  capital: number;
+  stake: number;
+  stakes: number[];
 }
 
 export interface FounderMath {
   exits: number[];
   founders: number;
   holders: { id: string; label: string; stake: number; pref: number }[];
-  vc_rounds: { id: string; label: string; bridge?: boolean; amount: number; post: number; pool: number }[];
+  vc_rounds: { id: string; label: string; bridge?: boolean; amount: number; post: number; pool: number; loan?: number }[];
   loans: number;
   loan_rate: number;
   loan_life: number;
   loan_multiple: number;
+  loan_debt: number;
+  loan_share: { min: number; max: number };
   vc_equity: number;
   raised_before: number;
   founders_after_vc: number;
   vc_stakes: { round: string; label: string; bridge: boolean; founders: number }[];
+  paths: FounderPath[];
   rows: FounderRow[];
 }
 

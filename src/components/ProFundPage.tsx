@@ -27,7 +27,9 @@ const LAYER_NAME: Record<LayerId, string> = { seed: 'Seed', venture: 'Venture', 
 const ALL_LINES = LAYER_IDS.flatMap((id) => L[id].lines);
 const EXIT_YEARS = [Math.min(...ALL_LINES.map((l) => l.exit_year)), Math.max(...ALL_LINES.map((l) => l.exit_year))];
 const GROWTH_HOLDS = L.growth.lines.map((l) => l.exit_year - l.entry_year);
-const AT_250 = FM.rows.find((r) => r.exit === 250e6) ?? FM.rows[1];
+const AT_1B = FM.rows.find((r) => r.exit === 1000e6)!;
+const UNI_SAME = fund.stress_tests.find((s) => s.id === 'unicorn_same')!;
+const [VC_PATH, SAME_PATH, HALF_PATH, CREDIT_PATH] = FM.paths;
 const RAISED_VC = FM.raised_before + FM.vc_equity;
 const DELAY_1 = fund.stress_tests.find((s) => s.id === 'exits_plus_1')!;
 const FR = fund.fund_returner;   // la loi 04 chiffrée : la sortie qui rend tout le fonds
@@ -123,15 +125,15 @@ function TheProblem() {
 // 4 · The inversion
 function TheInversion() {
   return (
-    <Slide id="inversion" n={4} kick="The inversion" title="One equity round, then loans and buybacks.">
+    <Slide id="inversion" n={4} kick="The inversion" title="Credit first. Equity when it earns its place.">
       <div className="pv-flow">
-        <div className="pv-flow-s"><span className="pv-ic"><Icon name="target" /></span><h3>One equity round</h3><p>A first cheque in new shares, from seed to Series A, or a buyback of existing shares.</p></div>
+        <div className="pv-flow-s"><span className="pv-ic"><Icon name="target" /></span><h3>A first cheque</h3><p>In new shares, from seed to Series A, or a buyback of existing shares.</p></div>
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>A reserved loan line</h3><p>Hiring, go-to-market, working capital, acquisitions. Need more? Equity on the same terms, with SPVs alongside the fund.</p></div>
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="trend" /></span><h3>Buybacks and cancellations</h3><p>Angels, leavers and early funds bought out; the company cancels shares every year.</p></div>
       </div>
       <div className="pv-callout">
         <span className="pv-tick soft"><Icon name="scale" /></span>
-        <p>If the founder grows with us, we never create a new share. If he raises elsewhere, we follow, or lead the round, in new shares. At growth stage we also write fresh cheques in new shares.</p>
+        <p>We never push for a new round. When a company needs equity, we bring it on the same terms, or follow another lead in new shares. At growth stage we also write fresh cheques in new shares.</p>
       </div>
     </Slide>
   );
@@ -139,16 +141,14 @@ function TheInversion() {
 
 // 5 · Founder math
 function FounderMathSlide() {
-  const rows = FM.rows;
-  const list = (k: 'founders_vc' | 'founders_profund') => rows.map((r) => eur(r[k], 'tile')).join(', ');
   return (
-    <Slide id="math" n={5} kick="Founder math" tint title="The capital you don’t raise is the company you keep.">
+    <Slide id="math" n={5} kick="Founder math" tint title="The equity you don’t sell is the company you keep.">
       <p className="pv-lead pv-slide-lead">
-        Exits at {rows.map((r) => eur(r.exit, 'val')).join(', ')}: founders take home {list('founders_vc')} on the VC path,
-        against {list('founders_profund')} with ProFund, for a company that needs {eur(FM.loans, 'tile')} of loans
-        instead of {eur(FM.vc_equity, 'tile')} of equity.
+        Same company, same valuations. On the same {eur(VC_PATH.capital, 'tile')}, {eur(SAME_PATH.loans, 'tile')} of loans lift the founders
+        from {pct(VC_PATH.stake, 1)} to {pct(SAME_PATH.stake, 1)}. The real gap comes from needing less equity: {pct(HALF_PATH.stake, 1)} on half
+        the capital, {pct(CREDIT_PATH.stake, 1)} on credit alone. For the teams we back, that is the thesis.
       </p>
-      <FounderTable investor />
+      <FounderTable />
       <p className="pv-fine">{founderNote()}</p>
     </Slide>
   );
@@ -157,17 +157,17 @@ function FounderMathSlide() {
 // 6 · Everyone wins
 function EveryoneWins() {
   return (
-    <Slide id="wins" n={6} kick="Everyone wins" title={`At a ${eur(AT_250.exit, 'val')} exit, everyone wins.`}>
+    <Slide id="wins" n={6} kick="Everyone wins" title={`At a ${eur(AT_1B.exit, 'val')} exit, everyone wins.`}>
       <div className="table-scroll pv-ts"><table className="fund-table pv-wins">
-        <thead><tr><th>At a {eur(AT_250.exit, 'val')} exit</th><th>VC path</th><th>ProFund path</th></tr></thead>
+        <thead><tr><th>At a {eur(AT_1B.exit, 'val')} exit</th><th>VC path</th><th>ProFund path</th></tr></thead>
         <tbody>
-          <tr><td>Founders</td><td>{eur(AT_250.founders_vc, 'tile')}</td><td className="pf">{eur(AT_250.founders_profund, 'tile')}</td></tr>
-          <tr><td>Series A investor, equity multiple</td><td>{mult(AT_250.series_a_vc)}</td><td className="pf">{mult(AT_250.series_a_profund)} (ProFund)</td></tr>
+          <tr><td>Founders</td><td>{eur(AT_1B.founders_vc, 'tile')}</td><td className="pf">{eur(AT_1B.founders_same, 'tile')} on the same capital, {eur(AT_1B.founders_half, 'tile')} on half of it, {eur(AT_1B.founders_credit, 'tile')} on credit alone</td></tr>
+          <tr><td>Series A investor, equity multiple</td><td>{mult(AT_1B.series_a_vc)}</td><td className="pf">{mult(AT_1B.series_a_same)}, {mult(AT_1B.series_a_half)} and {mult(AT_1B.series_a_credit)} on the same paths (ProFund)</td></tr>
           <tr><td>Angels</td><td>Wait for the exit</td><td className="pf">Liquidity at year 2</td></tr>
-          <tr><td>LPs</td><td>A unicorn, diluted round after round</td><td className="pf">{mult(TARGET.net_tvpi)} net and {pct(TARGET.net_irr)} IRR target: the same unicorn, {pct(FR.stake_at_exit, 1)} owned at exit</td></tr>
+          <tr><td>LPs</td><td>A unicorn, diluted round after round</td><td className="pf">{mult(TARGET.net_tvpi)} net and {pct(TARGET.net_irr)} IRR target if the unicorn grows on credit, {pct(FR.stake_at_exit, 1)} owned at exit; {mult(UNI_SAME.net_tvpi)} if it also sells {eur(SAME_PATH.equity, 'tile')} of equity</td></tr>
         </tbody>
       </table></div>
-      <p className="pv-punch">The only one who loses is the VC who would have sold rounds B, C and D.</p>
+      <p className="pv-punch">All that disappears is the equity nobody needed to sell.</p>
     </Slide>
   );
 }
@@ -179,7 +179,7 @@ function Alignment() {
       <div className="pv-trio">
         <div className="pv-card">
           <h3>Aligned</h3>
-          <p>Every buyback and cancellation lifts both stakes. We never need the founder to dilute or to raise again, and when a unicorn comes, we both still own our full stake.</p>
+          <p>Every buyback and cancellation lifts both stakes. We never push for a new round, and every share a company does not issue protects the founder’s stake and ours.</p>
         </div>
         <div className="pv-card">
           <h3>Downside</h3>
@@ -278,7 +278,7 @@ function TrackRecord() {
 // 11 · Terms and targets
 function TermsAndTargets() {
   return (
-    <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. One equity round per company.`}>
+    <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. Credit first, equity when the founder asks.`}>
       <div className="impact-grid">
         <div className="imp"><span className="imp-n">{pct(TARGET.net_irr)}</span><span className="imp-h">Target net IRR</span><p className="imp-p">Base case {pct(C.base.net_irr)}, stress case {pct(C.stress.net_irr)}</p></div>
         <div className="imp"><span className="imp-n">{mult(TARGET.net_tvpi)}</span><span className="imp-h">Target net TVPI</span><p className="imp-p">Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}</p></div>
@@ -349,7 +349,7 @@ function tierRows(id: LayerId): [string, string][] {
   const leads = x.tracks?.lead;
   const radar = x.tracks?.radar;
   if (id === 'seed') return [
-    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, the only equity round, loan line reserved`],
+    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, first cheque, loan line reserved`],
     ['Stage', x.stage],
     ['Role', 'Lead + radar tickets'],
     ['Entry post', eurRange(x.entry_post_min, x.entry_post_max)],
@@ -383,7 +383,7 @@ function Construction() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Appendix · Fund construction</span>
         <h2 className="h2">Fund construction.<br /><em>Two ways in at every layer.</em></h2>
-        <p className="pf-intro">A first equity cheque, or a buyback of existing shares. Then loans, never new shares.</p>
+        <p className="pf-intro">A first equity cheque, or a buyback of existing shares. Then credit first, and equity when the founder asks.</p>
         <div className="pv-tiers">
           {LAYER_IDS.map((id) => (
             <div key={id} className={`tier ${id}`}>
@@ -465,7 +465,7 @@ function Simulation() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Appendix · Fund simulation</span>
         <h2 className="h2">Line-by-line entry, buybacks, loans &amp; exit.<br /><em>Target case, every position of the three layers.</em></h2>
-        <p className="pf-intro">Ownership at exit is higher than at entry on every line where the founder grows with us: buybacks and cancellations lift our stake with his.</p>
+        <p className="pf-intro">Ownership at exit is higher than at entry on every line where the founder grows with us: buybacks and cancellations lift our stake with theirs.</p>
         <SimulationTables />
       </div>
     </div>

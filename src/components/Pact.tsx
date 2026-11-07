@@ -21,19 +21,21 @@
 // (standard BVCA, dans l'esprit « be generous to leavers » d'Index : seul un départ fautif
 // fait un bad leaver, les titres acquis restent au fondateur). La phrase sur la politique
 // de conflits du FONDS (comité consultatif des LPs) reste côté LPs (/lp, fiche p. 2).
-export const CLAUSES: { t: string; d: string }[] = [
-  { t: 'Equity, only when you choose.', d: 'The most we ever ask is a 1× non-participating preference: no participation, no ratchet, no cumulative dividend. We never push for a new round: every follow-on, ours or anyone else’s, is your call.' },
-  { t: 'Follow-on capital, reserved for you.', d: 'From day one, we reserve what comes next. A loan line with our fund and partner lenders, drawn in tranches when you need it: hiring, go-to-market, working capital, acquisitions. And equity whenever you ask: we lead it ourselves, on these same terms (a 1× preference at most), with SPVs and co-investors alongside the fund for the largest rounds. Every option stays open. It is always your call.' },
-  { t: 'Loans, on lender terms.', d: 'Our loans carry what any venture lender asks: monthly figures, no new senior debt without our consent, repayment if control of the company changes. If a payment is missed, the voting agreement is suspended until it is made.' },
-  { t: 'Buybacks, only with you.', d: 'We buy shares from your angels, leavers and early funds, never without your agreement. Their votes move to your side. Every buyback is priced by an independent valuer.' },
-  { t: 'Annual buyback.', d: 'Each year, the company can buy back shares. It cancels them, which lifts your stake, or uses them to refill your option pool, without creating new shares.' },
-  { t: 'Your votes.', d: 'Our shares vote with you under a voting agreement. Where the law allows, you hold multiple voting rights. Both belong to the founders who run the company: they end if you leave it or sell control.' },
-  { t: 'One board seat. No veto on how you run, raise or sell.', d: 'We take one seat, with monthly figures, quarterly accounts and the annual budget. You keep the majority. Our consent is needed only for what would change our shares behind our back: shares ranking ahead of ours, a change to our rights, dividends while one of our loans is outstanding, selling the IP outside a sale of the company, a dissolution.' },
-  { t: 'Neither of us votes on ourselves.', d: 'When a decision is about ProFund (our loan, a buyback by us), our shares don’t vote. When it is about you personally (your pay, a deal with a company you own), our shares vote freely, not with you.' },
-  { t: 'Raise elsewhere, freely.', d: 'You can raise from anyone, at any time. We have a right of first offer, and we can follow or lead the round in new shares. If another investor leads a priced round, the voting agreement ends and we hold the same rights as the new lead, never more.' },
-  { t: 'Your exit.', d: 'No veto on a sale. Ever. If you sell control, we can sell alongside you on the same terms, and our loans are repaid at closing. You can drag us into a sale on the same terms as every other shareholder, any 1× preference of ours included.' },
-  { t: 'Vesting and leavers.', d: 'The IP belongs to the company. Your shares vest over four years, with credit for the time you have already served. A good leaver keeps every vested share. Only fraud, gross misconduct or competing with the company makes a bad leaver: unvested shares then go back at nominal value. Shares that come back are cancelled or refill your pool, never ours. If the company is sold and the buyer lets you go, all your shares vest at once.' },
-  { t: 'Fallback.', d: 'The voting agreement ends in case of fraud, gross misconduct, a material breach of this pact or insolvency proceedings.' },
+// 06/11 : `vc`, ce que dit un term sheet classique sur le même sujet (notre résumé, pas une citation,
+// pas une clause) ; c'est l'ancien tableau « The term sheet, rewritten », fondu dans le pacte.
+export const CLAUSES: { t: string; d: string; vc: string }[] = [
+  { t: 'Equity, only when you choose.', d: 'The most we ever ask is a 1× non-participating preference: no participation, no ratchet, no cumulative dividend. We never push for a new round: every follow-on, ours or anyone else’s, is your call.', vc: 'A new round every 18 months, a preference stacked at each one, sometimes participating.' },
+  { t: 'Follow-on capital, reserved for you.', d: 'From day one, we reserve what comes next. A loan line with our fund and partner lenders, drawn in tranches when you need it: hiring, go-to-market, working capital, acquisitions. And equity whenever you ask: we lead it ourselves, on these same terms (a 1× preference at most), with SPVs and co-investors alongside the fund for the largest rounds. Every option stays open. It is always your call.', vc: 'A new fundraise at every stage.' },
+  { t: 'Loans, on lender terms.', d: 'Our loans carry what any venture lender asks: monthly figures, no new senior debt without our consent, repayment if control of the company changes. If a payment is missed, the voting agreement is suspended until it is made.', vc: 'None. Venture debt elsewhere, often with warrants.' },
+  { t: 'Buybacks, only with you.', d: 'We buy shares from your angels, leavers and early funds, never without your agreement. Their votes move to your side. Every buyback is priced by an independent valuer.', vc: 'Angels and early funds stay on your cap table, with their votes.' },
+  { t: 'Annual buyback.', d: 'Each year, the company can buy back shares. It cancels them, which lifts your stake, or uses them to refill your option pool, without creating new shares.', vc: 'Your stake goes down at every round: 11.4% after the Series D, at the median.' },
+  { t: 'Your votes.', d: 'Our shares vote with you under a voting agreement. Where the law allows, you hold multiple voting rights. Both belong to the founders who run the company: they end if you leave it or sell control.', vc: 'Every investor votes its own shares.' },
+  { t: 'One board seat. No veto on how you run, raise or sell.', d: 'We take one seat, with monthly figures, quarterly accounts and the annual budget. You keep the majority. Our consent is needed only for what would change our shares behind our back: shares ranking ahead of ours, a change to our rights, dividends while one of our loans is outstanding, selling the IP outside a sale of the company, a dissolution.', vc: 'A seat for every lead. Consent on the budget, key hires, new rounds, the sale.' },
+  { t: 'Neither of us votes on ourselves.', d: 'When a decision is about ProFund (our loan, a buyback by us), our shares don’t vote. When it is about you personally (your pay, a deal with a company you own), our shares vote freely, not with you.', vc: 'Left to company law.' },
+  { t: 'Raise elsewhere, freely.', d: 'You can raise from anyone, at any time. We have a right of first offer, and we can follow or lead the round in new shares. If another investor leads a priced round, the voting agreement ends and we hold the same rights as the new lead, never more.', vc: 'Investor consent on new rounds.' },
+  { t: 'Your exit.', d: 'No veto on a sale. Ever. If you sell control, we can sell alongside you on the same terms, and our loans are repaid at closing. You can drag us into a sale on the same terms as every other shareholder, any 1× preference of ours included.', vc: 'Investor consent on the sale.' },
+  { t: 'Vesting and leavers.', d: 'The IP belongs to the company. Your shares vest over four years, with credit for the time you have already served. A good leaver keeps every vested share. Only fraud, gross misconduct or competing with the company makes a bad leaver: unvested shares then go back at nominal value. Shares that come back are cancelled or refill your pool, never ours. If the company is sold and the buyer lets you go, all your shares vest at once.', vc: 'Bad leaver for resigning during vesting.' },
+  { t: 'Fallback.', d: 'The voting agreement ends in case of fraud, gross misconduct, a material breach of this pact or insolvency proceedings.', vc: 'Investor rights apply at all times.' },
 ];
 
 export const N_CLAUSES = CLAUSES.length;
@@ -51,8 +53,13 @@ export function PactList({ heading: H = 'h2' }: { heading?: 'h2' | 'h3' }) {
           <span className="n">{String(i + 1).padStart(2, '0')}</span>
           <H>{c.t}</H>
           <p>{c.d}</p>
+          <p className="vc"><span>Classic VC</span>{c.vc}</p>
         </li>
       ))}
+      <li className="pv-terms-note">
+        “Classic VC”: common terms as we read them, not the text of any fund, and not part of the pact. 11.4%: the median
+        founding team after a Series D, Carta data reported by <a href="https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/" target="_blank" rel="noopener noreferrer">SaaStr</a>.
+      </li>
     </ol>
   );
 }

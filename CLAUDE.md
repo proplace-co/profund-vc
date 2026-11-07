@@ -98,8 +98,8 @@ once », on ne pousse jamais de tour) et « Follow-on capital, reserved for you.
 equity aux mêmes termes dès que le fondateur la demande, SPV pour les plus gros tours) ; la
 réserve se lit dans `allocation.after_first_pct` (46 % de l'investi après le premier chèque :
 suivis, rachats, prêts), dite sur /lp et dans le bandeau de la fiche p. 1.
-« The term sheet, rewritten » (accueil, replié) compare un term sheet VC classique au pacte : une
-ligne par clause, les 12, dans l'ordre (`TERMS`) ; une clause qui change change aussi là.
+Sous chaque clause du pacte (`vc` dans `CLAUSES`, Pact.tsx), une ligne « Classic VC » : ce que dit un term
+sheet classique, notre résumé, pas une clause ni une citation (l'ancien tableau « The term sheet, rewritten », fondu dedans).
 **Préférence 1× (06/11)** : pas sur les petits tours de seed (clause 1 : « The most we ever ask is a 1×… ») ;
 aucun chiffre ne bouge, le plancher du modèle ne joue sur aucune ligne Seed (V-04, G-02, G-04 seulement). Aussi en v3.15 : la phrase
 sur les conflits, « our shares don't vote… LP advisory committee », quitte le pacte des
@@ -171,11 +171,20 @@ aucun fonds nommé ; on propose tout ce que proposent les meilleurs, la table re
 l'alignement par ce qu'on signe. **Accueil** : les règles, `TheFew` (« The companies that define this
 era will be built by very few people. »), le capital (« Diluted like no one. », un chemin : on agit comme le Chief Fundraising Officer interne
 du fondateur, lever tout ce qu'il faut, dans l'ordre qui dilue le moins ; les quatre étapes à
-l'horizontale, les chiffres du fonds, « Another lead? Take both. » ; étages et tickets repliés, c'est une
-lecture de LP ; posture humble et alignée, jamais faible),
-ce qu'ils gardent (`StakeChart` visible : les deux chemins dits en clair, une ligne droite contre un
-escalier, Deliveroo à part ; term sheet et calculateur repliés ; plus de tableau « What you take home »
-ni de colonne Deliveroo sur l'accueil, il reste illustratif sur /pitch et la fiche), les moteurs (étapes repliées), « Exceptional numbers deserve exceptional terms. ». **/lp** : plus de plan numéroté (« le plan 1 2 3 4 alourdit »), un seul raisonnement,
+l'horizontale, les chiffres du fonds fondus dedans, « Another lead? Take both. » ; étages et tickets
+repliés, `StageLadder` ; posture humble et alignée, jamais faible),
+ce qu'ils gardent (« The equity you don’t sell is the company you keep. » ; `StakeChart` visible, **quatre
+chemins, chacun dit ce qu'il lève** (`paths`, 07/11) : le chemin VC, 224 M€ d'equity, 11,4 % ; **le même capital**,
+199 M€ d'equity et 25 M€ de prêts, 13,2 % ; **la moitié du capital**, 85 M€ et 25 M€, 20,8 % ; **le crédit seul**,
+25 M€, 37,5 %. 59 M€ de prêts ne tenaient pas (Alexandre, 07/11) : le crédit s'arrête à 25 M€, 3 + 7 + 15 M€, soit 25 à
+30 % du dernier tour, dans les 20-40 % du marché (First Citizens, ex-SVB) ; `fund_model.py` échoue au-delà. À capital
+égal l'écart reste modeste, et c'est dit : il devient massif quand une société a besoin de moins d'equity, et c'est la
+thèse. Mêmes valorisations partout (même pre-money). Le pool se recharge en actions nouvelles à chaque tour, comme sur
+le chemin VC : le racheter (clause 5) coûterait 53 M€ de plus, c'est une option du calculateur, jamais le chemin par
+défaut. Plus de Deliveroo sur ce graphique, il a levé 1,3 Md£. Le calculateur part du même capital, montre les trois
+chemins d'un coup d'œil, dit quand les chemins ne lèvent pas la même somme et quand un prêt dépasse 40 % du dernier
+tour. `prerender.mjs` échoue si le moteur JS s'écarte de `fund.json` sur un chemin ; plus de tableau
+« What you take home » sur l'accueil, il reste illustratif sur /pitch et la fiche), les moteurs (étapes repliées), « Exceptional numbers deserve exceptional terms. ». **/lp** : plus de plan numéroté (« le plan 1 2 3 4 alourdit »), un seul raisonnement,
 chaque phrase appelle la suivante : « The kingmakers. » (les équipes AI-native, l'éloge, trois chiffres
 sourcés) → « Capital is no longer scarce. Ownership is. » (ils ont le choix ; 11,4 %, 6,3 %, sous les
 20 %) → « Every fund says founders come first. We wrote it down. » (ce qu'on rend aux fondateurs, ce
@@ -340,9 +349,11 @@ la C avec un pool à 16,5 % (Carta : 16,1 % et 16,8 %), 11,4 % après la D (donn
 par SaaStr : 11,4 % ; 10,4 % dans une reprise du rapport 2026) ; 224 M€ de fonds propres
 après la A. Le graphique et le calculateur montrent les levées intermédiaires ; le
 calculateur garde les classes d'investisseurs séparées (seed, Series A),
-comme le modèle, sinon il s'écarte du tableau publié. Côté ProFund, le pool se recharge
-avec des titres rachetés (pacte, clause 5). Ne pas revenir à des hypothèses plus flatteuses
-pour le VC sans source.
+comme le modèle, sinon il s'écarte du tableau publié. Ne pas revenir à des hypothèses plus
+flatteuses pour le VC sans source. **Les lignes du tableau (07/11)** : `founders_vc`, `_same`, `_half`, `_credit` et
+leurs `series_a_*` (`PUBLISHED_FOUNDER_MATH`) ; /lp, /pitch et la fiche p. 2 et 4 les montrent, plus jamais 224 M€
+d'equity contre 25 M€ de prêts sans le dire. Les stress `unicorn_half` et `unicorn_same` disent ce qu'il reste au fonds
+si la licorne S-01, que la cible suppose financée à crédit, vend aussi de l'equity (3,3× et 2,8× net).
 
 **Le Seed est en haltère** (01/11, Alexandre ; v3.4 du 05/11) : 50 sociétés, 10 leads
 de conviction S-01..S-10 et 40 tickets radar de 150 K€ S-11..S-50 (`SEED_TRACKS`,

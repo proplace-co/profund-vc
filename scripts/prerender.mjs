@@ -22,7 +22,7 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { founderPaths, millions } from '../src/lib/founderMath.js';
+import { creditPlan, founderPaths, halfCapitalPlan, millions, sameCapitalPlan } from '../src/lib/founderMath.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const DIST = join(here, '..', 'dist');
@@ -36,9 +36,10 @@ const BASE_DESC = 'Venture capital for the AI era. Pre-seed to growth, on terms 
 const FUND = JSON.parse(readFileSync(join(here, '..', 'src', 'data', 'fund.json'), 'utf8'));
 const FUND_SIZE = `€${FUND.fund.commitments / 1e6}M`;
 
-// Le calculateur (/calculator) et le tableau « The capital you don't raise » doivent
-// dire la même chose : le moteur JS du site, nourri des hypothèses de fund.json,
-// doit retomber sur le tableau publié que calcule scripts/fund_model.py.
+// Le calculateur (/calculator), le graphique de l'accueil et le tableau publié doivent dire la
+// même chose : le moteur JS du site, nourri des hypothèses de fund.json, doit retomber sur ce que
+// calcule scripts/fund_model.py, chemin par chemin (07/11). Et « the same capital » doit rester
+// la même levée : sinon, le build échoue.
 {
   const fm = FUND.founder_math;
   const inv = fm.holders.filter((h) => h.pref > 0);
@@ -48,14 +49,32 @@ const FUND_SIZE = `€${FUND.fund.commitments / 1e6}M`;
     ...inv.map((h) => ({ id: h.id, stake: h.stake, pref: h.pref })),
     { id: 'pool', stake: others.reduce((s, h) => s + h.stake, 0), pref: 0 },
   ];
+  const plans = {
+    same: [sameCapitalPlan(fm.vc_rounds), 0],
+    half: [halfCapitalPlan(fm.vc_rounds), fm.loans],
+    credit: [creditPlan(fm.vc_rounds), fm.loans],
+  };
+  const run = (plan, loans, exit) => founderPaths({ founders: fm.founders, holders, rounds: fm.vc_rounds, loans,
+    loanMultiple: fm.loan_multiple, plan, exit });
   for (const row of fm.rows) {
-    const p = founderPaths({ founders: fm.founders, holders, rounds: fm.vc_rounds, loans: fm.loans,
-      loanMultiple: fm.loan_multiple, exit: row.exit });
-    const got = [millions(p.vc.founders), millions(p.profund.founders)];
-    if (got[0] !== row.founders_vc || got[1] !== row.founders_profund) {
-      throw new Error(`Calculateur ≠ fund.json à la sortie ${row.exit} : ${got} au lieu de ${[row.founders_vc, row.founders_profund]}`);
+    for (const [id, [plan, loans]] of Object.entries(plans)) {
+      const p = run(plan, loans, row.exit);
+      const got = [millions(p.vc.founders), millions(p.profund.founders)];
+      const want = [row.founders_vc, row[`founders_${id}`]];
+      if (got[0] !== want[0] || got[1] !== want[1]) {
+        throw new Error(`Calculateur ≠ fund.json à la sortie ${row.exit}, chemin ${id} : ${got} au lieu de ${want}`);
+      }
     }
   }
+  for (const [id, [plan, loans]] of Object.entries(plans)) {
+    const p = run(plan, loans, 0).profund;
+    const path = fm.paths.find((x) => x.id === id);
+    if (Math.abs(p.stakeAtExit - path.stake) > 6e-4 || p.equityRaised !== path.equity || p.lent !== path.loans) {
+      throw new Error(`Chemin ${id} : le moteur (${p.stakeAtExit}, ${p.equityRaised}, ${p.lent}) ≠ fund.json`);
+    }
+  }
+  const same = fm.paths.find((x) => x.id === 'same');
+  if (same.capital !== fm.vc_equity) throw new Error('Accueil : « the same capital » ne lève plus la même somme');
 }
 
 // '' = accueil (déjà écrit par Vite, on ne fait que le laisser en place).

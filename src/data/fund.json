@@ -1402,6 +1402,20 @@
       "dpi_year7": 0.7
     },
     {
+      "id": "unicorn_half",
+      "label": "The unicorn also sells \u20ac85M of equity",
+      "net_tvpi": 3.3,
+      "net_irr": 0.29,
+      "dpi_year7": 0.7
+    },
+    {
+      "id": "unicorn_same",
+      "label": "The unicorn also sells \u20ac199M of equity",
+      "net_tvpi": 2.8,
+      "net_irr": 0.26,
+      "dpi_year7": 0.7
+    },
+    {
       "id": "loan_losses",
       "label": "30% more losses on every loan",
       "net_tvpi": 4.4,
@@ -1458,7 +1472,8 @@
         "bridge": true,
         "amount": 5000000,
         "post": 60000000,
-        "pool": 0.0
+        "pool": 0.0,
+        "loan": 3000000
       },
       {
         "id": "B",
@@ -1473,7 +1488,8 @@
         "bridge": true,
         "amount": 24000000,
         "post": 160000000,
-        "pool": 0.0
+        "pool": 0.0,
+        "loan": 7000000
       },
       {
         "id": "C",
@@ -1488,7 +1504,8 @@
         "bridge": true,
         "amount": 30000000,
         "post": 300000000,
-        "pool": 0.0
+        "pool": 0.0,
+        "loan": 15000000
       },
       {
         "id": "D",
@@ -1543,34 +1560,121 @@
         "founders": 0.114
       }
     ],
+    "paths": [
+      {
+        "id": "vc",
+        "label": "VC path",
+        "equity": 224000000,
+        "loans": 0,
+        "capital": 224000000,
+        "stake": 0.114,
+        "stakes": [
+          0.344,
+          0.272,
+          0.231,
+          0.162,
+          0.146,
+          0.114
+        ]
+      },
+      {
+        "id": "same",
+        "label": "The same capital",
+        "equity": 199000000,
+        "loans": 25000000,
+        "capital": 224000000,
+        "stake": 0.132,
+        "stakes": [
+          0.362,
+          0.286,
+          0.255,
+          0.178,
+          0.169,
+          0.132
+        ]
+      },
+      {
+        "id": "half",
+        "label": "Half the capital",
+        "equity": 85000000,
+        "loans": 25000000,
+        "capital": 110000000,
+        "stake": 0.208,
+        "stakes": [
+          0.375,
+          0.297,
+          0.297,
+          0.208,
+          0.208,
+          0.208
+        ]
+      },
+      {
+        "id": "credit",
+        "label": "Credit alone",
+        "equity": 0,
+        "loans": 25000000,
+        "capital": 25000000,
+        "stake": 0.375,
+        "stakes": [
+          0.375,
+          0.375,
+          0.375,
+          0.375,
+          0.375,
+          0.375
+        ]
+      }
+    ],
+    "loan_debt": 30000000.0,
+    "loan_share": {
+      "min": 0.25,
+      "max": 0.3
+    },
     "rows": [
       {
         "exit": 100000000,
         "founders_vc": 0,
-        "founders_profund": 26000000,
         "series_a_vc": 0.4,
-        "series_a_profund": 1.4
+        "founders_same": 0,
+        "series_a_same": 0.3,
+        "founders_half": 0,
+        "series_a_half": 0.7,
+        "founders_credit": 26000000,
+        "series_a_credit": 1.4
       },
       {
         "exit": 250000000,
         "founders_vc": 5000000,
-        "founders_profund": 83000000,
         "series_a_vc": 1.0,
-        "series_a_profund": 4.4
+        "founders_same": 4000000,
+        "series_a_same": 1.0,
+        "founders_half": 43000000,
+        "series_a_half": 2.3,
+        "founders_credit": 83000000,
+        "series_a_credit": 4.4
       },
       {
         "exit": 500000000,
         "founders_vc": 57000000,
-        "founders_profund": 176000000,
         "series_a_vc": 3.0,
-        "series_a_profund": 9.4
+        "founders_same": 62000000,
+        "series_a_same": 3.3,
+        "founders_half": 98000000,
+        "series_a_half": 5.2,
+        "founders_credit": 176000000,
+        "series_a_credit": 9.4
       },
       {
         "exit": 1000000000,
         "founders_vc": 114000000,
-        "founders_profund": 364000000,
         "series_a_vc": 6.1,
-        "series_a_profund": 19.4
+        "founders_same": 128000000,
+        "series_a_same": 6.8,
+        "founders_half": 202000000,
+        "series_a_half": 10.8,
+        "founders_credit": 364000000,
+        "series_a_credit": 19.4
       }
     ]
   },

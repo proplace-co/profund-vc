@@ -586,7 +586,7 @@ def construction_rows():
     holds = [ln["exit_year"] - ln["entry_year"] for ln in g["lines"]]
     spv = eur(FUND["company_max_with_spv"], "tile")
     return [
-        ("Ticket", f"{rng(s['ticket_min'], s['ticket_max'])}, the only equity round, loan line reserved",
+        ("Ticket", f"{rng(s['ticket_min'], s['ticket_max'])}, first cheque, loan line reserved",
          f"{rng(v['ticket_min'], v['ticket_max'])}, first cheque or buyback, loan line reserved",
          f"{rng(g['ticket_min'], FUND['company_cap'])} from the fund, up to {spv} with SPVs"),
         ("Stage", s["stage"], v["stage"], g["stage"]),
@@ -610,7 +610,7 @@ def page_two(F):
     kick(F, M, 84, "Fund construction")
     y = 102 + title(F, M, 102, W, "", 19, lead=1.18, markup=(
         x("Two ways in at every layer: a first equity cheque, or a buyback of existing shares. ")
-        + f'<font color="{BLUE}">{x("Then loans, never new shares.")}</font>'))
+        + f'<font color="{BLUE}">{x("Then credit first, equity when the founder asks.")}</font>'))
     y += 20
 
     # le tableau des trois etages
@@ -664,27 +664,35 @@ def page_two(F):
 
     # tout le monde y gagne (v3) : le texte a gauche, le tableau a 250 M EUR a droite
     t = CASES["target"]
-    row = next(r for r in FOUNDERS["rows"] if r["exit"] == 250_000_000)
+    # 07/11 : a 1 Md EUR, les memes tours sur tous les chemins ; chaque chemin dit ce qu'il leve
+    row = next(r for r in FOUNDERS["rows"] if r["exit"] == 1_000_000_000)
+    same_path = next(p for p in FOUNDERS["paths"] if p["id"] == "same")
+    uni_same = next(s_ for s_ in STRESS if s_["id"] == "unicorn_same")
     lw = 268.0
     kick(F, M, y, "Everyone wins")
     ty = y + 19
     ty += F.para(M, ty, lw, x(
-        "Our stake rises with the founder's: every buyback and cancellation lifts both. We never need the "
-        "founder to dilute or to raise again, and when a unicorn comes, we both still own our full stake."),
+        "Our stake rises with the founder's: every buyback and cancellation lifts both. We never push for a "
+        "new round, and every share a company does not issue protects the founder's stake and ours."),
         10.4, "reg", INK2, 1.52) + 12
-    ty += F.para(M, ty, lw, x("The only one who loses is the VC who would have sold rounds B, C and D."),
+    ty += F.para(M, ty, lw, x("All that disappears is the equity nobody needed to sell."),
                  10.6, "semi", BLUE_DK, 1.42)
     gx = M + lw + 20
     gw = W - lw - 20
     rows = [
-        ["Founders", eur(row["founders_vc"], "tile"), eur(row["founders_profund"], "tile")],
-        ["Series A investor, equity multiple", mult(row["series_a_vc"]), f"{mult(row['series_a_profund'])} (ProFund)"],
+        ["Founders", eur(row["founders_vc"], "tile"),
+         f"{eur(row['founders_same'], 'tile')} on the same capital, {eur(row['founders_half'], 'tile')} on half of it, "
+         f"{eur(row['founders_credit'], 'tile')} on credit alone"],
+        ["Series A investor, equity multiple", mult(row["series_a_vc"]),
+         f"{mult(row['series_a_same'])}, {mult(row['series_a_half'])} and {mult(row['series_a_credit'])} on the same "
+         "paths (ProFund)"],
         ["Angels", "Wait for the exit", "Liquidity at year 2"],
         ["LPs", "A unicorn, diluted round after round",
-         f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target: the same unicorn, "
-         f"{DATA['fund_returner']['stake_at_exit'] * 100:.1f}% owned at exit"],
+         f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target if the unicorn grows on credit, "
+         f"{DATA['fund_returner']['stake_at_exit'] * 100:.1f}% owned at exit; {mult(uni_same['net_tvpi'])} if it also "
+         f"sells {eur(same_path['equity'], 'tile')} of equity"],
     ]
-    gh = grid(F, gx, y - 4, gw, [(1.25, "l"), (0.95, "l"), (1.35, "l")],
+    gh = grid(F, gx, y - 4, gw, [(1.0, "l"), (0.8, "l"), (1.9, "l")],
               [f"At a {eur(row['exit'], 'val')} exit", "VC path", "ProFund path"], rows, size=9.2,
               hsize=7.4, pad_y=7.4, hl=2)
     y = max(ty, y - 4 + gh) + 34
@@ -1009,12 +1017,19 @@ def sim_table(F, u, v, w):
 
 
 def founder_table(F, u, v, w):
-    rows = [[eur(r["exit"], "val"), eur(r["founders_vc"], "tile"), eur(r["founders_profund"], "tile"),
-             mult(r["series_a_vc"]), mult(r["series_a_profund"])] for r in FOUNDERS["rows"]]
-    rows = [[(r[0], "gras", INK), r[1], (r[2], "gras", BLUE_DK), r[3], (r[4], "gras", BLUE_DK)] for r in rows]
-    return grid(F, u, v, w, [(0.7, "l"), (1, "r"), (1.1, "r"), (1.15, "r"), (1, "r")],
-                ["Exit", "Founders, VC path", "Founders, ProFund path", "Series A investor, VC path",
-                 "ProFund, equity"], rows, size=8.8, hsize=6.8, pad_y=3.6)
+    # 07/11 : les quatre chemins, chacun dit ce qu'il leve (la note a cote)
+    ids = [p["id"] for p in FOUNDERS["paths"]]
+    rows = []
+    for r in FOUNDERS["rows"]:
+        cells = [(eur(r["exit"], "val"), "gras", INK)]
+        for key, fmt in (("founders", lambda v: eur(v, "tile")), ("series_a", mult)):
+            for i in ids:
+                val = fmt(r[f"{key}_{i}"])
+                cells.append(val if i == "vc" else (val, "gras", BLUE_DK))
+        rows.append(cells)
+    head = ["Exit", "Founders: VC path", "Same capital", "Half the capital", "Credit alone",
+            "Series A: VC path", "Same capital", "Half the capital", "Credit alone"]
+    return grid(F, u, v, w, [(0.7, "l")] + [(1, "r")] * 8, head, rows, size=8.8, hsize=6.8, pad_y=3.6)
 
 
 def perf_table(F, u, v, w):
@@ -1093,18 +1108,20 @@ def page_four(F):
 
     def after(rid):
         return f"{next(st['founders'] for st in fm['vc_stakes'] if st['round'] == rid) * 100:.1f}%"
-    kick(F, M, 80, "The capital you don't raise is the company you keep")
-    fw = 446.0
+    kick(F, M, 80, "The equity you don't sell is the company you keep")
+    fw = 470.0
+    same = next(p for p in fm["paths"] if p["id"] == "same")
+    half = next(p for p in fm["paths"] if p["id"] == "half")
     fh = founder_table(F, M, 98, fw)
     F.para(M + fw + 16, 98, W - fw - 16, x(
-        f"Typical path, calibrated on Carta medians (not specific to Europe): {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} "
-        f"Series A, founders at {fm['founders'] * 100:.1f}% after the Series A, then {eur(fm['vc_equity'], 'tile')} "
-        f"of equity over Series B to D, each after a bridge, with pool refreshes and 1× non-participating "
-        f"preferences: founders at {after('B')}, {after('C')} and {after('D')} after the B, C and D, Carta's medians. "
-        f"ProFund path: same "
-        f"seed and Series A, then {eur(fm['loans'], 'tile')} of loans; the pool is refilled with bought-back "
-        "shares. Illustrative, not a forecast. Sources: Carta, Founder Ownership Report 2026; Series D, Carta "
-        "data reported by SaaStr."),
+        f"VC path, on Carta medians (not specific to Europe): {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} Series A, "
+        f"founders at {fm['founders'] * 100:.1f}%, then {eur(fm['vc_equity'], 'tile')} of equity with bridges and pool "
+        f"refreshes: {after('B')}, {after('C')} and {after('D')} after the B, C and D. With us, same valuations and "
+        f"{eur(fm['loans'], 'tile')} of loans, at {pct(fm['loan_share']['min'])} to {pct(fm['loan_share']['max'])} of the "
+        f"last round (usual range: 20% to 40%), subject to partner lenders. Same capital: {eur(same['equity'], 'tile')} of "
+        f"equity, founders at {same['stake'] * 100:.1f}%. Half: {eur(half['equity'], 'tile')} of equity, "
+        f"{half['stake'] * 100:.1f}%. Credit alone: no further round, {fm['founders'] * 100:.1f}%. Illustrative. Sources: "
+        "Carta; SaaStr; First Citizens."),
         7.6, "reg", MUTED, 1.38)
     y = 98 + fh + 12
 
@@ -1114,7 +1131,7 @@ def page_four(F):
     y += 37
     y += F.para(M, y, W, x(
         "Target case, every position of the three layers. Ownership at exit is higher than at entry on every "
-        "line where the founder grows with us: buybacks and cancellations lift our stake with his."),
+        "line where the founder grows with us: buybacks and cancellations lift our stake with theirs."),
         8.6, "reg", MUTED, 1.4) + 7
     y += sim_table(F, M, y, W) + 5
     sec = SECONDARY

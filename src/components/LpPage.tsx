@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { CONTACT } from './LeadForm';
 import { HeroVisual, Icon, type IconName } from './Thesis';
-import { EnginesForLps, EnginesRunning, Numbers, Say, TheTeam } from './Founders';
+import { EnginesForLps, EnginesRunning, Numbers, Say, TheTeam, pathMoney } from './Founders';
 import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
 import { Fold } from './Drawer';
 import { savedAccess } from '../lib/access';
-import { eur, eurRange, fund, mult, pct } from '../lib/fund';
+import { eur, eurRange, fund, mult, pct, type FounderPath } from '../lib/fund';
 import { FACTSHEET_URL } from '../lib/links';
 
 // /lp — LA PAGE DES LPs. 06/11 (6) : plus de plan numéroté, un seul raisonnement qu'on suit
@@ -31,6 +31,7 @@ const A = fund.allocation;
 const TARGET = C.target;
 const FR = fund.fund_returner;
 const NO_UNI = fund.stress_tests.find((s) => s.id === 'best_zombie')!;
+const UNI_SAME = fund.stress_tests.find((s) => s.id === 'unicorn_same')!;
 const BIG_UNICORN = fund.stress_tests.find((s) => s.id === 'big_unicorn')!;
 const FUND_SIZE = eur(F.commitments, 'tile');
 const PHONE = '+33 6 83 10 72 86';           // le même que la fiche PDF (factsheet.py, PHONE)
@@ -49,6 +50,7 @@ const SRC = {
   deliveroo: { n: 6, label: 'Deliveroo plc, IPO prospectus, 22 March 2021: Will Shu’s stake, capital raised', url: DELIVEROO_PROSPECTUS },
   atomico25: { n: 7, label: 'Atomico, State of European Tech 2025: $1B+ exits, share of deals and of value', url: 'https://2025.stateofeuropeantech.com/chapters/unlocking-capital-and-liquidity' },
   atomico23: { n: 8, label: 'Atomico, State of European Tech 2023: 77% of M&A deals under $100M', url: 'https://2023.stateofeuropeantech.com/exits' },
+  debt: { n: 9, label: 'First Citizens (formerly SVB), 22 September 2023: venture debt is typically sized at 20-40% of the last equity round', url: 'https://innovation.firstcitizens.com/business-growth/access-to-capital/right-amount-of-venture-debt' },
 } satisfies Record<string, Src>;
 const SOURCES: Src[] = Object.values(SRC).sort((a, b) => a.n - b.n);
 
@@ -141,11 +143,12 @@ const MEDIANS: { v: number; l: string; s: string; r: Src }[] = [
   { v: MEDIAN_D, l: 'After the Series D', s: 'Carta data, as reported by SaaStr', r: SRC.saastr },
 ];
 
-// Ce que nos termes changent : une multiplication, de vrais prix, une hypothèse dite en clair.
-const DEBT = FM.loans * FM.loan_multiple;
+// Ce que nos termes changent : une multiplication, de vrais prix, les hypothèses dites en clair.
+// 07/11 : les quatre chemins, chacun dit ce qu'il vend et emprunte. Le chemin « the same capital »
+// lève autant que le chemin usuel ; les deux autres lèvent moins, et le disent.
+const DEBT = FM.loan_debt;
 const A_COST = FM.holders.find((h) => h.id === 'series_a')!.pref;
 const A_STAKE0 = FM.holders.find((h) => h.id === 'series_a')!.stake;
-const A_STAKE_VC = A_STAKE0 * (MEDIAN_D / MEDIAN_A); // un chèque non renforcé, dilué comme les fondateurs
 const PRICES: { exit: number; e: Exit }[] = [
   { exit: 500e6, e: EXITS.instadeep },
   { exit: 1800e6, e: EXITS.tink },
@@ -160,38 +163,25 @@ function amt(v: number) {
   if (v <= 0) return '€0';
   return `€${(v / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
 }
-type Line = { l: string; v: string; k?: 'minus' | 'sub' };
-type Side = { name: string; lines: Line[]; label: string; result: string; edge?: string };
-const afterLoans = (exit: number): Line[] => [
-  { l: 'Sale price', v: amt(exit) },
-  { l: 'Loans and interest, repaid first', v: `−${amt(DEBT)}`, k: 'minus' },
-  { l: 'Left', v: amt(exit - DEBT), k: 'sub' },
-];
+const pathName = (p: FounderPath) => (p.id === 'vc' ? 'The usual path' : `With us, ${p.label.charAt(0).toLowerCase()}${p.label.slice(1)}`);
+const afterLoans = (p: FounderPath, exit: number) => (p.loans > 0 ? exit - DEBT : exit);
+type PathCell = { result: string; formula: string; edge?: string };
 
-function founderSides(exit: number): [Side, Side] {
-  const vc = MEDIAN_D * exit;
-  const pf = MEDIAN_A * (exit - DEBT);
-  return [
-    { name: 'Median founding team, after a Series D',
-      lines: [{ l: 'Sale price', v: amt(exit) }, { l: 'Founders’ stake', v: pct(MEDIAN_D, 1) }],
-      label: 'Founders take home', result: amt(vc) },
-    { name: 'ProFund path, our hypothesis',
-      lines: [...afterLoans(exit), { l: 'Founders’ stake, not diluted', v: pct(MEDIAN_A, 1) }],
-      label: 'Founders take home', result: amt(pf), edge: `${(pf / vc).toFixed(1)}× the median` },
-  ];
+/** Ce que touchent les fondateurs : la part × ce qui reste une fois les prêts remboursés. */
+function founderCell(p: FounderPath, exit: number): PathCell {
+  const left = afterLoans(p, exit);
+  const v = p.stake * left;
+  const usual = FM.paths[0].stake * exit;
+  return { result: amt(v), formula: `${pct(p.stake, 1)} × ${amt(left)}`,
+    edge: p.id === 'vc' ? undefined : `${(v / usual).toFixed(1)}× the usual path` };
 }
 
-function lpSides(exit: number): [Side, Side] {
-  const vc = A_STAKE_VC * exit;
-  const pf = A_STAKE0 * (exit - DEBT);
-  return [
-    { name: 'A cheque that is not topped up',
-      lines: [{ l: 'Sale price', v: amt(exit) }, { l: `Stake: ${pct(A_STAKE0)}, diluted like the founders’`, v: pct(A_STAKE_VC, 2) }],
-      label: `On a ${amt(A_COST)} cheque`, result: `${amt(vc)} · ${x1(vc / A_COST)}` },
-    { name: 'ProFund path, our hypothesis',
-      lines: [...afterLoans(exit), { l: 'Stake, not diluted', v: pct(A_STAKE0) }],
-      label: `On a ${amt(A_COST)} cheque`, result: `${amt(pf)} · ${x1(pf / A_COST)}`, edge: `${(pf / vc).toFixed(1)}× the cheque on the left` },
-  ];
+/** Ce que rend un chèque de Series A non renforcé : sa part baisse comme celle des fondateurs. */
+function chequeCell(p: FounderPath, exit: number): PathCell {
+  const left = afterLoans(p, exit);
+  const stake = A_STAKE0 * (p.stake / MEDIAN_A);
+  const v = stake * left;
+  return { result: amt(v), formula: `${p.id === 'credit' ? pct(stake) : pct(stake, 2)} × ${amt(left)}`, edge: `${x1(v / A_COST)} the cheque` };
 }
 
 // ── Ce qu'on rend, ce qu'on garde : chaque ligne reste une clause du pacte (Pact.tsx) ──
@@ -217,38 +207,34 @@ function Stats({ items }: { items: { b: string; t: ReactNode }[] }) {
   );
 }
 
-function SideCard({ s }: { s: Side }) {
+/** Une ligne par prix de vente réel, une colonne par chemin : le résultat et son calcul, toujours visibles. */
+function PathTable({ cell }: { cell: (p: FounderPath, exit: number) => PathCell }) {
   return (
-    <div className={`lp-led-side${s.edge ? ' pf' : ''}`}>
-      <p className="lp-led-name">{s.name}</p>
-      <dl>
-        {s.lines.map((x) => (
-          <div key={x.l} className={x.k ?? undefined}><dt>{x.l}</dt><dd>{x.v}</dd></div>
-        ))}
-      </dl>
-      <p className="lp-led-res"><span>{s.label}</span><b>{s.result}</b></p>
-      {s.edge && <p className="lp-led-edge">{s.edge}</p>}
-    </div>
-  );
-}
-
-/** Une ligne par prix de vente réel : le décompte des deux chemins, côte à côte, toujours visible. */
-function Ledgers({ sides }: { sides: (exit: number) => [Side, Side] }) {
-  return (
-    <div className="lp-led">
-      {PRICES.map((r) => {
-        const [vc, pf] = sides(r.exit);
-        return (
-          <article key={r.exit} className={`lp-led-row${r.exit >= UNICORN ? ' uni' : ''}`}>
-            <header>
-              <b>Sold for {eur(r.exit, 'val')}</b>
-              {r.exit >= UNICORN && <em>Unicorn</em>}
-              <span>The price of <ExitLink e={r.e} /> ({r.e.d.split(' · ')[1]}, {r.e.v})</span>
-            </header>
-            <div className="lp-led-grid"><SideCard s={vc} /><SideCard s={pf} /></div>
-          </article>
-        );
-      })}
+    <div className="lp-pt" role="table">
+      <div className="lp-pt-head" role="row">
+        <span role="columnheader">Sold for</span>
+        {FM.paths.map((p) => <span key={p.id} className={p.id} role="columnheader"><b>{pathName(p)}</b><small>{pathMoney(p)}</small></span>)}
+      </div>
+      {PRICES.map((r) => (
+        <div key={r.exit} className={`lp-pt-row${r.exit >= UNICORN ? ' uni' : ''}`} role="row">
+          <span className="lp-pt-price" role="rowheader">
+            <b>{eur(r.exit, 'val')}</b>
+            {r.exit >= UNICORN && <em>Unicorn</em>}
+            <small>The price of <ExitLink e={r.e} /> ({r.e.d.split(' · ')[1]}, {r.e.v})</small>
+          </span>
+          {FM.paths.map((p) => {
+            const c = cell(p, r.exit);
+            return (
+              <span key={p.id} className={`lp-pt-c ${p.id}`} role="cell">
+                <small className="l">{pathName(p)}</small>
+                <b>{c.result}</b>
+                <i>{c.formula}</i>
+                {c.edge && <em>{c.edge}</em>}
+              </span>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }
@@ -380,14 +366,14 @@ function LpContent() {
       </Say>
 
       <Say id="returns" title="What is right for them is what pays you."
-        lead={<p className="pv-say-p">When a company grows on credit instead of rounds, nobody is diluted: not the founders, not us. So when one of these teams becomes a unicorn, we still hold our full stake. One company can carry the fund. And if no unicorn comes, what we kept still works for you.</p>}>
+        lead={<p className="pv-say-p">Every share a company does not issue protects the founders’ stake, and ours. The less equity a team needs, the more we both hold when it becomes a unicorn. One company can carry the fund. And if no unicorn comes, what we kept still works for you.</p>}>
         <Numbers four items={[
           { b: mult(TARGET.net_tvpi), t: 'Target net TVPI' },
           { b: pct(TARGET.net_irr), t: 'Target net IRR' },
           { b: mult(FR.multiple_of_fund), t: `The fund, returned by our best company alone, at ${pct(FR.stake_at_exit, 1)} at exit` },
           { b: mult(NO_UNI.net_tvpi), t: 'Net TVPI if no unicorn comes' },
         ]} />
-        <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}. No company has followed this path yet.</p>
+        <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Base case {mult(C.base.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}. The target assumes our best company grows on credit; if it also sold {eur(FM.paths[1].equity, 'tile')} of equity along the way: {mult(UNI_SAME.net_tvpi)}. No company has followed this path yet.</p>
       </Say>
 
       <Say id="engines" tone="night" title="We run on what we back."
@@ -439,14 +425,14 @@ function LpContent() {
 
           <Fold id="room-math" title="What our terms change, at real sale prices" sub="A plain multiplication, for the founders and for a Series A cheque">
             <div className="lp-co">
-              <p className="lp-co-h"><b>Real: the sale prices and the medians. Our hypothesis: the right-hand column.</b> No company has followed this path yet. It assumes an AI-native company can grow on {amt(FM.loans)} of loans ({amt(DEBT)} to repay with interest) where the usual path sells far more equity. The founders then keep the {pct(MEDIAN_A, 1)} they hold after the Series A.</p>
-              <p className="lp-co-def">The prices are those paid for the companies named, not what happened to their founders or investors: we do not know their cap tables. We assume every investor converts into shares at these prices. A company that needs no further capital keeps more by taking neither path.</p>
+              <p className="lp-co-h"><b>Real: the sale prices and Carta’s medians. Our hypothesis: the three paths with us.</b> No company has followed them yet, and the valuations are the same on every path. Credit replaces what it can: {amt(FM.loans)} of loans, at {pct(FM.loan_share.min)} to {pct(FM.loan_share.max)} of the last round, within the usual 20% to 40% for venture debt<Ref s={SRC.debt} />, subject to our partner lenders. With interest, {amt(DEBT)} is repaid before any equity: a {amt(PRICES[0].exit)} sale leaves {amt(PRICES[0].exit - DEBT)}.</p>
+              <p className="lp-co-def">The prices are those paid for the companies named, not what happened to their founders or investors: we do not know their cap tables. We assume every investor converts into shares at these prices.</p>
             </div>
             <h3 className="pv-h3 lp-t lp-t0">For the founders</h3>
-            <Ledgers sides={founderSides} />
+            <PathTable cell={founderCell} />
             <h3 className="pv-h3 lp-t">For a {amt(A_COST)} Series A cheque</h3>
-            <p className="lp-read lp-fold-lead">Our hypothesis: {amt(A_COST)} for {pct(A_STAKE0)}. Left, the cheque is not topped up and shrinks like the founders’ stake: {pct(A_STAKE0)} × {(MEDIAN_D * 100).toFixed(1)} ÷ {(MEDIAN_A * 100).toFixed(1)} = {pct(A_STAKE_VC, 2)}. Funds that follow on keep more, and pay for it at every round. Right, no further equity round: it stays at {pct(A_STAKE0)}, behind {amt(DEBT)} of loans and interest repaid first. The returns on the loans themselves are left out.</p>
-            <Ledgers sides={lpSides} />
+            <p className="lp-read lp-fold-lead">Our hypothesis: {amt(A_COST)} for {pct(A_STAKE0)}. The cheque is not topped up, so it shrinks with the founders’ stake: on the same capital, {pct(A_STAKE0)} × {(FM.paths[1].stake * 100).toFixed(1)} ÷ {(MEDIAN_A * 100).toFixed(1)} = {pct(A_STAKE0 * (FM.paths[1].stake / MEDIAN_A), 2)}. Funds that follow on keep more, and pay for it at every round. The returns on the loans themselves are left out.</p>
+            <PathTable cell={chequeCell} />
           </Fold>
 
           <Fold id="room-exits" title="Europe’s exits follow a power law" sub="Atomico’s data, and 15 real exits at every size">

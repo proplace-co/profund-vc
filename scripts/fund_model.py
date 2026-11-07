@@ -318,31 +318,50 @@ FOUNDER_MATH = {
     # 11,4 %). 224 M EUR de fonds propres apres la Serie A. Preferences 1x non participantes,
     # pari passu. `bridge` : levee intermediaire (absente du graphique, presente au
     # calculateur).
+    # `loan` (07/11) : la part de la levee intermediaire que le credit peut porter (voir plus bas).
     "vc_rounds": [
-        {"id": "A2", "label": "Bridge to B", "bridge": True, "amount": 5 * M, "post": 60 * M, "pool": 0.0},
+        {"id": "A2", "label": "Bridge to B", "bridge": True, "amount": 5 * M, "post": 60 * M, "pool": 0.0, "loan": 3 * M},
         {"id": "B", "label": "Series B", "amount": 25 * M, "post": 150 * M, "pool": 0.05},
-        {"id": "B2", "label": "Bridge to C", "bridge": True, "amount": 24 * M, "post": 160 * M, "pool": 0.0},
+        {"id": "B2", "label": "Bridge to C", "bridge": True, "amount": 24 * M, "post": 160 * M, "pool": 0.0, "loan": 7 * M},
         {"id": "C", "label": "Series C", "amount": 60 * M, "post": 260 * M, "pool": 0.09},
-        {"id": "C2", "label": "Bridge to D", "bridge": True, "amount": 30 * M, "post": 300 * M, "pool": 0.0},
+        {"id": "C2", "label": "Bridge to D", "bridge": True, "amount": 30 * M, "post": 300 * M, "pool": 0.0, "loan": 15 * M},
         {"id": "D", "label": "Series D", "amount": 80 * M, "post": 450 * M, "pool": 0.05},
     ],
-    # Chemin ProFund : le pool se recharge avec des titres rachetes (pacte, clause 4),
-    # sans action nouvelle.
-    # Chemin ProFund : aucune action nouvelle ; 25 M EUR de prets au meme taux que
-    # le fonds (LOAN_RATE), tires par tranches et rembourses en ~1,6 an en moyenne
-    # (les prets du modele durent 1 a 3 ans) : 1,12^1,6 = 1,2x, deduits a la sortie
-    # avant les fonds propres.
+    # Les chemins ProFund (07/11, Alexandre : 59 M EUR de prets, ce n'est pas tenable). 25 M EUR de
+    # prets au plus, avec les preteurs partenaires, tires en 3 + 7 + 15 M EUR : 30 %, 28 % et 25 % du
+    # dernier tour, 6 %, 4,7 % et 5,8 % de la derniere valorisation. Le marche : 20 a 40 % du dernier
+    # tour, 6 a 8 % de la derniere valorisation (First Citizens, ex-SVB, 22/09/2023). Au meme taux
+    # que le fonds (LOAN_RATE), rembourses en ~1,6 an en moyenne (les prets du modele durent 1 a 3
+    # ans) : 1,12^1,6 = 1,2x, deduits a la sortie avant les fonds propres.
+    #   same   : le meme capital, aux memes valorisations (meme pre-money) : les prets remplacent une
+    #            part des levees intermediaires, le reste en equity.
+    #   half   : la moitie du capital : ni levees intermediaires ni Serie D, les prets en plus.
+    #   credit : le credit seul, aucun tour, pas de recharge du pool (une equipe restreinte vit sur
+    #            les 16,5 % du pool).
+    # Le pool se recharge en ACTIONS NOUVELLES a chaque tour, comme sur le chemin VC : racheter ces
+    # titres (pacte, clause 5) couterait 53 M EUR de plus, ni les prets ni le fonds ne les portent.
+    # Le calculateur le laisse en option, avec son cout.
     "loans": 25 * M,
     "loan_life": 1.6,
 }
 FOUNDER_MATH["loan_rate"] = LOAN_RATE
 FOUNDER_MATH["loan_multiple"] = loan_price(0, FOUNDER_MATH["loan_life"])
-# v3.15 (06/11) : le chemin VC recale sur Carta (ci-dessus) ; le chemin ProFund ne bouge pas.
+# 07/11 : le tableau compare les memes montants leves, plus 224 M EUR d'equity a 25 M EUR de prets.
+FOUNDER_PATHS = (
+    ("vc", "VC path"),
+    ("same", "The same capital"),
+    ("half", "Half the capital"),
+    ("credit", "Credit alone"),
+)
 PUBLISHED_FOUNDER_MATH = {
     "founders_vc": [0, 5 * M, 57 * M, 114 * M],
-    "founders_profund": [26 * M, 83 * M, 176 * M, 364 * M],
+    "founders_same": [0, 4 * M, 62 * M, 128 * M],
+    "founders_half": [0, 43 * M, 98 * M, 202 * M],
+    "founders_credit": [26 * M, 83 * M, 176 * M, 364 * M],
     "series_a_vc": [0.4, 1.0, 3.0, 6.1],
-    "series_a_profund": [1.4, 4.4, 9.4, 19.4],
+    "series_a_same": [0.3, 1.0, 3.3, 6.8],
+    "series_a_half": [0.7, 2.3, 5.2, 10.8],
+    "series_a_credit": [1.4, 4.4, 9.4, 19.4],
 }
 
 # La v2 (commit 2f3b590, scripts/fund_model.py) avec les memes sorties que la v3,
@@ -661,11 +680,26 @@ def _unicorn(lines, value=1000 * M, company="S-01"):
     return tuple(replace(x, exit_value=value) if x.company == company else x for x in lines)
 
 
+def _dilute(lines, keep, company="S-01"):
+    """La societe vend de l'equity : chaque ligne ne garde que `keep` de sa part de sortie."""
+    return tuple(replace(x, dilution=ratio(1 - (1 - x.dilution) * keep, 4)) if x.company == company else x
+                 for x in lines)
+
+
 def stress_tests() -> list[dict]:
     target = CASES[0]
+    # 07/11 : la cible suppose que la licorne grandit sur le credit. Si elle vend aussi de
+    # l'equity, comme sur les chemins du tableau des fondateurs : voici ce qu'il reste au fonds.
+    fm = founder_math()
+    path = {p["id"]: p for p in fm["paths"]}
+    equity = lambda k: f"\u20ac{path[k]['equity'] / M:.0f}M"
     rows = [
         ("exits_plus_1", "Every exit one year later", _shift(LINES, 1), target),
         ("best_zombie", "No unicorn: S-01 (both lines) becomes a zombie", _zombie_best(LINES), target),
+        ("unicorn_half", f"The unicorn also sells {equity('half')} of equity",
+         _dilute(LINES, path["half"]["stake"] / fm["founders"]), target),
+        ("unicorn_same", f"The unicorn also sells {equity('same')} of equity",
+         _dilute(LINES, path["same"]["stake"] / fm["founders"]), target),
         ("loan_losses", "30% more losses on every loan", LINES,
          replace(target, loan_repaid=ratio(target.loan_repaid - 0.30, 2))),
         ("two_unicorns", "Two unicorns: V-01 also sold for €1B", _unicorn(LINES, 1000 * M, "V-01"), target),
@@ -711,41 +745,75 @@ def _payout(value: float, holders: list[dict]) -> dict:
     raise SystemExit("ERREUR : tableau fondateurs, pas d'equilibre de conversion")
 
 
+def _founder_cap_table(fm: dict, plan: list) -> tuple[list[dict], list[float]]:
+    """Une cap table apres les tours. `plan`, par tour : None (pas de tour) ou la part en prets.
+    La part en prets reduit le tour au meme pre-money : equity / (post - pret). MEME CALCUL que
+    founderPaths() dans src/lib/founderMath.js (scripts/prerender.mjs verifie l'egalite)."""
+    hs = [{"id": "founders", "stake": fm["founders"], "pref": 0}] + [dict(h) for h in fm["holders"]]
+    stakes = []
+    for r, loan in zip(fm["vc_rounds"], plan):
+        if loan is not None:
+            pool = r.get("pool", 0.0)      # recharge du pool, avant l'argent frais
+            for h in hs:
+                h["stake"] *= 1 - pool
+            next(h for h in hs if h["id"] == "pool")["stake"] += pool
+            equity = r["amount"] - loan
+            k = equity / (r["post"] - loan)
+            for h in hs:
+                h["stake"] *= 1 - k
+            hs.append({"id": r["id"], "stake": k, "pref": equity})
+        stakes.append(hs[0]["stake"])
+    return hs, stakes
+
+
 def founder_math() -> dict:
     fm = FOUNDER_MATH
-    base = [{"id": "founders", "stake": fm["founders"], "pref": 0}] + [dict(h) for h in fm["holders"]]
-    vc = [dict(h) for h in base]
-    stakes = []
-    for r in fm["vc_rounds"]:
-        pool = r.get("pool", 0.0)          # recharge du pool, avant l'argent frais
-        for h in vc:
-            h["stake"] *= 1 - pool
-        next(h for h in vc if h["id"] == "pool")["stake"] += pool
-        k = r["amount"] / r["post"]
-        for h in vc:
-            h["stake"] *= 1 - k
-        vc.append({"id": r["id"], "stake": k, "pref": r["amount"]})
-        stakes.append({"round": r["id"], "label": r.get("label", f"Series {r['id']}"),
-                       "bridge": bool(r.get("bridge")), "founders": ratio(vc[0]["stake"], 3)})
-    debt = fm["loans"] * fm["loan_multiple"]
+    rounds = fm["vc_rounds"]
+    last_priced = max(i for i, r in enumerate(rounds) if not r.get("bridge"))
+    plans = {
+        "vc": ([0] * len(rounds), 0),
+        "same": ([r.get("loan", 0) for r in rounds], 0),
+        "half": ([None if r.get("bridge") or i == last_priced else 0 for i, r in enumerate(rounds)], fm["loans"]),
+        "credit": ([None] * len(rounds), fm["loans"]),
+    }
     a_cost = next(h["pref"] for h in fm["holders"] if h["id"] == "series_a")
+    tables, paths = {}, []
+    for key, label in FOUNDER_PATHS:
+        plan, extra = plans[key]
+        hs, stakes = _founder_cap_table(fm, plan)
+        lent = extra + sum(x for x in plan if x)
+        equity = sum(r["amount"] - x for r, x in zip(rounds, plan) if x is not None)
+        tables[key] = (hs, lent)
+        paths.append({"id": key, "label": label, "equity": equity, "loans": lent, "capital": equity + lent,
+                      "stake": ratio(stakes[-1], 3), "stakes": [ratio(x, 3) for x in stakes]})
     rows = []
     for v in fm["exits"]:
-        p_vc = _payout(v, vc)
-        p_pf = _payout(max(0.0, v - debt), base)
-        rows.append({
-            "exit": v,
-            "founders_vc": millions(p_vc["founders"]),
-            "founders_profund": millions(p_pf["founders"]),
-            "series_a_vc": ratio(p_vc["series_a"] / a_cost, 1),
-            "series_a_profund": ratio(p_pf["series_a"] / a_cost, 1),
-        })
+        row = {"exit": v}
+        for key, _label in FOUNDER_PATHS:
+            hs, lent = tables[key]
+            out = _payout(max(0.0, v - lent * fm["loan_multiple"]), hs)
+            row[f"founders_{key}"] = millions(out["founders"])
+            row[f"series_a_{key}"] = ratio(out["series_a"] / a_cost, 1)
+        rows.append(row)
+    # la part du dernier tour que chaque tranche de pret represente (dite sur le site et la fiche)
+    prev = a_cost
+    shares = []
+    for r in rounds:
+        if r.get("loan"):
+            shares.append(r["loan"] / prev)
+        if not r.get("bridge"):
+            prev = r["amount"]
+    vc_hs = tables["vc"][0]
     return {
         **{k: v for k, v in fm.items()},
-        "vc_equity": sum(r["amount"] for r in fm["vc_rounds"]),
+        "vc_equity": sum(r["amount"] for r in rounds),
         "raised_before": sum(h["pref"] for h in fm["holders"]),
-        "founders_after_vc": ratio(vc[0]["stake"], 3),
-        "vc_stakes": stakes,
+        "founders_after_vc": ratio(vc_hs[0]["stake"], 3),
+        "vc_stakes": [{"round": r["id"], "label": r.get("label", f"Series {r['id']}"), "bridge": bool(r.get("bridge")),
+                       "founders": x} for r, x in zip(rounds, paths[0]["stakes"])],
+        "paths": paths,
+        "loan_debt": fm["loans"] * fm["loan_multiple"],
+        "loan_share": {"min": ratio(min(shares), 2), "max": ratio(max(shares), 2)},
         "rows": rows,
     }
 
@@ -795,6 +863,21 @@ def validate(data: dict) -> Checks:
     for name, case in data["cases"].items():
         c.need(case["paid_in"] <= commitments, f"{name} : appele {case['paid_in']} > engagements")
     c.need(alloc["loans"] <= FUND["loan_cap_pct"] * commitments, "prets au-dela du plafond EuVECA")
+    # 07/11 : les prets du tableau des fondateurs restent dans la taille de marche, la meme levee
+    # reste la meme levee, et la moitie du capital reste la moitie.
+    _fm = founder_math()
+    _path = {x["id"]: x for x in _fm["paths"]}
+    c.need(sum(r.get("loan", 0) for r in _fm["vc_rounds"]) == _fm["loans"], "fondateurs : tranches de prets != loans")
+    c.need(_path["same"]["capital"] == _path["vc"]["capital"], "fondateurs : le meme capital ne leve plus la meme somme")
+    c.need(_path["half"]["capital"] <= _path["vc"]["capital"] / 2, "fondateurs : la moitie du capital depasse la moitie")
+    _prev_amount = next(h["pref"] for h in _fm["holders"] if h["id"] == "series_a")
+    _prev_post = _prev_amount / next(h["stake"] for h in _fm["holders"] if h["id"] == "series_a")
+    for _r in _fm["vc_rounds"]:
+        if _r.get("loan"):
+            c.need(0.20 <= _r["loan"] / _prev_amount <= 0.40, f"fondateurs : pret {_r['id']} hors de 20-40 % du dernier tour")
+            c.need(_r["loan"] / _prev_post <= 0.08, f"fondateurs : pret {_r['id']} au-dessus de 8 % de la valorisation")
+        if not _r.get("bridge"):
+            _prev_amount, _prev_post = _r["amount"], _r["post"]
     for x in LINES:
         b = BOUNDS[x.layer]
         first_ticket = (x.first or x.buyback) / x.n
@@ -1078,8 +1161,9 @@ def summary(data: dict) -> str:
     for s in data["stress_tests"]:
         out.append(f"    stress {s['id']:13s} {s['net_tvpi']:.1f}x {s['net_irr']:.0%}")
     for r in data["founder_math"]["rows"]:
-        out.append(f"    founders @ {r['exit'] / M:4.0f}M: VC {r['founders_vc'] / M:5.1f}  ProFund "
-                   f"{r['founders_profund'] / M:5.1f}  Series A {r['series_a_vc']}x vs {r['series_a_profund']}x")
+        out.append(f"    founders @ {r['exit'] / M:4.0f}M: VC {r['founders_vc'] / M:5.1f}  same {r['founders_same'] / M:5.1f}  "
+                   f"half {r['founders_half'] / M:5.1f}  credit {r['founders_credit'] / M:5.1f}  "
+                   f"Series A {r['series_a_vc']}x {r['series_a_same']}x {r['series_a_half']}x {r['series_a_credit']}x")
     fr = data["fund_returner"]
     out.append(f"  fund returner {fr['company']} -> {fr['proceeds'] / M:.1f} ({fr['multiple_of_fund']}x the fund);"
                f" SPV top-ups (outside the fund): EUR {data['spv_total'] / M:.1f}M")
