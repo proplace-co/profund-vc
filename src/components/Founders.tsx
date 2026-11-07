@@ -72,23 +72,18 @@ export function Numbers({ items, four = false }: { items: { b: string; t: ReactN
 // ── Les règles : ce que le VC prenait, ce que le pacte rend ──────────────────
 // Chaque ligne nouvelle est une clause du pacte (/terms) : ne rien promettre de plus.
 const RULES: { old: string; now: string }[] = [
-  // 06/11 (Antoine) : plus de « One round. Then never again. », ni de comparaison aux
-  // autres fonds : on propose tout, la table retournée.
-  { old: 'Big cheques, on their terms', now: 'Big cheques. Your terms.' },
-  { old: 'A slice of your company at every round', now: 'You dilute only when you choose.' },
+  // 07/11 (Alexandre) : plus de truismes (« You dilute only when you choose », « Your exit, on your
+  // timing ») ni de « Big cheques » face aux géants : le contrôle, ce que le pacte change vraiment.
   { old: 'Their seats, their votes, their veto', now: 'One seat. Our shares vote with you.' },
-  // (v3.10 : la ligne « No new preference on top of you » est retirée : l'equity
-  // complémentaire, au choix du fondateur, porte une préférence 1×.)
-  // v3.19 : plus de « No veto. Ever. » : une vente qui ne rend pas notre mise demande notre accord (clause 10).
-  { old: 'Their exit, on their timing', now: 'Your exit, on your timing.' },
+  { old: 'Their consent on your budget, your hires, your next round', now: 'No veto on how you run, raise or sell.' },
   // ProFund rachète : ce sont nos titres qui montent ; les votes passent du côté du fondateur.
   { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Their votes move to your side.' },
 ];
 
 /** Les règles. `hero` : en ouverture de l'accueil (titre h1, bouton) ; sinon une section.
  *  `onPact` : le pacte se déplie sous les règles ; `onRun` : le bouton ouvre le calculateur. */
-export function TheRules({ hero = false, pactOpen = false, onPact, onRun }: {
-  hero?: boolean; pactOpen?: boolean; onPact?: () => void; onRun?: () => void;
+export function TheRules({ hero = false, pactOpen = false, onPact }: {
+  hero?: boolean; pactOpen?: boolean; onPact?: () => void;
 }) {
   const [ref, seen] = useInView<HTMLDivElement>();
   const H = hero ? 'h1' : 'h2';
@@ -102,15 +97,9 @@ export function TheRules({ hero = false, pactOpen = false, onPact, onRun }: {
             <span>Venture capital for the AI era</span>
           </div>
         )}
-        {!hero && <p className="pv-kick">The rules</p>}
         <H className="pv-rules-h">Control was always yours.</H>
-        {hero && (
-          <div className="pv-ctas">
-            {onRun
-              ? <button type="button" className="pv-btn light" onClick={onRun}>Run your numbers <Icon name="arrow" /></button>
-              : <Link to="/calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>}
-          </div>
-        )}
+        {/* 07/11 : le positionnement en une ligne (Alexandre : « parfait ») */}
+        <p className="pv-rules-lead">The terms the best founders negotiate. <b>From your first cheque.</b></p>
         <ol className="pv-rules-list">
           {RULES.map((r, i) => (
             <li key={r.old} className="pv-rule" style={{ ['--d' as string]: `${0.15 + i * 0.18}s` }}>
@@ -145,81 +134,282 @@ export function TheRules({ hero = false, pactOpen = false, onPact, onRun }: {
 // Une phrase pour lui dire qu'il est attendu, sans adjectif sur nous.
 // 06/11 (9) : la vision (Antoine : « ça fait un peu vide ») : la même que la thèse (Thesis.tsx,
 // quatre lois), dite au fondateur, sans le fonds ni son multiple.
-const BACK: { t: string; d: string }[] = [
-  { t: 'Visionary founders.', d: 'Obsessive from day one. You iterate directly with AI until the machine mirrors your ambition.' },
-  { t: 'Self-improving systems.', d: 'Closed loops that compound in intelligence, precision and autonomy with every run.' },
-  { t: 'Maximum impact, minimum headcount.', d: 'Massive, painful problems in the world’s largest markets, with near-zero marginal labor.' },
-  { t: 'Category leaders.', d: 'Companies built to dominate their category, globally.' },
-];
+// 07/11 (3) : une idée, une image. Un organigramme de deux cent cinquante personnes implose et ne
+// laisse que trois fondateurs, entourés de leurs machines : « AI has collapsed what it takes to
+// build », à la lettre. Le visiteur peut rejouer (Before / Now). Puis une ligne, et ce que nous
+// soutenons en quatre mots. Pas de répétition avec le capital et les chiffres plus bas.
 
+/** L'organigramme : un dirigeant, quatre directions, douze équipes, puis les rangs. Trois points
+ *  deviennent les fondateurs ; tous les autres convergent vers le centre et disparaissent. */
+const ORG = (() => {
+  const C = { x: 500, y: 200 };
+  const dots: { x: number; y: number; r: number; tx: number; ty: number; d: number; s: number; f: boolean }[] = [];
+  const rnd = (i: number) => (((Math.sin(i * 12.9898) * 43758.5453) % 1) + 1) % 1;
+  const add = (x: number, y: number, r: number, f?: [number, number, number]) => {
+    const i = dots.length;
+    dots.push({ x, y, r, tx: C.x + (f ? f[0] : 0) - x, ty: C.y + (f ? f[1] : 0) - y, d: f ? 0 : 0.04 + rnd(i + 1) * 0.5, s: f ? f[2] : 0.15, f: !!f });
+  };
+  const L1 = [230, 410, 590, 770];
+  const lines = [`M500 57 V80 M230 80 H770 ${L1.map((x) => `M${x} 80 V103`).join(' ')}`];
+  for (const x of L1) lines.push(`M${x} 115 V138 M${x - 58} 138 H${x + 58} M${x - 58} 138 V161 M${x} 138 V161 M${x + 58} 138 V161`);
+  add(500, 50, 7, [0, -19, 1.3]);
+  L1.forEach((x, i) => add(x, 109, 6, i === 1 ? [-17, 11, 1.5] : i === 2 ? [17, 11, 1.5] : undefined));
+  L1.forEach((x) => [-58, 0, 58].forEach((dx) => add(x + dx, 167, 4.6)));
+  [[222, 34], [250, 40], [278, 46], [306, 52], [334, 58]].forEach(([y, n]) => {
+    for (let k = 0; k < n; k++) add(500 + (k - (n - 1) / 2) * 15.5, y, 3.3);
+  });
+  return { C, dots, lines: lines.join(' ') };
+})();
+const MACHINES = Array.from({ length: 10 }, (_, i) => {
+  const a = (i / 10) * Math.PI * 2;
+  return { x: Math.cos(a) * 118, y: Math.sin(a) * 118 };
+});
+
+function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; delay?: number }) {
+  const [ref, seen] = useInView<HTMLElement>();
+  const [now, setNow] = useState(false);
+  const touched = useRef(false);
+  useEffect(() => {
+    if (!seen) return;
+    const t = window.setTimeout(() => { if (!touched.current) setNow(true); }, delay);
+    return () => window.clearTimeout(t);
+  }, [seen, delay]);
+  const show = (v: boolean) => { touched.current = true; setNow(v); };
+  return (
+    <figure ref={ref} className={`pv-col${bare ? ' bare' : ''}${now ? ' now' : ''}`}>
+      <figcaption className="pv-col-h">AI has collapsed what it takes to build.</figcaption>
+      <svg viewBox="0 0 1000 370" aria-hidden="true">
+        <defs>
+          <radialGradient id="pvColGlow">
+            <stop offset="0" stopColor="#9fb6cf" stopOpacity=".5" />
+            <stop offset="1" stopColor="#9fb6cf" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <path className="org-lines" d={ORG.lines} />
+        <circle className="glow" cx={ORG.C.x} cy={ORG.C.y} r="96" />
+        <g className="ring-g" transform={`translate(${ORG.C.x} ${ORG.C.y})`}>
+          <circle className="ring" r="118" />
+          <circle className="ring-run" r="118" />
+          <g className="orbit">
+            {MACHINES.map((m, i) => <line key={`l${i}`} x1="0" y1="0" x2={m.x} y2={m.y} />)}
+            {MACHINES.map((m, i) => <circle key={`m${i}`} cx={m.x} cy={m.y} r="3.6" />)}
+          </g>
+        </g>
+        {ORG.dots.map((p, i) => (
+          <circle key={i} className={p.f ? 'dot f' : 'dot'} cx={p.x} cy={p.y} r={p.r}
+                  style={{ ['--tx' as string]: `${p.tx}px`, ['--ty' as string]: `${p.ty}px`, ['--d' as string]: `${p.d.toFixed(2)}s`, ['--s' as string]: p.s }} />
+        ))}
+      </svg>
+      <div className="pv-col-foot">
+        <p className="pv-col-cap" aria-live="polite">
+          <span className={now ? undefined : 'on'}>Thousands of people. A decade.</span>
+          <span className={now ? 'on' : undefined}>A few people. Months.</span>
+        </p>
+        <div className="pv-col-toggle" role="group" aria-label="Before and now">
+          <button type="button" className={now ? undefined : 'on'} aria-pressed={!now} onClick={() => show(false)}>Before</button>
+          <button type="button" className={now ? 'on' : undefined} aria-pressed={now} onClick={() => show(true)}>Now</button>
+        </div>
+      </div>
+    </figure>
+  );
+}
+
+/** La thèse (07/11, 6e passe) : après le contrôle, l'implosion dans sa carte. */
 export function TheFew() {
   return (
-    <Say id="few" title="The companies that define this era will be built by very few people."
-      lead={(
-        <>
-          <p className="pv-say-p">Founders who direct machines instead of org charts. Who reach revenue before headcount. Who see what a market wants long before it asks.</p>
-          <p className="pv-say-p">AI has collapsed what it takes to build. A tight team directing autonomous systems now does in months what used to take thousands of people and a decade. Capital is no longer scarce. Ownership is.</p>
-          <p className="pv-say-p">So we back these teams from the first cheque, finance their growth with credit before equity, and put our AI engines to work for them.</p>
-          <p className="pv-say-p"><b>Venture was written for companies that needed armies. You don’t. So we rewrote it.</b></p>
-        </>
-      )}>
-      <p className="pv-kick pv-back-k">What we back</p>
-      <ul className="pv-back">
-        {BACK.map((x) => <li key={x.t}><h3>{x.t}</h3><p>{x.d}</p></li>)}
-      </ul>
+    <Say id="few" title="The companies that define this era will be built by very few people.">
+      <CollapseVisual />
+      <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
     </Say>
   );
 }
 
-// ── Le capital (v3.9 ; 06/11 (8)) : un chemin, celui d'un Chief Fundraising Officer interne ──
-// La philosophie : lever tout ce qu'il faut pour tirer le maximum de la société, dans l'ordre
-// qui dilue le moins. Humble, aligné, jamais faible (ni « You decide what you take »), aucune
-// comparaison. Les étages et leurs tickets sont une lecture de LP : repliés. Si un autre fonds
-// mène, on devient un co-investisseur classique (clause 8) : ne jamais y promettre prêts,
-// rachats ni moteurs.
-const CAPITAL: { t: string; d: string }[] = [
-  { t: 'A cap table that gets cleaner.', d: 'We buy out angels and early funds, only with your agreement. Their votes move to your side.' },
-  { t: 'Another lead? Take both.', d: 'When another fund leads your round, we invest alongside, on its terms.' },
+// ── What we back (07/11, 7e passe) : la vision en un seul tracé. Les quatre lois ne sont pas
+// quatre idées : c'est une chaîne. Quelques fondateurs (01) dirigent des machines qui forment une
+// boucle qui s'améliore à chaque tour (02) ; la boucle conquiert un marché entier sans armée (03) ;
+// la loi de puissance couronne un leader (04). « The clearest minds directing the most autonomous
+// machines » : la phrase du manifeste (Thesis.tsx). À l'écran, la chaîne se dessine de gauche à
+// droite ; sur mobile, de haut en bas.
+const VF_ZONES = [
+  { n: '01', w: 26, t: 'Visionary founders.', d: 'Obsessive from day one. They direct, the machine executes.' },
+  { n: '02', w: 34, t: 'Self-improving systems.', d: 'Closed loops that compound with every run.' },
+  { n: '03', w: 32, t: 'Maximum impact, minimum headcount.', d: 'Whole markets, with near-zero marginal labor.' },
+  { n: '04', w: 28, t: 'Category leaders.', d: 'Built to dominate their category. The power law rewards the leader.' },
+];
+
+type VfLayout = { vertical: boolean; F: number; L: number; O: number; B: number; box: string; id: string };
+const VF_H: VfLayout = { vertical: false, F: 100, L: 430, O: 552, B: 962, box: '0 0 1200 380', id: 'h' };
+const VF_V: VfLayout = { vertical: true, F: 70, L: 300, O: 422, B: 760, box: '0 0 360 1000', id: 'v' };
+
+function VisionArt({ lay, live }: { lay: VfLayout; live: boolean }) {
+  // (t, s) : t le long de la chaîne, s en travers (positif = vers le haut à l'horizontale)
+  const P = (t: number, s2: number): [number, number] => (lay.vertical ? [180 + s2, 20 + t] : [t, 190 - s2]);
+  const pt = (t: number, s2: number) => P(t, s2).map((v) => v.toFixed(1)).join(' ');
+  const founders = [[0, 15], [-13, -8], [13, -8]].map(([dt, ds]) => P(lay.F + dt, ds));
+  const beam = `M${pt(lay.F + 34, 0)} L${pt(lay.L - 128, 0)}`;
+  const spiral: string[] = [];
+  for (let a = 0; a <= Math.PI * 5; a += 0.12) {
+    const r = 8 + a * 6.4;
+    spiral.push(pt(lay.L + Math.cos(a) * r, Math.sin(a) * r));
+  }
+  const spiralD = `M${spiral.join(' L')}`;
+  const machines = Array.from({ length: 10 }, (_, i) => {
+    const a = (i / 10) * Math.PI * 2;
+    return P(lay.L + Math.cos(a) * 122, Math.sin(a) * 122);
+  });
+  const C = P(lay.L, 0);
+  const market: { p: [number, number]; k: number }[] = [];
+  [112, 160, 208, 256, 304].forEach((R, k) => {
+    const amax = Math.asin(Math.min(0.92, 146 / R));
+    const n = 7 + k * 3;
+    for (let i = 0; i < n; i++) {
+      const a = -amax + (2 * amax * i) / (n - 1);
+      market.push({ p: P(lay.O + Math.cos(a) * R, Math.sin(a) * R), k });
+    }
+  });
+  const rays = market.filter((m) => m.k === 4).filter((_, i) => i % 3 === 0);
+  const O = P(lay.O, 0);
+  const bars = Array.from({ length: 13 }, (_, i) => {
+    const t = lay.B + i * 17;
+    const h = 220 / Math.pow(i + 1, 1.15);
+    const [x1, y1] = P(t - 4, -150);
+    const [x2, y2] = P(t + 4, -150 + h);
+    return { x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1) };
+  });
+  const base = [P(lay.B - 20, -150), P(lay.B + 12 * 17 + 20, -150)];
+  const top = P(lay.B, 70);
+  const link = `M${pt(lay.O + 304, 0)} C${pt(lay.O + 360, 0)} ${pt(lay.B - 40, 70)} ${pt(lay.B - 8, 70)}`;
+  const g = (k: string) => `pvVf${k}${lay.id}`;
+  return (
+    <svg viewBox={lay.box} className={lay.vertical ? 'v' : undefined} aria-hidden="true">
+      <defs>
+        <radialGradient id={g('Glow')}><stop offset="0" stopColor="#9fb6cf" stopOpacity=".5" /><stop offset="1" stopColor="#9fb6cf" stopOpacity="0" /></radialGradient>
+        <radialGradient id={g('Lead')}><stop offset="0" stopColor="#ffffff" stopOpacity=".35" /><stop offset="1" stopColor="#9fb6cf" stopOpacity="0" /></radialGradient>
+      </defs>
+      {/* 01 : les fondateurs, et leur intention */}
+      <circle className="vf-glow s1" cx={P(lay.F, 0)[0]} cy={P(lay.F, 0)[1]} r="62" fill={`url(#${g('Glow')})`} />
+      <path className="vf-line vf-draw s2" d={beam} pathLength={1} />
+      {/* 02 : la boucle de machines, qui s'élargit à chaque tour */}
+      <circle className="vf-glow s3" cx={C[0]} cy={C[1]} r="110" fill={`url(#${g('Glow')})`} />
+      <path className="vf-line vf-draw s3 slow" d={spiralD} pathLength={1} />
+      <circle className="vf-ring s4" cx={C[0]} cy={C[1]} r="122" />
+      <g className="vf-orbit s4">
+        {machines.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="3.4" />)}
+      </g>
+      {/* 03 : un marché entier */}
+      {rays.map((m, i) => <line key={`r${i}`} className="vf-ray" x1={O[0]} y1={O[1]} x2={m.p[0]} y2={m.p[1]} style={{ ['--d' as string]: `${2.3 + i * 0.05}s` }} />)}
+      {market.map((m, i) => <circle key={`m${i}`} className="vf-dot" cx={m.p[0]} cy={m.p[1]} r="2.4" style={{ ['--d' as string]: `${2.5 + m.k * 0.2}s` }} />)}
+      {/* 04 : le leader, et la longue traîne */}
+      <path className="vf-line vf-draw s5" d={link} pathLength={1} />
+      <line className="vf-base s5" x1={base[0][0]} y1={base[0][1]} x2={base[1][0]} y2={base[1][1]} />
+      <circle className="vf-glow s6" cx={top[0]} cy={top[1]} r="56" fill={`url(#${g('Lead')})`} />
+      {bars.map((r, i) => (
+        <rect key={`b${i}`} className={`vf-bar${i === 0 ? ' hi' : ''}`} x={r.x} y={r.y} width={r.w} height={r.h} rx="3"
+              style={{ ['--d' as string]: `${3.6 + i * 0.05}s` }} />
+      ))}
+      {founders.map(([x, y], i) => <circle key={`f${i}`} className="vf-hi" cx={x} cy={y} r="8" />)}
+      <circle className="vf-hi vf-core" cx={C[0]} cy={C[1]} r="4" />
+      {live && (
+        <g className="vf-pulses">
+          {[0, 1, 2].map((k) => (
+            <circle key={`pb${k}`} r="3" opacity="0">
+              <animateMotion dur="2.4s" begin={`${1.4 + k * 0.8}s`} repeatCount="indefinite" path={beam} />
+              <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="2.4s" begin={`${1.4 + k * 0.8}s`} repeatCount="indefinite" />
+            </circle>
+          ))}
+          {rays.slice(0, 5).map((m, k) => {
+            const d = `M${O[0].toFixed(1)} ${O[1].toFixed(1)} L${m.p[0].toFixed(1)} ${m.p[1].toFixed(1)}`;
+            return (
+              <circle key={`pr${k}`} r="2.4" opacity="0">
+                <animateMotion dur="2.8s" begin={`${3 + k * 0.45}s`} repeatCount="indefinite" path={d} />
+                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="2.8s" begin={`${3 + k * 0.45}s`} repeatCount="indefinite" />
+              </circle>
+            );
+          })}
+        </g>
+      )}
+    </svg>
+  );
+}
+
+export function WhatWeBack() {
+  const [ref, seen] = useInView<HTMLElement>();
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    if (!seen) return;
+    try { setLive(!window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch { setLive(true); }
+  }, [seen]);
+  return (
+    <section className="pv-sec night pv-vf-sec" id="back">
+      <div className="pv-wrap">
+        <p className="pv-kick">What we back</p>
+        <h2 className="pv-say-h">The clearest minds, directing the most autonomous machines.</h2>
+        <figure ref={ref} className={`pv-vf${seen ? ' in' : ''}`}>
+          <div className="pv-vf-art h"><VisionArt lay={VF_H} live={live} /></div>
+          <div className="pv-vf-art v"><VisionArt lay={VF_V} live={live} /></div>
+          <ol className="pv-vf-zones" style={{ gridTemplateColumns: VF_ZONES.map((z) => `${z.w}fr`).join(' ') }}>
+            {VF_ZONES.map((z, i) => (
+              <li key={z.n} style={{ ['--d' as string]: `${0.3 + i * 1.1}s` }}><span className="n">{z.n}</span><h3>{z.t}</h3><p>{z.d}</p></li>
+            ))}
+          </ol>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
+// 07/11 (6e passe) : il doit sentir que nous sommes son Chief Fundraising Officer, dans la maison, et
+// alignés à 100 % : son rôle en quatre verbes, le plan dans l'ordre qui dilue le moins, les étages et
+// les tickets dedans (plus de pli). L'alignement se dit par ce qui est vrai : chaque action qu'il
+// n'émet pas protège sa part ET la nôtre.
+const ROLE: { t: string; d: string }[] = [
+  { t: 'Plan.', d: 'We map everything your company needs to reach its full size.' },
+  { t: 'Sequence.', d: 'Revenue first, then credit, then equity only when it earns its place.' },
+  { t: 'Raise.', d: 'We lead, bring our partner lenders and line up the co-investors you want.' },
+  { t: 'Protect.', d: 'Every share you don’t issue protects your stake, and ours.' },
 ];
 
 export function CapitalStack() {
-  const [ref, seen] = useInView<HTMLOListElement>();
-  // 06/11 (9) : les chiffres du fonds sont fondus dans les étapes (montants de fund.json).
-  const steps: { icon: IconName; tag: string; t: string; d: ReactNode }[] = [
-    { icon: 'trend', tag: 'No dilution', t: 'Your growth',
-      d: 'Revenue funds what it can. That is what AI-native teams do best.' },
-    { icon: 'banknote', tag: 'No dilution', t: 'The loan line',
-      d: 'Reserved from day one, with our fund and partner lenders. Hiring, go-to-market, working capital, acquisitions. Drawn in tranches, repaid from growth.' },
-    { icon: 'target', tag: 'Your call', t: 'Equity, at every stage',
-      d: <>Pre-seed to growth: <b>{eur(L.seed.ticket_min)} to {eur(F.company_cap, 'tile')}</b> per company from our <b>{eur(F.commitments, 'tile')}</b> Fund I. Follow-on included: loans, buybacks, and equity on the same terms.</> },
-    { icon: 'shield', tag: 'Your call', t: 'Mega rounds, on your terms',
-      d: <><b>Beyond {eur(F.company_cap, 'tile')}</b>, when you need far more to stay ahead of over-capitalised rivals, we lead the round with SPVs and co-investors alongside the fund, on the same terms. Every option stays open.</> },
+  const [ref, seen] = useInView<HTMLDivElement>();
+  const plan: { call: boolean; t: string; d: string; stages?: boolean }[] = [
+    { call: false, t: 'Revenue', d: 'Funds what it can. AI-native teams do this best.' },
+    { call: false, t: 'The loan line', d: 'Reserved from day one, drawn in tranches as you reach agreed milestones.' },
+    { call: true, t: 'Equity, at every stage', d: `From our ${eur(F.commitments, 'tile')} Fund I, on the terms of the pact.`, stages: true },
+    { call: true, t: 'The largest rounds', d: 'The largest funds lead. We stay at your side, with SPVs and co-investors.' },
   ];
   return (
-    <Say id="capital" tone="tint" title="Diluted like no one."
-      lead={<p className="pv-say-p">Think of us as your in-house Chief Fundraising Officer. Our job: raise everything the company needs to reach its full size, in the order that dilutes you least. Every share you don’t issue protects your stake, and ours.</p>}>
-      <ol ref={ref} className={`pv-stack${seen ? ' in' : ''}`}>
-        {steps.map((x, i) => (
-          <li key={x.t} className="pv-stack-s" style={{ ['--d' as string]: `${i * 0.14}s` }}>
-            <div className="pv-stack-top">
-              <span className="pv-stack-n">{i + 1}</span>
-              <span className={`pv-stack-tag${x.tag === 'Your call' ? ' call' : ''}`}>{x.tag}</span>
-            </div>
-            <span className="pv-ic"><Icon name={x.icon} /></span>
-            <h3>{x.t}</h3>
-            <p>{x.d}</p>
-          </li>
-        ))}
-      </ol>
-      <ul className="pv-ruled">
-        {CAPITAL.map((c) => <li key={c.t}><h3>{c.t}</h3><p>{c.d}</p></li>)}
-      </ul>
-      <div className="pv-say-folds">
-        <Fold id="stages" title="Stages and tickets" sub="What we write at each stage, from pre-seed to growth">
-          <StageLadder />
-        </Fold>
+    <section className="pv-sec pv-cfo-sec" id="capital">
+      <div className="pv-wrap">
+        <p className="pv-kick pv-cfo-k">AI-native, in-house</p>
+        <h2 className="pv-say-h">Your Chief Fundraising Officer. <span>Perfectly aligned.</span></h2>
+        <div ref={ref} className={`pv-cfo${seen ? ' in' : ''}`}>
+          <ol className="pv-cfo-role">
+            {ROLE.map((r, i) => (
+              <li key={r.t} style={{ ['--d' as string]: `${0.1 + i * 0.12}s` }}><b>{r.t}</b><p>{r.d}</p></li>
+            ))}
+          </ol>
+          <div className="pv-plan">
+            <div className="pv-plan-h"><span>Your capital plan</span><em>Least dilutive first</em></div>
+            <ol>
+              {plan.map((x, i) => (
+                <li key={x.t} className={x.call ? 'call' : undefined} style={{ ['--d' as string]: `${0.35 + i * 0.15}s` }}>
+                  <span className="pv-plan-n">{i + 1}</span>
+                  <div>
+                    <div className="pv-plan-t"><h3>{x.t}</h3><span className="pv-plan-tag">{x.call ? 'Your call' : 'No dilution'}</span></div>
+                    <p>{x.d}</p>
+                    {x.stages && (
+                      <ul className="pv-plan-stages">
+                        {STAGES.map((st) => <li key={st.layer}><b>{st.layer}</b><span>{st.ticket}</span></li>)}
+                      </ul>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
       </div>
-    </Say>
+    </section>
   );
 }
 
@@ -265,7 +455,7 @@ export function HowWeBack() {
         </div>
         <div className="pv-callout pv-pact-row">
           <span className="pv-tick soft"><Icon name="scale" /></span>
-          <p>If you raise elsewhere, we can follow or lead the round. If another investor leads, we invest on its terms, never better. Fair both ways.</p>
+          <p>Every right we hold is written in a public pact, the same for every founder.</p>
           <Link to="/terms" className="pv-link">Read the {N_CLAUSES} clauses <Icon name="arrow" /></Link>
         </div>
       </div>
@@ -332,7 +522,7 @@ export function StakeChart() {
           </svg>
           {FM.paths.map((p) => (
             <span key={p.id} className={`pv-path-end ${p.id}`} style={{ top: `${y(p.stake)}%` }}>
-              <b>{pct(p.stake, 1)}</b><em>{p.label}</em>
+              <b>{pct(p.stake, 1)}</b>
             </span>
           ))}
           {/* au survol d'une étape : les quatre chemins, côte à côte */}
@@ -405,14 +595,13 @@ const A_ = (href: string, t: string) => <a href={href} target="_blank" rel="noop
 export function TheMath({ calcOpen = false, onCalc }: { calcOpen?: boolean; onCalc: () => void }) {
   return (
     <Say id="math" title="The equity you don’t sell is the company you keep."
-      lead={<p className="pv-say-p">Most founding teams end up with a fraction of what they built. With us, credit carries what it can, and you sell only the equity your growth truly needs. For a team that does not need an army, that is far less.</p>}>
+      lead={<p className="pv-say-p">Most founding teams end up with a fraction of what they built.</p>}>
       <StakeChart />
       <p className="pv-fine">
-        Same company, same valuations. VC path, calibrated on the medians of {A_('https://carta.com/data/founder-ownership-2026/', 'Carta’s Founder Ownership Report 2026')} (fully
-        diluted, not specific to Europe; Series D, Carta data reported by {A_('https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/', 'SaaStr')}): each round preceded by a bridge, with
-        option pool refreshes. With us: {eur(FM.loans, 'tile')} of loans in tranches, from our fund and partner lenders, each at {pct(FM.loan_share.min)} to {pct(FM.loan_share.max)} of the last round,
-        within the usual 20% to 40% for venture debt ({A_('https://innovation.firstcitizens.com/business-growth/access-to-capital/right-amount-of-venture-debt', 'First Citizens')}). The same capital: they replace part of the bridges. Half the capital: no bridges and
-        no Series D. Credit alone: no further round and no pool refresh. Elsewhere, the pool refreshes in new shares, as on the VC path. Buybacks and annual cancellations, which lift your stake, are not counted. Illustrative, not a forecast.
+        Same company, same valuations. VC path: the medians of {A_('https://carta.com/data/founder-ownership-2026/', 'Carta’s Founder Ownership Report 2026')}, the
+        Series D as reported by {A_('https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/', 'SaaStr')}. With us: {eur(FM.loans, 'tile')} of loans from our fund and partner lenders,
+        at {pct(FM.loan_share.min)} to {pct(FM.loan_share.max)} of the last round, within the usual range for venture debt ({A_('https://innovation.firstcitizens.com/business-growth/access-to-capital/right-amount-of-venture-debt', 'First Citizens')}).
+        Credit alone assumes no pool refresh. Buybacks and cancellations are not counted. Illustrative, not a forecast.
       </p>
       {/* le calculateur garde son ancre : /#calculator, le héros */}
       <div className="pv-calc-dock" id="calculator-dock">
@@ -462,7 +651,7 @@ function StagesGrid() {
 }
 
 /** Les étages sur l'accueil (06/11) : une montée sur fond de nuit, qui se lève à l'ouverture. */
-function StageLadder() {
+export function StageLadder() {
   return (
     <div className="pv-ladder">
       {STAGES.map((s, i) => (
@@ -536,14 +725,14 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
 
 // ── La fin : une phrase, un bouton ───────────────────────────────────────────
 /** `onOpen` : les boutons déplient le calculateur ou le pacte de l'accueil et y défilent. */
-export function FinalCall({ onOpen }: { onOpen?: (panel: 'pact' | 'calculator') => void }) {
+export function FinalCall({ onOpen }: { onOpen?: (panel: 'pact') => void }) {
   return (
     <section className="pv-sec pv-reserve-sec" id="final">
       <div className="pv-wrap">
         <div className="pv-band pv-final">
           <div>
             <h2>Exceptional numbers deserve exceptional terms.</h2>
-            <p>See what you keep, round after round.</p>
+            <p>A handful of founders a year.</p>
           </div>
           <div className="pv-band-ctas">
             {onOpen
@@ -613,11 +802,12 @@ export function EnginesRunning() {
       <div className="pv-run-grid">
         {RUN.map((c) => (
           <a key={c.name} className="pv-run-co" href={c.href} target="_blank" rel="noopener noreferrer">
+            <span className="pv-run-live"><i />Running</span>
             <span className="pv-run-lg"><img src={c.logo} alt={c.name} className={c.wide ? 'wide' : undefined} /></span>
             <p>{c.d}</p>
             <ul>
-              <li><Icon name="radar" />Corporate development<b>External AI Growth Engine</b></li>
-              <li><Icon name="bot" />Inbound and outbound<b>Internal AI Growth Engine</b></li>
+              <li><Icon name="radar" />Corporate development<b>External AI Growth Engine</b><i className="pv-run-pulse" aria-hidden="true" /></li>
+              <li><Icon name="bot" />Inbound and outbound<b>Internal AI Growth Engine</b><i className="pv-run-pulse" aria-hidden="true" /></li>
             </ul>
             <span className="pv-run-go">{c.href.replace(/^https:\/\/(www\.)?/, '')} <Icon name="out" /></span>
           </a>

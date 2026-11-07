@@ -120,6 +120,42 @@ et ce qui se réveille, les consentements d'un lead classique (12). /lp (GIVE, K
 /pitch (slide 7), la fiche (PACT p. 1, encadré p. 2) et l'accueil (règles, HowWeBack) suivent.
 La durée et la validité de la convention de vote et la conformité EuVECA sont à faire valider par
 un avocat avant toute signature.
+**Le positionnement (07/11, Alexandre)** : le crédit n'est pas une révolution (venture debt partout ;
+à levée égale, 13,2 % contre 11,4 %) et ce sont les valorisations qui protègent les meilleurs
+fondateurs de la dilution : on ne se bat plus sur la dilution ni sur la taille des chèques. On se bat
+sur le CONTRÔLE : « The terms the best founders negotiate. From your first cheque. » (ligne validée).
+JAMAIS « We take shares » ni rien qui parle du fonds comme d'un preneur (« c'est anti-fondateurs ») ; pas
+de schéma actions / votes (rejeté). Face aux géants : arriver
+les premiers (le deal flow), être utiles (les moteurs qui font tourner Proplace et Maximum Insurance),
+être alignés (le pacte) ; les géants mènent les gros tours, on reste à côté, sans bravade. Accueil :
+le héros (contrôle), The few (l'implosion, « Capital is no longer scarce. Control is. », l'accueil
+seulement : le manifeste de Thesis.tsx, la fiche et /pitch gardent « Ownership is. » en attendant
+Antoine), les moteurs, « Capital, in the right order. » (le tracé), le bandeau final (« A handful of
+founders a year. »). « Diluted like no one. », le graphique des chemins (`TheMath`, `StakeChart`) et le
+calculateur quittent l'accueil ; /terms n'y renvoie plus ; /calculator reste en ligne, hors du sitemap et
+en noindex ; le code reste. /lp suivra (l'accès, l'alignement, la protection plutôt que la dilution).
+**L'ordre de l'accueil (07/11, 6e passe, Alexandre)** : « Control was always yours. » en ouverture
+(« c'était beaucoup mieux »), puis l'implosion dans sa carte (« The companies that define this era… »,
+« Capital is no longer scarce. Control is. »), puis la vision (`WhatWeBack`, 7e passe : « The clearest minds, directing the most
+autonomous machines. », la phrase du manifeste, et UN tracé qui se dessine de gauche à droite : trois
+fondateurs, leur intention, la boucle de machines qui s'élargit, un marché entier, la loi de puissance
+et son leader ; les quatre lois dessous, alignées sur leur zone ; sur mobile, de haut en bas ; jamais
+de cartes tassées), puis « Your Chief Fundraising Officer. Perfectly aligned. » (`CapitalStack` : quatre verbes,
+Plan, Sequence, Raise, Protect, et « Your capital plan », le moins dilutif d'abord, les étages et tickets
+dedans), puis les moteurs (« Running today » en cartes sombres vivantes), le bandeau final.
+**Le dessin de l'accueil (07/11, trois passes ; Alexandre : « trop de texte », « les grandes icônes
+font cheap », « on se répète », « que l'on s'en souvienne après avoir quitté le site »)** : une idée
+par section, aucune répétition. `TheFew` : le titre, `CollapseVisual` (un organigramme de 250 points
+implose sous les yeux et ne laisse que trois fondateurs entourés de leurs machines ; Before / Now pour
+rejouer ; lancé une fois à l'écran), « Capital is no longer scarce. Ownership is. » sur UNE ligne, puis
+« What we back » en quatre intitulés. Ne pas forcer de retour à la ligne (`display: block`) dans une
+phrase qui tient sur une ligne. `CapitalStack` : le tracé de l'ordre du capital (plat, puis l'equity en
+pointillé, au choix du fondateur). Plus de bifurcation « Stay with us / Raise elsewhere » ni de
+truismes (« Any investor can lead », « never better », « You dilute only when you choose », « Your
+exit, on your timing », « Big cheques ») : ils faisaient passer le fonds pour naïf. Les règles du héros
+ne parlent que de contrôle (un siège et nos votes avec le fondateur, pas de veto, les rachats).
+`TheMath` : une phrase, le graphique (les noms des chemins une seule fois, dans les pavés), une note
+courte. Sous 900 px, des colonnes. Animations coupées si `prefers-reduced-motion`.
 **Préférence 1× (06/11)** : pas sur les petits tours de seed (clause 1 : « The most we ever ask is a 1×… ») ;
 aucun chiffre ne bouge, le plancher du modèle ne joue sur aucune ligne Seed (V-04, G-02, G-04 seulement). Aussi en v3.15 : la phrase
 sur les conflits, « our shares don't vote… LP advisory committee », quitte le pacte des

@@ -6,14 +6,13 @@ import { SiteHeader } from './Thesis';
 // même barre du haut, un héros court, puis le contenu.
 const LINKS = [
   { href: '/#rules', label: 'The rules' },
-  { href: '/#math', label: 'The math' },
   { href: '/terms', label: 'The pact' },
 ];
 
 export function SubHeader({ action, links = LINKS }: { action?: ReactNode; links?: { href: string; label: string }[] }) {
   return (
     <SiteHeader links={links}>
-      {action ?? <Link to="/calculator" className="pv-btn">Run your numbers</Link>}
+      {action ?? <Link to="/terms" className="pv-btn">Read the pact</Link>}
     </SiteHeader>
   );
 }

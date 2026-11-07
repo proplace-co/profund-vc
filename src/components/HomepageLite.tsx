@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
-import { CapitalStack, FinalCall, FounderEngines, TheFew, TheMath, TheRules } from './Founders';
+import { CapitalStack, FinalCall, FounderEngines, TheFew, TheRules, WhatWeBack } from './Founders';
 
 const DEALFLOW_HASHES = new Set(['#dealflow', '#follow', '#deal-flow']);
 
@@ -9,9 +9,10 @@ function hashWantsDealflow() {
   return DEALFLOW_HASHES.has((window.location.hash || '').toLowerCase());
 }
 
-// Les deux panneaux dépliables (v3.15) : leur ancre ouvre le panneau (/#pact, /#calculator).
-type Panel = 'pact' | 'calculator';
-const isPanel = (id: string): id is Panel => id === 'pact' || id === 'calculator';
+// Le panneau dépliable du pacte (v3.15) : son ancre l'ouvre (/#pact). 07/11 : le calculateur quitte
+// l'accueil (on ne vend plus la dilution) ; /calculator reste en ligne, hors du sitemap.
+type Panel = 'pact';
+const isPanel = (id: string): id is Panel => id === 'pact';
 
 function hashIs(panel: Panel) {
   return (window.location.hash || '').toLowerCase() === `#${panel}`;
@@ -32,12 +33,11 @@ function hashIs(panel: Panel) {
 export default function HomepageLite() {
   const [open, setOpen] = useState(() => hashWantsDealflow());
   const [pact, setPact] = useState(() => hashIs('pact'));
-  const [calc, setCalc] = useState(() => hashIs('calculator'));
   const { hash, key } = useLocation();
 
   // Ouvre un panneau et y défile (boutons lointains, ancres du pied de page).
   const reveal = useCallback((panel: Panel) => {
-    (panel === 'pact' ? setPact : setCalc)(true);
+    setPact(true);
     requestAnimationFrame(() => {
       document.getElementById(`${panel}-dock`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -45,8 +45,8 @@ export default function HomepageLite() {
 
   // Le bouton du panneau : ouvre ou ferme. Fermé depuis le bas du panneau, on remonte à son bouton.
   function toggle(panel: Panel) {
-    const wasOpen = panel === 'pact' ? pact : calc;
-    (panel === 'pact' ? setPact : setCalc)(!wasOpen);
+    const wasOpen = pact;
+    setPact(!wasOpen);
     if (!wasOpen) return;
     const dock = document.getElementById(`${panel}-dock`);
     if (dock && dock.getBoundingClientRect().top < 0) dock.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -78,10 +78,13 @@ export default function HomepageLite() {
 
   return (
     <div className="pfh">
-      <TheRules hero pactOpen={pact} onPact={() => toggle('pact')} onRun={() => reveal('calculator')} />
+      {/* 07/11 (6e passe, Alexandre) : le contrôle en ouverture, l'implosion, la vision en grand, le
+          Chief Fundraising Officer aligné, les moteurs, le bandeau. Plus de graphique de dilution ni
+          de calculateur : le crédit est un outil, pas la promesse. */}
+      <TheRules hero pactOpen={pact} onPact={() => toggle('pact')} />
       <TheFew />
+      <WhatWeBack />
       <CapitalStack />
-      <TheMath calcOpen={calc} onCalc={() => toggle('calculator')} />
       <FounderEngines />
       <FinalCall onOpen={reveal} />
       <DealFlowModal open={open} onClose={closeModal} />

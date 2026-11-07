@@ -16,8 +16,7 @@ export default function TermsPage() {
         <p className="pv-terms-lead">{PACT_LEAD}</p>
         <PactList />
         <div className="pv-ctas pv-terms-ctas">
-          <Link to="/#calculator" className="pv-btn light">Run your numbers <Icon name="arrow" /></Link>
-          <Link to="/" className="pv-btn ghost-light">Back to ProFund</Link>
+          <Link to="/" className="pv-btn light">Back to ProFund <Icon name="arrow" /></Link>
         </div>
       </div>
     </div>

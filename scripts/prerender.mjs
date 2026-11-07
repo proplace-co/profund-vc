@@ -104,9 +104,11 @@ const ROUTES = [
     desc: 'Equity only when you choose, follow-on capital reserved for you, buybacks only with you, your votes, one board seat and no veto on how you run, raise or sell, your exit. The 12 clauses ProFund signs with every company it backs.',
   },
   {
+    // 07/11 : plus lié depuis le site (on ne vend plus la dilution) ; en ligne pour les anciens liens
     path: 'calculator',
     title: 'Run your numbers | ProFund',
     desc: 'Your stake today, the rounds you plan, your expected exit: what you take home on the VC path and on the ProFund path, and your stake after every round.',
+    noindex: true,
   },
   {
     path: 'lp',
