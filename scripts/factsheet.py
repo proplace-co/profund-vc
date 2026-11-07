@@ -417,8 +417,8 @@ LAWS = (
 
 PACT = (
     ("Equity, when the founder chooses.", "At most a 1× non-participating preference; never a pushed round."),
-    ("Follow-on capital, reserved.", "Loans in tranches, then equity on the same terms when the founder "
-                                     "asks and our committee agrees."),
+    ("An in-house Chief Fundraising Officer.", "Loans to raise from strength, then equity on the same "
+                                               "terms when the founder asks and our committee agrees."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
                                     "agreement, and the company can cancel shares every year: each "
                                     "cancellation lifts both stakes."),

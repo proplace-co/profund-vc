@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { CONTACT } from './LeadForm';
 import { HeroVisual, Icon, type IconName } from './Thesis';
-import { EnginesForLps, EnginesRunning, Numbers, Say, TheTeam, pathMoney } from './Founders';
+import { CollapseVisual, EnginesForLps, EnginesRunning, Numbers, Say, TheTeam, WhatWeBack, pathMoney } from './Founders';
 import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
 import { Fold } from './Drawer';
 import { savedAccess } from '../lib/access';
@@ -335,8 +335,9 @@ function LpContent() {
         </div>
       </header>
 
-      <Say id="kingmakers" title="The kingmakers."
-        lead={<p className="pv-say-p">Small, AI-native, extraordinarily productive. They direct machines instead of org charts, and they reach in months what used to take a decade and an army. They are rare, and they will decide who wins this era.</p>}>
+      {/* 07/11 : la même thèse et la même vision que l'accueil (certains LPs ne verront que /lp) */}
+      <Say id="few" title="The companies that define this era will be built by very few people.">
+        <CollapseVisual />
         <Numbers items={[
           { b: '8 months', t: <>From launch to $100M ARR for Lovable, in Stockholm, with 45 people.<Ref s={SRC.lovable100} /></> },
           { b: '146 people', t: <>Lovable’s whole team when it passed $400M ARR.<Ref s={SRC.lovable400} /></> },
@@ -344,7 +345,9 @@ function LpContent() {
         ]} />
       </Say>
 
-      <Say id="ownership" tone="night" title="Capital is no longer scarce. Control is."
+      <WhatWeBack />
+
+      <Say id="ownership" title="Capital is no longer scarce. Control is."
         lead={<p className="pv-say-p">A team that does not need an army does not need a round every 18 months. Yet venture still runs on the old bargain: capital, for a slice of the company and a say in how it is run. The best founders no longer have to accept it. The funds that matter next will be the ones they choose.</p>}>
         <Numbers items={[
           { b: pct(MEDIAN_D, 1), t: <>What the median founding team holds after a Series D.<Ref s={SRC.saastr} /></> },

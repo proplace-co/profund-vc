@@ -165,7 +165,7 @@ const MACHINES = Array.from({ length: 10 }, (_, i) => {
   return { x: Math.cos(a) * 118, y: Math.sin(a) * 118 };
 });
 
-function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; delay?: number }) {
+export function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; delay?: number }) {
   const [ref, seen] = useInView<HTMLElement>();
   const [now, setNow] = useState(false);
   const touched = useRef(false);
@@ -362,51 +362,71 @@ export function WhatWeBack() {
 // alignés à 100 % : son rôle en quatre verbes, le plan dans l'ordre qui dilue le moins, les étages et
 // les tickets dedans (plus de pli). L'alignement se dit par ce qui est vrai : chaque action qu'il
 // n'émet pas protège sa part ET la nôtre.
-const ROLE: { t: string; d: string }[] = [
-  { t: 'Plan.', d: 'We map everything your company needs to reach its full size.' },
-  { t: 'Sequence.', d: 'Revenue first, then credit, then equity only when it earns its place.' },
-  { t: 'Raise.', d: 'We lead, bring our partner lenders and line up the co-investors you want.' },
-  { t: 'Protect.', d: 'Every share you don’t issue protects your stake, and ours.' },
+// 07/11 (8e passe) : plus le plan de capital (« revenus, prêts, equity » : tout directeur financier le
+// sait). Ce que fait d'intelligent un Chief Fundraising Officer aligné : lever en position de force (le
+// prêt porte jusqu'au point d'inflexion), nettoyer la table avant chaque tour, acheter sans diluer, et
+// les plus gros tours en une seule ligne. Puis les tickets, en une bande.
+const MOVES: { t: string; d: string }[] = [
+  { t: 'A clean cap table before every round.', d: 'We buy out angels and early funds, with your agreement. Their votes move to your side.' },
+  { t: 'Acquisitions without dilution.', d: 'Our External AI Growth Engine finds the targets. The loan line can finance them.' },
+  { t: 'The largest rounds, one line on your cap table.', d: 'The largest funds lead. We stay at your side, with one SPV for our co-investors.' },
 ];
 
-export function CapitalStack() {
+/** Lever en position de force : sans réserve, on lève au creux, à court de cash ; avec la ligne de prêt,
+ *  on lève au point d'inflexion. */
+function RaiseChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
-  const plan: { call: boolean; t: string; d: string; stages?: boolean }[] = [
-    { call: false, t: 'Revenue', d: 'Funds what it can. AI-native teams do this best.' },
-    { call: false, t: 'The loan line', d: 'Reserved from day one, drawn in tranches as you reach agreed milestones.' },
-    { call: true, t: 'Equity, at every stage', d: `From our ${eur(F.commitments, 'tile')} Fund I, on the terms of the pact.`, stages: true },
-    { call: true, t: 'The largest rounds', d: 'The largest funds lead. We stay at your side, with SPVs and co-investors.' },
-  ];
+  const d = 'M40 252 C140 240 240 198 320 178 C370 166 400 198 440 206 C520 222 600 150 700 104 C800 60 880 44 960 34';
+  return (
+    <div ref={ref} className={`pv-raise${seen ? ' in' : ''}`}>
+      <div className="pv-raise-txt">
+        <span className="n">01</span>
+        <h3>Raise from strength.</h3>
+        <p>A loan line reserved from day one carries you to your inflection. You raise equity when it pays, not when cash runs out.</p>
+      </div>
+      <div className="pv-raise-plot" aria-hidden="true">
+        <svg viewBox="0 0 1000 300" preserveAspectRatio="none">
+          <path className="area" d={`${d} L960 300 L40 300 Z`} />
+          <path className="curve" d={d} vectorEffect="non-scaling-stroke" />
+          <line className="mk" x1="440" y1="206" x2="440" y2="300" vectorEffect="non-scaling-stroke" />
+          <line className="mk hi" x1="700" y1="104" x2="700" y2="300" vectorEffect="non-scaling-stroke" />
+        </svg>
+        <span className="pv-raise-run"><i />The loan line carries you</span>
+        <span className="pv-raise-dot weak" />
+        <span className="pv-raise-dot strong" />
+        <span className="pv-raise-lab weak">Out of cash: the usual moment to raise</span>
+        <span className="pv-raise-lab strong">Your inflection: you raise here</span>
+      </div>
+      <ul className="pv-raise-key">
+        <li><i className="weak" />Out of cash: the usual moment to raise</li>
+        <li><i className="strong" />Your inflection: you raise here, with the loan line</li>
+      </ul>
+    </div>
+  );
+}
+
+export function CapitalStack() {
+  const [ref, seen] = useInView<HTMLOListElement>();
   return (
     <section className="pv-sec pv-cfo-sec" id="capital">
       <div className="pv-wrap">
         <p className="pv-kick pv-cfo-k">AI-native, in-house</p>
         <h2 className="pv-say-h">Your Chief Fundraising Officer. <span>Perfectly aligned.</span></h2>
-        <div ref={ref} className={`pv-cfo${seen ? ' in' : ''}`}>
-          <ol className="pv-cfo-role">
-            {ROLE.map((r, i) => (
-              <li key={r.t} style={{ ['--d' as string]: `${0.1 + i * 0.12}s` }}><b>{r.t}</b><p>{r.d}</p></li>
-            ))}
-          </ol>
-          <div className="pv-plan">
-            <div className="pv-plan-h"><span>Your capital plan</span><em>Least dilutive first</em></div>
-            <ol>
-              {plan.map((x, i) => (
-                <li key={x.t} className={x.call ? 'call' : undefined} style={{ ['--d' as string]: `${0.35 + i * 0.15}s` }}>
-                  <span className="pv-plan-n">{i + 1}</span>
-                  <div>
-                    <div className="pv-plan-t"><h3>{x.t}</h3><span className="pv-plan-tag">{x.call ? 'Your call' : 'No dilution'}</span></div>
-                    <p>{x.d}</p>
-                    {x.stages && (
-                      <ul className="pv-plan-stages">
-                        {STAGES.map((st) => <li key={st.layer}><b>{st.layer}</b><span>{st.ticket}</span></li>)}
-                      </ul>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
+        <p className="pv-say-p">Everything your company needs to reach its full potential, raised at the right moment and in the order that dilutes you least. Every share you don’t issue protects your stake, and ours.</p>
+        <RaiseChart />
+        <ol ref={ref} className={`pv-moves${seen ? ' in' : ''}`}>
+          {MOVES.map((m, i) => (
+            <li key={m.t} style={{ ['--d' as string]: `${0.1 + i * 0.14}s` }}>
+              <span className="n">{String(i + 2).padStart(2, '0')}</span>
+              <h3>{m.t}</h3>
+              <p>{m.d}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="pv-tickets">
+          <span className="pv-tickets-k">Our cheques</span>
+          {STAGES.map((st) => <span key={st.layer}><b>{st.layer}</b>{st.ticket}</span>)}
+          <span><b>Beyond</b>With SPVs</span>
         </div>
       </div>
     </section>

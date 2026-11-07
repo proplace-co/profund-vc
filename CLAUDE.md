@@ -140,10 +140,15 @@ en noindex ; le code reste. /lp suivra (l'accès, l'alignement, la protection pl
 autonomous machines. », la phrase du manifeste, et UN tracé qui se dessine de gauche à droite : trois
 fondateurs, leur intention, la boucle de machines qui s'élargit, un marché entier, la loi de puissance
 et son leader ; les quatre lois dessous, alignées sur leur zone ; sur mobile, de haut en bas ; jamais
-de cartes tassées), puis « Your Chief Fundraising Officer. Perfectly aligned. » (`CapitalStack` : quatre verbes,
-Plan, Sequence, Raise, Protect, et « Your capital plan », le moins dilutif d'abord, les étages et tickets
-dedans), puis les moteurs (« Running today » en cartes sombres vivantes), le bandeau final.
-**/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : la chute du manifeste devient « Capital is no
+de cartes tassées), puis « Your Chief Fundraising Officer. Perfectly aligned. » (`CapitalStack`, 8e passe : plus de
+plan de capital générique ; ce qu'un CFO aligné fait d'intelligent : « Raise from strength » et sa courbe,
+on lève au point d'inflexion et non à court de cash, puis la table nettoyée avant chaque tour, les
+acquisitions sans dilution, les plus gros tours en une ligne ; les tickets en une bande ; « full
+potential », jamais « full size »), puis les moteurs (« Running today » en cartes sombres vivantes), le bandeau final.
+**/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
+(`CollapseVisual`) et la vision (`WhatWeBack`) de l'accueil (« The kingmakers » est remplacé ; les
+chiffres sourcés de Lovable et Bessemer restent sous l'implosion ; les quatre cartes `FourLaws` quittent
+/pitch) ; la fiche p. 1 dit « An in-house Chief Fundraising Officer. » ; la chute du manifeste devient « Capital is no
 longer scarce. Control is. » PARTOUT (Thesis.tsx, /lp, fiche p. 1) ; la fiche p. 1 porte « The terms the
 best founders negotiate, from their first cheque. » au lieu de « The new go-to fund for elite
 founders » ; /lp a une section « How a focused fund wins the best founders. » (First, Useful, Aligned ;

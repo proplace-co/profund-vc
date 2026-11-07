@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
-import { FourLaws, HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
-import { CV_LOGOS, EveryStage, FounderTable, HowWeBack, founderNote } from './Founders';
+import { HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
+import { CV_LOGOS, CollapseVisual, EveryStage, FounderTable, HowWeBack, WhatWeBack, founderNote } from './Founders';
 import { N_CLAUSES } from './Pact';
 import { CASE_IDS, LAYER_IDS, eur, eurRange, fund, mult, pct, rowId, type FundLayer, type LayerId } from '../lib/fund';
 import pipeline from '../data/pipeline.json';
@@ -102,6 +102,7 @@ function TheShift() {
           <p className="pf-fine">¹ TechCrunch, 23 July 2025 (company-reported figures). ² Stripe 2025 annual letter, reported by TechCrunch on 27 February 2025.</p>
         </div>
       </div>
+      <CollapseVisual />
     </Slide>
   );
 }
@@ -618,7 +619,7 @@ export default function ProFundPage() {
       <TitleSlide />
       <TheShift />
       <Manifesto tint />
-      <FourLaws tint={false} />
+      <WhatWeBack />
       <TheProblem />
       <TheInversion />
       <HowWeBack />
