@@ -10,7 +10,7 @@ recalcule pas (QuickLook, Gmail, Outlook, iOS) affiche donc les bons chiffres.
 La mise en page reprend le classeur v3.3 livre le 05/11 (memes onglets, memes
 noms definis, memes colonnes dans Lines, memes formules) : seules differences,
 le Read me (le script du site calcule desormais la v3.3), trois sorties de plus
-en Performance (DPI annee 7, prets rembourses / pretes, plus grande sortie) et le
+en Performance (DPI annee 7, plus grande sortie) et le
 bloc des tests de resistance, et des controles de plus dans Checks.
 
 CHIFFRES : tous lus dans scripts/fund_model.py (constantes et build()). Aucun
@@ -31,6 +31,10 @@ Regenerer a la main apres toute modification du modele :
 
 puis commiter le xlsx et changer le ?v= de MODEL_XLSX_URL (src/lib/links.ts)
 pour que les navigateurs reprennent le nouveau fichier.
+
+v3.17 (07/11) : le fonds ne prete plus. Plus aucune colonne, aucun nom ni aucune formule de
+pret (FeeLoan, LoanRep*, LoanCap*, LoanSleeve) ; la dette des societes vient des banques
+partenaires, hors du fonds.
 
 Dependances : xlsxwriter (pip install --user xlsxwriter) ; pycel pour le
 controle seulement.
@@ -267,8 +271,6 @@ def sheet_assumptions(bk: Book) -> None:
     put("GP commitment, minimum (% of commitments)", "GPCommitPct", TERMS["gp_commit_min_pct"], "pct0", "Information")
     calc("GP commitment, minimum", "GPCommitMin", xmoney("GPCommitPct*Commitments"),
          DATA["terms"]["gp_commit_min"], "eur")
-    put("Management fee on the loan sleeve, during the investment period", "FeeLoan", TERMS["fee_loan_pct"], "pct1",
-        "Applied to the loans deployed (Construction); the rest of commitments pays the standard fee")
     ws.write(r, 0, "What if: partial secondary sale of a position (not in the pact; no line flagged)",
              bk.f(bold=True))
     r += 1
@@ -280,26 +282,18 @@ def sheet_assumptions(bk: Book) -> None:
          f'COUNTIF({LinesLayout.col("partial")},"yes")', len(DATA["secondary"]["lines"]), "int")
     r += 2
 
-    ws.write(r, 0, "Cases: exit multiplier and optional cap, and the share of each loan repaid; everything else "
-                   "unchanged", bk.f(bold=True))
+    ws.write(r, 0, "Cases: exit multiplier and optional cap; everything else unchanged", bk.f(bold=True))
     r += 1
     for case in fm.CASES:
         nm = CASE_NAME[case.id]
-        ws.write(r, 0, f"{nm} case: exit cap (B), exit multiplier (C), loans repaid (D)")
+        ws.write(r, 0, f"{nm} case: exit cap (B), exit multiplier (C)")
         ws.write(r, 1, "none" if case.exit_cap is None else case.exit_cap,
                  inp["txt"] if case.exit_cap is None else inp["eur"])
         ws.write(r, 2, case.exit_mult, inp["pct0"])
-        ws.write(r, 3, case.loan_repaid, inp["pct0"])
         bk.name(f"Cap{nm}", "Assumptions", r, 1)
         bk.name(f"Mult{nm}", "Assumptions", r, 2)
-        bk.name(f"LoanRep{nm}", "Assumptions", r, 3)
         if case.id == "target":
-            ws.write(r, 5, "Cap: an amount, or 'none'. Multiplier: share of every exit value kept. Loans repaid: "
-                           "share of each line's modelled repayment received (the rest is a default loss).", note)
-        elif case.id == "base":
-            lm = fm.LOAN_MULTIPLES
-            ws.write(r, 5, f"Line-level defaults are explicit (zombies {lm['zombie']}×, losses {lm['loss']}×); "
-                           "the case factor adds losses on every loan on top of them.", note)
+            ws.write(r, 5, "Cap: an amount, or 'none'. Multiplier: share of every exit value kept.", note)
         r += 1
     r += 1
 
@@ -331,24 +325,13 @@ def sheet_assumptions(bk: Book) -> None:
                    "company, SPVs.", note)
     r += 2
 
-    bk.band(ws, r, "Buybacks and loans (replaces the v2 follow-on reserve policy)", c1=5)
+    bk.band(ws, r, "Buybacks (replace the v2 follow-on reserve policy)", c1=5)
     r += 1
     put("Buyback discount to the valuation of the time (default; Lines column " + lc("discount") + " overrides)",
         "BuybackDiscount", fm.BUYBACK_DISCOUNT, "pct0",
         "Every buyback of existing shares: angels, leavers, early funds, the founder")
-    put("Loans, maximum (% of commitments)", "LoanCapPct", FUND["loan_cap_pct"], "pct0",
-        "EuVECA: loans only to portfolio companies, at most 30% of commitments")
-    calc("Loans, maximum", "LoanCap", xmoney("LoanCapPct*Commitments"), DATA["fund"]["loan_cap"], "eur")
-    ws.write(r, 0, "Loan rate, performing loans (per year, compounded over each loan's tenor)")
-    ws.write(r, 1, fm.LOAN_RATE, inp["pct0"])
-    ws.write(r, 5, "Performing lines: multiple = (1 + rate) ^ (repayment year - draw year), rounded to 0.01 "
-                   "(Lines, column " + lc("loan_mult") + "). No warrants: they would create new shares.", note)
-    r += 1
-    ws.write(r, 0, "Loan repayment multiple: zombie / loss (reference)")
-    for j, k in enumerate(("zombie", "loss")):
-        ws.write(r, 1 + j, fm.LOAN_MULTIPLES[k], inp["mult2"])
-    ws.write(r, 5, "Reference values: each distressed line carries its own multiple (Lines, column "
-                   + lc("loan_mult") + ")", note)
+    ws.write(r, 0, "The fund does not lend (v3.17)")
+    ws.write(r, 5, "v3.17: the fund no longer lends. Growth debt comes from partner banks, arranged by ProFund, outside the fund; each modelled loan became a buyback of the same amount in the same company (V-04 at its entry price, default discount), except the V-05 zombies' €1M, which pays the higher management fee (the loan sleeve paid 1% instead of 2%).", note)
     r += 1
     ws.write(r, 0, "After the first cheque, no new shares while the founder grows with ProFund")
     ws.write(r, 5, "If the founder raises elsewhere, ProFund follows or leads the round in new shares (Lines, columns "
@@ -357,8 +340,9 @@ def sheet_assumptions(bk: Book) -> None:
 
 
 # ── Lines ───────────────────────────────────────────────────────────────────
-# L'ordre des colonnes est celui du classeur livre (A..BE) : les lettres citees
-# dans les notes et les autres onglets sortent de lc(), jamais en dur.
+# L'ordre des colonnes est celui du classeur livre (A..BE), sans les colonnes de prets depuis
+# la v3.17 (A..AX) : les lettres citees dans les notes et les autres onglets sortent de lc(),
+# jamais en dur.
 COLS = (
     # INPUTS (A..P), N est une formule
     "id", "layer", "company", "n", "status", "kind", "track", "first", "entry_post", "buyback",
@@ -368,17 +352,17 @@ COLS = (
     # CASH-FLOW HELPERS (Z..AK)
     "sp_target", "ep_target", "sc_target", "ec_target", "sp_base", "ep_base", "sc_base", "ec_base",
     "sp_stress", "ep_stress", "sc_stress", "ec_stress",
-    # MECHANICS INPUTS (AL..AR)
-    "buyback_value", "cancel", "dilution", "loan", "loan_year", "loan_repay_year", "loan_mult",
-    # MECHANICS FORMULAS (AS..AY)
-    "bought", "lr_target", "eq_target", "eq_base", "eq_stress", "lr_base", "lr_stress",
-    # HARDENING AND FOLLOW-ON INPUTS (AZ..BE), BD est une formule
+    # MECHANICS INPUTS (AL..AN)
+    "buyback_value", "cancel", "dilution",
+    # MECHANICS FORMULAS (AO..AR)
+    "bought", "eq_target", "eq_base", "eq_stress",
+    # HARDENING AND FOLLOW-ON INPUTS (AS..AX), AW est une formule
     "discount", "follow", "follow_year", "follow_post", "follow_stake", "partial",
 )
 COL = {k: i for i, k in enumerate(COLS)}
 INPUTS = ("id", "layer", "company", "n", "status", "kind", "track", "first", "entry_post", "buyback", "entry_year",
-          "buyback_year", "exit_year", "exit_value", "recovery", "buyback_value", "cancel", "dilution", "loan",
-          "loan_year", "loan_repay_year", "loan_mult", "discount", "follow", "follow_year", "follow_post", "partial")
+          "buyback_year", "exit_year", "exit_value", "recovery", "buyback_value", "cancel", "dilution",
+          "discount", "follow", "follow_year", "follow_post", "partial")
 
 
 def lc(key: str) -> str:
@@ -396,11 +380,10 @@ HEAD = {
     "exit_pct": "Exit stake (formula: entry + buybacks, after cancellations and outside rounds)",
     "exit_value": "Exit value (100%, before the case multiplier)",
     "recovery": "Recovery multiple on equity (if no exit value)",
-    "invested": "Invested (equity + loans)", "perco": "Invested per company", "entry_pct": "Entry stake",
+    "invested": "Invested", "perco": "Invested per company", "entry_pct": "Entry stake",
     "buyback_value": "Buyback valuation (100%, per company)",
     "cancel": "Company buyback and cancellation (% of shares)",
-    "dilution": "Outside dilution (founder raised elsewhere)", "loan": "Loan (line total)",
-    "loan_year": "Loan draw year", "loan_repay_year": "Loan repayment year", "loan_mult": "Loan repayment multiple",
+    "dilution": "Outside dilution (founder raised elsewhere)",
     "bought": "Stake bought back (per company)",
     "discount": "Buyback discount (line; blank = default)",
     "follow": "Follow-on in new shares when the founder raises elsewhere (line total)",
@@ -410,14 +393,13 @@ HEAD = {
 }
 for _c in CASE_IDS:
     _n = CASE_NAME[_c]
-    HEAD[f"p_{_c}"] = f"Proceeds · {_n} (equity + loan)"
+    HEAD[f"p_{_c}"] = f"Proceeds · {_n}"
     HEAD[f"m_{_c}"] = f"MOIC · {_n}"
     HEAD[f"sp_{_c}"] = f"{_n} · secondary sale proceeds (equity)"
     HEAD[f"ep_{_c}"] = f"{_n} · equity proceeds at exit year"
     HEAD[f"sc_{_c}"] = f"{_n} · equity cost sold in secondary"
     HEAD[f"ec_{_c}"] = f"{_n} · equity cost at exit year"
     HEAD[f"eq_{_c}"] = f"Equity proceeds · {_n}"
-    HEAD[f"lr_{_c}"] = f"Loan repayment · {_n} (line)"
 
 
 class LinesLayout:
@@ -464,7 +446,6 @@ def line_values(line) -> dict:
         out[f"p_{case_id}"] = p
         out[f"m_{case_id}"] = ratio(p / fm.invested(line), 1)
         out[f"eq_{case_id}"] = fm.equity_proceeds(line, case)
-        out[f"lr_{case_id}"] = fm.loan_repayment(line, case)
         sec, rest, sc = fm.secondary_split(line, case)
         out[f"sp_{case_id}"] = sec
         out[f"ep_{case_id}"] = rest
@@ -475,10 +456,11 @@ def line_values(line) -> dict:
 
 def sheet_lines(bk: Book) -> None:
     ws = bk.sheet("Lines", grid=True)
-    bk.title(ws, "Fund simulation — line by line",
+    bk.title(ws, "Fund simulation, line by line",
              "Seed (S-), Venture (V-) and Growth (G-) lines. A line may group several companies (n): amounts are "
              "line totals. Blue = input, black = formula. While the founder grows with ProFund: no new shares after "
-             "the first cheque, exposure grows by buybacks, growth is financed by loans. If the founder raises "
+             "the first cheque, exposure grows by buybacks; growth debt comes from partner banks, not from the "
+             "fund. If the founder raises "
              f"elsewhere, ProFund follows or leads in new shares (columns {lc('follow')} to {lc('follow_post')}).")
     ws.set_column(0, len(COLS) - 1, 14)
     ws.set_column(COL["status"], COL["status"], 40)
@@ -486,8 +468,8 @@ def sheet_lines(bk: Book) -> None:
 
     groups = (("INPUTS", 0, COL["recovery"], BLUE_DK), ("FORMULAS", COL["invested"], COL["m_stress"], BLUE),
               ("CASH-FLOW HELPERS (used by the Cash flows tab)", COL["sp_target"], COL["ec_stress"], MUTED),
-              ("MECHANICS INPUTS (v3)", COL["buyback_value"], COL["loan_mult"], BLUE_DK),
-              ("MECHANICS FORMULAS (v3)", COL["bought"], COL["lr_stress"], BLUE),
+              ("MECHANICS INPUTS (v3)", COL["buyback_value"], COL["dilution"], BLUE_DK),
+              ("MECHANICS FORMULAS (v3)", COL["bought"], COL["eq_stress"], BLUE),
               ("HARDENING AND FOLLOW-ON INPUTS (v3.1)", COL["discount"], COL["partial"], BLUE_DK))
     for text, c0, c1, fill in groups:
         bk.band(ws, 3, text, c0, c1, fill)
@@ -497,9 +479,9 @@ def sheet_lines(bk: Book) -> None:
         ws.write(4, c, HEAD[key], hd)
 
     kinds = {
-        "eur": ("first", "entry_post", "buyback", "exit_value", "buyback_value", "loan", "follow", "follow_post"),
-        "year": ("entry_year", "buyback_year", "exit_year", "loan_year", "loan_repay_year", "follow_year"),
-        "pct": ("cancel", "dilution", "discount"), "mult": ("recovery", "loan_mult"),
+        "eur": ("first", "entry_post", "buyback", "exit_value", "buyback_value", "follow", "follow_post"),
+        "year": ("entry_year", "buyback_year", "exit_year", "follow_year"),
+        "pct": ("cancel", "dilution", "discount"), "mult": ("recovery",),
     }
     fmt_in = {k: bk.f(font_color=INPUT) for k in INPUTS}
     fmt_in["id"] = bk.f(font_color=INPUT, bold=True)
@@ -529,8 +511,7 @@ def sheet_lines(bk: Book) -> None:
             "first": line.first, "entry_post": line.entry_post, "buyback": line.buyback,
             "entry_year": line.entry_year, "buyback_year": line.buyback_year, "exit_year": line.exit_year,
             "exit_value": line.exit_value, "recovery": line.recovery, "buyback_value": line.buyback_value,
-            "cancel": line.cancel, "dilution": line.dilution, "loan": line.loan,
-            "loan_year": line.loan_year, "loan_repay_year": line.loan_repay_year, "loan_mult": line.loan_mult,
+            "cancel": line.cancel, "dilution": line.dilution,
             "discount": line.discount, "follow": line.follow, "follow_year": line.follow_year,
             "follow_post": line.follow_post, "partial": "yes" if line.partial else "no",
         }
@@ -550,7 +531,7 @@ def sheet_lines(bk: Book) -> None:
         eq_cost = f"({a['first']}+{a['buyback']}+{a['follow']})"
         put("exit_pct", f"IF(ISNUMBER({a['recovery']}),\"\",ROUND(({c['entry_pct']}+{c['bought']})/(1-{c['cancel']})"
                         f"*(1-{c['dilution']})+{c['follow_stake']},3))", pct1)
-        put("invested", f"{c['first']}+{c['buyback']}+{c['loan']}+{c['follow']}", eur)
+        put("invested", f"{c['first']}+{c['buyback']}+{c['follow']}", eur)
         put("perco", f"{c['invested']}/{c['n']}", eur)
         put("entry_pct", f"ROUND({c['first']}/{c['n']}/{c['entry_post']},3)", pct1)
         put("bought", f"IF({c['buyback']}=0,0,ROUND({c['buyback']}/{c['n']}/({c['buyback_value']}*(1-IF(ISNUMBER("
@@ -560,12 +541,10 @@ def sheet_lines(bk: Book) -> None:
             nm = CASE_NAME[case_id]
             v = _exit_expr(case_id, x)
             eq = f"{lc(f'eq_{case_id}')}{x}"
-            put(f"lr_{case_id}", f"IF({c['loan']}=0,0,{xmoney(f'{c['loan']}*{c['loan_mult']}*LoanRep{nm}')})",
-                eur)
             put(f"eq_{case_id}", f"IF(ISNUMBER({a['recovery']}),{xmoney(f'{a['recovery']}*{eq_cost}')},"
                                  f"{xmoney(f'MAX({a['exit_pct']}*{v},MIN({a['first']},{v}))')})",
                 eur)
-            put(f"p_{case_id}", f"{eq}+{lc(f'lr_{case_id}')}{x}", eur)
+            put(f"p_{case_id}", eq, eur)
             put(f"m_{case_id}", f"ROUND({lc(f'p_{case_id}')}{x}/{a['invested']},1)", mult)
             flag = f"AND({a['partial']}=\"yes\",{a['exit_year']}>SecYear,{eq}<>0)"
             put(f"sp_{case_id}", f"IF({flag},{xmoney(f'SecShare*SecPrice*{eq}')},0)", helper)
@@ -573,8 +552,8 @@ def sheet_lines(bk: Book) -> None:
             put(f"sc_{case_id}", f"IF({flag},SecShare*{eq_cost},0)", helper)
             put(f"ec_{case_id}", f"{eq_cost}-{lc(f'sc_{case_id}')}{x}", helper)
 
-    sums = ("first", "buyback", "invested", "loan", "follow") + tuple(
-        f"{k}_{c}" for c in CASE_IDS for k in ("p", "eq", "lr"))
+    sums = ("first", "buyback", "invested", "follow") + tuple(
+        f"{k}_{c}" for c in CASE_IDS for k in ("p", "eq"))
     tot_vals = {k: 0 for k in sums}
     for layer in fm.LAYERS:
         r = LinesLayout.sub[layer]
@@ -588,7 +567,7 @@ def sheet_lines(bk: Book) -> None:
         for line in lines:
             V = line_values(line)
             for k in sums:
-                vals[k] += getattr(line, k) if k in ("first", "buyback", "loan", "follow") else V[k]
+                vals[k] += getattr(line, k) if k in ("first", "buyback", "follow") else V[k]
         for k in sums:
             cl = lc(k)
             bk.formula(ws, r, COL[k], f"SUM({cl}{r0}:{cl}{r1})", vals[k], sub_eur)
@@ -617,8 +596,7 @@ def sheet_lines(bk: Book) -> None:
     ws.write(r + 2, 0, "Equity proceeds = exit stake × exit value × case multiplier (capped if a cap is set), floored by "
                        "the 1× preference on the first cheque; or recovery multiple × equity invested. Exit stake = "
                        "(entry stake + stake bought back at the line's discount) ÷ (1 − cancellations) × (1 − outside "
-                       "dilution) + stake from the follow-on in the outside round. Loan repayment = loan × repayment "
-                       "multiple × share repaid in the case, received in the repayment year. Amounts rounded to EUR "
+                       "dilution) + stake from the follow-on in the outside round. Amounts rounded to EUR "
                        "10K below EUR 1M and EUR 100K above, before any sum. A what-if partial secondary sale "
                        "(not in the pact) is in the helpers and the Cash flows tab, unused. Kind 'breakout' = a block "
                        "bought at growth stage in a company already in the portfolio (same exit key): not a new "
@@ -634,14 +612,12 @@ class ConsLayout:
     alloc: dict = {}
     returner: dict = {}
     exposure: dict = {}
-    loan_cap_row = 0
 
 
 def sheet_construction(bk: Book, cf_out: dict) -> None:
     ws = bk.sheet("Construction")
     bk.title(ws, "Portfolio construction",
-             "Per layer, capital allocation (first cheques, buybacks, loans), loans vs the EuVECA cap and exposure "
-             "per company.")
+             "Per layer, capital allocation (first cheques, buybacks, follow-ons) and exposure per company.")
     ws.set_column(0, 0, 50)
     ws.set_column(1, 14, 15)
     hd = bk.f(bold=True, bg_color=BAND, text_wrap=True, align="center", border=1, border_color=LINE)
@@ -654,11 +630,10 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
     r = 3
     bk.band(ws, r, "Portfolio by layer", c1=14)
     r += 1
-    cols = ["companies", "positions", "first", "buy_follow", "invested", "loans", "loans_pct"] + \
+    cols = ["companies", "positions", "first", "buy_follow", "invested"] + \
         [f"p_{c}" for c in CASE_IDS] + [f"m_{c}" for c in CASE_IDS]
     heads = ["Companies (new entries)", "Positions (lines)", "First cheques (new shares)",
-             "Buybacks + follow-ons in outside rounds", "Invested (incl. loans)", "Of which loans",
-             "Loans, share of invested"] + \
+             "Buybacks + follow-ons in outside rounds", "Invested"] + \
         [f"Proceeds · {CASE_NAME[c]}" for c in CASE_IDS] + [f"Gross MOIC · {CASE_NAME[c]}" for c in CASE_IDS]
     ConsLayout.cols = C = {k: 1 + i for i, k in enumerate(cols)}
     cl = {k: xl_col_to_name(v) for k, v in C.items()}
@@ -680,9 +655,6 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
                                            f"+SUMIF({L.col('layer')},{crit},{L.col('follow')})",
                    lay["buyback"] + lay["follow"], eur)
         bk.formula(ws, r, C["invested"], f"SUMIF({L.col('layer')},{crit},{L.col('invested')})", lay["invested"], eur)
-        bk.formula(ws, r, C["loans"], f"SUMIF({L.col('layer')},{crit},{L.col('loan')})", lay["loans"], eur)
-        bk.formula(ws, r, C["loans_pct"], f"IF({cl['invested']}{x}=0,0,ROUND({cl['loans']}{x}/{cl['invested']}{x},2))",
-                   lay["loans_pct"], pct0)
         for case in CASE_IDS:
             bk.formula(ws, r, C[f"p_{case}"], f"SUMIF({L.col('layer')},{crit},{L.col(f'p_{case}')})",
                        lay["proceeds"][case], eur)
@@ -695,12 +667,10 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
     ws.write(r, 0, "Total", bold["txt"])
     a = DATA["allocation"]
     totals = {"companies": DATA["fund"]["companies"], "positions": DATA["fund"]["positions"], "first": a["first"],
-              "buy_follow": a["buyback_follow"], "invested": a["invested"], "loans": a["loans"]}
+              "buy_follow": a["buyback_follow"], "invested": a["invested"]}
     for key, val in totals.items():
         bk.formula(ws, r, C[key], f"SUM({cl[key]}{r0}:{cl[key]}{r1})", val,
                    bold["int" if key in ("companies", "positions") else "eur"])
-    bk.formula(ws, r, C["loans_pct"], f"IF({cl['invested']}{r + 1}=0,0,ROUND({cl['loans']}{r + 1}/{cl['invested']}{r + 1},2))",
-               a["loans_pct"], bold["pct0"])
     for case in CASE_IDS:
         gross = DATA["cases"][case]["gross_proceeds"]
         bk.formula(ws, r, C[f"p_{case}"], f"SUM({cl[f'p_{case}']}{r0}:{cl[f'p_{case}']}{r1})", gross, bold["eur"])
@@ -714,9 +684,9 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
     lr = ConsLayout.layer_row
     inv_cell = cl["invested"]
     items = [
-        ("seed", f"{LAYER_NAME['seed']} — invested", f"{inv_cell}{lr['seed'] + 1}", a["seed"], eur),
-        ("venture", f"{LAYER_NAME['venture']} — invested", f"{inv_cell}{lr['venture'] + 1}", a["venture"], eur),
-        ("growth", f"{LAYER_NAME['growth']} — invested", f"{inv_cell}{lr['growth'] + 1}", a["growth"], eur),
+        ("seed", f"{LAYER_NAME['seed']}, invested", f"{inv_cell}{lr['seed'] + 1}", a["seed"], eur),
+        ("venture", f"{LAYER_NAME['venture']}, invested", f"{inv_cell}{lr['venture'] + 1}", a["venture"], eur),
+        ("growth", f"{LAYER_NAME['growth']}, invested", f"{inv_cell}{lr['growth'] + 1}", a["growth"], eur),
         ("invested", "Invested", None, a["invested"], bold["eur"]),
         ("first", "  of which first cheques (new shares)",
          f'SUMIFS({L.col("first")},{L.col("kind")},"new")+SUMIFS({L.col("first")},{L.col("kind")},"breakout")',
@@ -725,9 +695,6 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
          f'SUMIFS({L.col("buyback")},{L.col("kind")},"new")+SUMIFS({L.col("buyback")},{L.col("kind")},"breakout")'
          f'+SUMIFS({L.col("follow")},{L.col("kind")},"new")+SUMIFS({L.col("follow")},{L.col("kind")},"breakout")',
          a["buyback_follow"], eur),
-        ("loans", "  of which loans",
-         f'SUMIFS({L.col("loan")},{L.col("kind")},"new")+SUMIFS({L.col("loan")},{L.col("kind")},"breakout")',
-         a["loans"], eur),
         ("mgmt_fees", "Management fees (upside case)", cf_out["target"]["mgmt_fees"], a["mgmt_fees"], eur),
         ("fund_expenses", "Fund expenses, incl. set-up (upside case)", cf_out["target"]["fund_expenses"],
          a["fund_expenses"], eur),
@@ -743,32 +710,12 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
         elif key == "contingency":
             formula = xmoney(f"Commitments-B{al['invested'] + 1}-B{al['mgmt_fees'] + 1}-B{al['fund_expenses'] + 1}")
         bk.formula(ws, r, 1, formula, value, fmt)
-        if key == "loans":
-            bk.name("LoanSleeve", "Construction", r, 1)
         r += 1
     ConsLayout.alloc_after = r
-    ws.write(r, 0, "  share of invested capital after the first cheque (buybacks, follow-ons, loans)")
+    ws.write(r, 0, "  share of invested capital after the first cheque (buybacks, follow-ons)")
     bk.formula(ws, r, 1, f"ROUND((B{ConsLayout.alloc['invested'] + 1}-B{ConsLayout.alloc['first'] + 1})"
                          f"/B{ConsLayout.alloc['invested'] + 1},2)", a["after_first_pct"], pct0)
     ConsLayout.alloc["after_first_pct"] = r
-    r += 3
-
-    # Prets et plafond EuVECA
-    bk.band(ws, r, "Loans vs the EuVECA cap", c1=5)
-    r += 1
-    for i, h in enumerate(("Scope", "Loans deployed", "Cap (% of commitments)", "Cap", "Headroom", "Within cap")):
-        ws.write(r, i, h, hd)
-    r += 1
-    x = r + 1
-    ws.write(r, 0, "All lines", bk.f(bold=True))
-    loans = a["loans"]
-    cap = DATA["fund"]["loan_cap"]
-    bk.formula(ws, r, 1, f"B{ConsLayout.alloc['loans'] + 1}", loans, eur)
-    bk.formula(ws, r, 2, "LoanCapPct", FUND["loan_cap_pct"], pct0)
-    bk.formula(ws, r, 3, "LoanCap", cap, eur)
-    bk.formula(ws, r, 4, f"D{x}-B{x}", cap - loans, eur)
-    bk.formula(ws, r, 5, f'IF(B{x}<=D{x},"OK","CHECK")', "OK" if loans <= cap else "CHECK", bk.f(align="center", bold=True))
-    ConsLayout.loan_cap_row = r
     r += 3
 
     # Exposition par societe (toutes lignes) et fund returner
@@ -822,11 +769,11 @@ def sheet_construction(bk: Book, cf_out: dict) -> None:
 
 # ── Cash flows ──────────────────────────────────────────────────────────────
 FLOW_ROWS = (
-    ("inv", "Investments (first cheques, buybacks, follow-ons and loans)", True),
-    ("exitp", "Exit proceeds and loan repayments, incl. the partial secondary sale", True),
+    ("inv", "Investments (first cheques, buybacks and follow-ons)", True),
+    ("exitp", "Exit proceeds, incl. the partial secondary sale", True),
     ("tail", "Running costs of the years after the horizon, set aside", True),
     ("dist", "Distributable proceeds", True),
-    ("cost", "Cost of the positions sold and of the loans repaid", True),
+    ("cost", "Cost of the positions sold", True),
     ("nic", "Net invested capital at cost, end of year", False),
     ("mgmt", "Management fees", True),
     ("exp", "Fund expenses", True),
@@ -851,8 +798,8 @@ FLOW_ROWS = (
     ("gross", "Gross fund cash flow (exit proceeds − investments)", True),
 )
 OUT_ROWS = (
-    ("gross_proceeds", "Gross proceeds (exits at value + loan repayments)", "eur"),
-    ("realised", "Realised (exit proceeds incl. secondary, and loan repayments)", "eur"),
+    ("gross_proceeds", "Gross proceeds (exits at value)", "eur"),
+    ("realised", "Realised (exit proceeds incl. secondary)", "eur"),
     ("secondary_discount", "Secondary discount", "eur"),
     ("paid_in", "Paid-in capital", "eur"),
     ("mgmt_fees", "Management fees", "eur"),
@@ -864,7 +811,6 @@ OUT_ROWS = (
     ("gross_irr", "Gross IRR", "pct0"),
     ("dpi_year6", "Net DPI by year 6", "mult"),
     ("dpi_year7", "Net DPI by year 7", "mult"),
-    ("loans_multiple", "Loans: repaid ÷ lent", "mult2"),
     ("largest_exit", "Largest exit (after the case multiplier and cap)", "eur"),
     ("clawback", "GP clawback (must be zero)", "eur"),
 )
@@ -876,17 +822,12 @@ def mirror_case(case):
     R = {k[0]: [0.0] * n for k in FLOW_ROWS if k}
     tail = TERMS["running_cost"] * max(0, FUND["term_years"] - HORIZON)
     sp_tot, sc_tot = 0.0, 0.0
-    sleeve = sum(x.loan for x in fm.LINES)
     for line in fm.LINES:
         R["inv"][line.entry_year - 1] += line.first
         if line.buyback:
             R["inv"][line.buyback_year - 1] += line.buyback
         if line.follow:
             R["inv"][line.follow_year - 1] += line.follow
-        if line.loan:
-            R["inv"][line.loan_year - 1] += line.loan
-            R["exitp"][line.loan_repay_year - 1] += fm.loan_repayment(line, case)
-            R["cost"][line.loan_repay_year - 1] += line.loan
         sec, rest, sc = fm.secondary_split(line, case)
         sp_tot += sec
         sc_tot += sc
@@ -903,7 +844,7 @@ def mirror_case(case):
         if year > HORIZON:
             R["mgmt"][i] = R["exp"][i] = 0.0
         else:
-            R["mgmt"][i] = (TERMS["fee_ip_pct"] * (FUND["commitments"] - sleeve) + TERMS["fee_loan_pct"] * sleeve
+            R["mgmt"][i] = (TERMS["fee_ip_pct"] * FUND["commitments"]
                             if year <= FUND["investment_period_years"]
                             else TERMS["fee_post_pct"] * max(prev["nic"], 0.0))
             R["exp"][i] = TERMS["running_cost"] + (TERMS["setup_cost"] if year == 1 else 0)
@@ -929,7 +870,6 @@ def mirror_case(case):
             prev[k] = R[k][i]
     gross = sum(fm.proceeds(x, case) for x in fm.LINES)
     lp_t, calls_t = sum(R["lp"]), sum(R["calls"])
-    repaid = sum(fm.loan_repayment(x, case) for x in fm.LINES)
     out = {
         "gross_proceeds": gross,
         "realised": fm.money(sum(R["exitp"])),
@@ -943,7 +883,6 @@ def mirror_case(case):
         "gross_irr": ratio(fm.irr(R["gross"]), 2),
         "dpi_year6": ratio(sum(R["lp"][:6]) / sum(R["calls"][:6]), 1),
         "dpi_year7": ratio(sum(R["lp"][:7]) / sum(R["calls"][:7]), 1),
-        "loans_multiple": ratio(repaid / sleeve, 2) if sleeve else 0.0,
         "largest_exit": fm.money(max(fm.exit_value(x, case) for x in fm.LINES if x.exit_value)),
         "clawback": max(0.0, R["gpc"][-1] - carry * max(0.0, R["po"][-1] - R["contrib"][-1])),
     }
@@ -959,9 +898,9 @@ class CFLayout:
 
 def sheet_cashflows(bk: Book) -> dict:
     ws = bk.sheet("Cash flows", grid=True)
-    bk.title(ws, "Cash flows — yearly, per case",
+    bk.title(ws, "Cash flows, yearly, per case",
              "Year 1 = year of the first closing; all flows at year end. Columns after the horizon stay at zero. "
-             "Target (60%) and Stress (40%) apply a multiplier (and an optional cap) to every modelled exit value; the Upside is the modelled portfolio; loans repay as modelled.")
+             "Target (60%) and Stress (40%) apply a multiplier (and an optional cap) to every modelled exit value; the Upside is the modelled portfolio.")
     ws.set_column(0, 0, 64)
     ws.set_column(1, 1, 15)
     ws.set_column(2, 1 + len(YEARS), 13)
@@ -1000,12 +939,12 @@ def sheet_cashflows(bk: Book) -> dict:
             raise SystemExit(f"miroir Python : clawback {case_id}")
         outs[case_id] = {}
         # le titre du bloc suit les hypotheses : une formule, comme dans le classeur livre
-        title = (f"{nm.upper()} CASE — exit values × {pct_txt(case.exit_mult)}"
+        title = (f"{nm.upper()} CASE: exit values × {pct_txt(case.exit_mult)}"
                  + ("" if case.exit_cap is None else f", capped at €{case.exit_cap:,.0f}"))
         for c in range(0, c_last + 1):
             ws.write_blank(r, c, None, band)
         ws.set_row(r, 20)
-        bk.formula(ws, r, 0, f'"{nm.upper()} CASE — exit values × "&TEXT(Mult{nm},"0%")'
+        bk.formula(ws, r, 0, f'"{nm.upper()} CASE: exit values × "&TEXT(Mult{nm},"0%")'
                              f'&IF(ISNUMBER(Cap{nm}),", capped at €"&TEXT(Cap{nm},"#,##0"),"")', title, band)
         r += 1
         for spec in FLOW_ROWS:
@@ -1017,7 +956,6 @@ def sheet_cashflows(bk: Book) -> dict:
         rows = {k: CFLayout.rows[(case_id, k)] for k in R}
         sp, ep = L.col(f"sp_{case_id}"), L.col(f"ep_{case_id}")
         sc, ec = L.col(f"sc_{case_id}"), L.col(f"ec_{case_id}")
-        lrc = L.col(f"lr_{case_id}")
         for key, label_txt, total in (s for s in FLOW_ROWS if s):
             ws.write(rows[key], 0, ("     " if key in ("hb0", "hb1", "contrib", "d1", "po1", "d2", "po", "gpc", "nic")
                                     else "") + label_txt, bk.f(bold=key in ("calls", "dist", "lp", "gp", "net")))
@@ -1036,17 +974,14 @@ def sheet_cashflows(bk: Book) -> dict:
 
             put("inv", f"SUMIFS({L.col('first')},{L.col('entry_year')},{Y})"
                        f"+SUMIFS({L.col('buyback')},{L.col('buyback_year')},{Y})"
-                       f"+SUMIFS({L.col('follow')},{L.col('follow_year')},{Y})"
-                       f"+SUMIFS({L.col('loan')},{L.col('loan_year')},{Y})")
-            put("exitp", f"SUMIFS({ep},{L.col('exit_year')},{Y})+IF({Y}=SecYear,SUM({sp}),0)"
-                         f"+SUMIFS({lrc},{L.col('loan_repay_year')},{Y})")
+                       f"+SUMIFS({L.col('follow')},{L.col('follow_year')},{Y})")
+            put("exitp", f"SUMIFS({ep},{L.col('exit_year')},{Y})+IF({Y}=SecYear,SUM({sp}),0)")
             put("tail", f"IF({Y}=Horizon,-TailCost,0)")
             put("dist", f"{at('exitp')}+{at('tail')}", eur_b)
-            put("cost", f"SUMIFS({ec},{L.col('exit_year')},{Y})+IF({Y}=SecYear,SUM({sc}),0)"
-                        f"+SUMIFS({L.col('loan')},{L.col('loan_repay_year')},{Y})")
+            put("cost", f"SUMIFS({ec},{L.col('exit_year')},{Y})+IF({Y}=SecYear,SUM({sc}),0)")
             put("nic", (f"{at('inv')}-{at('cost')}" if first else f"{at('nic', True)}+{at('inv')}-{at('cost')}"), muted)
             nic_prev = "0" if first else at("nic", True)
-            put("mgmt", f"IF({Y}>Horizon,0,IF({Y}<=IPYears,FeeIP*(Commitments-LoanSleeve)+FeeLoan*LoanSleeve,"
+            put("mgmt", f"IF({Y}>Horizon,0,IF({Y}<=IPYears,FeeIP*Commitments,"
                         f"FeePost*MAX({nic_prev},0)))")
             put("exp", f"IF({Y}>Horizon,0,RunningCost+IF({Y}=1,SetupCost,0))")
             put("calls", f"{at('inv')}+{at('mgmt')}+{at('exp')}", eur_b)
@@ -1075,7 +1010,7 @@ def sheet_cashflows(bk: Book) -> dict:
                 bk.formula(ws, rows[key], 1, f"SUM({a}{rr}:{b}{rr})", sum(R[key]), eur_b)
         # sorties : arrondies comme run_case (money sur les montants, ratio sur les ratios)
         r += 1
-        bk.band(ws, r, f"Outputs — {nm} case", 0, 3, BLUE)
+        bk.band(ws, r, f"Outputs, {nm} case", 0, 3, BLUE)
         r += 1
         fmts = {"eur": eur_b, "mult": bk.f(num_format=MULT, bold=True), "mult2": bk.f(num_format=MULT2, bold=True),
                 "pct0": bk.f(num_format=PCT0, bold=True)}
@@ -1099,8 +1034,6 @@ def sheet_cashflows(bk: Book) -> dict:
             "gross_irr": f"ROUND(IRR({a}{rows['gross'] + 1}:{b}{rows['gross'] + 1}),2)",
             "dpi_year6": f"ROUND({row_sum('lp', a, y6)}/{row_sum('calls', a, y6)},1)",
             "dpi_year7": f"ROUND({row_sum('lp', a, y7)}/{row_sum('calls', a, y7)},1)",
-            "loans_multiple": f"IF(Lines!{lc('loan')}{tot}=0,0,ROUND(Lines!{lc(f'lr_{case_id}')}{tot}"
-                              f"/Lines!{lc('loan')}{tot},2))",
             "largest_exit": xmoney(f"IF(ISNUMBER(Cap{nm}),MIN({best},Cap{nm}),{best})"),
             "clawback": f"MAX(0,{last}{rows['gpc'] + 1}-Carry*MAX(0,{last}{rows['po'] + 1}-{last}{rows['contrib'] + 1}))",
         }
@@ -1121,7 +1054,7 @@ def sheet_cashflows(bk: Book) -> dict:
 # ── Performance ─────────────────────────────────────────────────────────────
 def sheet_performance(bk: Book, outs: dict) -> None:
     ws = bk.sheet("Performance")
-    bk.title(ws, "Fund performance — target returns, built line by line",
+    bk.title(ws, "Fund performance: target returns, built line by line",
              "Net of fees, expenses and carried interest. The table shown on profund.vc/pitch.")
     ws.set_column(0, 0, 52)
     ws.set_column(1, 3, 16)
@@ -1145,13 +1078,12 @@ def sheet_performance(bk: Book, outs: dict) -> None:
         return lambda c: (outs[c][key], cases[c][key])
     rows = [
         ("Fund size", lambda c: ("Commitments", FUND["commitments"]), eur),
-        ("Gross proceeds (exits + loan repayments)", out("gross_proceeds"), eur),
+        ("Gross proceeds (exits)", out("gross_proceeds"), eur),
         (f"Year-{SEC['year']} secondary discount", out("secondary_discount"), neg),
         ("Net TVPI", out("net_tvpi"), mult),
         ("Net IRR", out("net_irr"), pct),
         ("Net DPI by year 6", out("dpi_year6"), mult),
         ("Net DPI by year 7", out("dpi_year7"), mult),
-        ("Loans: repaid ÷ lent", out("loans_multiple"), mult2),
         ("Largest exit", out("largest_exit"), eur),
     ] + [
         (f"Gross MOIC · {LAYER_NAME[layer]}",
@@ -1175,10 +1107,7 @@ def sheet_performance(bk: Book, outs: dict) -> None:
         for j, case in enumerate(CASE_IDS):
             bk.formula(ws, r, 1 + j, outs[case][key], cases[case][key], (pct if key == "gross_irr" else eur)[j])
         r += 1
-    ws.write(r, 0, "Loans deployed", lab)
-    for j in range(3):
-        bk.formula(ws, r, 1 + j, "LoanSleeve", DATA["allocation"]["loans"], eur[j])
-    r += 2
+    r += 1
 
     # Tests de resistance : des re-calculs complets du modele Python, une hypothese a la fois
     bk.band(ws, r, "Stress tests, Target case", 0, 3, BLUE)
@@ -1198,20 +1127,21 @@ def sheet_performance(bk: Book, outs: dict) -> None:
     note = bk.f(font_color=MUTED, italic=True, text_wrap=True, valign="top")
     ws.merge_range(r, 0, r + 2, 3,
                    "Values, not live formulas: each row is a full re-run of scripts/fund_model.py (stress_tests) with "
-                   "one assumption changed, everything else as published. Exits shifted later keep the loan "
-                   "repayment schedule; the zombie case turns both S-01 lines into a 0.5× recovery with zombie loan "
-                   "terms; loan losses lower the share of each loan repaid by 30 points.", note)
+                   "one assumption changed, everything else as published. Exits shifted later move every exit "
+                   "one year, at the latest to year 10; the zombie case turns both S-01 lines into a 0.5× "
+                   "recovery; the unicorn cases dilute or re-value S-01 only.", note)
     r += 4
     t = TERMS
     largest = DATA["cases"]["target"]["largest_exit"]
     ws.merge_range(r, 0, r + 5, 3,
                    f"Net = after management fees ({pct_txt(t['fee_ip_pct'])} on commitments during the investment "
-                   f"period, {pct_txt(t['fee_loan_pct'])} on the loan sleeve, then {pct_txt(t['fee_post_pct'])} on "
-                   "invested capital incl. loans until repaid), fund expenses and carried interest (European "
+                   f"period, then {pct_txt(t['fee_post_pct'])} on invested capital still held, at cost), fund "
+                   "expenses and carried interest (European "
                    "whole-of-fund waterfall with a hurdle and GP catch-up), before tax. Investments over "
                    f"{FUND['investment_period_years']} years, exits from year {min(x.exit_year for x in fm.LINES)} to "
-                   f"year {HORIZON}. One portfolio in every case: Target and Stress multiply every exit value and lose "
-                   "more of the loans (Assumptions). No partial secondary sale (set Lines column " + lc("partial") +
+                   f"year {HORIZON}. One portfolio in every case: Target and Stress multiply every exit value "
+                   "(Assumptions). The fund does not lend: growth debt comes from partner banks, outside the "
+                   "fund. No partial secondary sale (set Lines column " + lc("partial") +
                    f" to 'yes' to test one). Largest exit in the Upside case: {eur_txt(largest)}, the unicorn. Targets are "
                    "model outputs, not a forecast or a guarantee.", note)
     ws.merge_range(r + 7, 0, r + 9, 3, PROJECTIONS, note)
@@ -1224,15 +1154,15 @@ class PerfLayout:
 # ── Checks ──────────────────────────────────────────────────────────────────
 def sheet_checks(bk: Book, outs: dict) -> list:
     ws = bk.sheet("Checks", tab=GREEN)
-    bk.title(ws, "Checks — this workbook vs the published v3.3 values",
-             "Every output recalculated here is compared with the published v3.3 values (column C: "
+    bk.title(ws, f"Checks: this workbook vs the published {fm.VERSION} values",
+             f"Every output recalculated here is compared with the published {fm.VERSION} values (column C: "
              "src/data/fund.json, written by scripts/fund_model.py, which the site and the fact sheet read): change "
              "an input and these checks turn red by design.")
     ws.set_column(0, 0, 60)
     ws.set_column(1, 3, 18)
     ws.set_column(4, 4, 10)
     hd = bk.f(bold=True, bg_color=BAND, border=1, border_color=LINE, align="center")
-    ws.write_row(5, 0, ["Check", "This workbook", "Published v3.3 value", "Difference", "Status"], hd)
+    ws.write_row(5, 0, ["Check", "This workbook", f"Published {fm.VERSION} value", "Difference", "Status"], hd)
     st = bk.f(bold=True, align="center")
     sect = bk.f(bold=True, font_color=BLUE_DK)
     eur, mult, pct, num, txt = (bk.f(num_format=EUR), bk.f(num_format=MULT), bk.f(num_format="0.000"),
@@ -1267,9 +1197,7 @@ def sheet_checks(bk: Book, outs: dict) -> list:
                                      ("positions", "positions", lay["positions"], num),
                                      ("first", "first cheques", lay["first"], eur),
                                      ("buy_follow", "buybacks and follow-ons", lay["buyback"] + lay["follow"], eur),
-                                     ("invested", "invested incl. loans", lay["invested"], eur),
-                                     ("loans", "loans", lay["loans"], eur),
-                                     ("loans_pct", "loans, share of invested", lay["loans_pct"], pct)):
+                                     ("invested", "invested", lay["invested"], eur)):
             items.append((f"{nm} · {label}", ref("Construction", rr, C.cols[key]), val, fmt))
         for case in CASE_IDS:
             items.append((f"{nm} · proceeds · {CASE_NAME[case]}", ref("Construction", rr, C.cols[f"p_{case}"]),
@@ -1278,11 +1206,7 @@ def sheet_checks(bk: Book, outs: dict) -> list:
                           lay["moic"][case], mult))
     for key, val in DATA["allocation"].items():
         fmt = pct if key.endswith("_pct") else eur
-        if key == "loans_pct":
-            items.append(("Allocation · loans pct", ref("Construction", C.total_row, C.cols["loans_pct"]), val, fmt))
-            continue
         items.append((f"Allocation · {key.replace('_', ' ')}", ref("Construction", C.alloc[key], 1), val, fmt))
-    items.append(("Loans · EuVECA cap", ref("Construction", C.loan_cap_row, 3), DATA["fund"]["loan_cap"], eur))
     for s in DATA["spv"]:
         rr = C.exposure[s["company"]]
         items.append((f"{s['company']} · invested by the fund", ref("Construction", rr, 1), s["fund"], eur))
@@ -1350,7 +1274,6 @@ def sheet_checks(bk: Book, outs: dict) -> list:
     e0, e1 = C.exposure_range
     rules.append(("Every company within the cap from the fund",
                   f"IF(COUNTIF({rng('Construction', e0, e1, 3)},\"CHECK\")=0,\"OK\",\"CHECK\")"))
-    rules.append(("Loans within the EuVECA cap", ref("Construction", C.loan_cap_row, 5)))
     for j, layer in enumerate(fm.LAYERS[:2]):
         nm = LAYER_NAME[layer]
         lo, hi = ref("Assumptions", B[("own", 0)], 1 + j), ref("Assumptions", B[("own", 1)], 1 + j)
@@ -1367,7 +1290,6 @@ def sheet_checks(bk: Book, outs: dict) -> list:
                   f'IF(COUNTIFS({L.col("follow")},">0",{L.col("dilution")},0)=0,"OK","CHECK")'))
     rules.append((f"Partial liquidity only on lines that exit after year {SEC['year']}",
                   f'IF(COUNTIFS({L.col("partial")},"yes",{L.col("exit_year")},"<="&SecYear)=0,"OK","CHECK")'))
-    rules.append(("Fees on the loan sleeve not above the standard fee", 'IF(FeeLoan<=FeeIP,"OK","CHECK")'))
     for label, formula in rules:
         ws.write(r, 0, label)
         bk.formula(ws, r, 4, formula, "OK", st)
@@ -1397,7 +1319,7 @@ def sheet_readme(bk: Book) -> None:
     ws.set_column(0, 0, 24)
     ws.set_column(1, 1, 110)
     ws.set_row(0, 34)
-    ws.write(0, 0, f"ProFund Fund I — Fund model ({fm.VERSION})", bk.f(bold=True, font_size=18))
+    ws.write(0, 0, f"ProFund Fund I, fund model ({fm.VERSION})", bk.f(bold=True, font_size=18))
     ws.write(1, 0, f"Model date {fm.MODEL_DATE} · Pre-seed to Growth · amounts in euros · "
                    "contact alexandre@profund.vc", bk.f(font_color=MUTED))
     box = bk.f(text_wrap=True, valign="top", bg_color=BAND, left=5, left_color=BLUE, font_size=10.5)
@@ -1417,19 +1339,19 @@ def sheet_readme(bk: Book) -> None:
     wrap = bk.f(text_wrap=True, valign="top")
     for tab, text in (
         ("Assumptions", "Fund size, terms and fees, the partial secondary sale, the multiplier and cap of each case, "
-                        "layer bounds, the buyback discount and the loan cap."),
+                        "layer bounds and the buyback discount."),
         ("Lines", f"The simulation lines ({n['seed']} S-, {n['venture']} V-, {n['growth']} G-): first cheque, buybacks, "
-                  "loans, cancellations and outside rounds, exit inputs, then proceeds and MOIC per case, with layer "
+                  "cancellations and outside rounds, exit inputs, then proceeds and MOIC per case, with layer "
                   f"subtotals. {n['seed']} lines carry their track: Lead ({SEED_TR['lead']['first']} to "
                   f"{SEED_TR['lead']['last']}) or Radar ({SEED_TR['radar']['first']} to {SEED_TR['radar']['last']})."),
-        ("Construction", "Portfolio by layer, capital allocation (first cheques, buybacks, loans), loans vs the EuVECA "
-                         "cap, exposure per company and the fund returner."),
-        ("Cash flows", "Yearly flows per case: investments incl. loans, exits incl. the year-6 secondary, loan "
-                       "repayments, fees, expenses, capital calls, the European waterfall step by step, LP and GP "
-                       "flows; net TVPI, IRR and DPI."),
+        ("Construction", "Portfolio by layer, capital allocation (first cheques, buybacks, follow-ons), exposure "
+                         "per company and the fund returner."),
+        ("Cash flows", "Yearly flows per case: investments, exits incl. the year-6 secondary, fees, expenses, "
+                       "capital calls, the European waterfall step by step, LP and GP flows; net TVPI, IRR and "
+                       "DPI."),
         ("Performance", "The Fund Performance table shown on profund.vc/pitch, linked to the tabs above, and the "
                         "stress tests of the Target case."),
-        ("Checks", "Every output compared with the published v3.3 values: src/data/fund.json, written by "
+        ("Checks", f"Every output compared with the published {fm.VERSION} values: src/data/fund.json, written by "
                    "scripts/fund_model.py, the model the site and the fact sheet read. This workbook is generated "
                    "from the same model by scripts/fund_xlsx.py. Change an input and the checks turn red: the "
                    "workbook then shows your case, no longer the published one."),
@@ -1446,24 +1368,21 @@ def sheet_readme(bk: Book) -> None:
         ("Blue", "Input: change it and the whole workbook recalculates (Excel, LibreOffice, Google Sheets).",
          bk.f(bold=True, font_color=INPUT)),
         ("Black", "Formula.", bk.f(bold=True)),
-        ("Green", "Check against the published v3.3 values.", bk.f(bold=True, font_color=GREEN)),
+        ("Green", f"Check against the published {fm.VERSION} values.", bk.f(bold=True, font_color=GREEN)),
         ("Years", "Year 1 = year of the first closing; all flows at year end.", bk.f(bold=True)),
         ("Rounding", "Every amount is rounded to its display grain (EUR 10K below EUR 1M, EUR 100K above) before "
                      "any sum; ratios at their display precision.", bk.f(bold=True)),
         ("v3 mechanics", "One equity round per company, then no new shares while the founder grows with ProFund. "
-                         "Exposure grows by buybacks of existing shares at a discount; growth is financed by loans; "
-                         "companies buy back and cancel shares. If the founder raises elsewhere, ProFund follows or "
-                         f"leads in new shares. {n['growth']} also takes fresh growth deals in new shares. Loans stay "
-                         f"within the EuVECA cap of {pct_txt(FUND['loan_cap_pct'])} of commitments, with a "
-                         f"{pct_txt(TERMS['fee_loan_pct'])} fee.  v3.2: realistic timing (investments over "
+                         "Exposure grows by buybacks of existing shares at a discount; companies buy back and "
+                         "cancel shares. If the founder raises elsewhere, ProFund follows or "
+                         f"leads in new shares. {n['growth']} also takes fresh growth deals in new shares. "
+                         f" v3.2: realistic timing (investments over "
                          f"{FUND['investment_period_years']} years, exits years {min(x.exit_year for x in fm.LINES)} "
-                         f"to {HORIZON}), loans at "
-                         f"{round(fm.LOAN_RATE * 100)}% a year in tranches (v3.4; v3.3 priced every loan at "
-                         f"1.4×), {n['growth']} bought from structural "
+                         f"to {HORIZON}), {n['growth']} bought from structural "
                          f"sellers. v3.3: real {n['venture']} and {n['growth']} tickets ({eur_txt(vr[0])}–"
                          f"{eur_txt(vr[1])} Series A cheques; {eur_txt(gr[0])}–{eur_txt(gr[1])} growth positions, up "
                          f"to {eur_txt(FUND['company_max_with_spv'])} with SPVs), incl. a block bought in our own "
-                         "breakout.", bk.f(bold=True)),
+                         "breakout. v3.17: the fund no longer lends. Growth debt comes from partner banks, arranged by ProFund, outside the fund; each modelled loan became a buyback of the same amount in the same company (V-04 at its entry price, default discount), except the V-05 zombies' €1M, which pays the higher management fee (the loan sleeve paid 1% instead of 2%).", bk.f(bold=True)),
     ):
         ws.write(r, 0, k, fmt)
         ws.write(r, 1, text, wrap)

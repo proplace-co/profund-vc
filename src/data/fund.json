@@ -1,7 +1,7 @@
 {
   "schema": 3,
-  "version": "v3.16",
-  "model_date": "2026-11-06",
+  "version": "v3.17",
+  "model_date": "2026-11-07",
   "fund": {
     "commitments": 100000000,
     "term_years": 10,
@@ -11,17 +11,14 @@
     "company_max_with_spv": 15000000,
     "europe_min_pct": 0.85,
     "euveca_qualifying_min_pct": 0.7,
-    "loan_cap_pct": 0.3,
     "first_close_min": 20000000,
     "first_close_max": 30000000,
     "company_cap": 10000000,
-    "loan_cap": 30000000,
     "companies": 62,
     "positions": 25
   },
   "terms": {
     "fee_ip_pct": 0.02,
-    "fee_loan_pct": 0.01,
     "fee_post_pct": 0.015,
     "fee_first_close_pct": 0.0175,
     "setup_cost": 400000,
@@ -39,13 +36,6 @@
     "lines": []
   },
   "buyback_discount": 0.2,
-  "loan_rate": 0.12,
-  "loan_multiples": {
-    "zombie": 0.8,
-    "loss": 0.2,
-    "performing_min": 1.12,
-    "performing_max": 1.4
-  },
   "layers": {
     "seed": {
       "model_name": "Seed",
@@ -60,9 +50,8 @@
       "breakouts": 0,
       "positions": 13,
       "first": 14700000,
-      "buyback": 3800000,
+      "buyback": 5800000,
       "follow": 1000000,
-      "loans": 2000000,
       "invested": 21500000,
       "first_cheque_range": [
         150000,
@@ -77,19 +66,19 @@
         3
       ],
       "proceeds": {
-        "target": 329620000,
-        "base": 198940000,
-        "stress": 133250000
+        "target": 361730000,
+        "base": 217620000,
+        "stress": 145560000
       },
       "moic": {
-        "target": 15.3,
-        "base": 9.3,
-        "stress": 6.2
+        "target": 16.8,
+        "base": 10.1,
+        "stress": 6.8
       },
       "gross_irr": {
-        "target": 0.56,
-        "base": 0.44,
-        "stress": 0.35
+        "target": 0.57,
+        "base": 0.45,
+        "stress": 0.36
       },
       "lines": [
         {
@@ -102,18 +91,17 @@
           "kind": "new",
           "track": "lead",
           "first": 1500000,
-          "buyback": 1500000,
+          "buyback": 2500000,
           "follow": 0,
-          "loan": 1000000,
           "invested": 4000000,
           "entry_post": 7500000,
           "entry_pct": 0.2,
-          "exit_pct": 0.263,
+          "exit_pct": 0.292,
           "exit_value": 1000000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 264200000,
-          "moic": 66.1,
+          "proceeds": 292000000,
+          "moic": 73.0,
           "entry_year": 1,
           "exit_year": 9,
           "buyback_year": 3,
@@ -122,10 +110,7 @@
           "cancel": 0.08,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": 3,
-          "loan_repay_year": 5,
-          "loan_mult": 1.25
+          "follow_post": null
         },
         {
           "id": "S-02",
@@ -137,18 +122,17 @@
           "kind": "new",
           "track": "lead",
           "first": 1000000,
-          "buyback": 1000000,
+          "buyback": 1500000,
           "follow": 1000000,
-          "loan": 500000,
           "invested": 3500000,
           "entry_post": 6000000,
           "entry_pct": 0.167,
-          "exit_pct": 0.196,
+          "exit_pct": 0.216,
           "exit_value": 250000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 49590000,
-          "moic": 14.2,
+          "proceeds": 54000000,
+          "moic": 15.4,
           "entry_year": 1,
           "exit_year": 8,
           "buyback_year": 3,
@@ -157,10 +141,7 @@
           "cancel": 0.0,
           "dilution": 0.15,
           "follow_year": 4,
-          "follow_post": 60000000,
-          "loan_year": 3,
-          "loan_repay_year": 5,
-          "loan_mult": 1.25
+          "follow_post": 60000000
         },
         {
           "id": "S-03",
@@ -172,9 +153,8 @@
           "kind": "new",
           "track": "lead",
           "first": 1000000,
-          "buyback": 500000,
+          "buyback": 1000000,
           "follow": 0,
-          "loan": 500000,
           "invested": 2000000,
           "entry_post": 7000000,
           "entry_pct": 0.143,
@@ -182,8 +162,8 @@
           "exit_value": null,
           "recovery": 0.0,
           "partial": false,
-          "proceeds": 100000,
-          "moic": 0.1,
+          "proceeds": 0,
+          "moic": 0.0,
           "entry_year": 2,
           "exit_year": 7,
           "buyback_year": 4,
@@ -192,10 +172,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": 3,
-          "loan_repay_year": 5,
-          "loan_mult": 0.2
+          "follow_post": null
         },
         {
           "id": "S-04",
@@ -209,7 +186,6 @@
           "first": 750000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 750000,
           "entry_post": 7000000,
           "entry_pct": 0.107,
@@ -227,10 +203,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-05",
@@ -244,7 +217,6 @@
           "first": 700000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 700000,
           "entry_post": 8000000,
           "entry_pct": 0.088,
@@ -262,10 +234,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-06",
@@ -279,7 +248,6 @@
           "first": 1500000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 1500000,
           "entry_post": 8000000,
           "entry_pct": 0.094,
@@ -297,10 +265,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-08",
@@ -314,7 +279,6 @@
           "first": 2250000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 2250000,
           "entry_post": 8000000,
           "entry_pct": 0.094,
@@ -332,10 +296,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-11",
@@ -349,7 +310,6 @@
           "first": 150000,
           "buyback": 800000,
           "follow": 0,
-          "loan": 0,
           "invested": 950000,
           "entry_post": 8000000,
           "entry_pct": 0.019,
@@ -367,10 +327,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-12",
@@ -384,7 +341,6 @@
           "first": 150000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 150000,
           "entry_post": 8000000,
           "entry_pct": 0.019,
@@ -402,10 +358,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-13",
@@ -419,7 +372,6 @@
           "first": 150000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 150000,
           "entry_post": 8000000,
           "entry_pct": 0.019,
@@ -437,10 +389,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-14",
@@ -454,7 +403,6 @@
           "first": 150000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 150000,
           "entry_post": 8000000,
           "entry_pct": 0.019,
@@ -472,10 +420,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-15",
@@ -489,7 +434,6 @@
           "first": 1200000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 1200000,
           "entry_post": 8000000,
           "entry_pct": 0.019,
@@ -507,10 +451,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "S-23",
@@ -524,7 +465,6 @@
           "first": 4200000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 4200000,
           "entry_post": 8000000,
           "entry_pct": 0.019,
@@ -542,10 +482,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         }
       ],
       "tracks": {
@@ -556,8 +493,8 @@
           "first": "S-01",
           "last": "S-10",
           "invested": 14700000,
-          "proceeds": 317240000,
-          "moic": 21.6
+          "proceeds": 349350000,
+          "moic": 23.8
         },
         "radar": {
           "companies": 40,
@@ -569,8 +506,7 @@
           "proceeds": 12380000,
           "moic": 1.8
         }
-      },
-      "loans_pct": 0.09
+      }
     },
     "venture": {
       "model_name": "Venture",
@@ -585,16 +521,15 @@
       "breakouts": 0,
       "positions": 6,
       "first": 19500000,
-      "buyback": 2500000,
+      "buyback": 7500000,
       "follow": 1500000,
-      "loans": 6000000,
-      "invested": 29500000,
+      "invested": 28500000,
       "first_cheque_range": [
         2000000,
         4000000
       ],
       "position_range": [
-        2500000,
+        2000000,
         7500000
       ],
       "entry_years": [
@@ -602,19 +537,19 @@
         4
       ],
       "proceeds": {
-        "target": 103350000,
-        "base": 65440000,
-        "stress": 45900000
+        "target": 115800000,
+        "base": 71200000,
+        "stress": 48900000
       },
       "moic": {
-        "target": 3.5,
-        "base": 2.2,
-        "stress": 1.6
+        "target": 4.1,
+        "base": 2.5,
+        "stress": 1.7
       },
       "gross_irr": {
-        "target": 0.28,
-        "base": 0.17,
-        "stress": 0.09
+        "target": 0.31,
+        "base": 0.19,
+        "stress": 0.11
       },
       "lines": [
         {
@@ -627,18 +562,17 @@
           "kind": "new",
           "track": null,
           "first": 4000000,
-          "buyback": 1500000,
+          "buyback": 3500000,
           "follow": 0,
-          "loan": 2000000,
           "invested": 7500000,
           "entry_post": 40000000,
           "entry_pct": 0.1,
-          "exit_pct": 0.126,
+          "exit_pct": 0.149,
           "exit_value": 500000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 65700000,
-          "moic": 8.8,
+          "proceeds": 74500000,
+          "moic": 9.9,
           "entry_year": 2,
           "exit_year": 9,
           "buyback_year": 4,
@@ -647,10 +581,7 @@
           "cancel": 0.08,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": 3,
-          "loan_repay_year": 6,
-          "loan_mult": 1.4
+          "follow_post": null
         },
         {
           "id": "V-02",
@@ -662,18 +593,17 @@
           "kind": "new",
           "track": null,
           "first": 3500000,
-          "buyback": 500000,
+          "buyback": 2000000,
           "follow": 1500000,
-          "loan": 1500000,
           "invested": 7000000,
           "entry_post": 35000000,
           "entry_pct": 0.1,
-          "exit_pct": 0.1,
+          "exit_pct": 0.123,
           "exit_value": 250000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 26800000,
-          "moic": 3.8,
+          "proceeds": 30800000,
+          "moic": 4.4,
           "entry_year": 2,
           "exit_year": 8,
           "buyback_year": 4,
@@ -682,10 +612,7 @@
           "cancel": 0.0,
           "dilution": 0.2,
           "follow_year": 5,
-          "follow_post": 120000000,
-          "loan_year": 4,
-          "loan_repay_year": 6,
-          "loan_mult": 1.25
+          "follow_post": 120000000
         },
         {
           "id": "V-03",
@@ -697,9 +624,8 @@
           "kind": "new",
           "track": null,
           "first": 3000000,
-          "buyback": 500000,
+          "buyback": 1500000,
           "follow": 0,
-          "loan": 1000000,
           "invested": 4500000,
           "entry_post": 35000000,
           "entry_pct": 0.086,
@@ -707,8 +633,8 @@
           "exit_value": null,
           "recovery": 0.5,
           "partial": false,
-          "proceeds": 2560000,
-          "moic": 0.6,
+          "proceeds": 2300000,
+          "moic": 0.5,
           "entry_year": 3,
           "exit_year": 7,
           "buyback_year": 4,
@@ -717,10 +643,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": 4,
-          "loan_repay_year": 6,
-          "loan_mult": 0.8
+          "follow_post": null
         },
         {
           "id": "V-04",
@@ -732,30 +655,26 @@
           "kind": "new",
           "track": null,
           "first": 2500000,
-          "buyback": 0,
+          "buyback": 500000,
           "follow": 0,
-          "loan": 500000,
           "invested": 3000000,
           "entry_post": 30000000,
           "entry_pct": 0.083,
-          "exit_pct": 0.083,
+          "exit_pct": 0.104,
           "exit_value": 60000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 5530000,
-          "moic": 1.8,
+          "proceeds": 6200000,
+          "moic": 2.1,
           "entry_year": 3,
           "exit_year": 5,
-          "buyback_year": null,
-          "buyback_value": null,
+          "buyback_year": 4,
+          "buyback_value": 30000000,
           "discount": null,
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": 4,
-          "loan_repay_year": 5,
-          "loan_mult": 1.12
+          "follow_post": null
         },
         {
           "id": "V-05",
@@ -769,16 +688,15 @@
           "first": 4000000,
           "buyback": 0,
           "follow": 0,
-          "loan": 1000000,
-          "invested": 5000000,
+          "invested": 4000000,
           "entry_post": 25000000,
           "entry_pct": 0.08,
           "exit_pct": null,
           "exit_value": null,
           "recovery": 0.5,
           "partial": false,
-          "proceeds": 2760000,
-          "moic": 0.6,
+          "proceeds": 2000000,
+          "moic": 0.5,
           "entry_year": 3,
           "exit_year": 8,
           "buyback_year": null,
@@ -787,10 +705,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": 5,
-          "loan_repay_year": 7,
-          "loan_mult": 0.8
+          "follow_post": null
         },
         {
           "id": "V-07",
@@ -804,7 +719,6 @@
           "first": 2500000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 2500000,
           "entry_post": 25000000,
           "entry_pct": 0.1,
@@ -822,13 +736,9 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         }
-      ],
-      "loans_pct": 0.2
+      ]
     },
     "growth": {
       "model_name": "Growth",
@@ -843,9 +753,8 @@
       "breakouts": 1,
       "positions": 6,
       "first": 11000000,
-      "buyback": 20000000,
+      "buyback": 22000000,
       "follow": 0,
-      "loans": 2000000,
       "invested": 33000000,
       "first_cheque_range": [
         5000000,
@@ -860,18 +769,18 @@
         5
       ],
       "proceeds": {
-        "target": 95800000,
-        "base": 60500000,
-        "stress": 44500000
+        "target": 99100000,
+        "base": 61900000,
+        "stress": 45100000
       },
       "moic": {
-        "target": 2.9,
-        "base": 1.8,
-        "stress": 1.3
+        "target": 3.0,
+        "base": 1.9,
+        "stress": 1.4
       },
       "gross_irr": {
-        "target": 0.39,
-        "base": 0.2,
+        "target": 0.41,
+        "base": 0.21,
         "stress": 0.1
       },
       "lines": [
@@ -885,18 +794,17 @@
           "kind": "new",
           "track": null,
           "first": 0,
-          "buyback": 5000000,
+          "buyback": 7000000,
           "follow": 0,
-          "loan": 2000000,
           "invested": 7000000,
           "entry_post": 150000000,
-          "entry_pct": 0.048,
-          "exit_pct": 0.048,
+          "entry_pct": 0.067,
+          "exit_pct": 0.067,
           "exit_value": 300000000,
           "recovery": null,
           "partial": false,
-          "proceeds": 16800000,
-          "moic": 2.4,
+          "proceeds": 20100000,
+          "moic": 2.9,
           "entry_year": 3,
           "exit_year": 6,
           "buyback_year": 3,
@@ -905,10 +813,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": 4,
-          "loan_repay_year": 6,
-          "loan_mult": 1.25
+          "follow_post": null
         },
         {
           "id": "G-02",
@@ -922,7 +827,6 @@
           "first": 6000000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 6000000,
           "entry_post": 175000000,
           "entry_pct": 0.034,
@@ -940,10 +844,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "G-03",
@@ -957,7 +858,6 @@
           "first": 0,
           "buyback": 5000000,
           "follow": 0,
-          "loan": 0,
           "invested": 5000000,
           "entry_post": 100000000,
           "entry_pct": 0.071,
@@ -975,10 +875,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "G-04",
@@ -992,7 +889,6 @@
           "first": 5000000,
           "buyback": 0,
           "follow": 0,
-          "loan": 0,
           "invested": 5000000,
           "entry_post": 150000000,
           "entry_pct": 0.033,
@@ -1010,10 +906,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "G-05",
@@ -1027,7 +920,6 @@
           "first": 0,
           "buyback": 5000000,
           "follow": 0,
-          "loan": 0,
           "invested": 5000000,
           "entry_post": 120000000,
           "entry_pct": 0.06,
@@ -1045,10 +937,7 @@
           "cancel": 0.0,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         },
         {
           "id": "G-06",
@@ -1062,7 +951,6 @@
           "first": 0,
           "buyback": 5000000,
           "follow": 0,
-          "loan": 0,
           "invested": 5000000,
           "entry_post": 150000000,
           "entry_pct": 0.048,
@@ -1080,28 +968,22 @@
           "cancel": 0.04,
           "dilution": 0.0,
           "follow_year": null,
-          "follow_post": null,
-          "loan_year": null,
-          "loan_repay_year": null,
-          "loan_mult": null
+          "follow_post": null
         }
-      ],
-      "loans_pct": 0.06
+      ]
     }
   },
   "allocation": {
     "seed": 21500000,
-    "venture": 29500000,
+    "venture": 28500000,
     "growth": 33000000,
-    "invested": 84000000,
+    "invested": 83000000,
     "first": 45200000,
-    "buyback_follow": 28800000,
-    "loans": 10000000,
+    "buyback_follow": 37800000,
     "after_first_pct": 0.46,
-    "loans_pct": 0.12,
-    "mgmt_fees": 11900000,
+    "mgmt_fees": 12600000,
     "fund_expenses": 3900000,
-    "contingency": 200000,
+    "contingency": 500000,
     "total": 100000000
   },
   "spv": [
@@ -1124,41 +1006,38 @@
   "spv_total": 21500000,
   "fund_returner": {
     "company": "S-01",
-    "proceeds": 314200000,
-    "multiple_of_fund": 3.1,
-    "stake_at_exit": 0.313,
-    "fund_returning_exit": 320000000
+    "proceeds": 342000000,
+    "multiple_of_fund": 3.4,
+    "stake_at_exit": 0.342,
+    "fund_returning_exit": 295000000
   },
   "cases": {
     "target": {
       "exit_mult": 1.0,
       "exit_cap": null,
-      "loan_repaid": 0.95,
-      "gross_proceeds": 528770000,
-      "gross_moic": 6.3,
-      "realised": 528800000,
-      "secondary_discount": -30000,
-      "paid_in": 99500000,
-      "mgmt_fees": 11900000,
+      "gross_proceeds": 576630000,
+      "gross_moic": 6.9,
+      "realised": 576600000,
+      "secondary_discount": 30000,
+      "paid_in": 99200000,
+      "mgmt_fees": 12600000,
       "fund_expenses": 3900000,
-      "lp_distributions": 442600000,
-      "carry": 85800000,
-      "net_tvpi": 4.4,
-      "net_irr": 0.36,
-      "gross_irr": 0.44,
+      "lp_distributions": 480900000,
+      "carry": 95400000,
+      "net_tvpi": 4.8,
+      "net_irr": 0.37,
+      "gross_irr": 0.47,
       "dpi_year6": 0.6,
-      "dpi_year7": 0.7,
-      "loans_repaid": 10840000,
-      "loans_multiple": 1.08,
+      "dpi_year7": 0.6,
       "largest_exit": 1000000000,
       "horizon_years": 9,
       "cashflows": {
         "investments": [
           2500000,
           14000000,
-          26700000,
-          28300000,
-          12500000,
+          26200000,
+          28800000,
+          11500000,
           0,
           0,
           0,
@@ -1166,15 +1045,15 @@
           0
         ],
         "calls": [
-          5200000,
-          16300000,
-          29000000,
-          30600000,
-          14800000,
+          5300000,
+          16400000,
+          28600000,
+          31200000,
+          13900000,
           1400000,
-          1000000,
-          830000,
-          550000,
+          1100000,
+          900000,
+          600000,
           0
         ],
         "distributions": [
@@ -1182,11 +1061,11 @@
           0,
           0,
           0,
-          11000000,
-          46400000,
-          8900000,
-          86500000,
-          375700000,
+          9800000,
+          44400000,
+          8700000,
+          97300000,
+          416200000,
           0
         ],
         "lp": [
@@ -1194,11 +1073,11 @@
           0,
           0,
           0,
-          11000000,
-          46400000,
-          8900000,
-          75700000,
-          300600000,
+          9800000,
+          44400000,
+          8700000,
+          85000000,
+          333000000,
           0
         ],
         "gp": [
@@ -1209,8 +1088,8 @@
           0,
           0,
           0,
-          10800000,
-          75000000,
+          12300000,
+          83100000,
           0
         ]
       }
@@ -1218,32 +1097,29 @@
     "base": {
       "exit_mult": 0.6,
       "exit_cap": null,
-      "loan_repaid": 0.85,
-      "gross_proceeds": 324880000,
-      "gross_moic": 3.9,
-      "realised": 324900000,
-      "secondary_discount": -20000,
-      "paid_in": 99500000,
-      "mgmt_fees": 11900000,
+      "gross_proceeds": 350720000,
+      "gross_moic": 4.2,
+      "realised": 350700000,
+      "secondary_discount": 20000,
+      "paid_in": 99200000,
+      "mgmt_fees": 12600000,
       "fund_expenses": 3900000,
-      "lp_distributions": 279500000,
-      "carry": 45000000,
-      "net_tvpi": 2.8,
-      "net_irr": 0.24,
-      "gross_irr": 0.31,
-      "dpi_year6": 0.4,
-      "dpi_year7": 0.5,
-      "loans_repaid": 9660000,
-      "loans_multiple": 0.97,
+      "lp_distributions": 300100000,
+      "carry": 50200000,
+      "net_tvpi": 3.0,
+      "net_irr": 0.25,
+      "gross_irr": 0.33,
+      "dpi_year6": 0.3,
+      "dpi_year7": 0.4,
       "largest_exit": 600000000,
       "horizon_years": 9,
       "cashflows": {
         "investments": [
           2500000,
           14000000,
-          26700000,
-          28300000,
-          12500000,
+          26200000,
+          28800000,
+          11500000,
           0,
           0,
           0,
@@ -1251,15 +1127,15 @@
           0
         ],
         "calls": [
-          5200000,
-          16300000,
-          29000000,
-          30600000,
-          14800000,
+          5300000,
+          16400000,
+          28600000,
+          31200000,
+          13900000,
           1400000,
-          1000000,
-          830000,
-          550000,
+          1100000,
+          900000,
+          600000,
           0
         ],
         "distributions": [
@@ -1267,11 +1143,11 @@
           0,
           0,
           0,
-          7400000,
-          30000000,
-          8800000,
-          53100000,
-          225300000,
+          5900000,
+          26700000,
+          8700000,
+          59600000,
+          249600000,
           0
         ],
         "lp": [
@@ -1279,11 +1155,11 @@
           0,
           0,
           0,
-          7400000,
-          30000000,
-          8800000,
-          53100000,
-          180200000,
+          5900000,
+          26700000,
+          8700000,
+          59600000,
+          199300000,
           0
         ],
         "gp": [
@@ -1295,7 +1171,7 @@
           0,
           0,
           0,
-          45000000,
+          50200000,
           0
         ]
       }
@@ -1303,32 +1179,29 @@
     "stress": {
       "exit_mult": 0.4,
       "exit_cap": null,
-      "loan_repaid": 0.65,
-      "gross_proceeds": 223650000,
-      "gross_moic": 2.7,
-      "realised": 223700000,
-      "secondary_discount": -50000,
-      "paid_in": 99500000,
-      "mgmt_fees": 11900000,
+      "gross_proceeds": 239560000,
+      "gross_moic": 2.9,
+      "realised": 239600000,
+      "secondary_discount": -40000,
+      "paid_in": 99200000,
+      "mgmt_fees": 12600000,
       "fund_expenses": 3900000,
-      "lp_distributions": 198500000,
-      "carry": 24800000,
-      "net_tvpi": 2.0,
-      "net_irr": 0.15,
-      "gross_irr": 0.22,
-      "dpi_year6": 0.3,
-      "dpi_year7": 0.4,
-      "loans_repaid": 7290000,
-      "loans_multiple": 0.73,
+      "lp_distributions": 211200000,
+      "carry": 28000000,
+      "net_tvpi": 2.1,
+      "net_irr": 0.17,
+      "gross_irr": 0.23,
+      "dpi_year6": 0.2,
+      "dpi_year7": 0.3,
       "largest_exit": 400000000,
       "horizon_years": 9,
       "cashflows": {
         "investments": [
           2500000,
           14000000,
-          26700000,
-          28300000,
-          12500000,
+          26200000,
+          28800000,
+          11500000,
           0,
           0,
           0,
@@ -1336,15 +1209,15 @@
           0
         ],
         "calls": [
-          5200000,
-          16300000,
-          29000000,
-          30600000,
-          14800000,
+          5300000,
+          16400000,
+          28600000,
+          31200000,
+          13900000,
           1400000,
-          1000000,
-          830000,
-          550000,
+          1100000,
+          900000,
+          600000,
           0
         ],
         "distributions": [
@@ -1352,11 +1225,11 @@
           0,
           0,
           0,
-          5600000,
-          22600000,
+          4000000,
+          19600000,
           8700000,
-          36400000,
-          150100000,
+          40700000,
+          166300000,
           0
         ],
         "lp": [
@@ -1364,11 +1237,11 @@
           0,
           0,
           0,
-          5600000,
-          22600000,
+          4000000,
+          19600000,
           8700000,
-          36400000,
-          125300000,
+          40700000,
+          138200000,
           0
         ],
         "gp": [
@@ -1380,7 +1253,7 @@
           0,
           0,
           0,
-          24800000,
+          28000000,
           0
         ]
       }
@@ -1390,51 +1263,44 @@
     {
       "id": "exits_plus_1",
       "label": "Every exit one year later",
-      "net_tvpi": 2.8,
-      "net_irr": 0.19,
-      "dpi_year7": 0.4
+      "net_tvpi": 3.0,
+      "net_irr": 0.2,
+      "dpi_year7": 0.3
     },
     {
       "id": "best_zombie",
       "label": "No unicorn: S-01 (both lines) becomes a zombie",
       "net_tvpi": 1.4,
       "net_irr": 0.08,
-      "dpi_year7": 0.5
+      "dpi_year7": 0.4
     },
     {
       "id": "unicorn_half",
       "label": "The unicorn also sells \u20ac85M of equity",
-      "net_tvpi": 2.1,
-      "net_irr": 0.18,
-      "dpi_year7": 0.5
+      "net_tvpi": 2.3,
+      "net_irr": 0.19,
+      "dpi_year7": 0.4
     },
     {
       "id": "unicorn_same",
       "label": "The unicorn also sells \u20ac199M of equity",
-      "net_tvpi": 1.8,
-      "net_irr": 0.15,
-      "dpi_year7": 0.5
-    },
-    {
-      "id": "loan_losses",
-      "label": "30% more losses on every loan",
-      "net_tvpi": 2.8,
-      "net_irr": 0.23,
+      "net_tvpi": 2.0,
+      "net_irr": 0.16,
       "dpi_year7": 0.4
     },
     {
       "id": "two_unicorns",
       "label": "Two unicorns: V-01 also modelled at \u20ac1B",
-      "net_tvpi": 3.1,
-      "net_irr": 0.26,
-      "dpi_year7": 0.5
+      "net_tvpi": 3.4,
+      "net_irr": 0.27,
+      "dpi_year7": 0.4
     },
     {
       "id": "big_unicorn",
       "label": "A bigger unicorn: S-01 modelled at \u20ac2B",
-      "net_tvpi": 4.3,
-      "net_irr": 0.33,
-      "dpi_year7": 0.5
+      "net_tvpi": 4.7,
+      "net_irr": 0.34,
+      "dpi_year7": 0.4
     }
   ],
   "founder_math": {

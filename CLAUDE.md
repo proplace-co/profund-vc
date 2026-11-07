@@ -97,7 +97,19 @@ Clauses 1 et 2 réécrites le 06/11 (2) : « Equity, only when you choose. » (p
 once », on ne pousse jamais de tour) et « Follow-on capital, reserved for you. » (prêts, puis
 equity aux mêmes termes dès que le fondateur la demande, SPV pour les plus gros tours) ; la
 réserve se lit dans `allocation.after_first_pct` (46 % de l'investi après le premier chèque :
-suivis, rachats, prêts), dite sur /lp et dans le bandeau de la fiche p. 1.
+rachats et suivis depuis la v3.17), dite sur /lp et dans le bandeau de la fiche p. 1.
+**v3.17 (07/11, Alexandre) : LE FONDS NE PRÊTE PLUS** (« j'ai pas envie de recruter un profil crédit »).
+ProFund, en Chief Fundraising Officer, fait lever la dette des fondateurs auprès des banques partenaires ;
+le prêt est entre la société et la banque, sans frais ni BSA pour ProFund ; si la banque demande des
+BSA, c'est le choix du fondateur (ne JAMAIS promettre « never with warrants » sur un prêt bancaire). Pas
+d'associé crédit à recruter, nulle part. Pacte : toujours 12 clauses, la clause 3 devient « Debt, raised
+for you. », les renvois aux prêts du fonds quittent les clauses 2, 4, 6, 7, 10 et 12 (12 : « a payment
+default on the company’s debt »). Modèle : chaque prêt devient un rachat de même montant dans la même
+société (V-04 au prix d'entrée), sauf le million des zombies V-05 qui paie les frais en plus (la poche de
+prêts payait 1 % au lieu de 2 %) ; plus de `fee_loan_pct`, `loan_cap_pct`, `LOAN_MULTIPLES`, ni de test
+« pertes sur prêts ». Cible 3,0x / 25 % (DPI an 7 0,4x), upside 4,8x / 37 %, stress 2,1x / 17 %, sans
+licorne 1,4x, licorne qui vend 199 M EUR d'equity 2,0x ; S-01 détenue à 34,2 %, une vente à 295 M EUR
+rend le fonds ; frais 12,6 M EUR. `LOAN_RATE` ne sert plus qu'au tableau des fondateurs (dette bancaire).
 Sous chaque clause du pacte (`vc` dans `CLAUSES`, Pact.tsx), une ligne « Classic VC » : ce que dit un term
 sheet classique, notre résumé, pas une clause ni une citation (l'ancien tableau « The term sheet, rewritten », fondu dedans).
 **Le pacte v3.19 (07/11, Alexandre, relu côté LPs)** : toujours 12 clauses, la même logique (la
@@ -172,7 +184,24 @@ résistance tournent sur la cible affichée (sans licorne 1,4x, licorne qui vend
 licorne à 2 Md EUR 4,3x). ATTENTION : les clés internes ne changent pas (« target » = valeurs modélisées,
 présenté « Upside » ; « base » = 60 %, présenté « Target »). Aucune hypothèse n'a été retouchée pour
 atteindre un chiffre rond. La tuile « One unicorn » devient « One company returns the fund » (une vente
-de S-01 à 320 M EUR rend le fonds).
+de S-01 à 320 M EUR rend le fonds). Chiffres remplacés par la v3.17 (ci-dessus) : 3,0x, 4,8x, 2,1x, 295 M EUR.
+**Les prêteurs partenaires (07/11, Alexandre ; v3.17 : ils prêtent seuls, le fonds ne prête plus)** : la
+dette des sociétés vient des banques partenaires et de la BEI ; les fonds de venture debt prennent
+d'ordinaire des BSA, qui créeraient des actions nouvelles. Pistes
+(recherche du 07/11, à confirmer en direct) : BNP Paribas Growth Solutions, HSBC Innovation Banking,
+J.P. Morgan Innovation Economy, BEI (tranches de 10 M EUR et plus ; elle prend souvent des BSA ou une
+rémunération indexée), Bpifrance pour les petits prêts de seed. Le gestionnaire EuVECA n'est pas
+choisi : la recommandation (recherche du 07/11, LPs internationaux, environ un tiers FR, un tiers CH,
+un tiers autres) est une SCSp luxembourgeoise gérée par un gestionnaire AGRÉÉ, avec le label EuVECA,
+à mettre en concurrence entre IQ-EQ, Fundcraft et Innpact ; un FPCI hébergé (IQ-EQ Management) si les
+résidents fiscaux français deviennent majoritaires ; jamais la Suisse comme domicile ; Roundtable n'est
+qu'enregistré (bon pour les SPV). Deux adaptations décidées (Alexandre, 07/11), à valider par un avis
+fiscal avant toute mention publique : (1) le piège des 10 % (163 quinquies B : un particulier français
+et sa famille au-delà de 10 % des parts d'un FPCI sont imposés chaque année) : gros tickets français
+via une holding à l'IS, ou plafonnés à 10 % du véhicule français, même au premier closing ; (2)
+l'apport-cession (150-0 B ter, quota de 75 %, rachats et prêts limités) : un véhicule parallèle
+français dédié, qui ne suit que les tours en actions nouvelles éligibles, le fonds principal gardant
+les rachats (v3.17 : il ne prête plus).
 **Le dessin de l'accueil (07/11, trois passes ; Alexandre : « trop de texte », « les grandes icônes
 font cheap », « on se répète », « que l'on s'en souvienne après avoir quitté le site »)** : une idée
 par section, aucune répétition. `TheFew` : le titre, `CollapseVisual` (un organigramme de 250 points

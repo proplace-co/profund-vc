@@ -40,6 +40,12 @@ levier « what if » (vente secondaire partielle), sans aucune ligne marquee.
 v3.9 (05/11) : le tableau des fondateurs est recale sur les medianes Carta (fondateurs a
 37,5 % apres la Serie A ; dilution mediane par tour de B a D ; recharges du pool).
 scripts/fund_xlsx.py regenere le classeur en formules vivantes.
+v3.17 (07/11, Alexandre) : le fonds ne prete plus. ProFund fait lever la dette des
+fondateurs aupres des banques partenaires (elles pretent et portent le risque) ; le fonds
+fait des actions et des rachats. Chaque pret du modele devient un rachat de meme montant
+dans la meme societe, au prix du rachat deja modelise (V-04, qui n'en avait pas : au prix
+d'entree, decote par defaut). Sauf le pret des zombies V-05 (1 M EUR) : il paie les frais de
+gestion en plus (la poche de prets payait 1 % au lieu de 2 %). Aucune autre hypothese ne bouge.
 
 Conventions :
 - montants en euros entiers ; une ligne qui regroupe n societes porte des
@@ -70,8 +76,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data" / "fund.json"
 
-VERSION = "v3.16"
-MODEL_DATE = "2026-11-06"   # fixe : --check doit rester stable d'un jour a l'autre
+VERSION = "v3.17"
+MODEL_DATE = "2026-11-07"   # fixe : --check doit rester stable d'un jour a l'autre
 
 M = 1_000_000
 
@@ -85,14 +91,12 @@ FUND = {
     "company_max_with_spv": 15 * M,  # au-dela : un ou plusieurs SPV de co-investissement
     "europe_min_pct": 0.85,          # UE/EEE + Royaume-Uni + Suisse
     "euveca_qualifying_min_pct": 0.70,
-    "loan_cap_pct": 0.30,            # EuVECA : prets aux seules societes du portefeuille
     "first_close_min": 20 * M,       # premier closing vise (deck /pitch, 05/11)
     "first_close_max": 30 * M,
 }
 TERMS = {
-    "fee_ip_pct": 0.02,              # sur les engagements hors poche de prets, periode d'investissement
-    "fee_loan_pct": 0.01,            # sur la poche de prets deployee, periode d'investissement
-    "fee_post_pct": 0.015,           # ensuite, sur le capital investi encore detenu, prets compris
+    "fee_ip_pct": 0.02,              # sur les engagements, periode d'investissement
+    "fee_post_pct": 0.015,           # ensuite, sur le capital investi encore detenu
     "fee_first_close_pct": 0.0175,   # LPs du premier closing ; le modele garde le taux standard (prudent)
     "setup_cost": 400_000,           # A CONFIRMER : devis du gestionnaire EuVECA
     "running_cost": 350_000,         # par an, sur toute la duree du fonds, idem
@@ -111,18 +115,14 @@ SECONDARY = {"share": 0.25, "year": 6, "price_pct": 0.60}
 # (chaque ligne peut fixer la sienne : 5-10 % sur les gagnants et angels, 30 %
 # sur les vendeurs structurels, fonds en fin de vie).
 BUYBACK_DISCOUNT = 0.20
-# Prets sains : 12 % par an, composes sur la duree du pret (tirage -> remboursement),
-# frais compris, sans BSA (un BSA creerait des actions nouvelles : le pacte l'exclut).
-# Le marche europeen de la venture debt : 10 a 13 % d'interets, 1 a 2 % de frais et
-# des BSA, soit 15 a 20 % de rendement pour le preteur ; 12 % sans BSA est prudent
-# pour le fonds et moins cher que le marche pour le fondateur.
+# v3.17 : le fonds ne prete plus. LOAN_RATE ne sert qu'au tableau des fondateurs : le cout
+# des prets que les banques partenaires font aux societes, 12 % par an composes, frais
+# compris (le marche europeen de la venture debt : 10 a 13 % d'interets, 1 a 2 % de frais).
 LOAN_RATE = 0.12
-# Prets en difficulte : multiples de remboursement explicites par ligne.
-LOAN_MULTIPLES = {"zombie": 0.8, "loss": 0.2}
 
 
 def loan_price(draw: float, repay: float) -> float:
-    """Multiple de remboursement d'un pret sain, au centieme (defini avant ratio())."""
+    """Multiple de remboursement d'un pret bancaire, au centieme (defini avant ratio())."""
     v = Decimal(str((1 + LOAN_RATE) ** (repay - draw)))
     return float(v.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
@@ -132,15 +132,14 @@ class Case:
     id: str
     exit_mult: float        # part de chaque valeur de sortie conservee
     exit_cap: int | None    # plafond optionnel sur chaque valeur de sortie
-    loan_repaid: float      # part du remboursement modelise de chaque pret effectivement recue
 
 
 # Un seul portefeuille dans chaque cas : Base et Stress multiplient chaque
-# valeur de sortie et perdent davantage sur les prets.
+# valeur de sortie.
 CASES = (
-    Case("target", 1.0, None, 0.95),
-    Case("base", 0.6, None, 0.85),
-    Case("stress", 0.4, None, 0.65),
+    Case("target", 1.0, None),
+    Case("base", 0.6, None),
+    Case("stress", 0.4, None),
 )
 CASE_IDS = tuple(c.id for c in CASES)
 
@@ -188,10 +187,6 @@ class Line:
     follow: int = 0                   # suivi en actions nouvelles dans ce tour exterieur
     follow_year: int | None = None
     follow_post: int | None = None    # post-money du tour exterieur, par societe
-    loan: int = 0                     # pret, total de ligne
-    loan_year: int | None = None
-    loan_repay_year: int | None = None
-    loan_mult: float | None = None
     exit_value: int | None = None     # valorisation de sortie (100 %), avant multiplicateur du cas
     recovery: float | None = None     # sinon : multiple recupere sur les fonds propres investis
     partial: bool = False             # liquidite partielle en annee 6 (clause 9)
@@ -202,22 +197,21 @@ L = Line
 LINES = (
     # Seed : 50 societes, pre-seed / seed, entrees annees 1-3.
     # S-01 a S-10 : leads de conviction ; S-11 a S-50 : tickets radar.
-    # S-01, la vitrine : le chemin ProFund pur, un tour, des rachats, des annulations, un pret.
+    # S-01, la vitrine : le chemin ProFund pur, un tour, des rachats, des annulations.
+    # v3.17 : les prets du fonds deviennent des rachats (S-01 : 1 M EUR de plus ; la dette de la
+    # societe vient des banques partenaires).
     # v3.16 (06/11, loi de puissance) : la licorne qui porte le fonds, vendue 1 Md EUR.
     L("S-01", "seed", "S-01", 1, "Unicorn: one round, buybacks, cancellations", "green", "new",
-      1_500_000, 7_500_000, 1, 9, buyback=1_500_000, buyback_year=3, buyback_value=40 * M,
-      discount=0.10, cancel=0.08,
-      loan=1 * M, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=1000 * M, track="lead"),
+      1_500_000, 7_500_000, 1, 9, buyback=2_500_000, buyback_year=3, buyback_value=40 * M,
+      discount=0.10, cancel=0.08, exit_value=1000 * M, track="lead"),
     # S-02 : le fondateur leve ailleurs (fair both ways), ProFund suit en actions nouvelles.
     L("S-02", "seed", "S-02", 1, "Breakout, raised elsewhere once, we followed", "green", "new",
-      1 * M, 6 * M, 1, 8, buyback=1 * M, buyback_year=3, buyback_value=25 * M, discount=0.10,
-      dilution=0.15, follow=1 * M, follow_year=4, follow_post=60 * M,
-      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult="rate", exit_value=250 * M, track="lead"),
+      1 * M, 6 * M, 1, 8, buyback=1_500_000, buyback_year=3, buyback_value=25 * M, discount=0.10,
+      dilution=0.15, follow=1 * M, follow_year=4, follow_post=60 * M, exit_value=250 * M, track="lead"),
     # v3.16 : la loi de puissance, la plupart des societes ne rendent pas leur mise.
     L("S-03", "seed", "S-03", 1, "Loss, after an angels buyback", "red", "new",
-      1 * M, 7 * M, 2, 7, buyback=500_000, buyback_year=4, buyback_value=20 * M, discount=0.10,
-      loan=500_000, loan_year=3, loan_repay_year=5, loan_mult=LOAN_MULTIPLES["loss"], recovery=0.0,
-      track="lead"),
+      1 * M, 7 * M, 2, 7, buyback=1 * M, buyback_year=4, buyback_value=20 * M, discount=0.10,
+      recovery=0.0, track="lead"),
     L("S-04", "seed", "S-04", 1, "Loss", "red", "new",
       750_000, 7 * M, 2, 5, recovery=0.0, track="lead"),
     L("S-05", "seed", "S-05", 1, "Early exit (M&A)", "blue", "new",
@@ -243,32 +237,27 @@ LINES = (
     # Serie A, entrees annees 2-4 (v3.4 : 3 M EUR de moins qu'en v3.3 sur les lignes qui
     # vivent, passes au radar ; la perte V-07 garde son montant).
     L("V-01", "venture", "V-01", 1, "Breakout, second winner", "green", "new",
-      4 * M, 40 * M, 2, 9, buyback=1_500_000, buyback_year=4, buyback_value=100 * M,
-      discount=0.05, cancel=0.08, loan=2 * M, loan_year=3, loan_repay_year=6, loan_mult="rate",
-      exit_value=500 * M),
+      4 * M, 40 * M, 2, 9, buyback=3_500_000, buyback_year=4, buyback_value=100 * M,
+      discount=0.05, cancel=0.08, exit_value=500 * M),
     L("V-02", "venture", "V-02", 1, "Raised elsewhere once, we followed", "green", "new",
-      3_500_000, 35 * M, 2, 8, buyback=500_000, buyback_year=4, buyback_value=60 * M, discount=0.10,
-      dilution=0.20, follow=1_500_000, follow_year=5, follow_post=120 * M,
-      loan=1_500_000, loan_year=4, loan_repay_year=6, loan_mult="rate", exit_value=250 * M),
+      3_500_000, 35 * M, 2, 8, buyback=2 * M, buyback_year=4, buyback_value=60 * M, discount=0.10,
+      dilution=0.20, follow=1_500_000, follow_year=5, follow_post=120 * M, exit_value=250 * M),
     L("V-03", "venture", "V-03", 1, "Zombie, after an angels buyback", "grey", "new",
-      3 * M, 35 * M, 3, 7, buyback=500_000, buyback_year=4, buyback_value=40 * M,
-      discount=0.10, loan=1 * M, loan_year=4, loan_repay_year=6, loan_mult=LOAN_MULTIPLES["zombie"],
-      recovery=0.5),
+      3 * M, 35 * M, 3, 7, buyback=1_500_000, buyback_year=4, buyback_value=40 * M,
+      discount=0.10, recovery=0.5),
     L("V-04", "venture", "V-04", 1, "Early exit (M&A)", "blue", "new",
-      2_500_000, 30 * M, 3, 5, loan=500_000, loan_year=4, loan_repay_year=5, loan_mult="rate",
+      2_500_000, 30 * M, 3, 5, buyback=500_000, buyback_year=4, buyback_value=30 * M,
       exit_value=60 * M),
     L("V-05", "venture", "V-05", 2, "Zombies (×2)", "grey", "new",
-      4 * M, 25 * M, 3, 8, loan=1 * M, loan_year=5, loan_repay_year=7, loan_mult=0.8,
-      recovery=0.5),
+      4 * M, 25 * M, 3, 8, recovery=0.5),
     L("V-07", "venture", "V-07", 1, "Loss", "red", "new",
       2_500_000, 25 * M, 4, 6, recovery=0.0),
     # Growth : 5 a 7 M EUR par position. Blocs rachetes a des fonds en fin
     # de vie (30 % de decote), tours de croissance en actions nouvelles, et un bloc
     # dans notre propre breakout ; entrees annees 3-5, sorties 2 a 4 ans plus tard.
     L("G-01", "growth", "G-01", 1, "Strategic exit, block bought from an end-of-life fund", "blue",
-      "new", 0, 150 * M, 3, 6, buyback=5 * M, buyback_year=3, buyback_value=150 * M,
-      discount=0.30, loan=2 * M, loan_year=4, loan_repay_year=6, loan_mult="rate",
-      exit_value=300 * M),
+      "new", 0, 150 * M, 3, 6, buyback=7 * M, buyback_year=3, buyback_value=150 * M,
+      discount=0.30, exit_value=300 * M),
     L("G-02", "growth", "G-02", 1, "Fresh growth round (new shares)", "blue", "new",
       6 * M, 175 * M, 4, 6, exit_value=300 * M),
     L("G-03", "growth", "G-03", 1, "Block bought from an end-of-life fund", "blue", "new",
@@ -283,9 +272,6 @@ LINES = (
       "breakout", 0, 150 * M, 5, 9, buyback=5 * M, buyback_year=5, buyback_value=150 * M,
       discount=0.30, cancel=0.04, exit_value=1000 * M),
 )
-# Prets sains : le prix suit la duree (LOAN_RATE) ; les zombies gardent leur multiple.
-LINES = tuple(replace(x, loan_mult=loan_price(x.loan_year, x.loan_repay_year))
-              if x.loan and x.loan_mult == "rate" else x for x in LINES)
 
 # Complement par SPV (hors fonds) jusqu'a company_max_with_spv, a titre indicatif.
 SPV_COMPANIES = ("S-01", "V-01", "G-01")
@@ -330,8 +316,8 @@ FOUNDER_MATH = {
     # Les chemins ProFund (07/11, Alexandre : 59 M EUR de prets, ce n'est pas tenable). 25 M EUR de
     # prets au plus, avec les preteurs partenaires, tires en 3 + 7 + 15 M EUR : 30 %, 28 % et 25 % du
     # dernier tour, 6 %, 4,7 % et 5,8 % de la derniere valorisation. Le marche : 20 a 40 % du dernier
-    # tour, 6 a 8 % de la derniere valorisation (First Citizens, ex-SVB, 22/09/2023). Au meme taux
-    # que le fonds (LOAN_RATE), rembourses en ~1,6 an en moyenne (les prets du modele durent 1 a 3
+    # tour, 6 a 8 % de la derniere valorisation (First Citizens, ex-SVB, 22/09/2023). Au taux
+    # LOAN_RATE (v3.17 : des banques partenaires, le fonds ne prete plus), rembourses en ~1,6 an en moyenne (de 1 a 3
     # ans) : 1,12^1,6 = 1,2x, deduits a la sortie avant les fonds propres.
     #   same   : le meme capital, aux memes valorisations (meme pre-money) : les prets remplacent une
     #            part des levees intermediaires, le reste en equity.
@@ -376,10 +362,13 @@ REFERENCE_V2 = {"commit": "2f3b590", "net_tvpi": 2.7, "capped_exit": 300 * M, "c
 # une licorne porte le fonds (S-01 vendue 1 Md EUR, 31 % detenus a la sortie, non dilues),
 # un second gagnant (V-01, 500 M EUR), et la plupart des societes ne rendent pas leur mise
 # (S-03 et S-04 perdues, V-03 zombie). Plus de plafond a 300 M EUR. Sans la licorne : 2,0x.
+# v3.17 (07/11) : le fonds ne prete plus, les prets deviennent des rachats : upside 4,4x -> 4,8x,
+# cible presentee (base) 2,8x -> 3,0x, stress 2,0x -> 2,1x ; le DPI a 7 ans baisse (les prets
+# remboursaient tot). Aucune hypothese retouchee pour tomber sur un chiffre rond.
 PUBLISHED = {
-    "target": {"net_tvpi": 4.4, "net_irr": 0.36, "dpi_year7": 0.7},
-    "base": {"net_tvpi": 2.8, "net_irr": 0.24},
-    "stress": {"net_tvpi": 2.0, "net_irr": 0.15},
+    "target": {"net_tvpi": 4.8, "net_irr": 0.37, "dpi_year7": 0.6},
+    "base": {"net_tvpi": 3.0, "net_irr": 0.25},
+    "stress": {"net_tvpi": 2.1, "net_irr": 0.17},
 }
 
 
@@ -411,7 +400,7 @@ def equity_cost(line: Line) -> int:
 
 
 def invested(line: Line) -> int:
-    return equity_cost(line) + line.loan
+    return equity_cost(line)
 
 
 def entry_stake(line: Line) -> float:
@@ -455,14 +444,8 @@ def equity_proceeds(line: Line, case: Case) -> int:
     return money(max(exit_stake(line) * v, min(line.first, v)))
 
 
-def loan_repayment(line: Line, case: Case) -> int:
-    if not line.loan:
-        return 0
-    return money(line.loan * line.loan_mult * case.loan_repaid)
-
-
 def proceeds(line: Line, case: Case) -> int:
-    return equity_proceeds(line, case) + loan_repayment(line, case)
+    return equity_proceeds(line, case)
 
 
 def secondary_split(line: Line, case: Case):
@@ -537,10 +520,6 @@ def run_case(case: Case, lines=LINES) -> dict:
             inv[x.buyback_year] += x.buyback
         if x.follow:
             inv[x.follow_year] += x.follow
-        if x.loan:
-            inv[x.loan_year] += x.loan
-            dist[x.loan_repay_year] += loan_repayment(x, case)
-            cost_out[x.loan_repay_year] += x.loan
         gross += proceeds(x, case)
         sec, rest, sec_cost = secondary_split(x, case)
         dist[SECONDARY["year"]] += sec
@@ -548,7 +527,6 @@ def run_case(case: Case, lines=LINES) -> dict:
         cost_out[SECONDARY["year"]] += sec_cost
         cost_out[x.exit_year] += equity_cost(x) - sec_cost
 
-    sleeve = sum(x.loan for x in lines)
     mgmt = [0.0] * years
     expenses = [0.0] * years
     nic = 0.0
@@ -558,8 +536,7 @@ def run_case(case: Case, lines=LINES) -> dict:
         if t > horizon:
             continue
         if t <= FUND["investment_period_years"]:
-            mgmt[t] = (TERMS["fee_ip_pct"] * (FUND["commitments"] - sleeve)
-                       + TERMS["fee_loan_pct"] * sleeve)
+            mgmt[t] = TERMS["fee_ip_pct"] * FUND["commitments"]
         else:
             mgmt[t] = TERMS["fee_post_pct"] * max(nic_start, 0.0)
         expenses[t] = TERMS["running_cost"] + (TERMS["setup_cost"] if t == 1 else 0)
@@ -584,13 +561,10 @@ def run_case(case: Case, lines=LINES) -> dict:
     def dpi(year):
         return ratio(sum(lp[1:year + 1]) / sum(calls[1:year + 1]), 1)
 
-    lent = sum(x.loan for x in lines)
-    repaid = sum(loan_repayment(x, case) for x in lines)
     realised = money(realised_raw)
     return {
         "exit_mult": case.exit_mult,
         "exit_cap": case.exit_cap,
-        "loan_repaid": case.loan_repaid,
         "gross_proceeds": gross,
         "gross_moic": ratio(gross / sum(invested(x) for x in lines), 1),
         "realised": realised,
@@ -605,8 +579,6 @@ def run_case(case: Case, lines=LINES) -> dict:
         "gross_irr": ratio(irr(gross_flows), 2),
         "dpi_year6": dpi(6),
         "dpi_year7": dpi(7),
-        "loans_repaid": repaid,
-        "loans_multiple": ratio(repaid / lent, 2) if lent else 0.0,
         "largest_exit": money(max(exit_value(x, case) for x in lines if x.exit_value)),
         "horizon_years": horizon,
         "cashflows": {
@@ -620,7 +592,7 @@ def run_case(case: Case, lines=LINES) -> dict:
 
 
 def layer_gross_irr(layer: str, case: Case) -> float:
-    """TRI brut d'un etage : investissements, sorties (secondaire compris) et prets."""
+    """TRI brut d'un etage : investissements et sorties (secondaire compris)."""
     flows = [0.0] * (FUND["term_years"] + 1)
     for x in (y for y in LINES if y.layer == layer):
         flows[x.entry_year] -= x.first
@@ -628,9 +600,6 @@ def layer_gross_irr(layer: str, case: Case) -> float:
             flows[x.buyback_year] -= x.buyback
         if x.follow:
             flows[x.follow_year] -= x.follow
-        if x.loan:
-            flows[x.loan_year] -= x.loan
-            flows[x.loan_repay_year] += loan_repayment(x, case)
         sec, rest, _ = secondary_split(x, case)
         flows[SECONDARY["year"]] += sec
         flows[x.exit_year] += rest
@@ -659,8 +628,7 @@ def fund_returning_exit(company: str) -> dict:
 
 # ── tests de resistance (cas cible, une hypothese a la fois) ────────────────
 def _shift(lines, years: int):
-    """Chaque sortie decalee, au plus tard en annee 10 ; les prets gardent leur
-    echeancier (ils se remboursent sur les flux de la societe, pas a la sortie)."""
+    """Chaque sortie decalee, au plus tard en annee 10."""
     cap = FUND["term_years"]
     return tuple(replace(x, exit_year=min(x.exit_year + years, cap)) for x in lines)
 
@@ -670,8 +638,7 @@ def _zombie_best(lines):
     out = []
     for x in lines:
         if x.company == best:
-            x = replace(x, exit_value=None, recovery=0.5, partial=False,
-                        loan_mult=LOAN_MULTIPLES["zombie"] if x.loan else x.loan_mult)
+            x = replace(x, exit_value=None, recovery=0.5, partial=False)
         out.append(x)
     return tuple(out)
 
@@ -691,7 +658,8 @@ def stress_tests() -> list[dict]:
     # modélisée, 2,8x) ; le cas modélisé (« target », 4,4x) est présenté comme l'upside. Les tests de
     # résistance tournent sur la cible présentée. Les clés internes restent target / base / stress.
     target = CASES[1]
-    # 07/11 : la cible suppose que la licorne grandit sur le credit. Si elle vend aussi de
+    # 07/11 : la cible suppose que la licorne grandit sur le credit (v3.17 : celui des banques
+    # partenaires, le fonds ne prete plus). Si elle vend aussi de
     # l'equity, comme sur les chemins du tableau des fondateurs : voici ce qu'il reste au fonds.
     fm = founder_math()
     path = {p["id"]: p for p in fm["paths"]}
@@ -703,8 +671,6 @@ def stress_tests() -> list[dict]:
          _dilute(LINES, path["half"]["stake"] / fm["founders"]), target),
         ("unicorn_same", f"The unicorn also sells {equity('same')} of equity",
          _dilute(LINES, path["same"]["stake"] / fm["founders"]), target),
-        ("loan_losses", "30% more losses on every loan", LINES,
-         replace(target, loan_repaid=ratio(target.loan_repaid - 0.30, 2))),
         ("two_unicorns", "Two unicorns: V-01 also modelled at €1B", _unicorn(LINES, 1000 * M, "V-01"), target),
         ("big_unicorn", "A bigger unicorn: S-01 modelled at €2B", _unicorn(LINES, 2000 * M), target),
     ]
@@ -865,7 +831,6 @@ def validate(data: dict) -> Checks:
            f"allocation : investi + frais > engagements ({alloc['contingency']})")
     for name, case in data["cases"].items():
         c.need(case["paid_in"] <= commitments, f"{name} : appele {case['paid_in']} > engagements")
-    c.need(alloc["loans"] <= FUND["loan_cap_pct"] * commitments, "prets au-dela du plafond EuVECA")
     # 07/11 : les prets du tableau des fondateurs restent dans la taille de marche, la meme levee
     # reste la meme levee, et la moitie du capital reste la moitie.
     _fm = founder_math()
@@ -891,7 +856,7 @@ def validate(data: dict) -> Checks:
             c.need(b["own"][0] <= own <= b["own"][1] + 1e-9, f"{x.id} : detention d'entree {own:.3f}")
         lo, hi = b["post"]
         c.need(lo <= x.entry_post <= hi, f"{x.id} : valorisation d'entree {x.entry_post} hors bornes")
-        # le calendrier : entrees, rachats, suivis et prets pendant la periode d'investissement
+        # le calendrier : entrees, rachats et suivis pendant la periode d'investissement
         c.need(1 <= x.entry_year <= ip and x.entry_year < x.exit_year <= term, f"{x.id} : annees")
         if x.buyback:
             c.need(x.buyback_year is not None and x.entry_year <= x.buyback_year <= ip
@@ -899,13 +864,6 @@ def validate(data: dict) -> Checks:
         if x.follow:
             c.need(x.follow_year is not None and x.entry_year <= x.follow_year <= ip
                    and x.follow_post, f"{x.id} : suivi")
-        if x.loan and x.loan_mult >= 1:
-            c.need(x.loan_mult == loan_price(x.loan_year, x.loan_repay_year),
-                   f"{x.id} : pret sain hors du taux ({x.loan_mult})")
-        if x.loan:
-            c.need(x.loan_year is not None and x.loan_repay_year is not None and x.loan_mult
-                   and x.entry_year <= x.loan_year <= ip
-                   and x.loan_year < x.loan_repay_year <= x.exit_year, f"{x.id} : pret")
         # LE PACTE : apres le premier cheque, aucune action nouvelle tant que le fondateur
         # grandit avec nous ; un suivi en actions nouvelles suppose qu'il a leve ailleurs.
         c.need(not x.follow or x.dilution > 0, f"{x.id} : actions nouvelles sans tour exterieur")
@@ -920,7 +878,7 @@ def validate(data: dict) -> Checks:
         c.need(not x.partial or (x.exit_value and x.exit_year > SECONDARY["year"]),
                f"{x.id} : liquidite partielle sans sortie apres l'annee {SECONDARY['year']}")
         # par societe : une ligne groupee peut porter 2,25 M EUR (3 x 750 K)
-        for v in (x.first, x.buyback, x.follow, x.loan):
+        for v in (x.first, x.buyback, x.follow):
             c.need(on_grain(v / x.n), f"{x.id} : {v / x.n:.0f} par societe, hors maille d'affichage")
         c.need(on_grain(x.entry_post), f"{x.id} : valorisation {x.entry_post} hors maille d'affichage")
         c.need(x.id.isascii(), f"{x.id} : identifiant non ASCII")
@@ -954,11 +912,7 @@ def validate(data: dict) -> Checks:
     for layer in LAYERS:
         x = data["layers"][layer]
         c.need(x["companies"] == BOUNDS[layer]["companies"], f"{layer} : {x['companies']} societes")
-        # Les produits d'une ligne ajoutent des fonds propres (maille de 100 K) et un
-        # remboursement de pret (maille de 10 K sous 1 M) : comme dans le classeur v3.3,
-        # ils ne tombent pas toujours sur la maille ; le site et la fiche les affichent
-        # a 100 K pres.
-        for key in ("first", "buyback", "follow", "loans", "invested"):
+        for key in ("first", "buyback", "follow", "invested"):
             c.need(on_grain(x[key]), f"{layer} : {key} {x[key]} hors maille d'affichage")
     # les chiffres publies le 05/11 (fiche v3, /pitch, tableau des fondateurs)
     for name, want in PUBLISHED.items():
@@ -994,7 +948,6 @@ def line_json(x: Line) -> dict:
         "first": x.first,
         "buyback": x.buyback,
         "follow": x.follow,
-        "loan": x.loan,
         "invested": invested(x),
         "entry_post": x.entry_post,
         "entry_pct": shown_entry(x),
@@ -1013,9 +966,6 @@ def line_json(x: Line) -> dict:
         "dilution": x.dilution,
         "follow_year": x.follow_year,
         "follow_post": x.follow_post,
-        "loan_year": x.loan_year,
-        "loan_repay_year": x.loan_repay_year,
-        "loan_mult": x.loan_mult,
     }
 
 
@@ -1060,7 +1010,6 @@ def build() -> dict:
             "first": sum(x.first for x in lines),
             "buyback": sum(x.buyback for x in lines),
             "follow": sum(x.follow for x in lines),
-            "loans": sum(x.loan for x in lines),
             "invested": sum(invested(x) for x in lines),
             "first_cheque_range": list(per_company(first_lines, lambda y: y.first)),
             "position_range": list(per_company(lines, invested)),
@@ -1075,14 +1024,12 @@ def build() -> dict:
             entry["proceeds"][case.id] = got
             entry["moic"][case.id] = ratio(got / entry["invested"], 1)
             entry["gross_irr"][case.id] = layer_gross_irr(layer, case)
-        entry["loans_pct"] = ratio(entry["loans"] / entry["invested"], 2)
         layers[layer] = entry
 
     target = cases["target"]
     invested_total = sum(layers[x]["invested"] for x in LAYERS)
     first_total = sum(layers[x]["first"] for x in LAYERS)
     buy_follow = sum(layers[x]["buyback"] + layers[x]["follow"] for x in LAYERS)
-    loans = sum(layers[x]["loans"] for x in LAYERS)
     contingency = FUND["commitments"] - invested_total - target["mgmt_fees"] - target["fund_expenses"]
 
     expo = exposures()
@@ -1100,16 +1047,11 @@ def build() -> dict:
         "version": VERSION,
         "model_date": MODEL_DATE,
         "fund": {**FUND, "company_cap": money(FUND["company_cap_pct"] * FUND["commitments"]),
-                 "loan_cap": money(FUND["loan_cap_pct"] * FUND["commitments"]),
                  "companies": sum(layers[x]["companies"] for x in LAYERS),
                  "positions": len(LINES)},
         "terms": {**TERMS, "gp_commit_min": money(TERMS["gp_commit_min_pct"] * FUND["commitments"])},
         "secondary": {**SECONDARY, "lines": lines_partial},
         "buyback_discount": BUYBACK_DISCOUNT,
-        "loan_rate": LOAN_RATE,
-        "loan_multiples": {**LOAN_MULTIPLES,
-                           "performing_min": min(x.loan_mult for x in LINES if x.loan and x.loan_mult >= 1),
-                           "performing_max": max(x.loan_mult for x in LINES if x.loan and x.loan_mult >= 1)},
         "layers": layers,
         "allocation": {
             "seed": layers["seed"]["invested"],
@@ -1118,9 +1060,7 @@ def build() -> dict:
             "invested": invested_total,
             "first": first_total,
             "buyback_follow": buy_follow,
-            "loans": loans,
             "after_first_pct": ratio((invested_total - first_total) / invested_total, 2),
-            "loans_pct": ratio(loans / invested_total, 2),
             "mgmt_fees": target["mgmt_fees"],
             "fund_expenses": target["fund_expenses"],
             "contingency": money(contingency),
@@ -1148,19 +1088,19 @@ def summary(data: dict) -> str:
     for layer in LAYERS:
         x = data["layers"][layer]
         out.append(f"  {layer:8s} {x['companies']:2d} cos {x['positions']:2d} pos  first {x['first'] / M:5.1f}  "
-                   f"buyback {x['buyback'] / M:4.1f}  follow {x['follow'] / M:3.1f}  loans {x['loans'] / M:4.1f}  "
+                   f"buyback {x['buyback'] / M:4.1f}  follow {x['follow'] / M:3.1f}  "
                    f"invested {x['invested'] / M:5.1f} -> target {x['proceeds']['target'] / M:6.1f} "
                    f"({x['moic']['target']}x, gross IRR {x['gross_irr']['target']:.0%})  "
                    f"base {x['moic']['base']}x  stress {x['moic']['stress']}x")
     a = data["allocation"]
     out.append(f"  invested {a['invested'] / M:.1f} (first {a['first'] / M:.1f} + buybacks/follow-ons "
-               f"{a['buyback_follow'] / M:.1f} + loans {a['loans'] / M:.1f}) + fees {a['mgmt_fees'] / M:.1f} "
+               f"{a['buyback_follow'] / M:.1f}) + fees {a['mgmt_fees'] / M:.1f} "
                f"+ expenses {a['fund_expenses'] / M:.1f} + contingency {a['contingency'] / M:.1f} = {a['total'] / M:.1f}")
     for name, case in data["cases"].items():
         out.append(f"  {name:7s} gross {case['gross_proceeds'] / M:6.1f}  realised {case['realised'] / M:6.1f}  "
                    f"paid-in {case['paid_in'] / M:5.1f}  carry {case['carry'] / M:5.1f}  "
                    f"TVPI {case['net_tvpi']:.1f}x  IRR {case['net_irr']:.0%}  gross IRR {case['gross_irr']:.0%}  "
-                   f"DPI y6 {case['dpi_year6']:.1f}x y7 {case['dpi_year7']:.1f}x  loans {case['loans_multiple']:.2f}x")
+                   f"DPI y6 {case['dpi_year6']:.1f}x y7 {case['dpi_year7']:.1f}x")
     for s in data["stress_tests"]:
         out.append(f"    stress {s['id']:13s} {s['net_tvpi']:.1f}x {s['net_irr']:.0%}")
     for r in data["founder_math"]["rows"]:

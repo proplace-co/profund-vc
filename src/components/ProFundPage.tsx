@@ -39,13 +39,11 @@ const FR = fund.fund_returner;   // la loi 04 chiffrée : la sortie qui rend tou
 // v3.16 (06/11) : la loi de puissance. La licorne est dans la cible ; son absence est un test.
 const NO_UNI = fund.stress_tests.find((s) => s.id === 'best_zombie')!;
 const UNI_EXIT_YEAR = Math.max(...ALL_LINES.filter((l) => l.company === FR.company).map((l) => l.exit_year));
-const loanLoss = (id: 'target' | 'base' | 'stress') => pct(1 - C[id].loan_repaid);
 // Décotes des rachats, lues sur les lignes : gagnants et angels (Seed, Venture),
 // vendeurs structurels (Growth, fonds en fin de vie).
 const discounts = (ids: LayerId[]) => ids.flatMap((id) => L[id].lines).filter((l) => l.buyback && l.discount !== null).map((l) => l.discount!);
 const WINNER_DISC = discounts(['seed', 'venture']);
 const STRUCT_DISC = Math.max(...discounts(['growth']));
-const LOANS_FROM = Math.min(...ALL_LINES.filter((l) => l.loan_repay_year !== null).map((l) => l.loan_repay_year!));
 
 function Slide({ id, n, kick, title, tint, night, children }: {
   id: string; n: number; kick: string; title: ReactNode; tint?: boolean; night?: boolean; children?: ReactNode;
@@ -132,7 +130,7 @@ function TheInversion() {
     <Slide id="inversion" n={4} kick="The inversion" title="Credit first. Equity when it earns its place.">
       <div className="pv-flow">
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="target" /></span><h3>A first cheque</h3><p>In new shares, from seed to Series A, or a buyback of existing shares.</p></div>
-        <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>A reserved loan line</h3><p>Hiring, go-to-market, working capital, acquisitions. Need more? Equity on the same terms, with SPVs alongside the fund.</p></div>
+        <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>Bank debt, raised for them</h3><p>Hiring, go-to-market, working capital, acquisitions, financed by our partner banks. Need more? Equity on the same terms, with SPVs alongside the fund.</p></div>
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="trend" /></span><h3>Buybacks and cancellations</h3><p>Angels, leavers and early funds bought out; the company cancels shares every year.</p></div>
       </div>
       <div className="pv-callout">
@@ -148,7 +146,7 @@ function FounderMathSlide() {
   return (
     <Slide id="math" n={5} kick="Founder math" tint title="The equity you don’t sell is the company you keep.">
       <p className="pv-lead pv-slide-lead">
-        Same company, same valuations. On the same {eur(VC_PATH.capital, 'tile')}, {eur(SAME_PATH.loans, 'tile')} of loans lift the founders
+        Same company, same valuations. On the same {eur(VC_PATH.capital, 'tile')}, {eur(SAME_PATH.loans, 'tile')} of bank loans lift the founders
         from {pct(VC_PATH.stake, 1)} to {pct(SAME_PATH.stake, 1)}. The real gap comes from needing less equity: {pct(HALF_PATH.stake, 1)} on half
         the capital, {pct(CREDIT_PATH.stake, 1)} on credit alone. For the teams we back, that is the thesis.
       </p>
@@ -168,7 +166,7 @@ function EveryoneWins() {
           <tr><td>Founders</td><td>{eur(AT_1B.founders_vc, 'tile')}</td><td className="pf">{eur(AT_1B.founders_same, 'tile')} on the same capital, {eur(AT_1B.founders_half, 'tile')} on half of it, {eur(AT_1B.founders_credit, 'tile')} on credit alone</td></tr>
           <tr><td>Series A investor, equity multiple</td><td>{mult(AT_1B.series_a_vc)}</td><td className="pf">{mult(AT_1B.series_a_same)}, {mult(AT_1B.series_a_half)} and {mult(AT_1B.series_a_credit)} on the same paths (ProFund)</td></tr>
           <tr><td>Angels</td><td>Wait for the exit</td><td className="pf">Liquidity at year 2</td></tr>
-          <tr><td>LPs</td><td>A unicorn, diluted round after round</td><td className="pf">{mult(TARGET.net_tvpi)} net and {pct(TARGET.net_irr)} IRR target, {mult(UPSIDE.net_tvpi)} in the upside; the unicorn grows on credit, {pct(FR.stake_at_exit, 1)} owned at exit; {mult(UNI_SAME.net_tvpi)} if it also sells {eur(SAME_PATH.equity, 'tile')} of equity</td></tr>
+          <tr><td>LPs</td><td>A unicorn, diluted round after round</td><td className="pf">{mult(TARGET.net_tvpi)} net and {pct(TARGET.net_irr)} IRR target, {mult(UPSIDE.net_tvpi)} in the upside; the unicorn grows on bank debt, {pct(FR.stake_at_exit, 1)} owned at exit; {mult(UNI_SAME.net_tvpi)} if it also sells {eur(SAME_PATH.equity, 'tile')} of equity</td></tr>
         </tbody>
       </table></div>
       <p className="pv-punch">All that disappears is the equity nobody needed to sell.</p>
@@ -187,7 +185,7 @@ function Alignment() {
         </div>
         <div className="pv-card">
           <h3>Downside</h3>
-          <p>Loans are repaid before equity. Our cheques carry a 1× preference outside small seed rounds, with standard anti-dilution, and no one can drag our shares into a sale below our money back.</p>
+          <p>Our cheques carry a 1× preference outside small seed rounds, with standard anti-dilution, and no one can drag our shares into a sale below our money back.</p>
         </div>
         <div className="pv-card">
           <h3>Conflicts policy</h3>
@@ -216,7 +214,7 @@ function SignedPipeline() {
         <div className="imp"><span className="imp-n">{PIPE.founders_signed}</span><span className="imp-h">Founders signed</span></div>
         <div className="imp"><span className="imp-n">{eur(PIPE.first_cheques_reserved!, 'tile')}</span><span className="imp-h">Of first cheques reserved</span></div>
         <div className="imp"><span className="imp-n">{eur(PIPE.buyback_options!, 'tile')}</span><span className="imp-h">Of buyback options</span></div>
-        <div className="imp"><span className="imp-n">{eur(PIPE.loan_lines_requested!, 'tile')}</span><span className="imp-h">Of loan lines requested</span></div>
+        <div className="imp"><span className="imp-n">{eur(PIPE.loan_lines_requested!, 'tile')}</span><span className="imp-h">Of bank debt requested</span></div>
       </div>
       {PIPE.as_of && <p className="pf-fine">As of {PIPE.as_of}.</p>}
     </Slide>
@@ -246,8 +244,6 @@ function Team() {
               <div className="f-row"><span className="f-co">Leboncoin · M&amp;A director</span><span className="f-desc">End-to-end acquisitions across Europe. The only GP who has sat on the acquirer's side of the table, and knows what makes a company unmissable at the LOI stage.</span></div>
               <div className="f-row"><span className="f-co">Google · Key account manager assistant</span><span className="f-desc">Key account management at Google.</span></div>
               <div className="f-row"><span className="f-co">Founder &amp; operator</span><span className="f-desc">Owner and CEO of Fadparis.com. Founder and investor of Dreamzer Games.</span></div>
-              {/* 05/11 : « [to recruit] » de la copie rendu explicite, le poste n'est pas pourvu */}
-              <div className="f-row"><span className="f-co">Loan book</span><span className="f-desc">A partner from venture debt will run the loan book (to be recruited).</span></div>
               <div className="f-row"><span className="f-co">Governance</span><span className="f-desc">Investment committee and key-person clause.</span></div>
             </div>
           </div>
@@ -282,11 +278,11 @@ function TrackRecord() {
 // 11 · Terms and targets
 function TermsAndTargets() {
   return (
-    <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. Credit first, equity when the founder asks.`}>
+    <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. Equity when the founder asks, debt from our partner banks.`}>
       <div className="impact-grid">
         <div className="imp"><span className="imp-n">{pct(TARGET.net_irr)}</span><span className="imp-h">Target net IRR</span><p className="imp-p">Upside {pct(UPSIDE.net_irr)}, stress case {pct(C.stress.net_irr)}</p></div>
         <div className="imp"><span className="imp-n">{mult(TARGET.net_tvpi)}</span><span className="imp-h">Target net TVPI</span><p className="imp-p">Upside {mult(UPSIDE.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}</p></div>
-        <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">Loans and growth exits bring cash back early; the unicorn sells in year {UNI_EXIT_YEAR}</p></div>
+        <div className="imp"><span className="imp-n">{mult(TARGET.dpi_year7)}</span><span className="imp-h">Net DPI by year 7</span><p className="imp-p">Growth exits bring cash back early; the unicorn sells in year {UNI_EXIT_YEAR}</p></div>
         <div className="imp"><span className="imp-n">{eur(FR.fund_returning_exit, 'val')}</span><span className="imp-h">One company returns the fund</span><p className="imp-p">A {eur(FR.fund_returning_exit, 'val')} sale of {FR.company} returns it on its own; in the upside, sold for {eur(UPSIDE.largest_exit, 'val')}, it returns {mult(FR.multiple_of_fund)}. Without it, {mult(NO_UNI.net_tvpi)} net</p></div>
       </div>
       <TermsTables />
@@ -307,12 +303,12 @@ export function TermsTables() {
           <tbody>
             <tr><td>Target fund size</td><td>{FUND_SIZE}, first close {eurRange(F.first_close_min, F.first_close_max, 'tile', '–')}</td></tr>
             <tr><td>Closed-ended EuVECA fund</td><td>{F.term_years} years, successive closings over {F.closing_months} months</td></tr>
-            <tr><td>Management fee, years 1–{F.investment_period_years}</td><td>{pct(T.fee_ip_pct)} ({pct(T.fee_loan_pct)} on the loan sleeve)</td></tr>
-            <tr><td>Then, on invested capital incl. loans until repaid</td><td>{pct(T.fee_post_pct, 1)}</td></tr>
+            <tr><td>Management fee, years 1–{F.investment_period_years}</td><td>{pct(T.fee_ip_pct)} of commitments</td></tr>
+            <tr><td>Then, on invested capital</td><td>{pct(T.fee_post_pct, 1)}</td></tr>
             <tr><td>Carried interest, European</td><td>{pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, with GP catch-up</td></tr>
             <tr><td>GP commitment, minimum</td><td>{pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {FUND_SIZE}</td></tr>
             <tr><td>Per company: fund / with SPVs</td><td>{eur(F.company_cap, 'tile')} / {eur(F.company_max_with_spv, 'tile')}</td></tr>
-            <tr><td>Loans</td><td>Up to {pct(F.loan_cap_pct)} of commitments (EuVECA)</td></tr>
+            <tr><td>Debt</td><td>None in the fund: raised for each company from our partner banks</td></tr>
             <tr><td>Tickets</td><td>Up to {eur(sd.ticket_max, 'tile')} at seed, {eurRange(vt.first_cheque_range[0], vt.first_cheque_range[1], 'table', '–')} at Series A, {eurRange(gr.position_range[0], gr.position_range[1], 'tile', '–')} at growth ({eur(F.company_max_with_spv, 'tile')} with SPVs)</td></tr>
           </tbody>
         </table></div>
@@ -321,7 +317,6 @@ export function TermsTables() {
           <tbody>
             <tr><td>First cheques, incl. fresh growth rounds</td><td>{eur(A.first)}</td></tr>
             <tr><td>Buybacks and follow-ons</td><td>{eur(A.buyback_follow)}</td></tr>
-            <tr><td>Loans</td><td>{eur(A.loans)}</td></tr>
             <tr className="sub"><td>Invested ({pct(A.after_first_pct)} after the first cheque)</td><td>{eur(A.invested)}</td></tr>
             <tr><td>Management fees</td><td>{eur(A.mgmt_fees)}</td></tr>
             <tr><td>Fund expenses, incl. set-up</td><td>{eur(A.fund_expenses)}</td></tr>
@@ -335,7 +330,7 @@ export function TermsTables() {
           <strong>Where {pct(TARGET.net_irr)} comes from.</strong> The target takes every exit at {pct(C.base.exit_mult)} of its modelled
           value. Like the best venture funds, one company carries the fund: {FR.company}, with {pct(FR.stake_at_exit, 1)} of it at exit because no
           round after ours dilutes us; at its modelled {eur(UPSIDE.largest_exit, 'val')}, it returns {mult(FR.multiple_of_fund)} the fund (the upside, {mult(UPSIDE.net_tvpi)} net). A second winner and most companies returning little or nothing make the rest of the power law. Cash
-          comes back early too: loans at {pct(fund.loan_rate)} a year, repaid from year {LOANS_FROM}, and growth positions bought at
+          comes back early too: growth positions bought at
           a {pct(STRUCT_DISC)} discount and sold after {Math.min(...GROWTH_HOLDS)}–{Math.max(...GROWTH_HOLDS)} years. Without the
           unicorn: {mult(NO_UNI.net_tvpi)} net. One year of delay on every exit: {pct(DELAY_1.net_irr)}. Law 04 in numbers: a
           {' '}{eur(FR.fund_returning_exit, 'val')} sale of {FR.company} returns the entire fund on its own.
@@ -353,21 +348,21 @@ function tierRows(id: LayerId): [string, string][] {
   const leads = x.tracks?.lead;
   const radar = x.tracks?.radar;
   if (id === 'seed') return [
-    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, first cheque, loan line reserved`],
+    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, first cheque`],
     ['Stage', x.stage],
     ['Role', 'Lead + radar tickets'],
     ['Entry post', eurRange(x.entry_post_min, x.entry_post_max)],
     ['Companies', `${leads!.companies} leads + ${radar!.companies} radar`],
-    ['Invested, loans included', eur(x.invested)],
+    ['Invested', eur(x.invested)],
     ['Target gross', `${mult(x.moic.base)} MOIC, ${mult(x.moic.target)} in the upside`],
   ];
   if (id === 'venture') return [
-    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, first cheque or buyback, loan line reserved`],
+    ['Ticket', `${eurRange(x.ticket_min, x.ticket_max)}, first cheque or buyback`],
     ['Stage', x.stage],
     ['Role', 'Direct at the inflection, or buyback of angels and leavers'],
     ['Entry post', eurRange(x.entry_post_min, x.entry_post_max)],
     ['Companies', `${x.companies} direct entries, ${eurRange(x.first_cheque_range[0], x.first_cheque_range[1], 'table', '–')} first cheques`],
-    ['Invested, loans included', eur(x.invested)],
+    ['Invested', eur(x.invested)],
     ['Target gross', `${mult(x.moic.base)} MOIC, ${mult(x.moic.target)} in the upside`],
   ];
   return [
@@ -376,7 +371,7 @@ function tierRows(id: LayerId): [string, string][] {
     ['Role', 'Direct: blocks from end-of-life funds and fresh growth rounds. Our breakouts: blocks bought in our winners'],
     ['Entry post', eurRange(x.entry_post_min, x.entry_post_max, 'val')],
     ['Companies', `${x.companies} direct entries + ${x.breakouts} of our breakouts, ${eurRange(x.position_range[0], x.position_range[1], 'tile', '–')} each`],
-    ['Invested, loans included', eur(x.invested)],
+    ['Invested', eur(x.invested)],
     ['Target gross', `${mult(x.moic.base)} MOIC (${mult(x.moic.target)} in the upside), ${pct(x.gross_irr.base)} gross IRR over ${Math.min(...GROWTH_HOLDS)}–${Math.max(...GROWTH_HOLDS)} year holds`],
   ];
 }
@@ -387,7 +382,7 @@ function Construction() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Appendix · Fund construction</span>
         <h2 className="h2">Fund construction.<br /><em>Two ways in at every layer.</em></h2>
-        <p className="pf-intro">A first equity cheque, or a buyback of existing shares. Then credit first, and equity when the founder asks.</p>
+        <p className="pf-intro">A first equity cheque, or a buyback of existing shares. Then bank debt we raise for the company, and equity when the founder asks.</p>
         <div className="pv-tiers">
           {LAYER_IDS.map((id) => (
             <div key={id} className={`tier ${id}`}>
@@ -432,7 +427,7 @@ function SimTable({ id }: { id: LayerId }) {
       <h3 className="pv-sim-h">{TIER_TAG[id]}<small>{layerIntro(id, x)}</small></h3>
       <div className="table-scroll"><table className="fund-table sim">
         <thead>
-          <tr><th>Deal ID</th><th>Status</th><th>First cheque</th><th>Buybacks</th><th>Follow-on</th><th>Loan</th><th>Entry stake</th><th>Stake at exit</th><th>Exit value</th><th>Fund return</th><th>MOIC</th></tr>
+          <tr><th>Deal ID</th><th>Status</th><th>First cheque</th><th>Buybacks</th><th>Follow-on</th><th>Entry stake</th><th>Stake at exit</th><th>Exit value</th><th>Fund return</th><th>MOIC</th></tr>
         </thead>
         <tbody>
           {x.lines.map((l, i) => {
@@ -447,7 +442,6 @@ function SimTable({ id }: { id: LayerId }) {
                 <td>{m(l.first)}</td>
                 <td>{m(l.buyback)}</td>
                 <td>{m(l.follow)}</td>
-                <td>{m(l.loan)}</td>
                 <td>{l.n === 1 ? pct(l.entry_pct, 1) : dash}</td>
                 <td>{l.exit_pct === null ? dash : pct(l.exit_pct, 1)}</td>
                 <td>{l.exit_value === null ? dash : eur(l.exit_value, 'val')}</td>
@@ -456,7 +450,7 @@ function SimTable({ id }: { id: LayerId }) {
               </tr>
             );
           })}
-          <tr className="sub"><td>Subtotal</td><td>{LAYER_NAME[id]}</td><td>{eur(x.first)}</td><td>{m(x.buyback)}</td><td>{m(x.follow)}</td><td>{m(x.loans)}</td><td>{dash}</td><td>{dash}</td><td>{dash}</td><td>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
+          <tr className="sub"><td>Subtotal</td><td>{LAYER_NAME[id]}</td><td>{eur(x.first)}</td><td>{m(x.buyback)}</td><td>{m(x.follow)}</td><td>{dash}</td><td>{dash}</td><td>{dash}</td><td>{eur(x.proceeds.target)}</td><td className="moic">{mult(x.moic.target)}</td></tr>
         </tbody>
       </table></div>
     </div>
@@ -468,7 +462,7 @@ function Simulation() {
     <div className="pf-section" id="simulation" style={{ background: 'var(--bg)' }}>
       <div className="pf-wrap-wide">
         <span className="eyebrow">Appendix · Fund simulation</span>
-        <h2 className="h2">Line-by-line entry, buybacks, loans &amp; exit.<br /><em>Modelled exit values (the upside), every position of the three layers.</em></h2>
+        <h2 className="h2">Line-by-line entry, buybacks &amp; exit.<br /><em>Modelled exit values (the upside), every position of the three layers.</em></h2>
         <p className="pf-intro">Ownership at exit is higher than at entry on every line where the founder grows with us: buybacks and cancellations lift our stake with theirs.</p>
         <SimulationTables />
       </div>
@@ -483,11 +477,11 @@ export function SimulationTables() {
       {LAYER_IDS.map((id) => <SimTable key={id} id={id} />)}
       <div className="table-scroll pv-total"><table className="fund-table">
         <tbody>
-          <tr className="sub"><td>Total</td><td>First cheques {eur(A.first)}</td><td>Buybacks {eur(LAYER_IDS.reduce((s, id) => s + L[id].buyback, 0))}</td><td>Follow-on {eur(LAYER_IDS.reduce((s, id) => s + L[id].follow, 0))}</td><td>Loans {eur(A.loans)}</td><td>Fund return {eur(TARGET.gross_proceeds)}</td><td className="moic">{mult(TARGET.gross_moic)}</td></tr>
+          <tr className="sub"><td>Total</td><td>First cheques {eur(A.first)}</td><td>Buybacks {eur(LAYER_IDS.reduce((s, id) => s + L[id].buyback, 0))}</td><td>Follow-on {eur(LAYER_IDS.reduce((s, id) => s + L[id].follow, 0))}</td><td>Fund return {eur(UPSIDE.gross_proceeds)}</td><td className="moic">{mult(UPSIDE.gross_moic)}</td></tr>
         </tbody>
       </table></div>
       <p className="pf-fine">
-        Fund return at exit value, equity plus loan repayment.
+        Fund return at exit value.
       </p>
     </>
   );
@@ -513,12 +507,11 @@ export function PerformanceTables() {
   const ORDER = ['base', 'target', 'stress'] as const;
   const rows: [string, (id: 'target' | 'base' | 'stress') => string][] = [
     ['Fund size', () => FUND_SIZE],
-    ['Gross proceeds, exits and loans', (id) => eur(C[id].gross_proceeds)],
+    ['Gross proceeds at exit', (id) => eur(C[id].gross_proceeds)],
     ['Net TVPI', (id) => mult(C[id].net_tvpi)],
     ['Net IRR', (id) => pct(C[id].net_irr)],
     ['Net DPI by year 6', (id) => mult(C[id].dpi_year6)],
     ['Net DPI by year 7', (id) => mult(C[id].dpi_year7)],
-    ['Loans: repaid ÷ lent', (id) => mult(C[id].loans_multiple, 2)],
     ['Largest exit', (id) => eur(C[id].largest_exit, 'val')],
   ];
   return (
@@ -542,13 +535,12 @@ export function PerformanceTables() {
           </table></div>
         </div>
         <p className="pf-fine">
-          Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, {pct(T.fee_loan_pct)} on the loan sleeve, then {pct(T.fee_post_pct, 1)} on invested capital, loans included until repaid), fund expenses
+          Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital), fund expenses
           and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. Investments over {F.investment_period_years} years, exits from year {EXIT_YEARS[0]} to year {EXIT_YEARS[1]}.
-          Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values. Stress: every exit at {pct(C.stress.exit_mult)}. Loans priced at {pct(fund.loan_rate)} a year on healthy companies ({mult(fund.loan_multiples.performing_min, 2)} to {mult(fund.loan_multiples.performing_max, 2)} by tenor, no warrants), drawn in tranches;
-          zombies repay {mult(fund.loan_multiples.zombie)}, plus {loanLoss('base')}, {loanLoss('target')} and {loanLoss('stress')} further losses on every loan in the target, upside and stress cases. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
+          Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values. Stress: every exit at {pct(C.stress.exit_mult)}. The fund does not lend: companies borrow from our partner banks. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
           and angels, {pct(STRUCT_DISC)} below from structural sellers (end-of-life funds). When a founder raises elsewhere, ProFund follows in new shares ({ALL_LINES.filter((l) => l.follow).map((l) => l.id).join(', ')}). G-02 and G-04 are fresh growth rounds in new shares;
           first cheques carry a 1× non-participating preference, outside small seed rounds. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
-          topped up to {eur(F.company_max_with_spv, 'tile')} with SPVs, outside the fund. Net TVPI on paid-in capital. Loan recycling not included. Targets are model outputs, not a forecast or a guarantee.
+          topped up to {eur(F.company_max_with_spv, 'tile')} with SPVs, outside the fund. Net TVPI on paid-in capital. Targets are model outputs, not a forecast or a guarantee.
         </p>
     </>
   );

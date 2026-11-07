@@ -25,7 +25,6 @@ export interface FundLine {
   first: number;            // premier chèque, actions nouvelles
   buyback: number;          // rachats de titres existants
   follow: number;           // suivi en actions nouvelles (le fondateur a levé ailleurs)
-  loan: number;
   invested: number;
   entry_post: number;
   entry_pct: number;        // premier chèque, ou bloc racheté en Growth
@@ -44,9 +43,6 @@ export interface FundLine {
   dilution: number;
   follow_year: number | null;
   follow_post: number | null;
-  loan_year: number | null;
-  loan_repay_year: number | null;
-  loan_mult: number | null;
 }
 
 /** Une voie du Seed : leads de conviction ou tickets radar. */
@@ -76,9 +72,7 @@ export interface FundLayer {
   first: number;
   buyback: number;
   follow: number;
-  loans: number;
   invested: number;
-  loans_pct: number;
   first_cheque_range: [number, number];
   position_range: [number, number];
   entry_years: [number, number];
@@ -92,7 +86,6 @@ export interface FundLayer {
 export interface FundCase {
   exit_mult: number;
   exit_cap: number | null;
-  loan_repaid: number;
   gross_proceeds: number;
   gross_moic: number;
   realised: number;
@@ -107,8 +100,6 @@ export interface FundCase {
   gross_irr: number;
   dpi_year6: number;
   dpi_year7: number;
-  loans_repaid: number;
-  loans_multiple: number;
   largest_exit: number;
   horizon_years: number;
 }
@@ -171,8 +162,6 @@ export interface FundData {
     company_max_with_spv: number;
     europe_min_pct: number;
     euveca_qualifying_min_pct: number;
-    loan_cap_pct: number;
-    loan_cap: number;
     first_close_min: number;
     first_close_max: number;
     companies: number;
@@ -180,7 +169,6 @@ export interface FundData {
   };
   terms: {
     fee_ip_pct: number;
-    fee_loan_pct: number;
     fee_post_pct: number;
     fee_first_close_pct: number;
     setup_cost: number;
@@ -193,8 +181,6 @@ export interface FundData {
   };
   secondary: { share: number; year: number; price_pct: number; lines: string[] };
   buyback_discount: number;
-  loan_rate: number;
-  loan_multiples: { zombie: number; loss: number; performing_min: number; performing_max: number };
   layers: Record<LayerId, FundLayer>;
   allocation: {
     seed: number;
@@ -203,9 +189,7 @@ export interface FundData {
     invested: number;
     first: number;
     buyback_follow: number;
-    loans: number;
     after_first_pct: number;
-    loans_pct: number;
     mgmt_fees: number;
     fund_expenses: number;
     contingency: number;

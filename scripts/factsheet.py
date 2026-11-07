@@ -417,14 +417,14 @@ LAWS = (
 
 PACT = (
     ("Equity, when the founder chooses.", "At most a 1× non-participating preference; never a pushed round."),
-    ("An in-house Chief Fundraising Officer.", "Loans to raise from strength, then equity on the same "
+    ("An in-house Chief Fundraising Officer.", "Bank debt we raise for them, then equity on the same "
                                                "terms when the founder asks and our committee agrees."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
                                     "agreement, and the company can cancel shares every year: each "
                                     "cancellation lifts both stakes."),
     ("Founder control.", "Our shares vote with the founder. One board seat, no veto on how they run, "
                          "raise or sell."),
-    ("Capital protected.", "No sale below our money back without us, loans on lender terms, founder "
+    ("Capital protected.", "No sale below our money back without us, buybacks priced independently, founder "
                            "lock-up and vesting. Protections wake up on default."),
 )
 
@@ -484,7 +484,7 @@ def page_one(F):
         "the most autonomous machines."), sz, "semi", INK, ld)
     yy += F.para(rx, yy, rw, f"<b>{x('Capital is no longer scarce. Control is.')}</b> " + x(
         "A team that doesn't need an army doesn't need a round every 18 months. So we don't sell it one: "
-        "we lend, we buy, and equity comes only when the founder chooses."), sz, "reg", BLUE_DK, ld)
+        "we raise its debt, we buy, and equity comes only when the founder chooses."), sz, "reg", BLUE_DK, ld)
     y = max(yy, y + 70) + 24
 
     # les quatre lois
@@ -532,7 +532,7 @@ def page_one(F):
         (FUND_SIZE, f"Target Fund I, closed-ended, closings over {FUND['closing_months']} months"),
         (f"{len(LAYER_IDS)} layers", f"Seed, Venture, Growth: {eur(LAYERS['seed']['ticket_min'])} to "
                                      f"{eur(FUND['company_cap'], 'tile')} per company"),
-        (pct(DATA["allocation"]["after_first_pct"]), "Invested after the first cheque: follow-ons, buybacks, loans"),
+        (pct(DATA["allocation"]["after_first_pct"]), "Invested after the first cheque: buybacks and follow-ons"),
         ("Every", "European seed round tracked by the Seed Radar, weekly"),
         ("6–18mo", "Detection lead before announcement"),
     ]
@@ -586,8 +586,8 @@ def construction_rows():
     holds = [ln["exit_year"] - ln["entry_year"] for ln in g["lines"]]
     spv = eur(FUND["company_max_with_spv"], "tile")
     return [
-        ("Ticket", f"{rng(s['ticket_min'], s['ticket_max'])}, first cheque, loan line reserved",
-         f"{rng(v['ticket_min'], v['ticket_max'])}, first cheque or buyback, loan line reserved",
+        ("Ticket", f"{rng(s['ticket_min'], s['ticket_max'])}, first cheque",
+         f"{rng(v['ticket_min'], v['ticket_max'])}, first cheque or buyback",
          f"{rng(g['ticket_min'], FUND['company_cap'])} from the fund, up to {spv} with SPVs"),
         ("Stage", s["stage"], v["stage"], g["stage"]),
         ("Role", "Lead + radar tickets", "Direct at the inflection, or buyback of angels and leavers",
@@ -599,7 +599,7 @@ def construction_rows():
          f"{v['companies']} direct entries, {rng(*v['first_cheque_range'])} first cheques",
          f"{g['companies']} direct entries + {g['breakouts']} of our breakout{'s' if g['breakouts'] > 1 else ''}, "
          f"{rng(*g['position_range'])} each"),
-        ("Invested, loans included", eur(s["invested"]), eur(v["invested"]), eur(g["invested"])),
+        ("Invested", eur(s["invested"]), eur(v["invested"]), eur(g["invested"])),
         ("Target gross", f"{mult(s['moic']['base'])} MOIC, {mult(s['moic']['target'])} in the upside",
          f"{mult(v['moic']['base'])} MOIC, {mult(v['moic']['target'])} in the upside",
          f"{mult(g['moic']['base'])} MOIC, {pct(g['gross_irr']['base'])} gross IRR over "
@@ -611,7 +611,7 @@ def page_two(F):
     kick(F, M, 84, "Fund construction")
     y = 102 + title(F, M, 102, W, "", 19, lead=1.18, markup=(
         x("Two ways in at every layer: a first equity cheque, or a buyback of existing shares. ")
-        + f'<font color="{BLUE}">{x("Then credit first, equity when the founder asks.")}</font>'))
+        + f'<font color="{BLUE}">{x("Then debt from our partner banks, equity when the founder asks.")}</font>'))
     y += 20
 
     # le tableau des trois etages
@@ -640,18 +640,16 @@ def page_two(F):
         ("Closed-ended EuVECA fund", f"{FUND['term_years']} years"),
         ("Successive closings", f"{FUND['closing_months']} months"),
         (f"Management fee, years 1–{ip}", pct(TERMS["fee_ip_pct"])),
-        (f"On the loan sleeve, years 1–{ip}", pct(TERMS["fee_loan_pct"])),
-        ("Then, on invested capital incl. loans until repaid", pct(TERMS["fee_post_pct"], 1)),
+        ("Then, on invested capital", pct(TERMS["fee_post_pct"], 1)),
         ("Carried interest, European", pct(TERMS["carry_pct"])),
         ("Hurdle, with GP catch-up", pct(TERMS["hurdle_pct"])),
         ("Per company: fund / with SPVs",
          f"{eur(FUND['company_cap'], 'tile')} / {eur(FUND['company_max_with_spv'], 'tile')}"),
-        ("Loans", f"Up to {pct(FUND['loan_cap_pct'])} of commitments (EuVECA)"),
+        ("Debt", "From partner banks, not the fund"),
     ]
     alloc = [
         ("First cheques, incl. fresh growth rounds", eur(ALLOC["first"])),
         ("Buybacks and follow-ons", eur(ALLOC["buyback_follow"])),
-        ("Loans", eur(ALLOC["loans"])),
         (f"Invested ({pct(ALLOC['after_first_pct'])} after the first cheque)", eur(ALLOC["invested"])),
         ("Management fees", eur(ALLOC["mgmt_fees"])),
         ("Fund expenses, incl. set-up", eur(ALLOC["fund_expenses"])),
@@ -690,9 +688,9 @@ def page_two(F):
          "paths (ProFund)"],
         ["Angels", "Wait for the exit", "Liquidity at year 2"],
         ["LPs", "A unicorn, diluted round after round",
-         f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target, {mult(up['net_tvpi'])} in the upside; the "
-         f"unicorn grows on credit, {DATA['fund_returner']['stake_at_exit'] * 100:.1f}% owned at exit; "
-         f"{mult(uni_same['net_tvpi'])} if it also sells {eur(same_path['equity'], 'tile')} of equity"],
+         f"{mult(t['net_tvpi'])} net and {pct(t['net_irr'])} IRR target, {mult(up['net_tvpi'])} upside; "
+         f"{DATA['fund_returner']['stake_at_exit'] * 100:.1f}% of the unicorn at exit; "
+         f"{mult(uni_same['net_tvpi'])} if it sells {eur(same_path['equity'], 'tile')} of equity"],
     ]
     gh = grid(F, gx, y - 4, gw, [(1.0, "l"), (0.8, "l"), (1.9, "l")],
               [f"At a {eur(row['exit'], 'val')} exit", "VC path", "ProFund path"], rows, size=9.2,
@@ -701,10 +699,10 @@ def page_two(F):
 
     # conflits et filet de securite
     txt = (f"<b>{x('Conflicts and fallback.')}</b> " + x(
-        "Every buyback is priced by an independent valuer. ProFund's shares abstain on its own loans and "
+        "Every buyback is priced by an independent valuer. ProFund's shares abstain on its own "
         "buybacks; founder pay beyond budget, related-party deals and buybacks of founder shares need our "
         "director's approval. Fund-side conflicts go to the LP advisory committee. Fraud, gross misconduct, a "
-        "material breach of the pact, a loan default not cured within 30 days or insolvency end the voting "
+        "material breach of the pact, a debt payment default not cured within 30 days or insolvency end the voting "
         "agreement and restore a classic lead's consents."))
     hb = F.hpara(W - 72, txt, 9.6, "reg", 1.5) + 30
     F.rr(M, y, W, hb, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
@@ -776,8 +774,7 @@ def page_three(F):
         ("Deal-04, acquired 2016",
          "100% acquisition, €45M buyout. Revenue growing ~20% YoY since acquisition.", "–"),
     )
-    extras = ("A partner from venture debt will run the loan book (to be recruited).",
-              "Investment committee and key-person clause.")
+    extras = ("Investment committee and key-person clause.",)
     roles = (
         "M&A Director, Leboncoin",
         "Senior Associate, Partech Ventures",
@@ -886,8 +883,8 @@ def cta(F, ymin):
 
 # ── page 4 : la simulation et la performance ────────────────────────────────
 SIM_COLS = (  # (titre, largeur relative, alignement)
-    (("DEAL ID",), 46, "l"), (("STATUS",), 214, "l"), (("FIRST", "CHEQUE"), 46, "r"),
-    (("BUYBACKS",), 48, "r"), (("FOLLOW-ON",), 48, "r"), (("LOAN",), 40, "r"),
+    (("DEAL ID",), 46, "l"), (("STATUS",), 254, "l"), (("FIRST", "CHEQUE"), 46, "r"),
+    (("BUYBACKS",), 48, "r"), (("FOLLOW-ON",), 48, "r"),
     (("ENTRY", "STAKE"), 38, "r"), (("STAKE", "AT EXIT"), 40, "r"), (("EXIT", "VALUE"), 40, "r"),
     (("FUND", "RETURN"), 46, "r"), (("MOIC",), 34, "r"),
 )
@@ -983,23 +980,22 @@ def sim_table(F, u, v, w):
             cell(2, ty, dash(line["first"], eur_cost))
             cell(3, ty, dash(line["buyback"], eur_cost))
             cell(4, ty, dash(line["follow"], eur_cost))
-            cell(5, ty, dash(line["loan"], eur_cost))
-            cell(6, ty, pct(line["entry_pct"], 1) if line["n"] == 1 and line["entry_pct"] else "–")
-            cell(7, ty, "–" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
-            cell(8, ty, "–" if line["exit_value"] is None else eur(line["exit_value"], "val"))
-            cell(9, ty, eur(line["proceeds"]), "gras" if strong else "reg", fs, TONE_TEXT[line["tone"]])
-            cell(10, ty, mult(line["moic"]), "gras", fs, BLUE_DK if strong else TONE_TEXT[line["tone"]])
+            cell(5, ty, pct(line["entry_pct"], 1) if line["n"] == 1 and line["entry_pct"] else "–")
+            cell(6, ty, "–" if line["exit_pct"] is None else pct(line["exit_pct"], 1))
+            cell(7, ty, "–" if line["exit_value"] is None else eur(line["exit_value"], "val"))
+            cell(8, ty, eur(line["proceeds"]), "gras" if strong else "reg", fs, TONE_TEXT[line["tone"]])
+            cell(9, ty, mult(line["moic"]), "gras", fs, BLUE_DK if strong else TONE_TEXT[line["tone"]])
             y += rh
         F.rr(u + 1, y, w - 2, sub, 0, fill=WARM)
         F.line(u, y, u + w, y, LINE2, 1)
         ty = y + (sub - fs) / 2 + 0.3
         cell(1, ty, f"Subtotal {LAYER_NAME[layer]}", "gras", fs, INK)
-        for i, key in ((2, "first"), (3, "buyback"), (4, "follow"), (5, "loans")):
+        for i, key in ((2, "first"), (3, "buyback"), (4, "follow")):
             cell(i, ty, dash(t[key], eur), "gras", fs, INK)
-        for i in (6, 7, 8):
+        for i in (5, 6, 7):
             cell(i, ty, "–", "reg", fs, SOFT)
-        cell(9, ty, eur(t["proceeds"]["target"]), "gras", fs, BLUE_DK)
-        cell(10, ty, mult(t["moic"]["target"]), "gras", fs, BLUE_DK)
+        cell(8, ty, eur(t["proceeds"]["target"]), "gras", fs, BLUE_DK)
+        cell(9, ty, mult(t["moic"]["target"]), "gras", fs, BLUE_DK)
         y += sub
     # le total du fonds
     F.clip(u, v, w, total, 14)
@@ -1008,13 +1004,13 @@ def sim_table(F, u, v, w):
     F.line(u, y, u + w, y, BLUE, 1.2)
     ty = y + (sub - fs) / 2 + 1
     cell(1, ty, "Total", "xgras", fs, INK)
-    tot = {k: sum(LAYERS[l][k] for l in LAYER_IDS) for k in ("first", "buyback", "follow", "loans")}
-    for i, key in ((2, "first"), (3, "buyback"), (4, "follow"), (5, "loans")):
+    tot = {k: sum(LAYERS[l][k] for l in LAYER_IDS) for k in ("first", "buyback", "follow")}
+    for i, key in ((2, "first"), (3, "buyback"), (4, "follow")):
         cell(i, ty, eur(tot[key]), "xgras", fs, INK)
-    for i in (6, 7, 8):
+    for i in (5, 6, 7):
         cell(i, ty, "–", "reg", fs, SOFT)
-    cell(9, ty, eur(CASES["target"]["gross_proceeds"]), "xgras", fs, BLUE_DK)
-    cell(10, ty, mult(CASES["target"]["gross_moic"]), "xgras", fs, BLUE_DK)
+    cell(8, ty, eur(CASES["target"]["gross_proceeds"]), "xgras", fs, BLUE_DK)
+    cell(9, ty, mult(CASES["target"]["gross_moic"]), "xgras", fs, BLUE_DK)
     F.rr(u, v, w, total, 14, stroke=LINE2, lw=1)
     return total
 
@@ -1041,12 +1037,11 @@ def perf_table(F, u, v, w):
     sec = SECONDARY
     rows = [
         ["Fund size"] + [FUND_SIZE] * 3,
-        ["Gross proceeds, exits and loans"] + [eur(c["gross_proceeds"]) for c in cases],
+        ["Gross proceeds at exit"] + [eur(c["gross_proceeds"]) for c in cases],
         ["Net TVPI"] + [mult(c["net_tvpi"]) for c in cases],
         ["Net IRR"] + [pct(c["net_irr"]) for c in cases],
         [f"Net DPI by year {sec['year']}"] + [mult(c["dpi_year6"]) for c in cases],
         [f"Net DPI by year {sec['year'] + 1}"] + [mult(c["dpi_year7"]) for c in cases],
-        ["Loans: repaid ÷ lent"] + [mult(c["loans_multiple"], 2) for c in cases],
         ["Largest exit"] + [eur(c["largest_exit"], "val") for c in cases],
     ]
     return grid(F, u, v, w, [(2.05, "l"), (1, "c"), (1, "c"), (1, "c")], ["Metric", "Target", "Upside", "Stress"],
@@ -1067,7 +1062,6 @@ def stress_table(F, u, v, w, height=None):
 
 def net_note():
     t, b, s = CASES["target"], CASES["base"], CASES["stress"]
-    lm = DATA["loan_multiples"]
     exits = [ln["exit_year"] for ln in ALL_LINES]
     disc = sorted({ln["discount"] for ln in ALL_LINES if ln["discount"]})
     structural = max(disc)
@@ -1076,20 +1070,17 @@ def net_note():
     fresh = [ln["id"] for ln in LAYERS["growth"]["lines"] if ln["first"]]
     brk = [ln for ln in ALL_LINES if ln["kind"] == "breakout"]
     zombie = sorted({ln["recovery"] for ln in ALL_LINES if ln["tone"] == "grey" and ln["recovery"]})
-    extra = lst([pct(round(1 - c["loan_repaid"], 2)) for c in (b, t, s)])
     ip = FUND["investment_period_years"]
     s_ = (
         f"Net = after management fees ({pct(TERMS['fee_ip_pct'])} on commitments for {ip} years, "
-        f"{pct(TERMS['fee_loan_pct'])} on the loan sleeve, then {pct(TERMS['fee_post_pct'], 1)} on invested "
-        "capital, loans included until repaid), fund expenses and carried interest "
+        f"then {pct(TERMS['fee_post_pct'], 1)} on invested "
+        "capital), fund expenses and carried interest "
         f"({pct(TERMS['carry_pct'])} over an {pct(TERMS['hurdle_pct'])} hurdle, European whole-of-fund waterfall "
         "with GP catch-up), before tax. "
         f"Investments over {ip} years, exits from year {min(exits)} to year {max(exits)}. "
         f"Target: every exit at {pct(b['exit_mult'])} of its modelled value. Upside: modelled values. "
         f"Stress: every exit at {pct(s['exit_mult'])}. "
-        f"Loans priced at {pct(DATA['loan_rate'])} a year on healthy companies ({mult(lm['performing_min'], 2)}"
-        f" to {mult(lm['performing_max'], 2)} by tenor, no warrants), drawn in tranches; zombies repay "
-        f"{mult(lm['zombie'])}, plus {extra} further losses on every loan in the target, upside and stress cases. "
+        "The fund does not lend: companies borrow from our partner banks. "
         f"Buybacks priced {pct(min(winners))}–{pct(max(winners))} below the valuation of the time on winners "
         f"and angels, {pct(structural)} below from structural sellers (end-of-life funds). "
         f"When a founder raises elsewhere, ProFund follows in new shares ({', '.join(followed)}). "
@@ -1098,7 +1089,7 @@ def net_note():
         + "".join(f"{ln['id']} is a block bought in {ln['company']}, counted as one company with it. " for ln in brk)
         + f"Zombies return {mult(zombie[0])} of the equity invested. "
         f"Any growth position can be topped up to {eur(FUND['company_max_with_spv'], 'tile')} with SPVs, "
-        "outside the fund. Net TVPI on paid-in capital. Loan recycling not included. "
+        "outside the fund. Net TVPI on paid-in capital. "
         "Targets are model outputs, not a forecast or a guarantee."
     )
     return s_
@@ -1121,8 +1112,8 @@ def page_four(F):
         f"VC path, on Carta medians (not specific to Europe): {eur(seed_pref, 'tile')} seed, {eur(a_pref, 'tile')} Series A, "
         f"founders at {fm['founders'] * 100:.1f}%, then {eur(fm['vc_equity'], 'tile')} of equity with bridges and pool "
         f"refreshes: {after('B')}, {after('C')} and {after('D')} after the B, C and D. With us, same valuations and "
-        f"{eur(fm['loans'], 'tile')} of loans, at {pct(fm['loan_share']['min'])} to {pct(fm['loan_share']['max'])} of the "
-        f"last round (usual range: 20% to 40%), subject to partner lenders. Same capital: {eur(same['equity'], 'tile')} of "
+        f"{eur(fm['loans'], 'tile')} of bank loans, at {pct(fm['loan_share']['min'])} to {pct(fm['loan_share']['max'])} of the "
+        f"last round (usual range: 20% to 40%), subject to partner banks. Same capital: {eur(same['equity'], 'tile')} of "
         f"equity, founders at {same['stake'] * 100:.1f}%. Half: {eur(half['equity'], 'tile')} of equity, "
         f"{half['stake'] * 100:.1f}%. Credit alone: no further round, {fm['founders'] * 100:.1f}%. Illustrative. Sources: "
         "Carta; SaaStr; First Citizens."),
@@ -1131,7 +1122,7 @@ def page_four(F):
 
     # la simulation ligne a ligne
     kick(F, M, y, "Fund simulation")
-    title(F, M, y + 16, W, "Line-by-line entry, buybacks, loans & exit.", 15.5)
+    title(F, M, y + 16, W, "Line-by-line entry, buybacks & exit.", 15.5)
     y += 37
     y += F.para(M, y, W, x(
         "Modelled exit values (the upside), every position of the three layers. Ownership at exit is higher than at entry on every "
@@ -1140,7 +1131,7 @@ def page_four(F):
     y += sim_table(F, M, y, W) + 5
     sec = SECONDARY
     y += F.para(M, y, W, x(
-        "Fund return at exit value, equity plus loan repayment."),
+        "Fund return at exit value."),
         7.3, "reg", SOFT, 1.35) + 9
 
     # la performance
@@ -1156,7 +1147,7 @@ def page_four(F):
         (mult(b["net_tvpi"]), "Target net TVPI",
          f"Upside {mult(t['net_tvpi'])}, stress case {mult(s['net_tvpi'])}"),
         (mult(b["dpi_year7"]), f"Net DPI by year {sec['year'] + 1}",
-         "Loans and Growth exits bring cash back early; the unicorn sells in year "
+         "Growth exits bring cash back early; the unicorn sells in year "
          + str(max(l["exit_year"] for l in LAYERS["seed"]["lines"] if l.get("company") == fr["company"]))),
         (eur(fr["fund_returning_exit"], "val"), "One company returns the fund",
          f"A {eur(fr['fund_returning_exit'], 'val')} sale of {fr['company']} returns it alone; at its modelled "

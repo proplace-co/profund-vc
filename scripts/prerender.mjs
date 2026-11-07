@@ -88,7 +88,7 @@ const ROUTES = [
     // le deck LP : frais et rendements cibles, jamais indexé (hors sitemap)
     path: 'pitch',
     title: `ProFund · Pre-seed to Growth · ${FUND_SIZE} target`,
-    desc: 'The ProFund LP deck: equity, then loans and buybacks. Founder math, alignment, team, terms, fund simulation and target returns. For professional and eligible investors.',
+    desc: 'The ProFund LP deck: equity, buybacks, then bank debt raised for founders. Founder math, alignment, team, terms, fund simulation and target returns. For professional and eligible investors.',
     noindex: true,
   },
   {

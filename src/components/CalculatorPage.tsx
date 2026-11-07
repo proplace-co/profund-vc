@@ -250,7 +250,7 @@ export function Calculator({ className = '' }: { className?: string }) {
           so that founders hold Carta’s median stake after each round (AI teams after the B). ProFund path: same valuations,
           with at most a 1× preference on our equity; the pool tops up in new shares, unless you refill it with bought-back
           shares; loans repaid at exit, before equity, sized by default at {pct(FM.loan_share.min)} to {pct(FM.loan_share.max)} of
-          the last round (usual range for venture debt: 20% to 40%, <a href="https://innovation.firstcitizens.com/business-growth/access-to-capital/right-amount-of-venture-debt" target="_blank" rel="noopener noreferrer">First Citizens</a>), and subject to our partner lenders.
+          the last round (usual range for venture debt: 20% to 40%, <a href="https://innovation.firstcitizens.com/business-growth/access-to-capital/right-amount-of-venture-debt" target="_blank" rel="noopener noreferrer">First Citizens</a>), and subject to our partner banks.
           Half the capital: no bridges and no last round. Credit alone: no further round and no pool top-up. Buybacks and the
           annual cancellations that lift your stake are not counted. Illustrative, not a forecast or an offer.
         </p>

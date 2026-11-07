@@ -404,12 +404,12 @@ export function WhatWeBack() {
 // les plus gros tours en une seule ligne. Puis les tickets, en une bande.
 const MOVES: { t: string; d: string }[] = [
   { t: 'A clean cap table before every round.', d: 'We buy out angels and early funds, with your agreement. Their votes move to your side.' },
-  { t: 'Acquisitions without dilution.', d: 'Our External AI Growth Engine finds the targets. The loan line can finance them.' },
+  { t: 'Acquisitions without dilution.', d: 'Our External AI Growth Engine finds the targets. Our partner banks can finance them.' },
   { t: 'The largest rounds, one line on your cap table.', d: 'The largest funds lead. We stay at your side, with one SPV for our co-investors.' },
 ];
 
-/** Lever en position de force : sans réserve, on lève au creux, à court de cash ; avec la ligne de prêt,
- *  on lève au point d'inflexion. */
+/** Lever en position de force : sans réserve, on lève au creux, à court de cash ; avec la dette levée
+ *  auprès des banques partenaires (v3.17 : le fonds ne prête plus), on lève au point d'inflexion. */
 function RaiseChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
   const d = 'M40 252 C140 240 240 198 320 178 C370 166 400 198 440 206 C520 222 600 150 700 104 C800 60 880 44 960 34';
@@ -418,7 +418,7 @@ function RaiseChart() {
       <div className="pv-raise-txt">
         <span className="n">01</span>
         <h3>Raise from strength.</h3>
-        <p>A loan line reserved from day one carries you to your inflection. You raise equity when it pays, not when cash runs out.</p>
+        <p>Debt we raise for you from our partner banks carries you to your inflection. You raise equity when it pays, not when cash runs out.</p>
       </div>
       <div className="pv-raise-plot" aria-hidden="true">
         <svg viewBox="0 0 1000 300" preserveAspectRatio="none">
@@ -427,7 +427,7 @@ function RaiseChart() {
           <line className="mk" x1="440" y1="206" x2="440" y2="300" vectorEffect="non-scaling-stroke" />
           <line className="mk hi" x1="700" y1="104" x2="700" y2="300" vectorEffect="non-scaling-stroke" />
         </svg>
-        <span className="pv-raise-run"><i />The loan line carries you</span>
+        <span className="pv-raise-run"><i />Bank debt carries you</span>
         <span className="pv-raise-dot weak" />
         <span className="pv-raise-dot strong" />
         <span className="pv-raise-lab weak">Out of cash: the usual moment to raise</span>
@@ -435,7 +435,7 @@ function RaiseChart() {
       </div>
       <ul className="pv-raise-key">
         <li><i className="weak" />Out of cash: the usual moment to raise</li>
-        <li><i className="strong" />Your inflection: you raise here, with the loan line</li>
+        <li><i className="strong" />Your inflection: you raise here, from strength</li>
       </ul>
     </div>
   );
@@ -473,8 +473,8 @@ export function CapitalStack() {
 const BLOCKS: { icon: IconName; t: string; d: string }[] = [
   { icon: 'target', t: 'Equity, when you choose.',
     d: 'In new shares, from your first round to your largest. After that, we never push for a new round.' },
-  { icon: 'banknote', t: 'Credit before equity.',
-    d: 'A reserved loan line carries what it can: hiring, go-to-market, working capital, acquisitions.' },
+  { icon: 'banknote', t: 'Debt before equity.',
+    d: 'We raise bank debt for you, to carry what it can: hiring, go-to-market, working capital, acquisitions.' },
   // 05/11 : « Every cancellation lifts your stake » (la copie disait « buyback ») :
   // quand ProFund rachète un angel, la part du fondateur ne bouge pas ; c'est
   // l'annulation par la société qui la relève.
@@ -524,7 +524,7 @@ export function HowWeBack() {
 // v3.15 : le chemin VC est calé sur les parts médianes de Carta par étape (fund_model.py).
 const AFTER = (id: string) => pct(FM.vc_stakes.find((s) => s.round === id)!.founders, 1);
 export function founderNote() {
-  return `VC path, calibrated on Carta medians (not specific to Europe): ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). With ProFund: same seed, Series A and valuations. The same capital: ${eur(FM.loans, 'tile')} of loans replace part of the bridges, at ${pct(FM.loan_share.min)} to ${pct(FM.loan_share.max)} of the last round (usual range for venture debt: 20% to 40%). Half the capital: no bridges and no Series D. Credit alone: no further round and no pool refresh. ${eur(FM.loan_debt, 'tile')} of loans and interest repaid before equity, subject to our partner lenders. Illustrative, not a forecast; no company has followed these paths yet. Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr; First Citizens, 22 September 2023.`;
+  return `VC path, calibrated on Carta medians (not specific to Europe): ${eur(SEED.pref, 'tile')} seed, ${eur(SERIES_A.pref, 'tile')} Series A, founders at ${(FM.founders * 100).toFixed(1)}% after the Series A; then ${eur(FM.vc_equity, 'tile')} of equity over the Series B, C and D, each one preceded by a bridge, with option pool refreshes and 1× non-participating preferences. Founders hold ${AFTER('B')} after the Series B, ${AFTER('C')} after the C and ${AFTER('D')} after the D, Carta’s medians (27.3% for AI teams after the B; 16.1% after the C, when the employee pool overtakes the founders; 11.4% after the D). With ProFund: same seed, Series A and valuations. The same capital: ${eur(FM.loans, 'tile')} of bank loans, raised with our partner banks, replace part of the bridges, at ${pct(FM.loan_share.min)} to ${pct(FM.loan_share.max)} of the last round (usual range for venture debt: 20% to 40%). Half the capital: no bridges and no Series D. Credit alone: no further round and no pool refresh. ${eur(FM.loan_debt, 'tile')} of loans and interest repaid before equity, subject to our partner banks. Illustrative, not a forecast; no company has followed these paths yet. Sources: Carta, Founder Ownership Report 2026; Series D, Carta data reported by SaaStr; First Citizens, 22 September 2023.`;
 }
 
 /** Ce qu'un chemin vend et emprunte, dit en clair : « €199M of equity, €25M of loans ». */
@@ -655,7 +655,7 @@ export function TheMath({ calcOpen = false, onCalc }: { calcOpen?: boolean; onCa
       <StakeChart />
       <p className="pv-fine">
         Same company, same valuations. VC path: the medians of {A_('https://carta.com/data/founder-ownership-2026/', 'Carta’s Founder Ownership Report 2026')}, the
-        Series D as reported by {A_('https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/', 'SaaStr')}. With us: {eur(FM.loans, 'tile')} of loans from our fund and partner lenders,
+        Series D as reported by {A_('https://www.saastr.com/the-state-of-seed-today-10-key-learnings-from-cartas-latest-data/', 'SaaStr')}. With us: {eur(FM.loans, 'tile')} of loans raised with our partner banks,
         at {pct(FM.loan_share.min)} to {pct(FM.loan_share.max)} of the last round, within the usual range for venture debt ({A_('https://innovation.firstcitizens.com/business-growth/access-to-capital/right-amount-of-venture-debt', 'First Citizens')}).
         Credit alone assumes no pool refresh. Buybacks and cancellations are not counted. Illustrative, not a forecast.
       </p>
@@ -685,7 +685,7 @@ const STAGES = [
     what: 'First cheque at the inflection, or a buyback of your angels and leavers' },
   { layer: 'Growth', stage: 'Series B and beyond',
     ticket: eurRange(L.growth.ticket_min, F.company_cap),
-    what: 'Fresh growth rounds, buybacks of early funds, growth loans, acquisition financing' },
+    what: 'Fresh growth rounds, buybacks of early funds, bank debt raised for growth and acquisitions' },
 ];
 
 function StagesGrid() {
@@ -730,7 +730,7 @@ export function EveryStage({ tint = false, kicker = true }: { tint?: boolean; ki
         <div className="pv-head">
           {kicker && <p className="pv-kick">Every stage</p>}
           <h2 className="pv-h2">Pre-seed to growth.</h2>
-          <p className="sub">At every layer, a first equity cheque or a buyback of existing shares. Then loans, and more equity whenever you choose, on the same terms.</p>
+          <p className="sub">At every layer, a first equity cheque or a buyback of existing shares. Then bank debt we raise for you, and more equity whenever you choose, on the same terms.</p>
         </div>
         <StagesGrid />
         {/* 06/11 : avec un fonds de premier plan en lead, on suit ses termes (pratique usuelle d'un co-investisseur) */}
@@ -765,8 +765,6 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
           </p>
           {lp && (
             <ul className="pv-checks sm">
-              {/* 05/11 : « [to recruit] » de la copie, rendu explicite : le poste n'est pas pourvu. */}
-              <li><span className="pv-tick"><Icon name="check" /></span>A partner from venture debt will run the loan book (to be recruited).</li>
               <li><span className="pv-tick"><Icon name="check" /></span>Investment committee and key-person clause.</li>
             </ul>
           )}

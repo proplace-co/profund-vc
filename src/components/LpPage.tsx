@@ -151,15 +151,16 @@ const GIVE: { t: string; d: string }[] = [
   { t: 'The next round.', d: 'We never push for one. Every follow-on is their call.' },
   { t: 'The exit.', d: 'We never block a sale that pays back what we invested.' },
 ];
-// v3.19 (07/11) : ce que le pacte protège, clause par clause, vu par un LP exigeant.
+// v3.19 (07/11) : ce que le pacte protège, clause par clause, vu par un LP exigeant. v3.17 du modèle
+// (07/11) : le fonds ne prête plus, « Loans repaid first » devient les rachats évalués (clause 4).
 const KEEP: { t: string; d: string }[] = [
   { t: 'A 1× preference.', d: 'On every cheque, first or follow-on, outside small seed rounds, with standard anti-dilution.' },
-  { t: 'Loans repaid first.', d: 'Before any equity and on any change of control, with lender covenants.' },
+  { t: 'Buybacks priced independently.', d: 'By an independent valuer, never while the company is in default on its debt, never from a founder without our approval.' },
   { t: 'No sale on the cheap.', d: 'Below our money back, no one can drag our shares into a sale. What a buyer pays a founder on the side counts as price.' },
   { t: 'Cash stays in the company.', d: 'Founder pay beyond budget, related-party deals and buybacks of founder shares need our approval.' },
   { t: 'Founders stay in.', d: 'Vesting with a cliff, a lock-up on founder shares, and a bad leaver returns every share at no more than cost.' },
   { t: 'Consent where it counts.', d: 'A board seat and monthly figures. Nothing ranks ahead of our shares or changes their rights without us.' },
-  { t: 'Protections that wake up.', d: 'Fraud, a loan default or a breach of the pact ends the voting agreement and restores a classic lead’s consents.' },
+  { t: 'Protections that wake up.', d: 'Fraud, a payment default on the company’s debt or a breach of the pact ends the voting agreement and restores a classic lead’s consents.' },
 ];
 
 // ── Les briques de mise en page ──────────────────────────────────────────────
@@ -308,7 +309,7 @@ function LpContent() {
           { b: mult(UPSIDE.net_tvpi), t: 'Net TVPI in the upside, at modelled exit values' },
           { b: mult(NO_UNI.net_tvpi), t: 'Net TVPI if no unicorn comes' },
         ]} />
-        <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values; our best company, sold for {eur(UPSIDE.largest_exit, 'val')} with {pct(FR.stake_at_exit, 1)} at exit, returns {mult(FR.multiple_of_fund)} the fund on its own, and a {eur(FR.fund_returning_exit, 'val')} sale already returns it. Stress: every exit at {pct(C.stress.exit_mult)}, {mult(C.stress.net_tvpi)}. The target assumes our best company grows on credit; if it also sold {eur(FM.paths[1].equity, 'tile')} of equity along the way: {mult(UNI_SAME.net_tvpi)}. No company has followed this path yet.</p>
+        <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values; our best company, sold for {eur(UPSIDE.largest_exit, 'val')} with {pct(FR.stake_at_exit, 1)} at exit, returns {mult(FR.multiple_of_fund)} the fund on its own, and a {eur(FR.fund_returning_exit, 'val')} sale already returns it. Stress: every exit at {pct(C.stress.exit_mult)}, {mult(C.stress.net_tvpi)}. The target assumes our best company grows on bank debt; if it also sold {eur(FM.paths[1].equity, 'tile')} of equity along the way: {mult(UNI_SAME.net_tvpi)}. No company has followed this path yet.</p>
       </Say>
 
       <Say id="engines" tone="night" title="We run on what we back."
@@ -395,7 +396,7 @@ function LpContent() {
                 </div>
               ))}
             </div>
-            <p className="lp-read lp-fold-lead">{pct(A.after_first_pct)} of what we invest goes in after the first cheque: follow-ons, buybacks and loans.</p>
+            <p className="lp-read lp-fold-lead">{pct(A.after_first_pct)} of what we invest goes in after the first cheque: buybacks and follow-ons.</p>
             <div className="lp-fund-tables"><TermsTables /></div>
           </Fold>
 
@@ -403,7 +404,7 @@ function LpContent() {
             <div className="lp-fund-tables"><PerformanceTables /></div>
           </Fold>
 
-          <Fold id="room-sim" title="The simulation, line by line" sub="Every position of the three layers: cheques, buybacks, loans, stake at exit, return">
+          <Fold id="room-sim" title="The simulation, line by line" sub="Every position of the three layers: cheques, buybacks, follow-ons, stake at exit, return">
             <div className="lp-fund-tables lp-sim"><SimulationTables /></div>
           </Fold>
 
