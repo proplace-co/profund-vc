@@ -155,6 +155,16 @@ founders » ; /lp a une section « How a focused fund wins the best founders. »
 les géants mènent les gros tours, on reste à côté, les SPV gardent cet upside aux LPs) ; /pitch (« The
 inversion ») dit le Chief Fundraising Officer ; la meta description et le `<noscript>` reprennent la
 ligne de positionnement.
+**Les règles du héros (07/11, 2)** : six, chacune une clause du pacte (un siège et nos votes avec toi,
+pas de veto, jamais de tour poussé, au plus une 1× sans participation, les rachats, la démission qui
+garde tout ce qui est acquis) ; chacune se barre à son tour quand elle arrive à l'écran (`RuleRow`, un
+départ commun), un trait rouge épais, une lueur qui balaie la ligne, la nouvelle règle qui se fait
+nette ; puis `RulesCoda` : « Your shares, your board, your exit. » barrés un par un, et « Now you get the
+capital without giving the company away. » en grand.
+**/lp, « Check every figure. » (07/11)** : l'ancienne « data room » (mot que les LPs visés ne
+comprennent pas), purgée de ce qui répétait la page : plus les chemins de dilution ni la protection en
+double. Restent : ce que les fondateurs gardent vraiment (cotations, Carta), les sorties européennes,
+le fonds et ses termes, rendements et tests, la simulation ligne à ligne, les moteurs, les documents.
 **Le dessin de l'accueil (07/11, trois passes ; Alexandre : « trop de texte », « les grandes icônes
 font cheap », « on se répète », « que l'on s'en souvienne après avoir quitté le site »)** : une idée
 par section, aucune répétition. `TheFew` : le titre, `CollapseVisual` (un organigramme de 250 points

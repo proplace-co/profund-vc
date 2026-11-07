@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { CONTACT } from './LeadForm';
 import { HeroVisual, Icon, type IconName } from './Thesis';
-import { CollapseVisual, EnginesForLps, EnginesRunning, Numbers, Say, TheTeam, WhatWeBack, pathMoney } from './Founders';
+import { CollapseVisual, EnginesForLps, EnginesRunning, Numbers, Say, TheTeam, WhatWeBack } from './Founders';
 import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
 import { Fold } from './Drawer';
 import { savedAccess } from '../lib/access';
-import { eur, eurRange, fund, mult, pct, type FounderPath } from '../lib/fund';
+import { eur, eurRange, fund, mult, pct } from '../lib/fund';
 import { FACTSHEET_URL } from '../lib/links';
 
 // /lp — LA PAGE DES LPs. 06/11 (6) : plus de plan numéroté, un seul raisonnement qu'on suit
@@ -16,7 +16,7 @@ import { FACTSHEET_URL } from '../lib/links';
 //   rare (Capital is no longer scarce) → on a écrit ce que tout le monde dit (We wrote it
 //   down) → ce qui est juste pour eux est ce qui paie le LP (What pays you) → un premier
 //   fonds ne cache rien, il se regarde travailler (We run on what we back) → tout le détail
-//   est là (The data room) → l'invitation (What €10M would represent).
+//   est là (Check every figure) → l'invitation (What €10M would represent).
 // Humble et sans comparaison : on ne nomme aucun fonds. Tout chiffre du fonds lu dans
 // fund.json et dit comme un modèle ; chiffres de tiers numérotés et cliquables (SOURCES, en
 // bas). Ne pas modifier un chiffre de tiers sans relire sa source. Pas de barre du haut ni de
@@ -50,7 +50,6 @@ const SRC = {
   deliveroo: { n: 6, label: 'Deliveroo plc, IPO prospectus, 22 March 2021: Will Shu’s stake, capital raised', url: DELIVEROO_PROSPECTUS },
   atomico25: { n: 7, label: 'Atomico, State of European Tech 2025: $1B+ exits, share of deals and of value', url: 'https://2025.stateofeuropeantech.com/chapters/unlocking-capital-and-liquidity' },
   atomico23: { n: 8, label: 'Atomico, State of European Tech 2023: 77% of M&A deals under $100M', url: 'https://2023.stateofeuropeantech.com/exits' },
-  debt: { n: 9, label: 'First Citizens (formerly SVB), 22 September 2023: venture debt is typically sized at 20-40% of the last equity round', url: 'https://innovation.firstcitizens.com/business-growth/access-to-capital/right-amount-of-venture-debt' },
 } satisfies Record<string, Src>;
 const SOURCES: Src[] = Object.values(SRC).sort((a, b) => a.n - b.n);
 
@@ -143,47 +142,6 @@ const MEDIANS: { v: number; l: string; s: string; r: Src }[] = [
   { v: MEDIAN_D, l: 'After the Series D', s: 'Carta data, as reported by SaaStr', r: SRC.saastr },
 ];
 
-// Ce que nos termes changent : une multiplication, de vrais prix, les hypothèses dites en clair.
-// 07/11 : les quatre chemins, chacun dit ce qu'il vend et emprunte. Le chemin « the same capital »
-// lève autant que le chemin usuel ; les deux autres lèvent moins, et le disent.
-const DEBT = FM.loan_debt;
-const A_COST = FM.holders.find((h) => h.id === 'series_a')!.pref;
-const A_STAKE0 = FM.holders.find((h) => h.id === 'series_a')!.stake;
-const PRICES: { exit: number; e: Exit }[] = [
-  { exit: 500e6, e: EXITS.instadeep },
-  { exit: 1800e6, e: EXITS.tink },
-  { exit: 7000e6, e: EXITS.wolt },
-];
-const x1 = (v: number) => `${v.toFixed(v < 10 ? 1 : 0)}×`;
-const UNICORN = 1e9;
-/** €94M, €30.4M, €2.61B : assez de précision pour refaire le calcul de tête. */
-function amt(v: number) {
-  if (v >= 1e9) return `€${(v / 1e9).toFixed(2).replace(/\.?0+$/, '')}B`;
-  if (v >= 100e6) return `€${Math.round(v / 1e6)}M`;
-  if (v <= 0) return '€0';
-  return `€${(v / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
-}
-const pathName = (p: FounderPath) => (p.id === 'vc' ? 'The usual path' : `With us, ${p.label.charAt(0).toLowerCase()}${p.label.slice(1)}`);
-const afterLoans = (p: FounderPath, exit: number) => (p.loans > 0 ? exit - DEBT : exit);
-type PathCell = { result: string; formula: string; edge?: string };
-
-/** Ce que touchent les fondateurs : la part × ce qui reste une fois les prêts remboursés. */
-function founderCell(p: FounderPath, exit: number): PathCell {
-  const left = afterLoans(p, exit);
-  const v = p.stake * left;
-  const usual = FM.paths[0].stake * exit;
-  return { result: amt(v), formula: `${pct(p.stake, 1)} × ${amt(left)}`,
-    edge: p.id === 'vc' ? undefined : `${(v / usual).toFixed(1)}× the usual path` };
-}
-
-/** Ce que rend un chèque de Series A non renforcé : sa part baisse comme celle des fondateurs. */
-function chequeCell(p: FounderPath, exit: number): PathCell {
-  const left = afterLoans(p, exit);
-  const stake = A_STAKE0 * (p.stake / MEDIAN_A);
-  const v = stake * left;
-  return { result: amt(v), formula: `${p.id === 'credit' ? pct(stake) : pct(stake, 2)} × ${amt(left)}`, edge: `${x1(v / A_COST)} the cheque` };
-}
-
 // ── Ce qu'on rend, ce qu'on garde : chaque ligne reste une clause du pacte (Pact.tsx) ──
 const GIVE: { t: string; d: string }[] = [
   { t: 'The votes.', d: 'Our shares vote with the founder on how the company is run.' },
@@ -211,50 +169,6 @@ function Stats({ items }: { items: { b: string; t: ReactNode }[] }) {
   );
 }
 
-/** Une ligne par prix de vente réel, une colonne par chemin : le résultat et son calcul, toujours visibles. */
-function PathTable({ cell }: { cell: (p: FounderPath, exit: number) => PathCell }) {
-  return (
-    <div className="lp-pt" role="table">
-      <div className="lp-pt-head" role="row">
-        <span role="columnheader">Sold for</span>
-        {FM.paths.map((p) => <span key={p.id} className={p.id} role="columnheader"><b>{pathName(p)}</b><small>{pathMoney(p)}</small></span>)}
-      </div>
-      {PRICES.map((r) => (
-        <div key={r.exit} className={`lp-pt-row${r.exit >= UNICORN ? ' uni' : ''}`} role="row">
-          <span className="lp-pt-price" role="rowheader">
-            <b>{eur(r.exit, 'val')}</b>
-            {r.exit >= UNICORN && <em>Unicorn</em>}
-            <small>The price of <ExitLink e={r.e} /> ({r.e.d.split(' · ')[1]}, {r.e.v})</small>
-          </span>
-          {FM.paths.map((p) => {
-            const c = cell(p, r.exit);
-            return (
-              <span key={p.id} className={`lp-pt-c ${p.id}`} role="cell">
-                <small className="l">{pathName(p)}</small>
-                <b>{c.result}</b>
-                <i>{c.formula}</i>
-                {c.edge && <em>{c.edge}</em>}
-              </span>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// Les règles de protection, vues des LPs (pacte à 12 clauses, Pact.tsx).
-const PROTECTION: { icon: IconName; t: string; d: string }[] = [
-  { icon: 'shield', t: '1× preference', d: 'On every cheque, first or follow-on, outside small seed rounds. Broad-based weighted-average anti-dilution; no full ratchet, no cumulative dividend.' },
-  { icon: 'banknote', t: 'Loans first', d: 'Lender covenants; repaid before any equity and on any change of control. A default not cured within 30 days makes the loan callable.' },
-  { icon: 'file', t: 'A board seat', d: 'Monthly figures, quarterly accounts, and consent on anything that would change our shares.' },
-  { icon: 'scale', t: 'Independent pricing', d: 'Every buyback is priced by an independent valuer, out of distributable reserves, never from a founder without our consent.' },
-  { icon: 'trend', t: 'Pro-rata and the lead’s terms', d: 'Our pro-rata on every new issue. If another investor leads a priced round, our shares keep their rights and we invest on the lead’s terms.' },
-  { icon: 'door', t: 'Exit', d: 'Tag-along on any founder sale. No drag below our money back without our consent; independent buyer, cash or listed shares, warranties capped; side payments to founders count as price.' },
-  { icon: 'handshake', t: 'Vesting and leavers', d: 'Four years with a one-year cliff, a lock-up on founder shares, a one-year non-compete; a bad leaver returns every share at the lower of cost and fair value.' },
-  { icon: 'lock', t: 'Conflicts', d: 'Our shares abstain on our own loans and buybacks; founder pay beyond budget and related-party deals need our director; fund-side conflicts go to the LP advisory committee.' },
-  { icon: 'check', t: 'Fallback', d: 'Fraud, misconduct, a breach of the pact, a loan default or insolvency end the voting agreement and restore a classic lead’s consents. Investment committee, key-person clause.' },
-];
 
 /** L'accès à la page : l'aperçu du GP (?gp), ou l'accès au deal flow de ce navigateur. */
 function lpAccess(): boolean {
@@ -266,7 +180,7 @@ function lpAccess(): boolean {
 
 // Ce que la page ouvre, montré fermé (pas de chiffre : la porte est publique).
 const BEHIND = ['The thesis, in sourced figures', 'Terms that protect capital and share the upside',
-  'The fund, its returns and terms', 'The data room: every figure, every clause', 'Fact sheet, fund model and LP deck'];
+  'The fund, its returns and terms', 'Every figure, with its source', 'Fact sheet, fund model and LP deck'];
 
 function LpGate() {
   const [modal, setModal] = useState<'apply' | 'returning' | null>(null);
@@ -352,7 +266,7 @@ function LpContent() {
         <Numbers items={[
           { b: pct(MEDIAN_D, 1), t: <>What the median founding team holds after a Series D.<Ref s={SRC.saastr} /></> },
           { b: '6.3%', t: <>What Deliveroo’s founder held at its IPO, after about £1.3bn raised.<Ref s={SRC.deliveroo} /></> },
-          { b: 'Under 20%', t: 'Every founder, in seven major European listings. Each one sourced in the data room.' },
+          { b: 'Under 20%', t: 'Every founder, in seven major European listings. Each one sourced below.' },
         ]} />
       </Say>
 
@@ -404,8 +318,10 @@ function LpContent() {
       </Say>
       <TheTeam lp tint={false} />
 
-      <Say id="data-room" tone="tint" title="The data room."
-        lead={<p className="pv-say-p">Every figure and every clause behind this page, with its source. Nothing here asks to be taken on trust.</p>}>
+      {/* 07/11 : plus « The data room » (Alexandre : ils ne comprendront pas) ; purgée de ce qui
+          répétait la page (les chemins de dilution, la protection en double). */}
+      <Say id="check" tone="tint" title="Check every figure."
+        lead={<p className="pv-say-p">The detail behind this page. Each figure links to its source or to its line in our model.</p>}>
         <div className="pv-say-folds">
           <Fold id="room-keep" title="What founders really keep" sub="Seven European listings and Carta’s medians, every figure with its source">
             <div className="lp-list" role="table">
@@ -440,18 +356,6 @@ function LpContent() {
               </div>
             </div>
             <p className="pv-fine lp-under">Carta’s data, fully diluted, is not specific to Europe.</p>
-          </Fold>
-
-          <Fold id="room-math" title="What our terms change, at real sale prices" sub="A plain multiplication, for the founders and for a Series A cheque">
-            <div className="lp-co">
-              <p className="lp-co-h"><b>Real: the sale prices and Carta’s medians. Our hypothesis: the three paths with us.</b> No company has followed them yet, and the valuations are the same on every path. Credit replaces what it can: {amt(FM.loans)} of loans, at {pct(FM.loan_share.min)} to {pct(FM.loan_share.max)} of the last round, within the usual 20% to 40% for venture debt<Ref s={SRC.debt} />, subject to our partner lenders. With interest, {amt(DEBT)} is repaid before any equity: a {amt(PRICES[0].exit)} sale leaves {amt(PRICES[0].exit - DEBT)}.</p>
-              <p className="lp-co-def">The prices are those paid for the companies named, not what happened to their founders or investors: we do not know their cap tables. We assume every investor converts into shares at these prices.</p>
-            </div>
-            <h3 className="pv-h3 lp-t lp-t0">For the founders</h3>
-            <PathTable cell={founderCell} />
-            <h3 className="pv-h3 lp-t">For a {amt(A_COST)} Series A cheque</h3>
-            <p className="lp-read lp-fold-lead">Our hypothesis: {amt(A_COST)} for {pct(A_STAKE0)}. The cheque is not topped up, so it shrinks with the founders’ stake: on the same capital, {pct(A_STAKE0)} × {(FM.paths[1].stake * 100).toFixed(1)} ÷ {(MEDIAN_A * 100).toFixed(1)} = {pct(A_STAKE0 * (FM.paths[1].stake / MEDIAN_A), 2)}. Funds that follow on keep more, and pay for it at every round. The returns on the loans themselves are left out.</p>
-            <PathTable cell={chequeCell} />
           </Fold>
 
           <Fold id="room-exits" title="Europe’s exits follow a power law" sub="Atomico’s data, and 15 real exits at every size">
@@ -499,14 +403,6 @@ function LpContent() {
 
           <Fold id="room-sim" title="The simulation, line by line" sub="Every position of the three layers: cheques, buybacks, loans, stake at exit, return">
             <div className="lp-fund-tables lp-sim"><SimulationTables /></div>
-          </Fold>
-
-          <Fold id="room-protect" title="What protects your capital, in full" sub="From the 12 clauses of the pact and the fund’s conflict policy">
-            <ul className="lp-prot">
-              {PROTECTION.map((x) => (
-                <li key={x.t}><Icon name={x.icon} /><span><b>{x.t}.</b> {x.d}</span></li>
-              ))}
-            </ul>
           </Fold>
 
           <Fold id="room-engines" title="The two engines, step by step" sub="How they source for the fund, and what they run for each company">

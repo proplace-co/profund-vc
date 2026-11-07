@@ -407,18 +407,39 @@
 .pv-rules-list { margin: clamp(48px, 6vw, 72px) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--night-line); }
 .pv-rule { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1.15fr); align-items: center; gap: 24px;
   padding: clamp(18px, 2vw, 26px) 0; border-bottom: 1px solid var(--night-line); }
-.pv-rule .old { font-size: clamp(16px, 1.45vw, 20px); color: #7a828e; }
-.pv-rule .old span { background-image: linear-gradient(rgba(232, 99, 84, .9), rgba(232, 99, 84, .9));
-  background-repeat: no-repeat; background-position: 0 56%; background-size: 0% 2px;
-  transition: background-size .7s cubic-bezier(.6, 0, .2, 1) var(--d, 0s), color .7s var(--d, 0s); }
-.pv-rule .arrow { display: grid; place-items: center; color: var(--blue-glow); opacity: 0;
-  transition: opacity .5s calc(var(--d, 0s) + .45s); }
+/* 07/11 (2) : chaque règle se barre à son tour, avec plus d'impact (Alexandre : « trop rapide, trop peu ») */
+.pv-rule { position: relative; overflow: hidden; }
+.pv-rule::before { content: ""; position: absolute; inset: 0; pointer-events: none; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(159, 182, 207, .11), transparent); }
+.pv-rule.in::before { animation: pv-rule-sweep 1.1s ease var(--d, 0s) 1 both; }
+@keyframes pv-rule-sweep { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+.pv-rule .old { font-size: clamp(16px, 1.45vw, 20px); }
+.pv-rule .old span { color: #c3cad4; background-image: linear-gradient(#e86354, #e86354); background-repeat: no-repeat; background-position: 0 58%;
+  background-size: 0% 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  transition: background-size .5s cubic-bezier(.7, 0, .2, 1) var(--d, 0s), color .5s ease calc(var(--d, 0s) + .2s); }
+.pv-rule.in .old span { background-size: 100% 3px; color: #59606b; }
+.pv-rule .arrow { display: grid; place-items: center; color: var(--blue-glow); opacity: 0; transform: translateX(-10px);
+  transition: opacity .4s ease calc(var(--d, 0s) + .35s), transform .4s ease calc(var(--d, 0s) + .35s); }
 .pv-rule .arrow svg { width: 22px; height: 22px; }
 .pv-rule .now { font-size: clamp(21px, 2.3vw, 32px); font-weight: 750; line-height: 1.15; letter-spacing: -.025em; color: #fff;
-  opacity: 0; transform: translateX(-10px); transition: opacity .6s calc(var(--d, 0s) + .5s), transform .6s calc(var(--d, 0s) + .5s); }
-.pv-rules.in .pv-rule .old span { background-size: 100% 2px; color: #5d6470; }
-.pv-rules.in .pv-rule .arrow { opacity: 1; }
-.pv-rules.in .pv-rule .now { opacity: 1; transform: none; }
+  opacity: 0; transform: translateX(-16px); filter: blur(6px);
+  transition: opacity .55s ease calc(var(--d, 0s) + .45s), transform .6s cubic-bezier(.2, .8, .2, 1) calc(var(--d, 0s) + .45s), filter .55s ease calc(var(--d, 0s) + .45s); }
+.pv-rule.in .arrow { opacity: 1; transform: none; }
+.pv-rule.in .now { opacity: 1; transform: none; filter: none; }
+/* la conclusion : morceau par morceau, puis la promesse */
+.pv-coda { margin-top: clamp(40px, 5vw, 64px); }
+.pv-coda-a { margin: 0; font-size: clamp(19px, 1.9vw, 27px); line-height: 1.45; letter-spacing: -.015em; color: var(--night-txt);
+  opacity: 0; transform: translateY(8px); transition: opacity .6s ease .1s, transform .6s ease .1s; }
+.pv-coda.in .pv-coda-a { opacity: 1; transform: none; }
+.pv-coda-x { font-weight: 650; color: #fff; background-image: linear-gradient(#e86354, #e86354); background-repeat: no-repeat; background-position: 0 58%;
+  background-size: 0% 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  transition: background-size .45s cubic-bezier(.7, 0, .2, 1) var(--d, 0s), color .45s ease calc(var(--d, 0s) + .2s); }
+.pv-coda.in .pv-coda-x { background-size: 100% 3px; color: #6b7380; }
+.pv-coda-b { margin: 14px 0 0; font-size: clamp(26px, 2.9vw, 40px); font-weight: 750; line-height: 1.08; letter-spacing: -.035em; color: rgba(230, 234, 240, .6);
+  opacity: 0; transform: translateY(14px); filter: blur(6px);
+  transition: opacity .8s ease 1.85s, transform .8s cubic-bezier(.2, .8, .2, 1) 1.85s, filter .8s ease 1.85s; }
+.pv-coda-b b { font-weight: 750; color: #fff; }
+.pv-coda.in .pv-coda-b { opacity: 1; transform: none; filter: none; }
 .pv-rules-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px;
   margin-top: 28px; font-size: 15.5px; color: var(--night-txt); }
 .pv-rules-foot .pv-link { color: #fff; }
@@ -432,7 +453,8 @@
 .pv-lp-flow p:not(.pv-kick) { margin: 0 0 6px; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) {
-  .pv-rule .old span, .pv-rule .arrow, .pv-rule .now { transition: none; }
+  .pv-rule .old, .pv-rule .old span, .pv-rule .arrow, .pv-rule .now, .pv-coda-a, .pv-coda-x, .pv-coda-b { transition: none; }
+  .pv-rule.in::before { animation: none; }
 }
 @media (max-width: 760px) {
   .pv-rule { grid-template-columns: minmax(0, 1fr); gap: 6px; }
@@ -1769,43 +1791,6 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pv-check b { display: block; font-size: 15px; font-weight: 650; color: var(--ink); }
 .pv-result .pv-res-warn + .pv-res-warn { margin-top: 6px; }
 .pv-result .pv-res-warn:last-of-type { margin-bottom: 18px; }
-
-/* /lp : les prix réels, les quatre chemins */
-.lp-pt { overflow: hidden; border-radius: var(--r-xl); background: #fff; box-shadow: var(--sh-2); }
-.lp-pt-head, .lp-pt-row { display: grid; grid-template-columns: minmax(0, 1.2fr) repeat(4, minmax(0, 1fr)); }
-.lp-pt-head { border-bottom: 1px solid var(--line); }
-.lp-pt-head > span { display: grid; align-content: start; gap: 4px; padding: 16px 16px 14px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.lp-pt-head b { font-size: 11px; font-weight: 800; line-height: 1.35; color: var(--ink-2); }
-.lp-pt-head small { font-size: 12.5px; font-weight: 500; line-height: 1.35; letter-spacing: 0; text-transform: none; color: var(--muted); }
-.lp-pt-head .credit, .lp-pt-c.credit { background: var(--night); }
-.lp-pt-head .half, .lp-pt-c.half { background: #dde5ef; }
-.lp-pt-head .same, .lp-pt-c.same { background: var(--blue-soft); }
-.lp-pt-head .credit b { color: #fff; }
-.lp-pt-head .credit small { color: var(--night-txt); }
-.lp-pt-head .half small, .lp-pt-head .same small { color: var(--ink-2); }
-.lp-pt-row + .lp-pt-row { border-top: 1px solid var(--line); }
-.lp-pt-price { display: flex; flex-wrap: wrap; align-items: center; align-content: start; gap: 4px 10px; padding: 18px 16px; }
-.lp-pt-price b { font-size: clamp(21px, 2vw, 26px); font-weight: 750; letter-spacing: -.025em; color: var(--ink); }
-.lp-pt-price em { padding: 2px 9px; border-radius: 999px; font-style: normal; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--blue-dk); background: var(--blue-soft); }
-.lp-pt-price small { flex-basis: 100%; font-size: 13.5px; line-height: 1.4; color: var(--muted); }
-.lp-pt-price a { color: var(--blue-dk); text-decoration: none; border-bottom: 1px solid rgba(74, 96, 128, .35); font-weight: 650; }
-.lp-pt-c { display: grid; align-content: start; gap: 5px; padding: 18px 16px; }
-.lp-pt-c .l { display: none; font-size: 10.5px; font-weight: 800; line-height: 1.3; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
-.lp-pt-c b { font-size: clamp(20px, 2.05vw, 28px); font-weight: 750; letter-spacing: -.03em; line-height: 1; white-space: nowrap; color: var(--ink); }
-.lp-pt-c i { font-style: normal; font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted); }
-.lp-pt-c.same i, .lp-pt-c.half i { color: var(--ink-2); }
-.lp-pt-c em { font-style: normal; font-size: 12.5px; font-weight: 700; line-height: 1.3; color: var(--blue-dk); }
-.lp-pt-c.credit b, .lp-pt-c.credit .l { color: #fff; }
-.lp-pt-c.credit i { color: var(--night-txt); }
-.lp-pt-c.credit em { color: var(--blue-glow); }
-@media (max-width: 900px) {
-  .lp-pt-head { display: none; }
-  .lp-pt-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .lp-pt-price { grid-column: 1 / -1; padding: 16px 16px 14px; }
-  .lp-pt-c .l { display: block; }
-  .lp-pt-c { padding: 14px 16px 16px; }
-  .lp-pt-c.vc { background: var(--bg); }
-}
 
 /* /pitch : le tableau des quatre chemins */
 .pv-fm th { vertical-align: bottom; }

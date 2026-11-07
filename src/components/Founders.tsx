@@ -74,11 +74,52 @@ export function Numbers({ items, four = false }: { items: { b: string; t: ReactN
 const RULES: { old: string; now: string }[] = [
   // 07/11 (Alexandre) : plus de truismes (« You dilute only when you choose », « Your exit, on your
   // timing ») ni de « Big cheques » face aux géants : le contrôle, ce que le pacte change vraiment.
+  // 07/11 (2) : « trop peu » : six règles, chacune une clause (6, 6, 1, 1, 4, 11).
   { old: 'Their seats, their votes, their veto', now: 'One seat. Our shares vote with you.' },
   { old: 'Their consent on your budget, your hires, your next round', now: 'No veto on how you run, raise or sell.' },
+  { old: 'A new round pushed on you every 18 months', now: 'We never push for a round.' },
+  { old: 'A preference stacked on every round', now: 'At most a 1×. No participation.' },
   // ProFund rachète : ce sont nos titres qui montent ; les votes passent du côté du fondateur.
   { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Their votes move to your side.' },
+  { old: 'Resign during vesting, lose your shares', now: 'Resign, and keep every vested share.' },
 ];
+
+/** Une règle : elle se barre quand elle arrive à l'écran, dans l'ordre, une après l'autre. `t0` : le
+ *  départ commun, pour que l'enchaînement reste régulier même si on fait défiler vite. */
+function RuleRow({ r, i, t0 }: { r: { old: string; now: string }; i: number; t0: { current: number | null } }) {
+  const [ref, seen] = useInView<HTMLLIElement>();
+  const [d, setD] = useState(0);
+  useEffect(() => {
+    if (!seen) return;
+    const now = performance.now();
+    if (t0.current === null) t0.current = now;
+    setD(Math.max(0.08, (t0.current + 250 + i * 420 - now) / 1000));
+  }, [seen, i, t0]);
+  return (
+    <li ref={ref} className={`pv-rule${seen && d > 0 ? ' in' : ''}`} style={{ ['--d' as string]: `${d.toFixed(2)}s` }}>
+      <span className="old"><span>{r.old}</span></span>
+      <span className="arrow" aria-hidden="true"><Icon name="arrow" /></span>
+      <span className="now">{r.now}</span>
+    </li>
+  );
+}
+
+/** La conclusion : ce que chaque tour prenait, barré morceau par morceau, puis la promesse. */
+function RulesCoda() {
+  const [ref, seen] = useInView<HTMLDivElement>();
+  const pieces = ['Your shares,', 'your board,', 'your exit.'];
+  return (
+    <div ref={ref} className={`pv-coda${seen ? ' in' : ''}`}>
+      <p className="pv-coda-a">
+        For fifty years, every round took a piece of it.{' '}
+        {pieces.map((w, k) => (
+          <span key={w}>{k > 0 && ' '}<span className="pv-coda-x" style={{ ['--d' as string]: `${0.55 + k * 0.38}s` }}>{w}</span></span>
+        ))}
+      </p>
+      <p className="pv-coda-b">Now you get the capital <b>without giving the company away.</b></p>
+    </div>
+  );
+}
 
 /** Les règles. `hero` : en ouverture de l'accueil (titre h1, bouton) ; sinon une section.
  *  `onPact` : le pacte se déplie sous les règles ; `onRun` : le bouton ouvre le calculateur. */
@@ -86,6 +127,7 @@ export function TheRules({ hero = false, pactOpen = false, onPact }: {
   hero?: boolean; pactOpen?: boolean; onPact?: () => void;
 }) {
   const [ref, seen] = useInView<HTMLDivElement>();
+  const t0 = useRef<number | null>(null);
   const H = hero ? 'h1' : 'h2';
   return (
     <section className={`pv-sec night pv-rules-sec${hero ? ' pv-rules-hero' : ''}`} id="rules">
@@ -101,16 +143,10 @@ export function TheRules({ hero = false, pactOpen = false, onPact }: {
         {/* 07/11 : le positionnement en une ligne (Alexandre : « parfait ») */}
         <p className="pv-rules-lead">The terms the best founders negotiate. <b>From your first cheque.</b></p>
         <ol className="pv-rules-list">
-          {RULES.map((r, i) => (
-            <li key={r.old} className="pv-rule" style={{ ['--d' as string]: `${0.15 + i * 0.18}s` }}>
-              <span className="old"><span>{r.old}</span></span>
-              <span className="arrow" aria-hidden="true"><Icon name="arrow" /></span>
-              <span className="now">{r.now}</span>
-            </li>
-          ))}
+          {RULES.map((r, i) => <RuleRow key={r.old} r={r} i={i} t0={t0} />)}
         </ol>
         {/* la conclusion des règles barrées (Antoine, 05/11 : en bas, pas sous le titre) */}
-        <p className="pv-rules-sub">For fifty years, every round took a piece of it. Your shares, your board, your exit. Now you get the capital without giving the company away.</p>
+        <RulesCoda />
         <div className="pv-rules-foot" id="pact-dock">
           <span>A public pact, the same for every founder. You know our terms before we know your name.</span>
           {onPact
