@@ -400,16 +400,18 @@ def grid(F, u, v, w, cols, head, rows, size=8.8, hsize=7.0, pad_y=4.6, hl=None, 
 
 
 # ── page 1 : la these et la structure ───────────────────────────────────────
+# L'ordre des lois (07/11) : les fondateurs, le marché sans armée, la boucle qui compose, le leader.
+# Le meme ordre que le site (Thesis.tsx, WhatWeBack de Founders.tsx).
 LAWS = (
     ("crown", "Visionary founders",
      "We back obsessive visionaries from Day 1. Founders who don't build org charts, but "
      "iterate directly with AI until the machine mirrors their exact ambition."),
-    ("loop", "Self-improving systems",
-     "We look for closed-loop architectures. Products that don't just automate a task, but compound in "
-     "intelligence, precision, and autonomy with every single run."),
     ("globe", "Maximum impact. Minimum headcount.",
      "We invest in integral systems solving massive, painful problems in the world's largest "
      "markets, operated with near-zero marginal labor."),
+    ("loop", "Self-improving systems",
+     "We look for closed-loop architectures. Products that don't just automate a task, but compound in "
+     "intelligence, precision, and autonomy with every single run."),
     ("trend", "Fund-returning physics",
      "Every check we write backs a "
      f"company built to dominate its category globally and return our entire {FUND_SIZE} fund."),

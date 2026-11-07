@@ -149,10 +149,14 @@ en noindex ; le code reste. /lp suivra (l'accès, l'alignement, la protection pl
 **L'ordre de l'accueil (07/11, 6e passe, Alexandre)** : « Control was always yours. » en ouverture
 (« c'était beaucoup mieux »), puis l'implosion dans sa carte (« The companies that define this era… »,
 « Capital is no longer scarce. Control is. »), puis la vision (`WhatWeBack`, 7e passe : « The clearest minds, directing the most
-autonomous machines. », la phrase du manifeste, et UN tracé qui se dessine de gauche à droite : trois
-fondateurs, leur intention, la boucle de machines qui s'élargit, un marché entier, la loi de puissance
-et son leader ; les quatre lois dessous, alignées sur leur zone ; sur mobile, de haut en bas ; jamais
-de cartes tassées), puis « Your Chief Fundraising Officer. Perfectly aligned. » (`CapitalStack`, 8e passe : plus de
+autonomous machines. », la phrase du manifeste, et UN tracé qui se dessine de gauche à droite ; 9e
+passe, l'ordre logique des lois (Alexandre) : 01 Visionary founders, 02 Maximum impact, minimum
+headcount, 03 Self-improving systems, 04 Category leaders, le même dans `LAWS` (Thesis.tsx) et la fiche
+p. 1 ; une chaîne : les trois fondateurs (le triangle où s'arrête l'implosion), leur intention, un
+marché entier atteint depuis un point, chaque passage qui revient au cœur de la boucle, la boucle qui
+s'élargit, la loi de puissance et son leader ; puis des impulsions parcourent toute la chaîne (client
+touché, retour au cœur, l'impulsion grossit en s'enroulant, le leader s'allume) ; les quatre lois
+dessous, alignées sur leur zone ; sur mobile, de haut en bas ; jamais de cartes tassées), puis « Your Chief Fundraising Officer. Perfectly aligned. » (`CapitalStack`, 8e passe : plus de
 plan de capital générique ; ce qu'un CFO aligné fait d'intelligent : « Raise from strength » et sa courbe,
 on lève au point d'inflexion et non à court de cash, puis la table nettoyée avant chaque tour, les
 acquisitions sans dilution, les plus gros tours en une ligne ; les tickets en une bande ; « full

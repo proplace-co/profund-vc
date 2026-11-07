@@ -113,6 +113,9 @@ export function Manifesto({ tint = false, lp = false }: { tint?: boolean; lp?: b
   );
 }
 
+// L'ordre des lois (07/11, Alexandre) : une chaîne. Les fondateurs dirigent, la machine atteint un
+// marché entier sans armée, chaque passage nourrit la boucle qui compose, le leader l'emporte. Même
+// ordre dans `WhatWeBack` (Founders.tsx) et la fiche (factsheet.py).
 const LAWS: { icon: IconName; t: string; d: string }[] = [
   {
     icon: 'crown',
@@ -120,14 +123,14 @@ const LAWS: { icon: IconName; t: string; d: string }[] = [
     d: 'We back obsessive visionaries from Day 1. Founders who don’t build org charts, but iterate directly with AI until the machine mirrors their exact ambition.',
   },
   {
-    icon: 'loop',
-    t: 'Self-improving systems',
-    d: 'We look for closed-loop architectures. Products that don’t just automate a task, but compound in intelligence, precision, and autonomy with every single run.',
-  },
-  {
     icon: 'globe',
     t: 'Maximum impact. Minimum headcount.',
     d: 'We invest in integral systems solving massive, painful problems in the world’s largest markets, operated with near-zero marginal labor.',
+  },
+  {
+    icon: 'loop',
+    t: 'Self-improving systems',
+    d: 'We look for closed-loop architectures. Products that don’t just automate a task, but compound in intelligence, precision, and autonomy with every single run.',
   },
   {
     icon: 'trend',
