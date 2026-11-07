@@ -344,7 +344,7 @@ function LpContent() {
         ]} />
       </Say>
 
-      <Say id="ownership" tone="night" title="Capital is no longer scarce. Ownership is."
+      <Say id="ownership" tone="night" title="Capital is no longer scarce. Control is."
         lead={<p className="pv-say-p">A team that does not need an army does not need a round every 18 months. Yet venture still runs on the old bargain: capital, for a slice of the company and a say in how it is run. The best founders no longer have to accept it. The funds that matter next will be the ones they choose.</p>}>
         <Numbers items={[
           { b: pct(MEDIAN_D, 1), t: <>What the median founding team holds after a Series D.<Ref s={SRC.saastr} /></> },
@@ -367,6 +367,18 @@ function LpContent() {
         </div>
         <p className="lp-deal-end">Protect the capital. Share the upside with the people who create it.</p>
         <Link to="/terms" className="pv-link lp-deal-go">Read the pact <Icon name="arrow" /></Link>
+      </Say>
+
+      {/* 07/11 : la réponse à « pourquoi vous face aux géants ? » (Alexandre : « parfait »). On ne se bat
+          pas sur la taille : on gagne en arrivant les premiers, en étant utiles, en étant alignés. */}
+      <Say id="win" tone="night" title="How a focused fund wins the best founders."
+        lead={<p className="pv-say-p">Not on cheque size. Where size does not help.</p>}>
+        <Numbers items={[
+          { b: 'First.', t: 'Our deal flow engine tracks every European seed round, every week, and flags the inflection before it becomes consensus.' },
+          { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace and Maximum Insurance.' },
+          { b: 'Aligned.', t: 'The terms the best founders negotiate, from their first cheque. In writing, in a public pact.' },
+        ]} />
+        <p className="pv-fine pv-three-src">The largest funds lead the largest rounds. We stay at the founder’s side, with SPVs that keep that upside for our LPs.</p>
       </Say>
 
       <Say id="returns" title="What is right for them is what pays you."

@@ -101,9 +101,10 @@ export function Manifesto({ tint = false, lp = false }: { tint?: boolean; lp?: b
             <b>The future doesn’t belong to the largest organizations.</b> It belongs to the clearest
             minds directing the most autonomous machines.
           </p>
-          {/* La chute v3 (05/11) : la fiche porte sa variante LP (« …we lend, we buy… »). */}
+          {/* La chute v3 (05/11) : la fiche porte sa variante LP (« …we lend, we buy… »). 07/11 : « Control is. »,
+              comme l'accueil et /lp (le positionnement sur le contrôle, Alexandre). */}
           <p className="chute">
-            <b>Capital is no longer scarce. Ownership is.</b> A team that doesn’t need an army doesn’t
+            <b>Capital is no longer scarce. Control is.</b> A team that doesn’t need an army doesn’t
             need a round every 18 months. {lp ? 'So we don’t sell it one: we lend, we buy, and equity comes only when the founder chooses.' : 'So we don’t sell you one.'}
           </p>
         </div>

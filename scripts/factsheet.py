@@ -438,9 +438,9 @@ def page_one(F):
                                     "autonomous machines, in the world's largest markets."), 11.4, "reg", INK2, 1.48)
     # la ligne forte, en gras sous le sous-titre (06/11 : le positionnement LP)
     y += 12
-    strong = (f"<b>{x('The new go-to fund for elite founders.')}</b> "
-              + x("From the seed to the Series B, with SPVs alongside for the largest. "
-                  "Every fund says founders come first: we wrote it down."))
+    strong = (f"<b>{x('The terms the best founders negotiate, from their first cheque.')}</b> "
+              + x("Seed to Series B, SPVs for the largest rounds. Every fund says founders come "
+                  "first: we wrote it down."))
     hs = F.para(M + 13, y, tw - 13, strong, 11.4, "reg", INK, 1.45)
     F.rr(M, y + 1, 3.2, hs - 2, 1.6, fill=BLUE)
     y += hs
@@ -482,7 +482,7 @@ def page_one(F):
     yy += gp + F.para(rx, yy, rw, x(
         "The future doesn't belong to the largest organizations. It belongs to the clearest minds directing "
         "the most autonomous machines."), sz, "semi", INK, ld)
-    yy += F.para(rx, yy, rw, f"<b>{x('Capital is no longer scarce. Ownership is.')}</b> " + x(
+    yy += F.para(rx, yy, rw, f"<b>{x('Capital is no longer scarce. Control is.')}</b> " + x(
         "A team that doesn't need an army doesn't need a round every 18 months. So we don't sell it one: "
         "we lend, we buy, and equity comes only when the founder chooses."), sz, "reg", BLUE_DK, ld)
     y = max(yy, y + 70) + 24

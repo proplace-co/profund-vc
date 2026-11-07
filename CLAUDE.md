@@ -143,6 +143,13 @@ et son leader ; les quatre lois dessous, alignées sur leur zone ; sur mobile, d
 de cartes tassées), puis « Your Chief Fundraising Officer. Perfectly aligned. » (`CapitalStack` : quatre verbes,
 Plan, Sequence, Raise, Protect, et « Your capital plan », le moins dilutif d'abord, les étages et tickets
 dedans), puis les moteurs (« Running today » en cartes sombres vivantes), le bandeau final.
+**/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : la chute du manifeste devient « Capital is no
+longer scarce. Control is. » PARTOUT (Thesis.tsx, /lp, fiche p. 1) ; la fiche p. 1 porte « The terms the
+best founders negotiate, from their first cheque. » au lieu de « The new go-to fund for elite
+founders » ; /lp a une section « How a focused fund wins the best founders. » (First, Useful, Aligned ;
+les géants mènent les gros tours, on reste à côté, les SPV gardent cet upside aux LPs) ; /pitch (« The
+inversion ») dit le Chief Fundraising Officer ; la meta description et le `<noscript>` reprennent la
+ligne de positionnement.
 **Le dessin de l'accueil (07/11, trois passes ; Alexandre : « trop de texte », « les grandes icônes
 font cheap », « on se répète », « que l'on s'en souvienne après avoir quitté le site »)** : une idée
 par section, aucune répétition. `TheFew` : le titre, `CollapseVisual` (un organigramme de 250 points

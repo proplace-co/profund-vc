@@ -133,7 +133,7 @@ function TheInversion() {
       </div>
       <div className="pv-callout">
         <span className="pv-tick soft"><Icon name="scale" /></span>
-        <p>We never push for a new round. When a company needs equity, we bring it on the same terms, or follow another lead in new shares. At growth stage we also write fresh cheques in new shares.</p>
+        <p>We act as each founder’s in-house Chief Fundraising Officer: everything the company needs, raised in the order that dilutes least. We never push for a new round; when another fund leads, we follow in new shares. At growth stage we also write fresh cheques in new shares.</p>
       </div>
     </Slide>
   );

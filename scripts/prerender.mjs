@@ -29,7 +29,7 @@ const DIST = join(here, '..', 'dist');
 const ORIGIN = 'https://profund.vc';
 
 const BASE_TITLE = 'ProFund · Control was always yours.';
-const BASE_DESC = 'Venture capital for the AI era. Pre-seed to growth, on terms written for founders. Your shares, your votes, your exit.';
+const BASE_DESC = 'Venture capital for the AI era. The terms the best founders negotiate, from your first cheque. Your shares, your votes, your exit.';
 
 // Le titre de /pitch porte la taille du fonds : lue dans le modèle
 // (scripts/fund_model.py → src/data/fund.json), jamais tapée ici.
