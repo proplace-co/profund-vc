@@ -218,7 +218,12 @@ const MACHINES = Array.from({ length: 10 }, (_, i) => {
   return { x: Math.cos(a) * 118, y: Math.sin(a) * 118 };
 });
 
-export function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; delay?: number }) {
+/** `label` : l'intitulé au-dessus du dessin ; `nowCap` : la légende « Now ». `lead` (l'ouverture de
+ *  l'accueil, 10/11) : l'intitulé est le h1 de la page et reste visible même en `bare`. */
+export function CollapseVisual({
+  bare = false, delay = 900, lead = false,
+  label = 'AI has collapsed what it takes to build.', nowCap = 'A few people. Months.',
+}: { bare?: boolean; delay?: number; lead?: boolean; label?: string; nowCap?: string }) {
   const [ref, seen] = useInView<HTMLElement>();
   const [now, setNow] = useState(false);
   const touched = useRef(false);
@@ -229,8 +234,8 @@ export function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; 
   }, [seen, delay]);
   const show = (v: boolean) => { touched.current = true; setNow(v); };
   return (
-    <figure ref={ref} className={`pv-col${bare ? ' bare' : ''}${now ? ' now' : ''}`}>
-      <figcaption className="pv-col-h">AI has collapsed what it takes to build.</figcaption>
+    <figure ref={ref} className={`pv-col${bare ? ' bare' : ''}${lead ? ' lead' : ''}${now ? ' now' : ''}`}>
+      <figcaption className="pv-col-h">{lead ? <h1>{label}</h1> : label}</figcaption>
       <svg viewBox="0 0 1000 370" aria-hidden="true">
         <defs>
           <radialGradient id="pvColGlow">
@@ -256,7 +261,7 @@ export function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; 
       <div className="pv-col-foot">
         <p className="pv-col-cap" aria-live="polite">
           <span className={now ? undefined : 'on'}>Thousands of people. A decade.</span>
-          <span className={now ? 'on' : undefined}>A few people. Months.</span>
+          <span className={now ? 'on' : undefined}>{nowCap}</span>
         </p>
         <div className="pv-col-toggle" role="group" aria-label="Before and now">
           <button type="button" className={now ? undefined : 'on'} aria-pressed={!now} onClick={() => show(false)}>Before</button>
@@ -270,8 +275,10 @@ export function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; 
 const FEW_TITLE = 'The companies that define this era will be built by very few people.';
 
 /** La thèse (07/11, 6e passe) : l'implosion dans sa carte. `hero` (10/11, Alexandre : le contrôle
- *  passe juste avant le Chief Fundraising Officer) : elle ouvre l'accueil, le logo et la signature
- *  au-dessus, le titre en h1, sur fond clair (la vision et le contrôle qui suivent sont de nuit). */
+ *  passe juste avant le Chief Fundraising Officer) : elle ouvre l'accueil, de nuit, le logo et la
+ *  signature au-dessus ; plus de grand titre (10/11, 2) : la phrase devient l'intitulé du dessin (le
+ *  h1), « AI has collapsed what it takes to build. » sa légende « Now ». /lp et /pitch gardent les
+ *  intitulés d'origine. */
 export function TheFew({ hero = false }: { hero?: boolean }) {
   if (!hero) {
     return (
@@ -282,14 +289,13 @@ export function TheFew({ hero = false }: { hero?: boolean }) {
     );
   }
   return (
-    <section className="pv-sec pv-say pv-few-open" id="few">
+    <section className="pv-sec night pv-few-hero" id="few">
       <div className="pv-wrap">
         <div className="pv-rules-brand">
           <img className="pv-rules-logo" src="/logo.png" alt="ProFund" width={150} height={40} />
           <span>Venture capital for the AI era</span>
         </div>
-        <h1 className="pv-say-h">{FEW_TITLE}</h1>
-        <CollapseVisual />
+        <CollapseVisual bare lead label={FEW_TITLE} nowCap="AI has collapsed what it takes to build." />
         <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
       </div>
     </section>
@@ -648,7 +654,7 @@ export function CapitalStack() {
     <section className="pv-sec pv-cfo-sec" id="capital">
       <div className="pv-wrap">
         <p className="pv-kick pv-cfo-k">AI-native, in-house</p>
-        <h2 className="pv-say-h">Founders don’t need another VC. <span>They need a partner who does the work.</span></h2>
+        <h2 className="pv-say-h">Founders don’t need another VC, <span>they need a partner sharing the vision and doing the work.</span></h2>
         <ol ref={rolesRef} className={`pv-ruled pv-roles${rolesIn ? ' in' : ''}`}>
           {ROLES.map((r, i) => (
             <li key={r.t} style={{ ['--d' as string]: `${0.1 + i * 0.18}s` }}>

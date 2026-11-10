@@ -2012,12 +2012,12 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 @media (max-width: 760px) { .pv-roles li { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .pv-roles li { transition: none; } }
 
-/* 10/11 : l'implosion ouvre l'accueil, sur fond clair : le logo dans ses couleurs, la signature en bleu */
-.pv-few-open { padding-top: clamp(48px, 6vw, 80px); }
-.pv-few-open .pv-rules-logo { filter: none; }
-.pv-few-open .pv-rules-brand span { border-left-color: var(--line-2); color: var(--blue); }
-.pv-few-open .pv-say-h { max-width: 15em; font-size: clamp(40px, 6vw, 92px); }
-/* la vision puis le contrôle, deux sections de nuit à la suite : un filet les sépare */
+/* 10/11 (2) : l'implosion ouvre l'accueil, de nuit et sans carte (.pv-few-hero, .pv-col.bare) ; plus
+   de grand titre : l'intitulé du dessin porte la phrase (le h1) et reste visible */
+.pv-col.bare.lead .pv-col-h { display: block; font-size: 13px; line-height: 1.5; }
+/* l'ouverture, la vision puis le contrôle : trois sections de nuit à la suite, un filet entre chacune */
+.pv-few-hero + .pv-vf-sec > .pv-wrap { border-top: 1px solid var(--night-line); padding-top: clamp(72px, 9vw, 112px); }
+.pv-few-hero + .pv-vf-sec { padding-top: 0; }
 .pv-vf-sec + .pv-rules-sec > .pv-wrap { border-top: 1px solid var(--night-line); padding-top: clamp(72px, 9vw, 128px); }
 .pv-vf-sec + .pv-rules-sec { padding-top: 0; }
 
