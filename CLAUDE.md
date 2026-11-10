@@ -164,6 +164,16 @@ plan de capital générique ; ce qu'un CFO aligné fait d'intelligent : « Raise
 on lève au point d'inflexion et non à court de cash, puis la table nettoyée avant chaque tour, les
 acquisitions sans dilution, les plus gros tours en une ligne ; les tickets en une bande ; « full
 potential », jamais « full size »), puis les moteurs (« Running today » en cartes sombres vivantes), le bandeau final.
+**L'ordre de l'accueil (10/11, Alexandre) remplace celui du 07/11** : l'implosion ouvre (`TheFew hero` :
+fond clair, logo dans ses couleurs et signature, le titre en h1, la carte sombre, « Control is. »), puis
+la vision (`WhatWeBack`), puis le contrôle (`TheRules` sans `hero`, un filet le sépare de la vision, le
+pacte se déplie toujours dessous, `/#pact`), puis « AI-native, in-house » (`CapitalStack`), les moteurs,
+le bandeau. `CapitalStack` n'est plus seulement le Chief Fundraising Officer : « Founders don’t need
+another VC. They need a partner who does the work. », trois rôles en lignes (`ROLES` : le Chief
+Fundraising Officer, le sparring partner « Then the call is yours », les agents IA « You approve, they
+act »), puis « How we raise » (la courbe, les trois mouvements, les tickets). « Their votes move to your
+side » ne se dit plus que dans les règles. Le `<title>` reste « Control was always yours. ». /lp, /pitch
+et la fiche disent encore « Chief Fundraising Officer » seul.
 **/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
 (`CollapseVisual`) et la vision (`WhatWeBack`) de l'accueil (« The kingmakers » est remplacé ; les
 chiffres sourcés de Lovable et Bessemer restent sous l'implosion ; les quatre cartes `FourLaws` quittent
@@ -179,7 +189,11 @@ pas de veto, jamais de tour poussé, au plus une 1× sans participation, les rac
 garde tout ce qui est acquis) ; chacune se barre à son tour quand elle arrive à l'écran (`RuleRow`, un
 départ commun), un trait rouge épais, une lueur qui balaie la ligne, la nouvelle règle qui se fait
 nette ; puis `RulesCoda` : « Your shares, your board, your exit. » barrés un par un, et « Now you get the
-capital without giving the company away. » en grand.
+capital without giving the company away. » en grand. **10/11 (Alexandre)** : QUATRE règles (siège et
+votes, pas de veto, jamais de tour poussé, les rachats) : la 1× et la démission quittent la mise en avant
+(trop dans le détail, elles restent dans le pacte) ; plus lent pour qu'on lise : une règle toutes les
+2,1 s (`RULE_START`, `RULE_STEP`), le trait, puis la flèche, puis la règle nouvelle ; la conclusion part
+après la dernière règle, sur le même départ commun (`CODA_AT`), jamais en même temps.
 **/lp, « Check every figure. » (07/11)** : l'ancienne « data room » (mot que les LPs visés ne
 comprennent pas), purgée de ce qui répétait la page : plus les chemins de dilution ni la protection en
 double. Restent : ce que les fondateurs gardent vraiment (cotations, Carta), les sorties européennes,

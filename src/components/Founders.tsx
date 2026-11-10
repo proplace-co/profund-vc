@@ -74,15 +74,28 @@ export function Numbers({ items, four = false }: { items: { b: string; t: ReactN
 const RULES: { old: string; now: string }[] = [
   // 07/11 (Alexandre) : plus de truismes (« You dilute only when you choose », « Your exit, on your
   // timing ») ni de « Big cheques » face aux géants : le contrôle, ce que le pacte change vraiment.
-  // 07/11 (2) : « trop peu » : six règles, chacune une clause (6, 6, 1, 1, 4, 11).
+  // 07/11 (2) : « trop peu » : six règles, chacune une clause.
+  // 10/11 (Alexandre) : quatre, le contrôle seul (clauses 6, 6, 1, 4) : la préférence 1× et le
+  // vesting quittent la mise en avant (trop dans le détail ; ils restent dans le pacte).
   { old: 'Their seats, their votes, their veto', now: 'One seat. Our shares vote with you.' },
   { old: 'Their consent on your budget, your hires, your next round', now: 'No veto on how you run, raise or sell.' },
   { old: 'A new round pushed on you every 18 months', now: 'We never push for a round.' },
-  { old: 'A preference stacked on every round', now: 'At most a 1×. No participation.' },
   // ProFund rachète : ce sont nos titres qui montent ; les votes passent du côté du fondateur.
   { old: 'Angels and leavers stuck on your cap table', now: 'We buy them out. Their votes move to your side.' },
-  { old: 'Resign during vesting, lose your shares', now: 'Resign, and keep every vested share.' },
 ];
+
+// 10/11 (Alexandre : « que l'on ait vraiment le temps de lire ») : une règle toutes les 2,1 s, la
+// première 0,9 s après l'arrivée à l'écran, puis la conclusion, une fois la dernière règle lue.
+const RULE_START = 0.9;
+const RULE_STEP = 2.1;
+const CODA_AT = RULE_START + RULES.length * RULE_STEP + 0.4;
+
+/** Le délai (s) d'une étape prévue `at` secondes après le départ commun `t0`, posé au premier appel. */
+function delayFrom(t0: { current: number | null }, at: number) {
+  const now = performance.now();
+  if (t0.current === null) t0.current = now;
+  return Math.max(0.08, (t0.current + at * 1000 - now) / 1000);
+}
 
 /** Une règle : elle se barre quand elle arrive à l'écran, dans l'ordre, une après l'autre. `t0` : le
  *  départ commun, pour que l'enchaînement reste régulier même si on fait défiler vite. */
@@ -90,10 +103,7 @@ function RuleRow({ r, i, t0 }: { r: { old: string; now: string }; i: number; t0:
   const [ref, seen] = useInView<HTMLLIElement>();
   const [d, setD] = useState(0);
   useEffect(() => {
-    if (!seen) return;
-    const now = performance.now();
-    if (t0.current === null) t0.current = now;
-    setD(Math.max(0.08, (t0.current + 250 + i * 420 - now) / 1000));
+    if (seen) setD(delayFrom(t0, RULE_START + i * RULE_STEP));
   }, [seen, i, t0]);
   return (
     <li ref={ref} className={`pv-rule${seen && d > 0 ? ' in' : ''}`} style={{ ['--d' as string]: `${d.toFixed(2)}s` }}>
@@ -104,16 +114,23 @@ function RuleRow({ r, i, t0 }: { r: { old: string; now: string }; i: number; t0:
   );
 }
 
-/** La conclusion : ce que chaque tour prenait, barré morceau par morceau, puis la promesse. */
-function RulesCoda() {
+/** La conclusion : ce que chaque tour prenait, barré morceau par morceau, puis la promesse. Elle part
+ *  après la dernière règle (même départ commun `t0`), jamais en même temps qu'elles. */
+function RulesCoda({ t0 }: { t0: { current: number | null } }) {
   const [ref, seen] = useInView<HTMLDivElement>();
+  const [c, setC] = useState(0);
+  useEffect(() => {
+    if (seen) setC(delayFrom(t0, CODA_AT));
+  }, [seen, t0]);
   const pieces = ['Your shares,', 'your board,', 'your exit.'];
+  const x = (k: number) => c + 1.1 + k * 0.75;
+  const vars = { ['--c' as string]: `${c.toFixed(2)}s`, ['--cb' as string]: `${(x(pieces.length) + 0.5).toFixed(2)}s` };
   return (
-    <div ref={ref} className={`pv-coda${seen ? ' in' : ''}`}>
+    <div ref={ref} className={`pv-coda${seen && c > 0 ? ' in' : ''}`} style={vars}>
       <p className="pv-coda-a">
         For fifty years, every round took a piece of it.{' '}
         {pieces.map((w, k) => (
-          <span key={w}>{k > 0 && ' '}<span className="pv-coda-x" style={{ ['--d' as string]: `${0.55 + k * 0.38}s` }}>{w}</span></span>
+          <span key={w}>{k > 0 && ' '}<span className="pv-coda-x" style={{ ['--d' as string]: `${x(k).toFixed(2)}s` }}>{w}</span></span>
         ))}
       </p>
       <p className="pv-coda-b">Now you get the capital <b>without giving the company away.</b></p>
@@ -146,7 +163,7 @@ export function TheRules({ hero = false, pactOpen = false, onPact }: {
           {RULES.map((r, i) => <RuleRow key={r.old} r={r} i={i} t0={t0} />)}
         </ol>
         {/* la conclusion des règles barrées (Antoine, 05/11 : en bas, pas sous le titre) */}
-        <RulesCoda />
+        <RulesCoda t0={t0} />
         <div className="pv-rules-foot" id="pact-dock">
           <span>A public pact, the same for every founder. You know our terms before we know your name.</span>
           {onPact
@@ -250,13 +267,32 @@ export function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; 
   );
 }
 
-/** La thèse (07/11, 6e passe) : après le contrôle, l'implosion dans sa carte. */
-export function TheFew() {
+const FEW_TITLE = 'The companies that define this era will be built by very few people.';
+
+/** La thèse (07/11, 6e passe) : l'implosion dans sa carte. `hero` (10/11, Alexandre : le contrôle
+ *  passe juste avant le Chief Fundraising Officer) : elle ouvre l'accueil, le logo et la signature
+ *  au-dessus, le titre en h1, sur fond clair (la vision et le contrôle qui suivent sont de nuit). */
+export function TheFew({ hero = false }: { hero?: boolean }) {
+  if (!hero) {
+    return (
+      <Say id="few" title={FEW_TITLE}>
+        <CollapseVisual />
+        <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
+      </Say>
+    );
+  }
   return (
-    <Say id="few" title="The companies that define this era will be built by very few people.">
-      <CollapseVisual />
-      <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
-    </Say>
+    <section className="pv-sec pv-say pv-few-open" id="few">
+      <div className="pv-wrap">
+        <div className="pv-rules-brand">
+          <img className="pv-rules-logo" src="/logo.png" alt="ProFund" width={150} height={40} />
+          <span>Venture capital for the AI era</span>
+        </div>
+        <h1 className="pv-say-h">{FEW_TITLE}</h1>
+        <CollapseVisual />
+        <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
+      </div>
+    </section>
   );
 }
 
@@ -555,8 +591,19 @@ export function WhatWeBack() {
 // sait). Ce que fait d'intelligent un Chief Fundraising Officer aligné : lever en position de force (le
 // prêt porte jusqu'au point d'inflexion), nettoyer la table avant chaque tour, acheter sans diluer, et
 // les plus gros tours en une seule ligne. Puis les tickets, en une bande.
+// 10/11 (Alexandre) : plus seulement un Chief Fundraising Officer. Le fondateur n'a pas besoin d'un VC
+// de plus mais d'un partenaire qui fait le travail : il lève (le CFO, détaillé dessous), il réfléchit
+// avec lui (le sparring partner, jamais à sa place : pas de veto, clause 6) et ses agents IA agissent
+// chaque jour (les deux moteurs, la section suivante). « Their votes move to your side » reste dans
+// les règles, juste au-dessus, et quitte la ligne des rachats pour ne pas se répéter.
+const ROLES: { t: string; d: string }[] = [
+  { t: 'Your Chief Fundraising Officer.', d: 'Everything your company needs to reach its full potential, raised at the right moment and in the order that dilutes you least. Every share you don’t issue protects your stake, and ours.' },
+  { t: 'Your sparring partner.', d: 'Every big call thought through with you before you make it: a hire, a price, a round, an acquisition. Then the call is yours.' },
+  { t: 'AI agents, at work every day.', d: 'Our agents find your acquisitions, write your posts and source your leads. You approve, they act.' },
+];
+
 const MOVES: { t: string; d: string }[] = [
-  { t: 'A clean cap table before every round.', d: 'We buy out angels and early funds, with your agreement. Their votes move to your side.' },
+  { t: 'A clean cap table before every round.', d: 'We buy out angels and early funds, with your agreement.' },
   { t: 'Acquisitions without dilution.', d: 'Our External AI Growth Engine finds the targets. Our partner banks can finance them.' },
   { t: 'The largest rounds, one line on your cap table.', d: 'The largest funds lead. We stay at your side, with one SPV for our co-investors.' },
 ];
@@ -596,12 +643,21 @@ function RaiseChart() {
 
 export function CapitalStack() {
   const [ref, seen] = useInView<HTMLOListElement>();
+  const [rolesRef, rolesIn] = useInView<HTMLOListElement>();
   return (
     <section className="pv-sec pv-cfo-sec" id="capital">
       <div className="pv-wrap">
         <p className="pv-kick pv-cfo-k">AI-native, in-house</p>
-        <h2 className="pv-say-h">Your Chief Fundraising Officer. <span>Perfectly aligned.</span></h2>
-        <p className="pv-say-p">Everything your company needs to reach its full potential, raised at the right moment and in the order that dilutes you least. Every share you don’t issue protects your stake, and ours.</p>
+        <h2 className="pv-say-h">Founders don’t need another VC. <span>They need a partner who does the work.</span></h2>
+        <ol ref={rolesRef} className={`pv-ruled pv-roles${rolesIn ? ' in' : ''}`}>
+          {ROLES.map((r, i) => (
+            <li key={r.t} style={{ ['--d' as string]: `${0.1 + i * 0.18}s` }}>
+              <h3>{r.t}</h3>
+              <p>{r.d}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="pv-kick pv-cfo-sub">How we raise</p>
         <RaiseChart />
         <ol ref={ref} className={`pv-moves${seen ? ' in' : ''}`}>
           {MOVES.map((m, i) => (

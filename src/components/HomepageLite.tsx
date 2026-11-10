@@ -80,10 +80,12 @@ export default function HomepageLite() {
     <div className="pfh">
       {/* 07/11 (6e passe, Alexandre) : le contrôle en ouverture, l'implosion, la vision en grand, le
           Chief Fundraising Officer aligné, les moteurs, le bandeau. Plus de graphique de dilution ni
-          de calculateur : le crédit est un outil, pas la promesse. */}
-      <TheRules hero pactOpen={pact} onPact={() => toggle('pact')} />
-      <TheFew />
+          de calculateur : le crédit est un outil, pas la promesse.
+          10/11 (Alexandre) : l'implosion ouvre, puis la vision ; le contrôle passe juste avant
+          « AI-native, in-house » (le partenaire qui fait le travail). */}
+      <TheFew hero />
       <WhatWeBack />
+      <TheRules pactOpen={pact} onPact={() => toggle('pact')} />
       <CapitalStack />
       <FounderEngines />
       <FinalCall onOpen={reveal} />
