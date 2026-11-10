@@ -130,7 +130,7 @@ function TheInversion() {
     <Slide id="inversion" n={4} kick="The inversion" title="Credit first. Equity when it earns its place.">
       <div className="pv-flow">
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="target" /></span><h3>A first cheque</h3><p>In new shares, from seed to Series A, or a buyback of existing shares.</p></div>
-        <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>Bank debt, raised for them</h3><p>Hiring, go-to-market, working capital, acquisitions, financed by our partner banks. Need more? Equity on the same terms, with SPVs alongside the fund.</p></div>
+        <div className="pv-flow-s"><span className="pv-ic"><Icon name="banknote" /></span><h3>Debt, with our advice</h3><p>Hiring, go-to-market, working capital, acquisitions: where debt fits, we advise on how much, when and from whom. Need more? Equity on the same terms, with SPVs alongside the fund.</p></div>
         <div className="pv-flow-s"><span className="pv-ic"><Icon name="trend" /></span><h3>Buybacks and cancellations</h3><p>Angels, leavers and early funds bought out; the company cancels shares every year.</p></div>
       </div>
       <div className="pv-callout">
@@ -278,7 +278,7 @@ function TrackRecord() {
 // 11 · Terms and targets
 function TermsAndTargets() {
   return (
-    <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. Equity when the founder asks, debt from our partner banks.`}>
+    <Slide id="terms" n={11} kick="Terms and targets" tint title={`${FUND_SIZE} target. Equity when the founder asks, debt with our advice.`}>
       <div className="impact-grid">
         <div className="imp"><span className="imp-n">{pct(TARGET.net_irr)}</span><span className="imp-h">Target net IRR</span><p className="imp-p">Upside {pct(UPSIDE.net_irr)}, stress case {pct(C.stress.net_irr)}</p></div>
         <div className="imp"><span className="imp-n">{mult(TARGET.net_tvpi)}</span><span className="imp-h">Target net TVPI</span><p className="imp-p">Upside {mult(UPSIDE.net_tvpi)}, stress case {mult(C.stress.net_tvpi)}</p></div>
@@ -309,7 +309,7 @@ export function TermsTables() {
             <tr><td>Carried interest, European</td><td>{pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, with GP catch-up</td></tr>
             <tr><td>GP commitment, minimum</td><td>{pct(T.gp_commit_min_pct)} of commitments, {eur(T.gp_commit_min, 'tile')} at {FUND_SIZE}</td></tr>
             <tr><td>Per company: fund / with SPVs</td><td>{eur(F.company_cap, 'tile')} / {eur(F.company_max_with_spv, 'tile')}</td></tr>
-            <tr><td>Debt</td><td>None in the fund: raised for each company from our partner banks</td></tr>
+            <tr><td>Debt</td><td>None in the fund: companies borrow from banks, with our advice</td></tr>
             <tr><td>Tickets</td><td>Up to {eur(sd.ticket_max, 'tile')} at seed, {eurRange(vt.first_cheque_range[0], vt.first_cheque_range[1], 'table', '–')} at Series A, {eurRange(gr.position_range[0], gr.position_range[1], 'tile', '–')} at growth ({eur(F.company_max_with_spv, 'tile')} with SPVs)</td></tr>
           </tbody>
         </table></div>
@@ -383,7 +383,7 @@ function Construction() {
       <div className="pf-wrap-wide">
         <span className="eyebrow">Appendix · Fund construction</span>
         <h2 className="h2">Fund construction.<br /><em>Two ways in at every layer.</em></h2>
-        <p className="pf-intro">A first equity cheque, or a buyback of existing shares. Then bank debt we raise for the company, and equity when the founder asks.</p>
+        <p className="pf-intro">A first equity cheque, or a buyback of existing shares. Then bank debt where it helps, with our advice, and equity when the founder asks.</p>
         <div className="pv-tiers">
           {LAYER_IDS.map((id) => (
             <div key={id} className={`tier ${id}`}>
@@ -538,7 +538,7 @@ export function PerformanceTables() {
         <p className="pf-fine">
           Net = after management fees ({pct(T.fee_ip_pct)} on commitments for {F.investment_period_years} years, then {pct(T.fee_post_pct, 1)} on invested capital), fund expenses
           and carried interest ({pct(T.carry_pct)} over an {pct(T.hurdle_pct)} hurdle, European whole-of-fund waterfall with GP catch-up), before tax. Investments over {F.investment_period_years} years, exits from year {EXIT_YEARS[0]} to year {EXIT_YEARS[1]}.
-          Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values. Stress: every exit at {pct(C.stress.exit_mult)}. The fund does not lend: companies borrow from our partner banks. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
+          Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values. Stress: every exit at {pct(C.stress.exit_mult)}. The fund does not lend: companies borrow from banks, with our advice. Buybacks priced {pct(Math.min(...WINNER_DISC))}–{pct(Math.max(...WINNER_DISC))} below the valuation of the time on winners
           and angels, {pct(STRUCT_DISC)} below from structural sellers (end-of-life funds). When a founder raises elsewhere, ProFund follows in new shares ({ALL_LINES.filter((l) => l.follow).map((l) => l.id).join(', ')}). G-02 and G-04 are fresh growth rounds in new shares;
           first cheques carry a 1× non-participating preference, outside small seed rounds. G-06 is a block bought in S-01, counted as one company with it. Zombies return 0.5× of the equity invested. Any growth position can be
           topped up to {eur(F.company_max_with_spv, 'tile')} with SPVs, outside the fund. Net TVPI on paid-in capital. Targets are model outputs, not a forecast or a guarantee.

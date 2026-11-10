@@ -419,7 +419,7 @@ LAWS = (
 
 PACT = (
     ("Equity, when the founder chooses.", "At most a 1× non-participating preference; never a pushed round."),
-    ("An in-house Chief Fundraising Officer.", "Bank debt we raise for them, then equity on the same "
+    ("An in-house Chief Fundraising Officer.", "Debt advice where it helps, then equity on the same "
                                                "terms when the founder asks and our committee agrees."),
     ("Buybacks and cancellations.", "We buy out angels, leavers and early funds, with the founder's "
                                     "agreement, and the company can cancel shares every year: each "
@@ -486,7 +486,7 @@ def page_one(F):
         "the most autonomous machines."), sz, "semi", INK, ld)
     yy += F.para(rx, yy, rw, f"<b>{x('Capital is no longer scarce. Control is.')}</b> " + x(
         "A team that doesn't need an army doesn't need a round every 18 months. So we don't sell it one: "
-        "we raise its debt, we buy, and equity comes only when the founder chooses."), sz, "reg", BLUE_DK, ld)
+        "debt where it helps, buybacks, and equity only when the founder chooses."), sz, "reg", BLUE_DK, ld)
     y = max(yy, y + 70) + 24
 
     # les quatre lois
@@ -613,7 +613,7 @@ def page_two(F):
     kick(F, M, 84, "Fund construction")
     y = 102 + title(F, M, 102, W, "", 19, lead=1.18, markup=(
         x("Two ways in at every layer: a first equity cheque, or a buyback of existing shares. ")
-        + f'<font color="{BLUE}">{x("Then debt from our partner banks, equity when the founder asks.")}</font>'))
+        + f'<font color="{BLUE}">{x("Then debt with our advice, equity when the founder asks.")}</font>'))
     y += 20
 
     # le tableau des trois etages
@@ -648,7 +648,7 @@ def page_two(F):
         ("Hurdle, with GP catch-up", pct(TERMS["hurdle_pct"])),
         ("Per company: fund / with SPVs",
          f"{eur(FUND['company_cap'], 'tile')} / {eur(FUND['company_max_with_spv'], 'tile')}"),
-        ("Debt", "From partner banks, not the fund"),
+        ("Debt", "From banks, with our advice"),
     ]
     alloc = [
         ("First cheques, incl. fresh growth rounds", eur(ALLOC["first"])),
@@ -1083,7 +1083,7 @@ def net_note():
         f"Investments over {ip} years, exits from year {min(exits)} to year {max(exits)}. "
         f"Target: every exit at {pct(b['exit_mult'])} of its modelled value. Upside: modelled values. "
         f"Stress: every exit at {pct(s['exit_mult'])}. "
-        "The fund does not lend: companies borrow from our partner banks. "
+        "The fund does not lend: companies borrow from banks, with our advice. "
         f"Buybacks priced {pct(min(winners))}–{pct(max(winners))} below the valuation of the time on winners "
         f"and angels, {pct(structural)} below from structural sellers (end-of-life funds). "
         f"When a founder raises elsewhere, ProFund follows in new shares ({', '.join(followed)}). "
@@ -1116,7 +1116,7 @@ def page_four(F):
         f"founders at {fm['founders'] * 100:.1f}%, then {eur(fm['vc_equity'], 'tile')} of equity with bridges and pool "
         f"refreshes: {after('B')}, {after('C')} and {after('D')} after the B, C and D. With us, same valuations and "
         f"{eur(fm['loans'], 'tile')} of bank loans, at {pct(fm['loan_share']['min'])} to {pct(fm['loan_share']['max'])} of the "
-        f"last round (usual range: 20% to 40%), subject to partner banks. Same capital: {eur(same['equity'], 'tile')} of "
+        f"last round (usual range: 20% to 40%), subject to lenders. Same capital: {eur(same['equity'], 'tile')} of "
         f"equity, founders at {same['stake'] * 100:.1f}%. Half: {eur(half['equity'], 'tile')} of equity, "
         f"{half['stake'] * 100:.1f}%. Credit alone: no further round, {fm['founders'] * 100:.1f}%. Illustrative. Sources: "
         "Carta; SaaStr; First Citizens."),

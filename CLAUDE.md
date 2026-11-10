@@ -174,12 +174,17 @@ règles plus lentes (ci-dessous) et `CapitalStack`, qui n'est plus seulement le 
 « Venture capital for the AI era. » (10/11, 2 : « Not another VC. A partner, all in. » était « cheap »),
 trois rôles en lignes (`ROLES`), chacun ouvert par ce qui compte en gras : le Chief Fundraising Officer
 « Perfectly aligned. », le sparring partner « The hard questions on every big call, before the market asks
-them », « Our agents, in symbiosis with yours. » « You direct, they act. » ; puis « How we raise » (la
+them », « Our agents, in symbiosis with yours. » « Proactive support, every day. » (cibles, investisseurs,
+posts, leads, acceptés, modifiés ou déclinés en un clic ; quatre pastilles : Corporate development,
+Fundraising, Inbound, Outbound) ; puis « How we raise » (la
 courbe, les trois mouvements, les tickets). **La dette (10/11, Alexandre)** : on ne la lève plus soi-même,
 on conseille : « Where debt can help, we advise », la barre de la courbe dit « Your runway, planned
-ahead », les acquisitions « We help you structure the financing ». ATTENTION : la clause 3 du pacte
-(« Debt, raised for you »), /pitch (« Bank debt, raised for them »), /lp et la fiche disent encore qu'on
-lève la dette auprès des banques partenaires : à aligner sur demande (le pacte est un texte contractuel). « Their votes move to your side » ne se dit plus que dans les règles.
+ahead », les acquisitions « We help you structure the financing ». Aligné partout le 10/11 (à la
+demande d'Alexandre) : la clause 3 du pacte devient « Debt, with our advice. » (combien, quand, auprès de
+qui, les termes relus ; toujours ni frais ni BSA), la FAQ de /lp, /pitch, le `<noscript>`, la meta de
+/pitch, le calculateur, la fiche (p. 1, 2 et 4) et l'Excel. Plus de « partner banks » nulle part : on
+écrit « banks » ou « lenders ». La thèse de l'accueil et de /lp dit « …will be built by few people. »
+(sans « very ») et tient sur deux lignes au-dessus de 600 px (`#few .pv-say-h`). « Their votes move to your side » ne se dit plus que dans les règles.
 /lp, /pitch et la fiche disent encore « Chief Fundraising Officer » seul.
 **/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
 (`CollapseVisual`) et la vision (`WhatWeBack`) de l'accueil (« The kingmakers » est remplacé ; les

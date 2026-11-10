@@ -334,7 +334,7 @@ def sheet_assumptions(bk: Book) -> None:
         "BuybackDiscount", fm.BUYBACK_DISCOUNT, "pct0",
         "Every buyback of existing shares: angels, leavers, early funds, the founder")
     ws.write(r, 0, "The fund does not lend (v3.17)")
-    ws.write(r, 5, "v3.17: the fund no longer lends. Growth debt comes from partner banks, arranged by ProFund, outside the fund; each modelled loan became a buyback of the same amount in the same company (V-04 at its entry price, default discount), except the V-05 zombies' €1M, which pays the higher management fee (the loan sleeve paid 1% instead of 2%).", note)
+    ws.write(r, 5, "v3.17: the fund no longer lends. Growth debt comes from banks, with ProFund's advice, outside the fund; each modelled loan became a buyback of the same amount in the same company (V-04 at its entry price, default discount), except the V-05 zombies' €1M, which pays the higher management fee (the loan sleeve paid 1% instead of 2%).", note)
     r += 1
     ws.write(r, 0, "After the first cheque, no new shares while the founder grows with ProFund")
     ws.write(r, 5, "If the founder raises elsewhere, ProFund follows or leads the round in new shares (Lines, columns "
@@ -462,7 +462,7 @@ def sheet_lines(bk: Book) -> None:
     bk.title(ws, "Fund simulation, line by line",
              "Seed (S-), Venture (V-) and Growth (G-) lines. A line may group several companies (n): amounts are "
              "line totals. Blue = input, black = formula. While the founder grows with ProFund: no new shares after "
-             "the first cheque, exposure grows by buybacks; growth debt comes from partner banks, not from the "
+             "the first cheque, exposure grows by buybacks; growth debt comes from banks (ProFund advises), not from the "
              "fund. If the founder raises "
              f"elsewhere, ProFund follows or leads in new shares (columns {lc('follow')} to {lc('follow_post')}).")
     ws.set_column(0, len(COLS) - 1, 14)
@@ -1143,7 +1143,7 @@ def sheet_performance(bk: Book, outs: dict) -> None:
                    "whole-of-fund waterfall with a hurdle and GP catch-up), before tax. Investments over "
                    f"{FUND['investment_period_years']} years, exits from year {min(x.exit_year for x in fm.LINES)} to "
                    f"year {HORIZON}. One portfolio in every case: Target and Stress multiply every exit value "
-                   "(Assumptions). The fund does not lend: growth debt comes from partner banks, outside the "
+                   "(Assumptions). The fund does not lend: growth debt comes from banks, outside the "
                    "fund. No partial secondary sale (set Lines column " + lc("partial") +
                    f" to 'yes' to test one). Largest exit in the Upside case: {eur_txt(largest)}, the unicorn. Targets are "
                    "model outputs, not a forecast or a guarantee.", note)
@@ -1385,7 +1385,7 @@ def sheet_readme(bk: Book) -> None:
                          f"sellers. v3.3: real {n['venture']} and {n['growth']} tickets ({eur_txt(vr[0])}–"
                          f"{eur_txt(vr[1])} Series A cheques; {eur_txt(gr[0])}–{eur_txt(gr[1])} growth positions, up "
                          f"to {eur_txt(FUND['company_max_with_spv'])} with SPVs), incl. a block bought in our own "
-                         "breakout. v3.17: the fund no longer lends. Growth debt comes from partner banks, arranged by ProFund, outside the fund; each modelled loan became a buyback of the same amount in the same company (V-04 at its entry price, default discount), except the V-05 zombies' €1M, which pays the higher management fee (the loan sleeve paid 1% instead of 2%).", bk.f(bold=True)),
+                         "breakout. v3.17: the fund no longer lends. Growth debt comes from banks, with ProFund's advice, outside the fund; each modelled loan became a buyback of the same amount in the same company (V-04 at its entry price, default discount), except the V-05 zombies' €1M, which pays the higher management fee (the loan sleeve paid 1% instead of 2%).", bk.f(bold=True)),
     ):
         ws.write(r, 0, k, fmt)
         ws.write(r, 1, text, wrap)

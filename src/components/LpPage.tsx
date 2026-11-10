@@ -182,7 +182,7 @@ const CALLED = (y: number) => TARGET.cashflows.calls.slice(0, y).reduce((s, v) =
 const IP = F.investment_period_years;
 const FAQ: { id: string; q: string; a: ReactNode }[] = [
   { id: 'faq-debt', q: 'Why doesn’t the fund lend?',
-    a: <>Lending well is a profession of its own, and a fund that lends to the companies it owns sits on both sides of the table. So the fund holds equity only. When debt can carry a company’s growth, we raise it for the founders from our partner banks: we build the case, negotiate the terms and stay at the table. The loan is between the company and the bank, and ProFund takes no fee and no warrants on it.</> },
+    a: <>Lending well is a profession of its own, and a fund that lends to the companies it owns sits on both sides of the table. So the fund holds equity only. When debt can carry a company’s growth, we advise the founders on it: how much, when and from whom, and we review the terms with them. The loan is between the company and the lender, and ProFund takes no fee and no warrants on it.</> },
   { id: 'faq-ic', q: 'Who decides an investment?',
     a: <>An authorised manager (AIFM) runs the fund and keeps a veto on compliance and risk; its selection is under way. Every investment goes through an investment committee where external members, chosen among our LPs, sit alongside the Founding Partner, who never invests alone. An LP advisory committee approves every conflict of interest.</> },
   { id: 'faq-key', q: 'You are a solo GP. What if something happens to you?',
@@ -297,7 +297,7 @@ function LpContent() {
       </header>
 
       {/* 07/11 : la même thèse et la même vision que l'accueil (certains LPs ne verront que /lp) */}
-      <Say id="few" title="The companies that define this era will be built by very few people.">
+      <Say id="few" title="The companies that define this era will be built by few people.">
         <CollapseVisual />
         <Numbers items={[
           { b: '8 months', t: <>From launch to $100M ARR for Lovable, in Stockholm, with 45 people.<Ref s={SRC.lovable100} /></> },
