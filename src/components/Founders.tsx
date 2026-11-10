@@ -629,7 +629,7 @@ export function CapitalStack() {
     <section className="pv-sec pv-cfo-sec" id="capital">
       <div className="pv-wrap">
         <p className="pv-kick pv-cfo-k">AI-native, in-house</p>
-        <h2 className="pv-say-h">Founders don’t need another VC, <span>they need a partner sharing the vision and doing the work.</span></h2>
+        <h2 className="pv-say-h">Not another VC. <span>A&nbsp;partner, all in.</span></h2>
         <ol ref={rolesRef} className={`pv-ruled pv-roles${rolesIn ? ' in' : ''}`}>
           {ROLES.map((r, i) => (
             <li key={r.t} style={{ ['--d' as string]: `${0.1 + i * 0.18}s` }}>

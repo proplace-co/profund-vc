@@ -171,8 +171,8 @@ people. Months. »), la vision de nuit, « AI-native, in-house » en clair, les 
 Essayés le 10/11 puis abandonnés (dans l'historique, v3.33 à v3.35) : l'implosion en ouverture, la phrase
 de la thèse en intitulé du dessin, les règles et les moteurs en clair. Ce qui reste du 10/11 : les quatre
 règles plus lentes (ci-dessous) et `CapitalStack`, qui n'est plus seulement le Chief Fundraising Officer :
-« Founders don’t need another VC, they need a partner sharing the vision and doing the work. » (texte
-d'Alexandre, tel quel), trois rôles en lignes (`ROLES` : le Chief Fundraising Officer, le sparring partner
+« Not another VC. A partner, all in. » (10/11, la version courte de « Founders don’t need another VC,
+they need a partner sharing the vision and doing the work. »), trois rôles en lignes (`ROLES` : le Chief Fundraising Officer, le sparring partner
 « Then the call is yours », les agents IA « You approve, they act »), puis « How we raise » (la courbe,
 les trois mouvements, les tickets). « Their votes move to your side » ne se dit plus que dans les règles.
 /lp, /pitch et la fiche disent encore « Chief Fundraising Officer » seul.
