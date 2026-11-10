@@ -2012,14 +2012,87 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 @media (max-width: 760px) { .pv-roles li { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .pv-roles li { transition: none; } }
 
-/* 10/11 (2) : l'implosion ouvre l'accueil, de nuit et sans carte (.pv-few-hero, .pv-col.bare) ; plus
-   de grand titre : l'intitulé du dessin porte la phrase (le h1) et reste visible */
-.pv-col.bare.lead .pv-col-h { display: block; font-size: 13px; line-height: 1.5; }
-/* l'ouverture, la vision puis le contrôle : trois sections de nuit à la suite, un filet entre chacune */
-.pv-few-hero + .pv-vf-sec > .pv-wrap { border-top: 1px solid var(--night-line); padding-top: clamp(72px, 9vw, 112px); }
-.pv-few-hero + .pv-vf-sec { padding-top: 0; }
-.pv-vf-sec + .pv-rules-sec > .pv-wrap { border-top: 1px solid var(--night-line); padding-top: clamp(72px, 9vw, 128px); }
-.pv-vf-sec + .pv-rules-sec { padding-top: 0; }
+/* ══ 10/11 (3, Alexandre) : l'accueil alterne clair et nuit ══════════════════════════════════════
+   1 l'implosion (clair, le dessin dans sa carte sombre), 2 la vision (nuit), 3 le contrôle (clair),
+   4 « AI-native, in-house » (nuit), 5 les moteurs (clair), puis le bandeau sombre. Les règles et les
+   moteurs ont été dessinés pour la nuit : leurs variantes claires sont ici, limitées à l'accueil
+   (.pv-rules-light, .pv-engines-light) ; /terms et /lp ne changent pas. */
+
+/* 1 · l'ouverture : plus de grand titre, l'intitulé du dessin porte la phrase (le h1) */
+.pv-few-open { padding-top: clamp(48px, 6vw, 80px); }
+.pv-few-open .pv-rules-logo { filter: none; }
+.pv-few-open .pv-rules-brand span { border-left-color: var(--line-2); color: var(--blue); }
+.pv-few-open .pv-rules-brand + .pv-col { margin-top: clamp(4px, 1vw, 14px); }
+.pv-col.lead .pv-col-h { font-size: 13px; line-height: 1.5; }
+
+/* 3 · le contrôle, clair */
+.pv-rules-light .pv-rules-h { color: var(--ink); }
+.pv-rules-light .pv-rules-lead { color: var(--muted); }
+.pv-rules-light .pv-rules-lead b { color: var(--ink); }
+.pv-rules-light .pv-rules-list, .pv-rules-light .pv-rule { border-color: var(--line-2); }
+.pv-rules-light .pv-rule::before { background: linear-gradient(90deg, transparent, rgba(98, 124, 153, .09), transparent); }
+.pv-rules-light .pv-rule .old span { color: var(--ink-2); }
+.pv-rules-light .pv-rule.in .old span { color: #a9b0ba; }
+.pv-rules-light .pv-rule .arrow { color: var(--blue); }
+.pv-rules-light .pv-rule .now { color: var(--ink); }
+.pv-rules-light .pv-coda-a { color: var(--muted); }
+.pv-rules-light .pv-coda-x { color: var(--ink); }
+.pv-rules-light .pv-coda.in .pv-coda-x { color: #a9b0ba; }
+.pv-rules-light .pv-coda-b { color: var(--soft); }
+.pv-rules-light .pv-coda-b b { color: var(--ink); }
+.pv-rules-light .pv-rules-foot { color: var(--muted); }
+.pv-btn.line.pv-toggle .pv-toggle-ic { background: var(--blue-soft); color: var(--blue-dk); }
+.pv-btn.line.pv-toggle.open { box-shadow: inset 0 0 0 1.5px var(--ink); }
+/* le pacte déplié sous les règles, clair */
+.pv-rules-light .pv-drawer-glow { background: linear-gradient(90deg, rgba(98, 124, 153, 0), rgba(98, 124, 153, .7) 50%, rgba(98, 124, 153, 0)); }
+.pv-rules-light .pv-terms-lead { color: var(--ink-2); }
+.pv-rules-light .pv-terms-list, .pv-rules-light .pv-terms-list li { border-color: var(--line-2); }
+.pv-rules-light .pv-terms-list .n { background-image: linear-gradient(140deg, #8aa2bd, #3f5573); }
+.pv-rules-light .pv-terms-list h3 { color: var(--ink); }
+.pv-rules-light .pv-terms-list p { color: var(--muted); }
+.pv-rules-light .pv-terms-list p.vc, .pv-rules-light .pv-terms-list li.pv-terms-note { color: var(--soft); }
+.pv-rules-light .pv-terms-list p.vc span { color: var(--blue); }
+
+/* 4 · « AI-native, in-house », de nuit */
+.pv-cfo-sec.night .pv-say-h span { color: var(--blue-glow); }
+.pv-sec.night .pv-ruled { border-bottom-color: var(--night-line); }
+.pv-sec.night .pv-ruled li { border-top-color: var(--night-line); }
+.pv-sec.night .pv-ruled h3 { color: #fff; }
+.pv-sec.night .pv-ruled p { color: var(--night-txt); }
+.pv-cfo-sec.night .pv-raise { background: radial-gradient(80% 90% at 85% 10%, #263544 0%, #181e26 60%, #13171c 100%);
+  box-shadow: inset 0 0 0 1px var(--night-line), 0 40px 80px -40px rgba(0, 0, 0, .8); }
+.pv-cfo-sec.night .pv-moves li { border-top-color: var(--night-line); }
+.pv-cfo-sec.night .pv-moves .n { color: var(--blue-glow); }
+.pv-cfo-sec.night .pv-moves h3 { color: #fff; }
+.pv-cfo-sec.night .pv-moves p { color: var(--night-txt); }
+.pv-cfo-sec.night .pv-tickets { background: rgba(255, 255, 255, .04); box-shadow: inset 0 0 0 1px var(--night-line); }
+.pv-cfo-sec.night .pv-tickets-k { color: var(--night-txt); }
+.pv-cfo-sec.night .pv-tickets > span:not(.pv-tickets-k) { background: rgba(255, 255, 255, .07); box-shadow: inset 0 0 0 1px var(--night-line); color: #fff; }
+.pv-cfo-sec.night .pv-tickets b { color: var(--blue-glow); }
+
+/* 5 · les moteurs, clairs : cartes blanches, logos en noir, sous-moteurs allumés en bleu */
+.pv-engines-light .pv-eng { background: #fff; box-shadow: var(--sh-2); }
+.pv-engines-light .pv-eng h3 { color: var(--ink); }
+.pv-engines-light .pv-eng p { color: var(--muted); }
+.pv-engines-light .pv-eng-steps, .pv-engines-light .pv-eng-steps li { border-color: var(--line); }
+.pv-engines-light .pv-eng-steps .n { background-image: linear-gradient(140deg, #8aa2bd, #3f5573); }
+.pv-engines-light .pv-eng-steps b { color: var(--blue); }
+.pv-engines-light .pv-run-key { color: var(--muted); }
+.pv-engines-light .pv-run-key svg, .pv-engines-light .pv-run-key span::before { color: var(--blue); }
+.pv-engines-light .pv-run-head .pv-kick { color: var(--blue); }
+.pv-engines-light .pv-run-head p:not(.pv-kick) { color: var(--ink); }
+.pv-engines-light .pv-run-key b { color: var(--ink); }
+.pv-engines-light .pv-runc { color: var(--ink); background: #fff; box-shadow: var(--sh-2); }
+.pv-engines-light .pv-runc::before { background: radial-gradient(closest-side, rgba(98, 124, 153, .08), rgba(98, 124, 153, 0)); }
+.pv-engines-light .pv-runc:hover { box-shadow: var(--sh-3); }
+.pv-engines-light .pv-runc-top img { filter: brightness(0); opacity: .86; }
+.pv-engines-light .pv-runc-eng { border-top-color: var(--line); }
+.pv-engines-light .pv-runc-row .e { color: var(--blue); }
+.pv-engines-light .pv-runc-p { color: #b7bdc6; box-shadow: inset 0 0 0 1px var(--line); }
+.pv-engines-light .pv-runc-p.on { color: var(--ink); background: var(--blue-soft); box-shadow: inset 0 0 0 1px #d3deea; }
+.pv-engines-light .pv-runc-p.on i { background: #2f9e62; box-shadow: 0 0 6px rgba(47, 158, 98, .55); }
+.pv-engines-light .pv-runc-p.on::after { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .8), transparent); }
+.pv-engines-light .pv-runc-dot { background: #2f9e62; }
 
 /* ── Running today (07/11, 11e passe, Alexandre) : six petites cartes identiques ──────────────── */
 /* Une légende dit les deux moteurs et leurs sous-moteurs ; chaque carte porte les mêmes trois

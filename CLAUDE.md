@@ -165,13 +165,17 @@ on lève au point d'inflexion et non à court de cash, puis la table nettoyée a
 acquisitions sans dilution, les plus gros tours en une ligne ; les tickets en une bande ; « full
 potential », jamais « full size »), puis les moteurs (« Running today » en cartes sombres vivantes), le bandeau final.
 **L'ordre de l'accueil (10/11, Alexandre) remplace celui du 07/11** : l'implosion ouvre (`TheFew hero` :
-de nuit, sans carte (`CollapseVisual bare lead`), le logo blanc et la signature ; PLUS de grand titre
-(10/11, 2) : « The companies that define this era will be built by very few people. » est l'intitulé
-du dessin, et le h1 de la page ; la légende « Now » dit « AI has collapsed what it takes to build. »
-au lieu de « A few people. Months. » ; /lp et /pitch gardent les intitulés d'origine ; puis « Control
-is. »), puis la vision (`WhatWeBack`), puis le contrôle (`TheRules` sans `hero`, le pacte se déplie
-toujours dessous, `/#pact`) : trois sections de nuit, un filet entre chacune ; puis « AI-native,
-in-house » (`CapitalStack`), les moteurs, le bandeau. `CapitalStack` n'est plus seulement le Chief
+le logo dans ses couleurs et la signature, le dessin dans sa carte sombre (`CollapseVisual lead`) ; PLUS
+de grand titre (10/11, 2) : « The companies that define this era will be built by very few people. »
+est l'intitulé du dessin, et le h1 de la page ; la légende « Now » dit « AI has collapsed what it takes
+to build. » au lieu de « A few people. Months. » ; /lp et /pitch gardent les intitulés d'origine ; puis
+« Control is. »), puis la vision (`WhatWeBack`), puis le contrôle (`TheRules` sans `hero`, le pacte se
+déplie toujours dessous, `/#pact`), puis « AI-native, in-house » (`CapitalStack`), les moteurs, le
+bandeau. **Les fonds alternent (10/11, 3)** : clair, nuit, clair, nuit, clair, puis le bandeau sombre
+(ouverture, vision, contrôle, « AI-native, in-house », moteurs). Les règles et les moteurs, dessinés pour
+la nuit, ont leurs variantes claires limitées à l'accueil (`.pv-rules-light`, pacte déplié compris, et
+`.pv-engines-light` : cartes blanches, logos en noir) ; /terms et /lp ne changent pas. `CapitalStack` est
+de nuit (`.pv-cfo-sec.night`). `CapitalStack` n'est plus seulement le Chief
 Fundraising Officer : « Founders don’t need another VC, they need a partner sharing the vision and
 doing the work. » (texte d'Alexandre, tel quel), trois rôles en lignes (`ROLES` : le Chief
 Fundraising Officer, le sparring partner « Then the call is yours », les agents IA « You approve, they
