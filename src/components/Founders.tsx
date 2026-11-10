@@ -577,20 +577,24 @@ export function WhatWeBack() {
 // avec lui (le sparring partner, jamais à sa place : pas de veto, clause 6) et ses agents IA agissent
 // chaque jour (les deux moteurs, la section suivante). « Their votes move to your side » reste dans
 // les règles, juste au-dessus, et quitte la ligne des rachats pour ne pas se répéter.
-const ROLES: { t: string; d: string }[] = [
-  { t: 'Your Chief Fundraising Officer.', d: 'Everything your company needs to reach its full potential, raised at the right moment and in the order that dilutes you least. Every share you don’t issue protects your stake, and ours.' },
-  { t: 'Your sparring partner.', d: 'Every big call thought through with you before you make it: a hire, a price, a round, an acquisition. Then the call is yours.' },
-  { t: 'AI agents, at work every day.', d: 'Our agents find your acquisitions, write your posts and source your leads. You approve, they act.' },
+// 10/11 (2, Alexandre : « c'est cheap », « plus vision, plus stylé ») : trois lignes courtes, chacune
+// ouverte par ce qui compte (en gras) ; la symbiose de nos agents et des leurs (la thèse : « the clearest
+// minds, directing the most autonomous machines ») ; « Perfectly aligned » revient.
+const ROLES: { t: string; b: string; d: string }[] = [
+  { t: 'Your Chief Fundraising Officer.', b: 'Perfectly aligned.', d: 'Every share you don’t issue protects your stake, and ours.' },
+  { t: 'Your sparring partner.', b: 'The hard questions on every big call,', d: 'before the market asks them. The last word is yours.' },
+  { t: 'Our agents, in symbiosis with yours.', b: 'You direct, they act.', d: 'Every day, they find your acquisitions, write your posts and source your leads.' },
 ];
 
 const MOVES: { t: string; d: string }[] = [
   { t: 'A clean cap table before every round.', d: 'We buy out angels and early funds, with your agreement.' },
-  { t: 'Acquisitions without dilution.', d: 'Our External AI Growth Engine finds the targets. Our partner banks can finance them.' },
+  { t: 'Acquisitions without dilution.', d: 'Our External AI Growth Engine finds the targets. We help you structure the financing.' },
   { t: 'The largest rounds, one line on your cap table.', d: 'The largest funds lead. We stay at your side, with one SPV for our co-investors.' },
 ];
 
-/** Lever en position de force : sans réserve, on lève au creux, à court de cash ; avec la dette levée
- *  auprès des banques partenaires (v3.17 : le fonds ne prête plus), on lève au point d'inflexion. */
+/** Lever en position de force : sans réserve, on lève au creux, à court de cash ; la piste préparée
+ *  avec nous, on lève au point d'inflexion. 10/11 (Alexandre) : on ne lève plus la dette soi-même,
+ *  on conseille (« Where debt can help, we advise ») ; plus de « Bank debt carries you ». */
 function RaiseChart() {
   const [ref, seen] = useInView<HTMLDivElement>();
   const d = 'M40 252 C140 240 240 198 320 178 C370 166 400 198 440 206 C520 222 600 150 700 104 C800 60 880 44 960 34';
@@ -599,7 +603,7 @@ function RaiseChart() {
       <div className="pv-raise-txt">
         <span className="n">01</span>
         <h3>Raise from strength.</h3>
-        <p>Debt we raise for you from our partner banks carries you to your inflection. You raise equity when it pays, not when cash runs out.</p>
+        <p>We plan your runway and your rounds with you, so you raise at your inflection, not when cash runs out. Where debt can help, we advise.</p>
       </div>
       <div className="pv-raise-plot" aria-hidden="true">
         <svg viewBox="0 0 1000 300" preserveAspectRatio="none">
@@ -608,7 +612,7 @@ function RaiseChart() {
           <line className="mk" x1="440" y1="206" x2="440" y2="300" vectorEffect="non-scaling-stroke" />
           <line className="mk hi" x1="700" y1="104" x2="700" y2="300" vectorEffect="non-scaling-stroke" />
         </svg>
-        <span className="pv-raise-run"><i />Bank debt carries you</span>
+        <span className="pv-raise-run"><i />Your runway, planned ahead</span>
         <span className="pv-raise-dot weak" />
         <span className="pv-raise-dot strong" />
         <span className="pv-raise-lab weak">Out of cash: the usual moment to raise</span>
@@ -629,12 +633,12 @@ export function CapitalStack() {
     <section className="pv-sec pv-cfo-sec" id="capital">
       <div className="pv-wrap">
         <p className="pv-kick pv-cfo-k">AI-native, in-house</p>
-        <h2 className="pv-say-h">Not another VC. <span>A&nbsp;partner, all in.</span></h2>
+        <h2 className="pv-say-h">Venture capital <span>for the AI era.</span></h2>
         <ol ref={rolesRef} className={`pv-ruled pv-roles${rolesIn ? ' in' : ''}`}>
           {ROLES.map((r, i) => (
             <li key={r.t} style={{ ['--d' as string]: `${0.1 + i * 0.18}s` }}>
               <h3>{r.t}</h3>
-              <p>{r.d}</p>
+              <p><b>{r.b}</b> {r.d}</p>
             </li>
           ))}
         </ol>

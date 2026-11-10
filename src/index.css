@@ -2006,7 +2006,9 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
    lignes (.pv-ruled), puis « How we raise », le détail du premier */
 .pv-roles li { opacity: 0; transform: translateY(10px); transition: opacity .7s ease var(--d, 0s), transform .7s cubic-bezier(.2, .7, .2, 1) var(--d, 0s); }
 .pv-roles.in li { opacity: 1; transform: none; }
-.pv-roles h3 { font-weight: 750; }
+.pv-roles h3 { font-weight: 750; font-size: clamp(24px, 2.5vw, 36px); }
+.pv-roles p { font-size: clamp(17.5px, 1.4vw, 19.5px); }
+.pv-roles p b { font-weight: 650; color: var(--ink); }
 .pv-cfo-sub { margin: clamp(64px, 8vw, 120px) 0 0; }
 .pv-cfo-sub + .pv-raise { margin-top: 18px; }
 @media (max-width: 760px) { .pv-roles li { grid-template-columns: minmax(0, 1fr); } }
