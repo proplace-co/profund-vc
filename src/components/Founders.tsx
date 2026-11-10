@@ -147,8 +147,7 @@ export function TheRules({ hero = false, pactOpen = false, onPact }: {
   const t0 = useRef<number | null>(null);
   const H = hero ? 'h1' : 'h2';
   return (
-    // 10/11 (3) : l'accueil alterne clair et nuit ; les règles, troisièmes, sont claires (le héros reste de nuit)
-    <section className={`pv-sec pv-rules-sec${hero ? ' night pv-rules-hero' : ' pv-rules-light'}`} id="rules">
+    <section className={`pv-sec night pv-rules-sec${hero ? ' pv-rules-hero' : ''}`} id="rules">
       <div ref={ref} className={`pv-wrap pv-rules${seen ? ' in' : ''}`}>
         {/* v3.15 (06/11) : la signature « Venture capital for the AI era » à côté du logo */}
         {hero && (
@@ -168,7 +167,7 @@ export function TheRules({ hero = false, pactOpen = false, onPact }: {
         <div className="pv-rules-foot" id="pact-dock">
           <span>A public pact, the same for every founder. You know our terms before we know your name.</span>
           {onPact
-            ? <DrawerToggle open={pactOpen} controls="pact" onClick={onPact} className={hero ? 'ghost-light' : 'line'}
+            ? <DrawerToggle open={pactOpen} controls="pact" onClick={onPact} className="ghost-light"
                             label={`Read the pact, ${N_CLAUSES} clauses`} closeLabel="Close the pact" />
             : <Link to="/terms" className="pv-link">Read the pact, {N_CLAUSES} clauses <Icon name="arrow" /></Link>}
         </div>
@@ -219,12 +218,7 @@ const MACHINES = Array.from({ length: 10 }, (_, i) => {
   return { x: Math.cos(a) * 118, y: Math.sin(a) * 118 };
 });
 
-/** `label` : l'intitulé au-dessus du dessin ; `nowCap` : la légende « Now ». `lead` (l'ouverture de
- *  l'accueil, 10/11) : l'intitulé est le h1 de la page et reste visible même en `bare`. */
-export function CollapseVisual({
-  bare = false, delay = 900, lead = false,
-  label = 'AI has collapsed what it takes to build.', nowCap = 'A few people. Months.',
-}: { bare?: boolean; delay?: number; lead?: boolean; label?: string; nowCap?: string }) {
+export function CollapseVisual({ bare = false, delay = 900 }: { bare?: boolean; delay?: number }) {
   const [ref, seen] = useInView<HTMLElement>();
   const [now, setNow] = useState(false);
   const touched = useRef(false);
@@ -235,8 +229,8 @@ export function CollapseVisual({
   }, [seen, delay]);
   const show = (v: boolean) => { touched.current = true; setNow(v); };
   return (
-    <figure ref={ref} className={`pv-col${bare ? ' bare' : ''}${lead ? ' lead' : ''}${now ? ' now' : ''}`}>
-      <figcaption className="pv-col-h">{lead ? <h1>{label}</h1> : label}</figcaption>
+    <figure ref={ref} className={`pv-col${bare ? ' bare' : ''}${now ? ' now' : ''}`}>
+      <figcaption className="pv-col-h">AI has collapsed what it takes to build.</figcaption>
       <svg viewBox="0 0 1000 370" aria-hidden="true">
         <defs>
           <radialGradient id="pvColGlow">
@@ -262,7 +256,7 @@ export function CollapseVisual({
       <div className="pv-col-foot">
         <p className="pv-col-cap" aria-live="polite">
           <span className={now ? undefined : 'on'}>Thousands of people. A decade.</span>
-          <span className={now ? 'on' : undefined}>{nowCap}</span>
+          <span className={now ? 'on' : undefined}>A few people. Months.</span>
         </p>
         <div className="pv-col-toggle" role="group" aria-label="Before and now">
           <button type="button" className={now ? undefined : 'on'} aria-pressed={!now} onClick={() => show(false)}>Before</button>
@@ -273,34 +267,13 @@ export function CollapseVisual({
   );
 }
 
-const FEW_TITLE = 'The companies that define this era will be built by very few people.';
-
-/** La thèse (07/11, 6e passe) : l'implosion dans sa carte. `hero` (10/11, Alexandre : le contrôle
- *  passe juste avant le Chief Fundraising Officer) : elle ouvre l'accueil, le logo et la signature
- *  au-dessus ; plus de grand titre (10/11, 2) : la phrase devient l'intitulé du dessin (le h1),
- *  « AI has collapsed what it takes to build. » sa légende « Now ». /lp et /pitch gardent les
- *  intitulés d'origine. 10/11 (3) : l'accueil alterne clair et nuit, l'ouverture est claire, le
- *  dessin dans sa carte sombre. */
-export function TheFew({ hero = false }: { hero?: boolean }) {
-  if (!hero) {
-    return (
-      <Say id="few" title={FEW_TITLE}>
-        <CollapseVisual />
-        <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
-      </Say>
-    );
-  }
+/** La thèse (07/11, 6e passe) : après le contrôle, l'implosion dans sa carte. */
+export function TheFew() {
   return (
-    <section className="pv-sec pv-say pv-few-open" id="few">
-      <div className="pv-wrap">
-        <div className="pv-rules-brand">
-          <img className="pv-rules-logo" src="/logo.png" alt="ProFund" width={150} height={40} />
-          <span>Venture capital for the AI era</span>
-        </div>
-        <CollapseVisual lead label={FEW_TITLE} nowCap="AI has collapsed what it takes to build." />
-        <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
-      </div>
-    </section>
+    <Say id="few" title="The companies that define this era will be built by very few people.">
+      <CollapseVisual />
+      <p className="pv-few-quote">Capital is no longer scarce. <b>Control is.</b></p>
+    </Say>
   );
 }
 
@@ -653,8 +626,7 @@ export function CapitalStack() {
   const [ref, seen] = useInView<HTMLOListElement>();
   const [rolesRef, rolesIn] = useInView<HTMLOListElement>();
   return (
-    // 10/11 (3) : de nuit, entre le contrôle et les moteurs, clairs
-    <section className="pv-sec night pv-cfo-sec" id="capital">
+    <section className="pv-sec pv-cfo-sec" id="capital">
       <div className="pv-wrap">
         <p className="pv-kick pv-cfo-k">AI-native, in-house</p>
         <h2 className="pv-say-h">Founders don’t need another VC, <span>they need a partner sharing the vision and doing the work.</span></h2>
@@ -1155,8 +1127,7 @@ function EngineCards({ engines, open }: { engines: typeof ENGINES; open: boolean
 export function FounderEngines() {
   const [open, setOpen] = useState(false);
   return (
-    // 10/11 (3) : clair (l'accueil alterne) ; les cartes passent en blanc, sur /lp elles restent de nuit
-    <section className="pv-sec pv-engines-light" id="engines">
+    <section className="pv-sec night" id="engines">
       <div className="pv-wrap">
         <div className="pv-head">
           <h2 className="pv-h2">Two AI engines, working for you.</h2>
@@ -1164,7 +1135,7 @@ export function FounderEngines() {
         </div>
         <EngineCards engines={ENGINES} open={open} />
         <div className="pv-eng-more">
-          <DrawerToggle open={open} controls="engine-0" onClick={() => setOpen((o) => !o)} className="line"
+          <DrawerToggle open={open} controls="engine-0" onClick={() => setOpen((o) => !o)} className="ghost-light"
                         label="How they work" closeLabel="Close" />
         </div>
         <EnginesRunning />
