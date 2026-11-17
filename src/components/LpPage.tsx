@@ -341,10 +341,12 @@ function LpContent() {
           pas sur la taille : on gagne en arrivant les premiers, en étant utiles, en étant alignés. */}
       <Say id="win" tone="night" title="How a focused fund wins the best founders."
         lead={<p className="pv-say-p">Not on cheque size. Where size does not help.</p>}>
-        {/* 17/11 (Alexandre) : « Aligned. » et WinHealth Group retirés */}
-        <Numbers two items={[
+        {/* 17/11 (Alexandre) : WinHealth Group retiré ; « Aligned. » revient avec une phrase simple (le
+            contrôle, ce qui nous distingue ; le détail est dans le pacte, juste au-dessus) */}
+        <Numbers items={[
           { b: 'First.', t: 'Our deal flow engine tracks every European seed round, every week, and flags the inflection before it becomes consensus.' },
           { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace, Maximum Insurance and Sosuites.' },
+          { b: 'Aligned.', t: 'Founders keep control of their company.' },
         ]} />
         <p className="pv-fine pv-three-src">The largest funds lead the largest rounds. We stay at the founder’s side, with SPVs that keep that upside for our LPs.</p>
       </Say>

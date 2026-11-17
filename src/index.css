@@ -1207,7 +1207,6 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
 
 .pv-three { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px clamp(24px, 4vw, 56px); margin-top: clamp(48px, 6vw, 88px); }
 .pv-three.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.pv-three.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .pv-three > div { display: grid; gap: 12px; align-content: start; padding-top: 20px; border-top: 1px solid var(--line-2); }
 .pv-three b { font-size: clamp(40px, 4.8vw, 72px); font-weight: 750; line-height: 1; letter-spacing: -.045em; color: var(--ink); }
 .pv-three.four b { font-size: clamp(40px, 4.2vw, 62px); }
@@ -1341,7 +1340,7 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
 }
 .lp-night { padding: clamp(12px, 1.6vw, 18px); border-radius: var(--r-lg); background: var(--night); }
 @media (max-width: 900px) {
-  .pv-three, .pv-three.four, .pv-three.two { grid-template-columns: minmax(0, 1fr); }
+  .pv-three, .pv-three.four { grid-template-columns: minmax(0, 1fr); }
   .pv-ruled li { grid-template-columns: minmax(0, 1fr); }
   .lp-deal { grid-template-columns: minmax(0, 1fr); }
 }

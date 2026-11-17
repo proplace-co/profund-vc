@@ -60,10 +60,10 @@ export function Say({ id, tone, title, lead, children }: {
   );
 }
 
-/** Deux, trois ou quatre chiffres, sans carte : un filet, le chiffre, ce qu'il veut dire. */
-export function Numbers({ items, four = false, two = false }: { items: { b: string; t: ReactNode }[]; four?: boolean; two?: boolean }) {
+/** Trois ou quatre chiffres, sans carte : un filet, le chiffre, ce qu'il veut dire. */
+export function Numbers({ items, four = false }: { items: { b: string; t: ReactNode }[]; four?: boolean }) {
   return (
-    <div className={`pv-three${four ? ' four' : two ? ' two' : ''}`}>
+    <div className={`pv-three${four ? ' four' : ''}`}>
       {items.map((x) => <div key={x.b}><b>{x.b}</b><span>{x.t}</span></div>)}
     </div>
   );
