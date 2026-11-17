@@ -189,8 +189,9 @@ qui, les termes relus ; toujours ni frais ni BSA), la FAQ de /lp, /pitch, le `<n
 /lp, /pitch et la fiche disent encore « Chief Fundraising Officer » seul.
 **Le portefeuille (17/11, Alexandre)** : Proplace, Maximum Insurance et Sosuites, opérées à 100 % par
 l'équipe, sont trois positions radar inaugurales du Fund I (le ticket radar du modèle, `tracks.radar.ticket_max`,
-pour 2 % chacune : `INAUGURAL_STAKE` dans LpPage.tsx et factsheet.py, les termes de ces positions, pas une
-sortie du modèle, qui n'a pas bougé). « Running today » devient « Portfolio » (accueil) et « In portfolio »
+pour 2 % chacune : `INAUGURAL` dans lib/fund.ts, lu par /lp et /pitch, et `INAUGURAL_STAKE` dans
+factsheet.py, à changer ensemble ; les termes de ces positions, pas une sortie du modèle, qui n'a pas bougé).
+/pitch dit les mêmes lignes que la fiche : sous « Proof of work » (Thesis.tsx) et dans « Conflicts policy ». « Running today » devient « Portfolio » (accueil) et « In portfolio »
 (/lp) : ces trois sociétés seules (`PORTFOLIO`, Founders.tsx ; WinHealth Group, Nexecur et S4BT en sortent,
 ce ne sont pas des participations ; ils restent dans `Powers` et la fiche p. 3), une pastille « Seed », un
 filtre par sous-moteur (les cartes hors filtre s'estompent). Accueil : la loi 02 dit « Maximum impact, right
@@ -207,7 +208,8 @@ Reporting ni l'onglet Reporting de la fiche (elle s'ouvre sur le mémo) ; « In 
 chaque rechargement (`/cibles/approach-map` répond `{ ok, stages }`, `loadApproachMap` lit `map` ou
 `approaches`) ; Sosuites n'est pas un dossier du fonds (`dealflow: false`, une carte à la place du cadre ;
 passer à true quand elle y entre). Le cockpit a besoin d'environ 1 080 px pour la liste et la fiche côte à
-côte : les onglets des sociétés sont au-dessus du cadre, pas à côté. Fiche : p. 2, l'entrée Growth dit
+côte : les boutons des sociétés (`aria-pressed`, pas des onglets ARIA) sont au-dessus du cadre, pas à côté,
+une ligne par société sous 1 000 px (le logo large de Maximum Insurance). Fiche : p. 2, l'entrée Growth dit
 « €80M+ » (aussi l'annexe de /pitch ; le modèle garde son plafond), une phrase sur ces trois positions dans
 « Conflicts and fallback » ; p. 3, une ligne sous l'introduction de « Proof of work ».
 **/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
@@ -340,7 +342,8 @@ l'accueil a une colonne « At 6.3%, the Deliveroo case » : les fondateurs ramen
 mêmes tours, mêmes préférences, calculée par `atFounderStake` de `founderMath.js` ; sous les
 moteurs, « Running today » : Proplace et Maximum Insurance, dont la corp dev, l'inbound et
 l'outbound sont entièrement gérés par les deux moteurs, Antoine, 06/11 ; 07/11, Alexandre (11e passe) :
-SIX petites cartes identiques (`RUN`, `.pv-runc`), trois colonnes, deux sous 900 px, une sous 600 px ;
+SIX petites cartes identiques (`RUN`, `.pv-runc`), trois colonnes, deux sous 900 px, une sous 600 px
+[17/11 : TROIS cartes, `PORTFOLIO`, une colonne sous 1 000 px, cf. « Le portefeuille (17/11) »] ;
 une légende des deux moteurs et de leurs sous-moteurs (`RUN_ENGINES`) ; chaque carte : le logo, un
 point vert, puis les mêmes trois sous-moteurs dans le même ordre (External : Corp dev ; Internal :
 Inbound, Outbound), allumés si la société s'en sert (`caps`), éteints sinon ; la description en

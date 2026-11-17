@@ -220,6 +220,9 @@
 .pv-h2 { margin: 0; font-size: clamp(32px, 3.4vw, 54px); line-height: 1.05; letter-spacing: -.03em;
   font-weight: 750; text-wrap: balance; }
 .pv-head .sub { margin: 0; font-size: 18.5px; line-height: 1.6; color: var(--muted); }
+/* 17/11 : la ligne des positions inaugurales sous « Proof of work » (/pitch), comme la fiche p. 3 */
+.pv-head .sub.pv-proof-in { margin-top: 6px; font-weight: 600; color: var(--blue-dk); }
+.pv-proof-in a { color: inherit; }
 .pv-sec.night .pv-kick { color: var(--blue-glow); }
 .pv-sec.night .pv-h2 { color: #fff; }
 .pv-sec.night .pv-head .sub { color: var(--night-txt); }
@@ -863,7 +866,6 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
 .pv-lp-perf .two-col-grid { gap: 24px !important; }
 .pv-lp-band { margin-bottom: 20px; }
 .pv-lp-notice { max-width: none; }
-.pv-run-cta { margin-top: 20px; }
 /* les sorties européennes */
 .pv-exit-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 40px; }
 .pv-exit-stats > div { padding: 24px 26px; border-radius: var(--r-lg); background: #fff; box-shadow: var(--sh-2); }
@@ -1246,20 +1248,24 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   background: rgba(255, 255, 255, .03); box-shadow: inset 0 0 0 1px var(--night-line); color: var(--night-txt); font: inherit; text-align: left;
   transition: background .2s ease, box-shadow .2s ease, color .2s ease; }
 .lp-live-cos button:hover { box-shadow: inset 0 0 0 1px rgba(159, 182, 207, .42); }
-.lp-live-cos button[aria-selected="true"] { background: rgba(159, 182, 207, .15); box-shadow: inset 0 0 0 1px rgba(159, 182, 207, .7); color: #fff; }
-.lp-live-cos img { display: block; width: auto; max-width: 100%; filter: brightness(0) invert(1); opacity: .55; transition: opacity .2s ease; }
-.lp-live-cos button[aria-selected="true"] img { opacity: 1; }
-.lp-live-cos small { font-size: 12.5px; font-weight: 650; letter-spacing: .01em; }
+.lp-live-cos button[aria-pressed="true"] { background: rgba(159, 182, 207, .15); box-shadow: inset 0 0 0 1px rgba(159, 182, 207, .7); color: #fff; }
+/* la hauteur du logo est un plafond (max-height en ligne) : il se réduit sans se déformer */
+.lp-live-cos img { display: block; width: auto; height: auto; max-width: 100%; min-width: 0; filter: brightness(0) invert(1); opacity: .55; transition: opacity .2s ease; }
+.lp-live-cos button[aria-pressed="true"] img { opacity: 1; }
+.lp-live-cos small { flex: none; font-size: 12.5px; font-weight: 650; letter-spacing: .01em; }
 .lp-live-pane { position: relative; height: clamp(620px, 86vh, 900px); overflow: hidden; border-radius: var(--r-xl); background: #fff; box-shadow: var(--sh-3); }
 .lp-live-pane iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .lp-live-wait { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; font-size: 15px; color: var(--muted); text-align: center; }
 .lp-live-off { display: grid; place-content: center; justify-items: center; gap: 14px; height: 100%; padding: 32px; text-align: center; }
-.lp-live-off img { display: block; width: auto; max-width: 70%; }
+.lp-live-off img { display: block; width: auto; height: auto; max-width: 70%; }
 .lp-live-off p { margin: 0; max-width: 34em; font-size: 16px; line-height: 1.55; color: var(--ink); }
 .lp-live-off .lp-live-soon { font-size: 14px; color: var(--muted); }
+/* sous 1 000 px, trois colonnes écrasaient le logo large de Maximum Insurance : une ligne par société */
+@media (max-width: 1000px) {
+  .lp-live-cos { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .lp-live-cos button { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 18px; }
+}
 @media (max-width: 600px) {
-  .lp-live-cos { gap: 8px; }
-  .lp-live-cos button { place-items: center; padding: 14px 10px; }
   .lp-live-cos small { display: none; }
   .lp-live-pane { height: 82vh; border-radius: var(--r-lg); }
 }
@@ -1992,10 +1998,10 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 @media (max-width: 760px) { .pv-roles li { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) { .pv-roles li { transition: none; } }
 
-/* ── Running today (07/11, 11e passe, Alexandre) : six petites cartes identiques ──────────────── */
+/* ── Portfolio (17/11 ; « Running today » du 07/11, 11e passe) : trois cartes identiques ──────── */
 /* Une légende dit les deux moteurs et leurs sous-moteurs ; chaque carte porte les mêmes trois
    sous-moteurs dans le même ordre, allumés quand la société s'en sert, éteints sinon. Trois colonnes,
-   deux sous 900 px, une sous 600 px (en deux colonnes, les logos larges devenaient illisibles). */
+   une sous 1 000 px (plus étroites, le logo large de Maximum Insurance devenait illisible). */
 .pv-run { margin-top: clamp(40px, 5vw, 72px); }
 .pv-run-head { margin-bottom: 12px; }
 .pv-run-key { display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 0 0 22px; padding: 0; list-style: none; font-size: 13.5px; color: var(--night-txt); }
@@ -2038,8 +2044,8 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 .pv-runc-p.on::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 50%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .2), transparent); animation: pv-runc-shine 5s ease-in-out infinite var(--d, 0s); }
 @keyframes pv-runc-shine { 0%, 70% { left: -60%; } 100% { left: 120%; } }
-@media (max-width: 760px) {
-  .pv-run-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@media (max-width: 1000px) { .pv-run-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; } }
+@media (max-width: 600px) {
   .pv-runc { gap: 12px; padding: 14px 16px 16px; }
   .pv-runc-top { height: 28px; }
   .pv-runc-eng { gap: 8px; padding-top: 12px; }

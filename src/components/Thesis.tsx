@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { eur, fund } from '../lib/fund';
+import { eur, fund, INAUGURAL, pct } from '../lib/fund';
 
 // LE TEXTE DE LA THÈSE (Antoine, 30/10, v3 du 05/11) : manifeste et sa chute,
 // quatre lois, deux moteurs, proof of work. L'accueil ET /pitch rendent ces
@@ -216,7 +216,8 @@ export function OurEdge({ onFollow }: { onFollow?: () => void }) {
   );
 }
 
-// Sociétés du GP, hors du fonds (la note « Outside the fund » a été retirée le 30/10).
+// Sociétés opérées par le GP. 17/11 (Alexandre) : trois positions radar inaugurales du Fund I (INAUGURAL,
+// lib/fund.ts), dites sous l'introduction comme sur la fiche p. 3 (factsheet.py) : les changer ensemble.
 const PROOF = [
   { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', wide: false,
     tagline: 'Autonomous AI operating system for corporate development & M&A.' },
@@ -236,6 +237,10 @@ export function ProofOfWork({ tint = false }: { tint?: boolean }) {
           <p className="sub">
             ProFund and the companies below are operated almost entirely by our in-house engines
             and agents:
+          </p>
+          <p className="sub pv-proof-in">
+            Included in Fund I as inaugural Seed Radar positions ({eur(INAUGURAL.ticket)} / {pct(INAUGURAL.stake)} each)
+            with live automated reporting on <a href="/dealflow/">profund.vc/dealflow</a>.
           </p>
         </div>
         <div className="pv-proof">

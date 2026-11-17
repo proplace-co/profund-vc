@@ -29,16 +29,18 @@ export default function LiveReporting() {
   return (
     <div className="lp-live">
       <h3 className="lp-live-h"><span className="pv-dot" />Live reporting &amp; deal flow</h3>
-      <div className="lp-live-cos" role="tablist" aria-label="Portfolio companies">
+      {/* des boutons à état (aria-pressed), pas des onglets ARIA : pas de contrat clavier à tenir. Le
+          message d'attente repart à chaque changement de société (le cadre est remonté). */}
+      <div className="lp-live-cos" role="group" aria-label="Portfolio companies">
         {PORTFOLIO.map((c) => (
-          <button key={c.name} type="button" role="tab" aria-selected={c.name === co.name} aria-controls="lp-live-pane"
-                  onClick={() => setSel(c.name)}>
-            <img src={c.logo} alt={c.name} style={{ height: c.h }} />
+          <button key={c.name} type="button" aria-pressed={c.name === co.name} aria-controls="lp-live-pane"
+                  onClick={() => { if (c.name !== co.name) { setSel(c.name); setLoaded(''); } }}>
+            <img src={c.logo} alt={c.name} style={{ maxHeight: c.h }} />
             <small>Seed · {c.caps.map((k) => RUNS[k]).join(', ')}</small>
           </button>
         ))}
       </div>
-      <div id="lp-live-pane" className="lp-live-pane" role="tabpanel" aria-label={`${co.name}, live file`}>
+      <div id="lp-live-pane" className="lp-live-pane" role="region" aria-label={`${co.name}, live file`}>
         {co.dealflow ? (
           <>
             {loaded !== co.name && <p className="lp-live-wait">Opening {co.name}’s live file…</p>}
@@ -47,7 +49,7 @@ export default function LiveReporting() {
           </>
         ) : (
           <div className="lp-live-off">
-            <img src={co.logo} alt={co.name} style={{ height: co.h * 1.4 }} />
+            <img src={co.logo} alt={co.name} style={{ maxHeight: co.h * 1.4 }} />
             <p>{co.d}</p>
             <p className="lp-live-soon">{co.name} is not in the live deal flow yet. Its file opens here as soon as it is.</p>
           </div>

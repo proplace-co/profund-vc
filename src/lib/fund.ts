@@ -214,6 +214,12 @@ export interface FundData {
 
 export const fund = raw as unknown as FundData;
 
+/** 17/11 (Alexandre) : Proplace, Maximum Insurance et Sosuites, opérées à 100 % par l'équipe, trois
+ *  positions radar inaugurales du Fund I : le ticket radar du modèle, pour 2 % chacune (les termes de ces
+ *  positions, pas une sortie du modèle). Lu par /lp et /pitch ; la même valeur dans scripts/factsheet.py
+ *  (INAUGURAL_STAKE) : les changer ensemble. */
+export const INAUGURAL = { ticket: fund.layers.seed.tracks!.radar.ticket_max, stake: 0.02 };
+
 export const LAYER_IDS: LayerId[] = ['seed', 'venture', 'growth'];
 export const CASE_IDS: CaseId[] = ['target', 'base', 'stress'];
 

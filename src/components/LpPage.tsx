@@ -8,7 +8,7 @@ import LiveReporting from './LiveReporting';
 import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
 import { Fold } from './Drawer';
 import { savedAccess } from '../lib/access';
-import { eur, eurRange, fund, mult, pct } from '../lib/fund';
+import { eur, eurRange, fund, INAUGURAL, mult, pct } from '../lib/fund';
 import { FACTSHEET_URL } from '../lib/links';
 
 // /lp — LA PAGE DES LPs. 06/11 (6) : plus de plan numéroté, un seul raisonnement qu'on suit
@@ -41,11 +41,9 @@ const FUND_SIZE = eur(F.commitments, 'tile');
 const PHONE = '+33 6 83 10 72 86';           // le même que la fiche PDF (factsheet.py, PHONE)
 const PHONE_TEL = 'tel:+33683107286';
 const TICKET = 10_000_000;                    // l'allocation discutée en fin de page (page, pas modèle)
-// 17/11 (Alexandre) : Proplace, Maximum Insurance et Sosuites, opérées à 100 % par l'équipe, trois tickets
-// radar inauguraux : le ticket radar du modèle, pour 2 % chacune (les termes de ces trois positions, pas
-// une sortie du modèle ; la même valeur dans factsheet.py, INAUGURAL_STAKE).
-const INAUGURAL_TICKET = L.seed.tracks!.radar.ticket_max;
-const INAUGURAL_STAKE = 0.02;
+// 17/11 (Alexandre) : les trois positions radar inaugurales (INAUGURAL, lib/fund.ts).
+const INAUGURAL_TICKET = INAUGURAL.ticket;
+const INAUGURAL_STAKE = INAUGURAL.stake;
 
 const DELIVEROO_PROSPECTUS = 'https://lexismarkettracker.lexisnexis.com/documents/0035/35079/167313/MT_Deliveroo%20plc_prospectus_22%20March%202021.pdf';
 // ── Les sources : numérotées, cliquables, listées en bas de page ──────────────

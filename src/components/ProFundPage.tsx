@@ -4,7 +4,7 @@ import DealFlowModal from './DealFlowModal';
 import { HeroVisual, Icon, Manifesto, OurEdge, ProofOfWork, SiteHeader } from './Thesis';
 import { CV_LOGOS, CollapseVisual, EveryStage, FounderTable, HowWeBack, WhatWeBack, founderNote } from './Founders';
 import { N_CLAUSES } from './Pact';
-import { CASE_IDS, LAYER_IDS, eur, eurRange, fund, mult, pct, rowId, type FundLayer, type LayerId } from '../lib/fund';
+import { CASE_IDS, INAUGURAL, LAYER_IDS, eur, eurRange, fund, mult, pct, rowId, type FundLayer, type LayerId } from '../lib/fund';
 import pipeline from '../data/pipeline.json';
 import { FACTSHEET_URL, MODEL_XLSX_URL } from '../lib/links';
 
@@ -189,7 +189,8 @@ function Alignment() {
         </div>
         <div className="pv-card">
           <h3>Conflicts policy</h3>
-          <p>Buybacks priced by an independent valuer. When a decision involves ProFund itself, our shares don’t vote; founder pay beyond budget and related-party deals need our approval. Conflicts of interest go to the LP advisory committee.</p>
+          {/* 17/11 (Alexandre) : la même phrase que la fiche p. 2 sur les positions inaugurales */}
+          <p>Buybacks priced by an independent valuer. When a decision involves ProFund itself, our shares don’t vote; founder pay beyond budget and related-party deals need our approval. Conflicts of interest go to the LP advisory committee. Inaugural Seed Radar stakes in GP-operated companies (Proplace, Maximum Insurance, Sosuites: {eur(INAUGURAL.ticket)} at {pct(INAUGURAL.stake)} each) are included at inception; any follow-on goes to the independent valuer and the LP advisory committee.</p>
         </div>
       </div>
       <div className="pv-ctas"><Link to="/terms" className="pv-link">Read the founders’ pact, {N_CLAUSES} clauses <Icon name="arrow" /></Link></div>
