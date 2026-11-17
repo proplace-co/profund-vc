@@ -124,7 +124,7 @@ const LAWS: { icon: IconName; t: string; d: string }[] = [
   },
   {
     icon: 'globe',
-    t: 'Maximum impact. Minimum headcount.',
+    t: 'Maximum impact. Right headcount.',   // 17/11 (Alexandre), comme l'accueil et la fiche
     d: 'We invest in integral systems solving massive, painful problems in the world’s largest markets, operated with near-zero marginal labor.',
   },
   {

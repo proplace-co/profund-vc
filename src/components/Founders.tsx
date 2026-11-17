@@ -60,10 +60,10 @@ export function Say({ id, tone, title, lead, children }: {
   );
 }
 
-/** Trois ou quatre chiffres, sans carte : un filet, le chiffre, ce qu'il veut dire. */
-export function Numbers({ items, four = false }: { items: { b: string; t: ReactNode }[]; four?: boolean }) {
+/** Deux, trois ou quatre chiffres, sans carte : un filet, le chiffre, ce qu'il veut dire. */
+export function Numbers({ items, four = false, two = false }: { items: { b: string; t: ReactNode }[]; four?: boolean; two?: boolean }) {
   return (
-    <div className={`pv-three${four ? ' four' : ''}`}>
+    <div className={`pv-three${four ? ' four' : two ? ' two' : ''}`}>
       {items.map((x) => <div key={x.b}><b>{x.b}</b><span>{x.t}</span></div>)}
     </div>
   );
@@ -290,9 +290,10 @@ export function TheFew() {
 // (les points restent) et une onde qui le balaie d'un coup ; la catégorie se gagne sous les yeux :
 // une foule de concurrents au coude à coude, puis le leader s'envole et la traîne retombe (loi de
 // puissance plus raide : le leader pèse plus que tous les autres réunis).
+// 17/11 (Alexandre) : « right headcount », plus « minimum » (le dessin garde ses trois lignes).
 const VF_ZONES = [
   { n: '01', w: 23, at: 0.3, t: 'Visionary founders.', d: 'Obsessive from day one. They direct, the machine executes.' },
-  { n: '02', w: 33, at: 1.2, t: 'Maximum impact, minimum headcount.', d: 'Whole markets, with near-zero marginal labor.' },
+  { n: '02', w: 33, at: 1.2, t: 'Maximum impact, right headcount.', d: 'Whole markets, with near-zero marginal labor.' },
   { n: '03', w: 34, at: 2.8, t: 'Self-improving systems.', d: 'Closed loops that compound with every run.' },
   { n: '04', w: 30, at: 5.5, t: 'Category leaders.', d: 'Built to dominate their category. The power law rewards the leader.' },
 ];
@@ -582,55 +583,15 @@ export function WhatWeBack() {
 // minds, directing the most autonomous machines ») ; « Perfectly aligned » revient.
 // 10/11 (3) : les agents, un soutien proactif : ils proposent chaque jour, le fondateur accepte, modifie
 // ou décline en un clic, sur quatre terrains (`tags`).
+// 17/11 (Alexandre) : le sparring partner et toute la partie « How we raise » (la courbe, les trois
+// mouvements, les tickets) quittent l'accueil ; restent deux rôles (historique : v3.39).
 const ROLES: { t: string; b: string; d: string; tags?: string[] }[] = [
   { t: 'Your Chief Fundraising Officer.', b: 'Perfectly aligned.', d: 'Every share you don’t issue protects your stake, and ours.' },
-  { t: 'Your sparring partner.', b: 'The hard questions on every big call,', d: 'before the market asks them. The last word is yours.' },
   { t: 'Our agents, in symbiosis with yours.', b: 'Proactive support, every day.', d: 'Targets, investors, posts and leads, brought to you before you ask. Accept, edit or decline each one in a click.',
     tags: ['Corporate development', 'Fundraising', 'Inbound', 'Outbound'] },
 ];
 
-const MOVES: { t: string; d: string }[] = [
-  { t: 'A clean cap table before every round.', d: 'We buy out angels and early funds, with your agreement.' },
-  { t: 'Acquisitions without dilution.', d: 'Our External AI Growth Engine finds the targets. We help you structure the financing.' },
-  { t: 'The largest rounds, one line on your cap table.', d: 'The largest funds lead. We stay at your side, with one SPV for our co-investors.' },
-];
-
-/** Lever en position de force : sans réserve, on lève au creux, à court de cash ; la piste préparée
- *  avec nous, on lève au point d'inflexion. 10/11 (Alexandre) : on ne lève plus la dette soi-même,
- *  on conseille (« Where debt can help, we advise ») ; plus de « Bank debt carries you ». */
-function RaiseChart() {
-  const [ref, seen] = useInView<HTMLDivElement>();
-  const d = 'M40 252 C140 240 240 198 320 178 C370 166 400 198 440 206 C520 222 600 150 700 104 C800 60 880 44 960 34';
-  return (
-    <div ref={ref} className={`pv-raise${seen ? ' in' : ''}`}>
-      <div className="pv-raise-txt">
-        <span className="n">01</span>
-        <h3>Raise from strength.</h3>
-        <p>We plan your runway and your rounds with you, so you raise at your inflection, not when cash runs out. Where debt can help, we advise.</p>
-      </div>
-      <div className="pv-raise-plot" aria-hidden="true">
-        <svg viewBox="0 0 1000 300" preserveAspectRatio="none">
-          <path className="area" d={`${d} L960 300 L40 300 Z`} />
-          <path className="curve" d={d} vectorEffect="non-scaling-stroke" />
-          <line className="mk" x1="440" y1="206" x2="440" y2="300" vectorEffect="non-scaling-stroke" />
-          <line className="mk hi" x1="700" y1="104" x2="700" y2="300" vectorEffect="non-scaling-stroke" />
-        </svg>
-        <span className="pv-raise-run"><i />Your runway, planned ahead</span>
-        <span className="pv-raise-dot weak" />
-        <span className="pv-raise-dot strong" />
-        <span className="pv-raise-lab weak">Out of cash: the usual moment to raise</span>
-        <span className="pv-raise-lab strong">Your inflection: you raise here</span>
-      </div>
-      <ul className="pv-raise-key">
-        <li><i className="weak" />Out of cash: the usual moment to raise</li>
-        <li><i className="strong" />Your inflection: you raise here, from strength</li>
-      </ul>
-    </div>
-  );
-}
-
 export function CapitalStack() {
-  const [ref, seen] = useInView<HTMLOListElement>();
   const [rolesRef, rolesIn] = useInView<HTMLOListElement>();
   return (
     <section className="pv-sec pv-cfo-sec" id="capital">
@@ -648,22 +609,6 @@ export function CapitalStack() {
             </li>
           ))}
         </ol>
-        <p className="pv-kick pv-cfo-sub">How we raise</p>
-        <RaiseChart />
-        <ol ref={ref} className={`pv-moves${seen ? ' in' : ''}`}>
-          {MOVES.map((m, i) => (
-            <li key={m.t} style={{ ['--d' as string]: `${0.1 + i * 0.14}s` }}>
-              <span className="n">{String(i + 2).padStart(2, '0')}</span>
-              <h3>{m.t}</h3>
-              <p>{m.d}</p>
-            </li>
-          ))}
-        </ol>
-        <div className="pv-tickets">
-          <span className="pv-tickets-k">Our cheques</span>
-          {STAGES.map((st) => <span key={st.layer}><b>{st.layer}</b>{st.ticket}</span>)}
-          <span><b>Beyond</b>With SPVs</span>
-        </div>
       </div>
     </section>
   );
@@ -959,9 +904,10 @@ export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: bool
         <div>
           <p className="pv-kick">Founding Partner</p>
           <h2 className="pv-h2">Alexandre Busson</h2>
+          {/* 17/11 (Alexandre) : le parcours tel qu'il l'écrit (/lp seule ; /pitch garde le sien) */}
           <p className="pv-team-txt">
-            M&amp;A Director at Leboncoin, LBO at Ardian (ex-AXA PE),
-            Senior Associate at Partech Ventures, Google. Three exits at 10×, 20× and 19× before the fund.
+            M&amp;A Director at Leboncoin, LBO at Ardian, Ventures at Partech Ventures,
+            Key account management at Google. Three exits at 10×, 20× and 19× before the fund.
           </p>
           {lp && (
             <ul className="pv-checks sm">
@@ -1026,26 +972,31 @@ const ENGINES: { icon: IconName; name: string; d: string; steps: { k: string; d:
 // pas de corp dev ; Sosuites inbound ; WinHealth Group outbound et corp dev ; Nexecur et S4BT corp dev
 // (logo Nexecur sans celui du groupe). Ne jamais allumer un sous-moteur que la société ne fait pas
 // tourner. La description de chaque société reste en infobulle.
+// 17/11 (Alexandre) : « Running today » devient le PORTEFEUILLE (« Portfolio » sur l'accueil, « In
+// portfolio » sur /lp) : les trois sociétés Seed que l'équipe opère à 100 % et dont ProFund détient 2 %
+// (Proplace, Maximum Insurance, Sosuites). WinHealth Group, Nexecur et S4BT quittent la grille : ce ne
+// sont pas des participations. Un filtre par sous-moteur : les cartes qui ne le font pas tourner
+// s'estompent, la grille ne bouge pas.
 type RunCap = 'corpdev' | 'inbound' | 'outbound';
 const RUN_ENGINES: { icon: IconName; k: string; name: string; caps: { id: RunCap; t: string }[] }[] = [
   { icon: 'radar', k: 'External', name: 'External AI Growth Engine', caps: [{ id: 'corpdev', t: 'Corp dev' }] },
   { icon: 'bot', k: 'Internal', name: 'Internal AI Growth Engine', caps: [{ id: 'inbound', t: 'Inbound' }, { id: 'outbound', t: 'Outbound' }] },
 ];
 const RUN_LABEL: Record<RunCap, string> = { corpdev: 'corporate development', inbound: 'inbound', outbound: 'outbound' };
-/** `h` : la hauteur du logo en px (les logos n'ont pas les mêmes proportions). */
-const RUN: { name: string; logo: string; href: string; h: number; d: string; caps: RunCap[] }[] = [
+/** `h` : la hauteur du logo en px (les logos n'ont pas les mêmes proportions). `dealflow` : la société
+ *  est un dossier du cockpit du fonds (proplace.co/cibles/profund-vc), donc `?sel=&only=` ouvre sa fiche
+ *  (/lp, LiveReporting.tsx). Sosuites n'y est pas au 17/11 : passer à true quand elle y entre. */
+export type PortfolioCo = { name: string; logo: string; href: string; h: number; d: string; caps: RunCap[]; dealflow: boolean };
+export const PORTFOLIO: PortfolioCo[] = [
   { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', h: 27,
-    d: 'Autonomous AI operating system for corporate development and M&A.', caps: ['corpdev', 'inbound', 'outbound'] },
+    d: 'Autonomous AI operating system for corporate development and M&A.', caps: ['corpdev', 'inbound', 'outbound'], dealflow: true },
   { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', h: 14,
-    d: 'Travel insurance and duty of care for companies and their teams abroad.', caps: ['inbound', 'outbound'] },
+    d: 'Travel insurance and duty of care for companies and their teams abroad.', caps: ['inbound', 'outbound'], dealflow: true },
   { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', h: 17,
-    d: 'AI-assisted personalised art prints to share.', caps: ['inbound'] },
-  { name: 'WinHealth Group', logo: '/portfolio-winhealth.png', href: 'https://winhealthgroup.com', h: 23,
-    d: 'Swiss broker in international health insurance for expatriates and their families.', caps: ['corpdev', 'outbound'] },
-  { name: 'Nexecur', logo: '/ref-nexecur.png', href: 'https://www.nexecur.fr', h: 18,
-    d: 'Home and business alarms with remote monitoring.', caps: ['corpdev'] },
-  { name: 'S4BT', logo: '/ref-s4bt.svg', href: 'https://sforbt.com', h: 34,
-    d: 'Solutions for Business Travel: booking, payment and travel technology.', caps: ['corpdev'] },
+    d: 'AI-assisted personalised art prints to share.', caps: ['inbound'], dealflow: false },
+];
+const RUN_FILTERS: { id: RunCap | null; t: string }[] = [
+  { id: null, t: 'All' }, { id: 'corpdev', t: 'Corp dev' }, { id: 'inbound', t: 'Inbound' }, { id: 'outbound', t: 'Outbound' },
 ];
 
 // Les mêmes moteurs, vus des LPs (06/11) : le fonds s'en sert pour trouver ses sociétés,
@@ -1066,12 +1017,14 @@ const ENGINES_LP: typeof ENGINES = [
     ] },
 ];
 
-/** La preuve : les sociétés que les deux moteurs font tourner aujourd'hui (accueil et /lp). */
-export function EnginesRunning() {
+/** Le portefeuille : les sociétés Seed que les deux moteurs font tourner (accueil « Portfolio », /lp
+ *  « In portfolio »), filtrables par sous-moteur. `children` : une note sous la grille (/lp). */
+export function EnginesRunning({ kick = 'Portfolio', children }: { kick?: string; children?: ReactNode }) {
+  const [only, setOnly] = useState<RunCap | null>(null);
   return (
     <div className="pv-run">
       <div className="pv-run-head">
-        <p className="pv-kick">Running today</p>
+        <p className="pv-kick">{kick}</p>
         <p>Live on our two engines, every day.</p>
       </div>
       <ul className="pv-run-key">
@@ -1079,13 +1032,21 @@ export function EnginesRunning() {
           <li key={e.k}><Icon name={e.icon} /><b>{e.name}</b><span>{e.caps.map((x) => x.t).join(', ')}</span></li>
         ))}
       </ul>
+      <div className="pv-run-filter" role="group" aria-label="Show the companies running">
+        {RUN_FILTERS.map((f) => (
+          <button key={f.t} type="button" aria-pressed={only === f.id} onClick={() => setOnly(f.id)}>
+            {f.t}<span>{f.id ? PORTFOLIO.filter((c) => c.caps.includes(f.id!)).length : PORTFOLIO.length}</span>
+          </button>
+        ))}
+      </div>
       <div className="pv-run-grid">
-        {RUN.map((c, i) => (
-          <a key={c.name} className="pv-runc" href={c.href} target="_blank" rel="noopener noreferrer" title={c.d}
-             aria-label={`${c.name}: ${c.caps.map((k) => RUN_LABEL[k]).join(', ')}, on our engines`}>
+        {PORTFOLIO.map((c, i) => (
+          <a key={c.name} className={`pv-runc${only && !c.caps.includes(only) ? ' off' : ''}`} href={c.href}
+             target="_blank" rel="noopener noreferrer" title={c.d}
+             aria-label={`${c.name}, seed: ${c.caps.map((k) => RUN_LABEL[k]).join(', ')}, on our engines`}>
             <span className="pv-runc-top">
               <img src={c.logo} alt="" style={{ maxHeight: `min(${c.h}px, 100%)` }} />
-              <span className="pv-runc-dot" aria-hidden="true" />
+              <span className="pv-runc-st" aria-hidden="true">Seed<span className="pv-runc-dot" /></span>
             </span>
             <span className="pv-runc-eng" aria-hidden="true">
               {RUN_ENGINES.map((e) => (
@@ -1103,6 +1064,7 @@ export function EnginesRunning() {
           </a>
         ))}
       </div>
+      {children}
     </div>
   );
 }

@@ -370,7 +370,8 @@ function tierRows(id: LayerId): [string, string][] {
     ['Ticket', `${eurRange(x.ticket_min, F.company_cap)} from the fund, up to ${eur(F.company_max_with_spv, 'tile')} with SPVs`],
     ['Stage', x.stage],
     ['Role', 'Direct: blocks from end-of-life funds and fresh growth rounds. Our breakouts: blocks bought in our winners'],
-    ['Entry post', eurRange(x.entry_post_min, x.entry_post_max, 'val')],
+    // 17/11 (Alexandre) : pas de plafond affiché en Growth (les secondaires tardifs), comme la fiche p. 2
+    ['Entry post', `${eur(x.entry_post_min, 'val')}+`],
     ['Companies', `${x.companies} direct entries + ${x.breakouts} of our breakouts, ${eurRange(x.position_range[0], x.position_range[1], 'tile', '–')} each`],
     ['Invested', eur(x.invested)],
     ['Target gross', `${mult(x.moic.base)} MOIC (${mult(x.moic.target)} in the upside), ${pct(x.gross_irr.base)} gross IRR over ${Math.min(...GROWTH_HOLDS)}–${Math.max(...GROWTH_HOLDS)} year holds`],

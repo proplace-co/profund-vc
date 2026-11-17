@@ -23,6 +23,7 @@ src/
     TermsPage.tsx       route /terms — le pacte, page sombre sans barre du haut (texte dans Pact.tsx)
     CalculatorPage.tsx  route /calculator — « Run your numbers » ; exporte `Calculator` (aussi dans l'accueil)
     LpPage.tsx          route /lp — la page LP, fermée par une porte (LpGate) sauf accès accepté ou ?gp
+    LiveReporting.tsx   /lp « Live reporting & deal flow » : les 3 sociétés du portefeuille + le cockpit (iframe)
     SubPage.tsx         coquille de /terms, /calculator, /lp
     LeadForm.tsx        le formulaire de /lp → email préparé
     ProFundPage.tsx     route /pitch — le deck LP, une section par slide + annexe
@@ -186,6 +187,29 @@ qui, les termes relus ; toujours ni frais ni BSA), la FAQ de /lp, /pitch, le `<n
 écrit « banks » ou « lenders ». La thèse de l'accueil et de /lp dit « …will be built by few people. »
 (sans « very ») et tient sur deux lignes au-dessus de 600 px (`#few .pv-say-h`). « Their votes move to your side » ne se dit plus que dans les règles.
 /lp, /pitch et la fiche disent encore « Chief Fundraising Officer » seul.
+**Le portefeuille (17/11, Alexandre)** : Proplace, Maximum Insurance et Sosuites, opérées à 100 % par
+l'équipe, sont trois positions radar inaugurales du Fund I (le ticket radar du modèle, `tracks.radar.ticket_max`,
+pour 2 % chacune : `INAUGURAL_STAKE` dans LpPage.tsx et factsheet.py, les termes de ces positions, pas une
+sortie du modèle, qui n'a pas bougé). « Running today » devient « Portfolio » (accueil) et « In portfolio »
+(/lp) : ces trois sociétés seules (`PORTFOLIO`, Founders.tsx ; WinHealth Group, Nexecur et S4BT en sortent,
+ce ne sont pas des participations ; ils restent dans `Powers` et la fiche p. 3), une pastille « Seed », un
+filtre par sous-moteur (les cartes hors filtre s'estompent). Accueil : la loi 02 dit « Maximum impact, right
+headcount. » (aussi `LAWS` et la fiche p. 1) ; le sparring partner et toute la partie « How we raise » (la
+courbe, les mouvements, les tickets, leurs styles) sont retirés. /lp : plus de bouton « Follow our deal flow
+live » ni de capture sous le héros ; « Aligned. » et WinHealth Group quittent « How a focused fund wins » ;
+« What is right for them is what pays us. » ; le parcours du GP tel qu'Alexandre l'écrit (/pitch garde le
+sien) ; sous le portefeuille, la note (opérées à 100 %, 2 %) puis `LiveReporting` : les trois sociétés en
+onglets au-dessus du cockpit du deal flow, Proplace d'abord. RÈGLE : AUCUN code du cockpit ni de /dealflow
+n'est modifié ; on prend son lien profond existant `?sel=&only=` (celui de l'email du matin), en anglais
+(`/carte/`), lecture seule. proplace.co/cibles/profund-vc redirige vers le même jeton que `dealFlowPreview`.
+Limites du cockpit au 17/11, à corriger côté monorepo si Alexandre le demande : aucun lien n'ouvre la vue
+Reporting ni l'onglet Reporting de la fiche (elle s'ouvre sur le mémo) ; « In portfolio » est vide après
+chaque rechargement (`/cibles/approach-map` répond `{ ok, stages }`, `loadApproachMap` lit `map` ou
+`approaches`) ; Sosuites n'est pas un dossier du fonds (`dealflow: false`, une carte à la place du cadre ;
+passer à true quand elle y entre). Le cockpit a besoin d'environ 1 080 px pour la liste et la fiche côte à
+côte : les onglets des sociétés sont au-dessus du cadre, pas à côté. Fiche : p. 2, l'entrée Growth dit
+« €80M+ » (aussi l'annexe de /pitch ; le modèle garde son plafond), une phrase sur ces trois positions dans
+« Conflicts and fallback » ; p. 3, une ligne sous l'introduction de « Proof of work ».
 **/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
 (`CollapseVisual`) et la vision (`WhatWeBack`) de l'accueil (« The kingmakers » est remplacé ; les
 chiffres sourcés de Lovable et Bessemer restent sous l'implosion ; les quatre cartes `FourLaws` quittent

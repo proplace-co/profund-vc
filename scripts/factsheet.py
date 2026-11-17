@@ -73,7 +73,10 @@ PAGES = 4
 MONTHS = ("January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December")
 
-# Les societes que le GP opere avec ses agents, hors du fonds (detenues a 100 %).
+# Les societes que le GP opere avec ses agents. 17/11 (Alexandre) : trois positions radar inaugurales du
+# Fund I, le ticket radar du modele pour INAUGURAL_STAKE chacune (les termes de ces trois positions, pas
+# une sortie du modele ; la meme valeur sur /lp, LpPage.tsx), avec un reporting automatise en direct.
+INAUGURAL_STAKE = 0.02
 # Memes accroches que l'accueil (src/components/Thesis.tsx). Maximum Insurance
 # n'existe qu'en SVG cote site : reportlab ne lit pas le SVG, d'ou sa version
 # PNG dans scripts/assets/.
@@ -406,7 +409,7 @@ LAWS = (
     ("crown", "Visionary founders",
      "We back obsessive visionaries from Day 1. Founders who don't build org charts, but "
      "iterate directly with AI until the machine mirrors their exact ambition."),
-    ("globe", "Maximum impact. Minimum headcount.",
+    ("globe", "Maximum impact. Right headcount.",       # 17/11 (Alexandre) : « right », plus « minimum »
      "We invest in integral systems solving massive, painful problems in the world's largest "
      "markets, operated with near-zero marginal labor."),
     ("loop", "Self-improving systems",
@@ -595,8 +598,9 @@ def construction_rows():
         ("Role", "Lead + radar tickets", "Direct at the inflection, or buyback of angels and leavers",
          "Direct: blocks from end-of-life funds and fresh growth rounds. "
          "Our breakouts: blocks bought in our winners"),
+        # 17/11 (Alexandre) : Growth sans plafond affiche, pour ne pas brider les secondaires tardifs
         ("Entry post", rng(s["entry_post_min"], s["entry_post_max"]),
-         rng(v["entry_post_min"], v["entry_post_max"]), rng(g["entry_post_min"], g["entry_post_max"])),
+         rng(v["entry_post_min"], v["entry_post_max"]), f"{eur(g['entry_post_min'], 'tile')}+"),
         ("Companies", f"{lead['companies']} leads + {radar['companies']} radar",
          f"{v['companies']} direct entries, {rng(*v['first_cheque_range'])} first cheques",
          f"{g['companies']} direct entries + {g['breakouts']} of our breakout{'s' if g['breakouts'] > 1 else ''}, "
@@ -706,7 +710,11 @@ def page_two(F):
         "buybacks; founder pay beyond budget, related-party deals and buybacks of founder shares need our "
         "director's approval. Fund-side conflicts go to the LP advisory committee. Fraud, gross misconduct, a "
         "material breach of the pact, a debt payment default not cured within 30 days or insolvency end the voting "
-        "agreement and restore a classic lead's consents."))
+        "agreement and restore a classic lead's consents. "
+        # 17/11 (Alexandre) : les trois positions inaugurales operees par le GP
+        f"Inaugural Seed Radar stakes in GP-operated companies (Proplace, Maximum Insurance, Sosuites: "
+        f"{eur(LAYERS['seed']['tracks']['radar']['ticket_max'])} at {pct(INAUGURAL_STAKE)} each) are included at "
+        "inception; any follow-on goes to the independent valuer and the LP advisory committee."))
     hb = F.hpara(W - 72, txt, 9.6, "reg", 1.5) + 30
     F.rr(M, y, W, hb, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
     F.rr(M + 14, y + (hb - 30) / 2, 30, 30, 9, fill=BLUE_SOFT)
@@ -830,7 +838,11 @@ def page_three(F):
     title(F, M, y + 17, W, "We live what we back.", 18)
     y += 44
     y += F.para(M, y, W, x("ProFund and the companies below are "
-                           "operated almost entirely by our in-house engines and agents:"), 10, "reg", MUTED, 1.45) + 10
+                           "operated almost entirely by our in-house engines and agents:"), 10, "reg", MUTED, 1.45) + 3
+    # 17/11 (Alexandre) : les trois sont des positions radar inaugurales du Fund I
+    y += F.para(M, y, W, x(f"Included in Fund I as inaugural Seed Radar positions "
+                           f"({eur(LAYERS['seed']['tracks']['radar']['ticket_max'])} / {pct(INAUGURAL_STAKE)} each) "
+                           f"with live automated reporting on {DEALFLOW_TXT}."), 10, "semi", BLUE_DK, 1.45) + 10
     gap = 12.0
     pcw = (W - 2 * gap) / 3
     pch = 60.0

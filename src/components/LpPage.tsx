@@ -2,8 +2,9 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import DealFlowModal from './DealFlowModal';
 import { CONTACT } from './LeadForm';
-import { HeroVisual, Icon, type IconName } from './Thesis';
+import { Icon, type IconName } from './Thesis';
 import { CollapseVisual, EnginesForLps, EnginesRunning, Numbers, Say, TheTeam, WhatWeBack } from './Founders';
+import LiveReporting from './LiveReporting';
 import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
 import { Fold } from './Drawer';
 import { savedAccess } from '../lib/access';
@@ -40,6 +41,11 @@ const FUND_SIZE = eur(F.commitments, 'tile');
 const PHONE = '+33 6 83 10 72 86';           // le même que la fiche PDF (factsheet.py, PHONE)
 const PHONE_TEL = 'tel:+33683107286';
 const TICKET = 10_000_000;                    // l'allocation discutée en fin de page (page, pas modèle)
+// 17/11 (Alexandre) : Proplace, Maximum Insurance et Sosuites, opérées à 100 % par l'équipe, trois tickets
+// radar inauguraux : le ticket radar du modèle, pour 2 % chacune (les termes de ces trois positions, pas
+// une sortie du modèle ; la même valeur dans factsheet.py, INAUGURAL_STAKE).
+const INAUGURAL_TICKET = L.seed.tracks!.radar.ticket_max;
+const INAUGURAL_STAKE = 0.02;
 
 const DELIVEROO_PROSPECTUS = 'https://lexismarkettracker.lexisnexis.com/documents/0035/35079/167313/MT_Deliveroo%20plc_prospectus_22%20March%202021.pdf';
 // ── Les sources : numérotées, cliquables, listées en bas de page ──────────────
@@ -274,10 +280,8 @@ export default function LpPage() {
 }
 
 function LpContent() {
-  // Le deal flow live : directement si ce navigateur en a l'accès (LP accepté), sinon la
-  // candidature (popup). Un LP non accepté n'y accède jamais : /dealflow vérifie le jeton.
-  const [open, setOpen] = useState(false);
-  const follow = () => { if (savedAccess()) window.location.href = '/dealflow/'; else setOpen(true); };
+  // 17/11 (Alexandre) : plus de bouton « Follow our deal flow live » sur /lp ; le deal flow se lit dans
+  // la page (LiveReporting, sous le portefeuille), /dealflow reste ouvert aux LPs acceptés.
   useEffect(() => { if (!window.location.hash) window.scrollTo(0, 0); }, []);
   const mailto = `mailto:${CONTACT}?subject=${encodeURIComponent('ProFund Fund I · indicative interest')}`;
   return (
@@ -288,11 +292,10 @@ function LpContent() {
           <p className="lp-hero-eye">Fund I · {FUND_SIZE} · EuVECA pre-marketing</p>
           <h1 className="lp-hero-h">Backing AI-native teams building self-improving AI systems.</h1>
           <p className="lp-hero-lead">A few people now build what used to take thousands. We stand beside them, on terms that finally say so.</p>
+          {/* 17/11 : un seul bouton, plus la capture du deal flow dessous */}
           <div className="pv-ctas">
             <a href="#allocation" className="pv-btn light">Talk to the Founding Partner <Icon name="arrow" /></a>
-            <button type="button" className="pv-btn ghost-light" onClick={follow}><span className="pv-dot" />Follow our deal flow live</button>
           </div>
-          <div className="lp-hero-shot"><HeroVisual /></div>
         </div>
       </header>
 
@@ -337,15 +340,15 @@ function LpContent() {
           pas sur la taille : on gagne en arrivant les premiers, en étant utiles, en étant alignés. */}
       <Say id="win" tone="night" title="How a focused fund wins the best founders."
         lead={<p className="pv-say-p">Not on cheque size. Where size does not help.</p>}>
-        <Numbers items={[
+        {/* 17/11 (Alexandre) : « Aligned. » et WinHealth Group retirés */}
+        <Numbers two items={[
           { b: 'First.', t: 'Our deal flow engine tracks every European seed round, every week, and flags the inflection before it becomes consensus.' },
-          { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace, Maximum Insurance, Sosuites and WinHealth Group.' },
-          { b: 'Aligned.', t: 'The terms the best founders negotiate, from their first cheque. In writing, in a public pact.' },
+          { b: 'Useful.', t: 'Each founder gets an in-house Chief Fundraising Officer, and the two AI engines that already run Proplace, Maximum Insurance and Sosuites.' },
         ]} />
         <p className="pv-fine pv-three-src">The largest funds lead the largest rounds. We stay at the founder’s side, with SPVs that keep that upside for our LPs.</p>
       </Say>
 
-      <Say id="returns" title="What is right for them is what pays you."
+      <Say id="returns" title="What is right for them is what pays us."
         lead={<p className="pv-say-p">Every share a company does not issue protects the founders’ stake, and ours. The less equity a team needs, the more we both hold when it becomes a unicorn. One company can carry the fund. And if no unicorn comes, the fund still returns more than your capital.</p>}>
         <Numbers four items={[
           { b: mult(TARGET.net_tvpi), t: 'Target net TVPI' },
@@ -356,12 +359,16 @@ function LpContent() {
         <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values; our best company, sold for {eur(UPSIDE.largest_exit, 'val')} with {pct(FR.stake_at_exit, 1)} at exit, returns {mult(FR.multiple_of_fund)} the fund on its own, and a {eur(FR.fund_returning_exit, 'val')} sale already returns it. Stress: every exit at {pct(C.stress.exit_mult)}, {mult(C.stress.net_tvpi)}. The target assumes our best company grows on bank debt; if it also sold {eur(FM.paths[1].equity, 'tile')} of equity along the way: {mult(UNI_SAME.net_tvpi)}. No company has followed this path yet.</p>
       </Say>
 
+      {/* 17/11 (Alexandre) : les trois positions radar inaugurales, le portefeuille (« In portfolio »),
+          puis leur fiche en direct dans le cockpit du deal flow (LiveReporting.tsx) */}
       <Say id="engines" tone="night" title="We run on what we back."
-        lead={<p className="pv-say-p">This is a first fund, and we will not pretend otherwise. What we can show you is how we work: a small team, two AI engines that already run real companies, and every company we review, every evening, in a live deal flow you can watch yourself. Not once a quarter.</p>}>
-        <div className="lp-run"><EnginesRunning /></div>
-        <div className="pv-ctas pv-run-cta">
-          <button type="button" className="pv-btn light" onClick={follow}><span className="pv-dot" />Follow our deal flow live</button>
+        lead={<p className="pv-say-p">This is a first fund, and we will not pretend otherwise. What we can show you is how we work: three inaugural Seed Radar positions (Proplace, Maximum Insurance and Sosuites: {eur(INAUGURAL_TICKET)} for {pct(INAUGURAL_STAKE)} each, included in Fund I from Day 1, with live automated reporting), and every Seed, Venture, and Growth company we review, every evening, in our live deal flow.</p>}>
+        <div className="lp-run">
+          <EnginesRunning kick="In portfolio">
+            <p className="lp-run-note">Proplace, Maximum Insurance and Sosuites are 100% operated by ProFund, which holds {pct(INAUGURAL_STAKE)} of each.</p>
+          </EnginesRunning>
         </div>
+        <LiveReporting />
       </Say>
       <TheTeam lp tint={false} />
 
@@ -490,7 +497,6 @@ function LpContent() {
               <a className="lp-contact-line" href={PHONE_TEL}><Icon name="phone" />{PHONE}</a>
               <a className="lp-contact-line" href={`mailto:${CONTACT}`}><Icon name="mail" />{CONTACT}</a>
               <a className="pv-btn light lp-contact-go" href={mailto}>Register your interest <Icon name="arrow" /></a>
-              <button type="button" className="pv-btn ghost-light lp-contact-go" onClick={follow}><span className="pv-dot" />Follow our deal flow live</button>
               <a className="lp-contact-doc" href={FACTSHEET_URL} download><Icon name="file" />Fact sheet (PDF)</a>
             </div>
           </div>
@@ -519,7 +525,6 @@ function LpContent() {
           <p className="pv-fine">Fund figures: the ProFund fund model, the same as the fact sheet and the Excel model; a model, not a track record. Listings and exits: each figure links to its own source.</p>
         </div>
       </section>
-      <DealFlowModal lp open={open} onClose={() => setOpen(false)} />
     </div>
   );
 }
