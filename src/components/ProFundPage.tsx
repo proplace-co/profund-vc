@@ -551,9 +551,10 @@ export function PerformanceTables() {
 
 // Le modèle Excel (scripts/fund_xlsx.py) et la fiche PDF (scripts/factsheet.py),
 // régénérés depuis fund.json ; leurs ?v= vivent dans src/lib/links.ts.
-export function Downloads({ deck = false }: { deck?: boolean }) {
+/** `compact` : en petit, sur une ligne, sur fond de nuit (héros de /lp, 17/11). */
+export function Downloads({ deck = false, compact = false }: { deck?: boolean; compact?: boolean }) {
   return (
-    <div className="pv-dls">
+    <div className={`pv-dls${compact ? ' compact' : ''}`}>
       <a className="pv-dl" href={MODEL_XLSX_URL} download>
         <span className="pv-dl-ic"><Icon name="sheet" /></span>
         <span><b>Fund model (Excel)</b><small>Every line, cash flow and the waterfall, in live formulas</small></span>

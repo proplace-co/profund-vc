@@ -212,6 +212,14 @@ côte : les boutons des sociétés (`aria-pressed`, pas des onglets ARIA) sont a
 une ligne par société sous 1 000 px (le logo large de Maximum Insurance). Fiche : p. 2, l'entrée Growth dit
 « €80M+ » (aussi l'annexe de /pitch ; le modèle garde son plafond), une phrase sur ces trois positions dans
 « Conflicts and fallback » ; p. 3, une ligne sous l'introduction de « Proof of work ».
+**17/11 (2, Alexandre : « ça alourdit pour rien », « trop visible »)** : le portefeuille (accueil et /lp)
+perd sa légende des moteurs et son filtre, chaque carte dit déjà ses sous-moteurs. /lp : « We run on what
+we back. » n'a plus de texte d'introduction (les 150 K€ et le Fund I n'y sont plus dits, la note des 2 %
+reste) ; les trois documents (modèle Excel, fiche, deck LP : `Downloads compact`) montent dans le héros, en
+petit, sur une ligne sous « Talk to the Founding Partner » ; « Check every figure » devient une annexe
+discrète en bas de page, juste avant les sources et dans leur style (des lignes, pas des cartes) ; la photo
+du GP sur /lp est celle de la fiche (`gp-photo-sheet.jpg`, la même photo que celle envoyée par Alexandre, en
+meilleure définition), /pitch garde `gp-photo.jpg`.
 **/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
 (`CollapseVisual`) et la vision (`WhatWeBack`) de l'accueil (« The kingmakers » est remplacé ; les
 chiffres sourcés de Lovable et Bessemer restent sous l'implosion ; les quatre cartes `FourLaws` quittent

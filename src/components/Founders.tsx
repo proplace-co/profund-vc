@@ -896,11 +896,12 @@ export const CV_LOGOS = [
   { name: 'leboncoin', src: '/cv-leboncoin.png', h: 20 },
 ];
 
-export function TheTeam({ lp = false, tint = true }: { lp?: boolean; tint?: boolean }) {
+/** `photo` : /lp passe la photo de la fiche (17/11, 2). */
+export function TheTeam({ lp = false, tint = true, photo = '/gp-photo.jpg' }: { lp?: boolean; tint?: boolean; photo?: string }) {
   return (
     <section className={`pv-sec${tint ? ' tint' : ''}`} id="team">
       <div className="pv-wrap pv-team">
-        <img className="pv-team-photo" src="/gp-photo.jpg" alt="Alexandre Busson" width={240} height={300} />
+        <img className="pv-team-photo" src={photo} alt="Alexandre Busson" width={240} height={300} />
         <div>
           <p className="pv-kick">Founding Partner</p>
           <h2 className="pv-h2">Alexandre Busson</h2>
@@ -995,9 +996,6 @@ export const PORTFOLIO: PortfolioCo[] = [
   { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', h: 17,
     d: 'AI-assisted personalised art prints to share.', caps: ['inbound'], dealflow: false },
 ];
-const RUN_FILTERS: { id: RunCap | null; t: string }[] = [
-  { id: null, t: 'All' }, { id: 'corpdev', t: 'Corp dev' }, { id: 'inbound', t: 'Inbound' }, { id: 'outbound', t: 'Outbound' },
-];
 
 // Les mêmes moteurs, vus des LPs (06/11) : le fonds s'en sert pour trouver ses sociétés,
 // puis les branche dans chacune. Le process, pas le slogan.
@@ -1018,30 +1016,18 @@ const ENGINES_LP: typeof ENGINES = [
 ];
 
 /** Le portefeuille : les sociétés Seed que les deux moteurs font tourner (accueil « Portfolio », /lp
- *  « In portfolio »), filtrables par sous-moteur. `children` : une note sous la grille (/lp). */
+ *  « In portfolio »). 17/11 (2, Alexandre : « ça alourdit pour rien ») : plus de légende des moteurs ni
+ *  de filtre, chaque carte dit déjà ses sous-moteurs. `children` : une note sous la grille (/lp). */
 export function EnginesRunning({ kick = 'Portfolio', children }: { kick?: string; children?: ReactNode }) {
-  const [only, setOnly] = useState<RunCap | null>(null);
   return (
     <div className="pv-run">
       <div className="pv-run-head">
         <p className="pv-kick">{kick}</p>
         <p>Live on our two engines, every day.</p>
       </div>
-      <ul className="pv-run-key">
-        {RUN_ENGINES.map((e) => (
-          <li key={e.k}><Icon name={e.icon} /><b>{e.name}</b><span>{e.caps.map((x) => x.t).join(', ')}</span></li>
-        ))}
-      </ul>
-      <div className="pv-run-filter" role="group" aria-label="Show the companies running">
-        {RUN_FILTERS.map((f) => (
-          <button key={f.t} type="button" aria-pressed={only === f.id} onClick={() => setOnly(f.id)}>
-            {f.t}<span>{f.id ? PORTFOLIO.filter((c) => c.caps.includes(f.id!)).length : PORTFOLIO.length}</span>
-          </button>
-        ))}
-      </div>
       <div className="pv-run-grid">
         {PORTFOLIO.map((c, i) => (
-          <a key={c.name} className={`pv-runc${only && !c.caps.includes(only) ? ' off' : ''}`} href={c.href}
+          <a key={c.name} className="pv-runc" href={c.href}
              target="_blank" rel="noopener noreferrer" title={c.d}
              aria-label={`${c.name}, seed: ${c.caps.map((k) => RUN_LABEL[k]).join(', ')}, on our engines`}>
             <span className="pv-runc-top">

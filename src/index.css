@@ -310,6 +310,15 @@
 .pv-dl-ic svg { width: 18px; height: 18px; }
 .pv-dl b { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.25; }
 .pv-dl small { display: block; font-size: 12.5px; line-height: 1.3; color: var(--muted); }
+/* 17/11 (2) : les trois documents dans le héros de /lp, en petit, sur une ligne, sur fond de nuit */
+.pv-dls.compact { gap: 8px; margin-top: 18px; }
+.pv-dls.compact .pv-dl { gap: 9px; padding: 4px 16px 4px 4px; background: rgba(255, 255, 255, .05); box-shadow: inset 0 0 0 1px var(--night-line); color: #fff; }
+.pv-dls.compact .pv-dl:hover { box-shadow: inset 0 0 0 1px rgba(159, 182, 207, .6); }
+.pv-dls.compact .pv-dl-ic { width: 30px; height: 30px; background: rgba(159, 182, 207, .16); color: var(--blue-glow); }
+.pv-dls.compact .pv-dl-ic svg { width: 14px; height: 14px; }
+.pv-dls.compact .pv-dl b { font-size: 13px; }
+.pv-dls.compact .pv-dl small { font-size: 11.5px; color: var(--night-txt); white-space: nowrap; }
+@media (max-width: 600px) { .pv-dls.compact .pv-dl small { white-space: normal; } }
 
 @media (max-width: 1080px) {
   .pv-laws { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1072,6 +1081,19 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
 .lp-contact-doc { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--blue-dk); text-decoration: none; }
 .lp-contact-doc svg { width: 16px; height: 16px; }
 .lp-sources-sec { padding-top: 24px; }
+/* 17/11 (2, Alexandre : « trop visible ») : « Check every figure » en annexe, juste avant les sources et
+   dans leur style : des lignes fines, pas des cartes ; le détail se déplie dessous comme avant */
+.lp-check-sec { padding-bottom: 8px; }
+.lp-check-lead { margin-top: 6px; }
+.lp-checks { margin-top: 14px; border-top: 1px solid var(--line); }
+.lp-checks .lp-fold { border-radius: 0; background: none; box-shadow: none; border-bottom: 1px solid var(--line); }
+.lp-checks .lp-fold-bar { padding: 9px 0; }
+.lp-checks .lp-fold-bar > span:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
+.lp-checks .lp-fold-bar b { font-size: 14.5px; font-weight: 600; letter-spacing: 0; color: var(--ink-2); }
+.lp-checks .lp-fold-bar small { font-size: 13px; color: var(--soft); }
+.lp-checks .pv-toggle-ic { width: 26px; height: 26px; }
+.lp-checks .pv-toggle-ic::before, .lp-checks .pv-toggle-ic::after { width: 10px; }
+.lp-checks .lp-fold .pv-drawer-in { padding-inline: 0; }
 .lp-sources { display: grid; gap: 0; margin: 14px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
 .lp-sources li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 24px; }
 .lp-sources li:target { background: var(--blue-tint); }
@@ -1270,7 +1292,6 @@ select.pfm-in { appearance: none; padding-right: 40px; background-image: url("da
   .lp-live-pane { height: 82vh; border-radius: var(--r-lg); }
 }
 .lp-night { padding: clamp(12px, 1.6vw, 18px); border-radius: var(--r-lg); background: var(--night); }
-.lp-room-dl { position: relative; margin-top: 24px; }
 @media (max-width: 900px) {
   .pv-three, .pv-three.four, .pv-three.two { grid-template-columns: minmax(0, 1fr); }
   .pv-ruled li { grid-template-columns: minmax(0, 1fr); }
@@ -1999,31 +2020,16 @@ hr.pf-div { border: none; border-top: 1px solid var(--line); margin: 0; }
 @media (prefers-reduced-motion: reduce) { .pv-roles li { transition: none; } }
 
 /* ── Portfolio (17/11 ; « Running today » du 07/11, 11e passe) : trois cartes identiques ──────── */
-/* Une légende dit les deux moteurs et leurs sous-moteurs ; chaque carte porte les mêmes trois
-   sous-moteurs dans le même ordre, allumés quand la société s'en sert, éteints sinon. Trois colonnes,
+/* Chaque carte porte les mêmes trois sous-moteurs dans le même ordre, allumés quand la société s'en
+   sert, éteints sinon (plus de légende ni de filtre depuis le 17/11, 2). Trois colonnes,
    une sous 1 000 px (plus étroites, le logo large de Maximum Insurance devenait illisible). */
 .pv-run { margin-top: clamp(40px, 5vw, 72px); }
-.pv-run-head { margin-bottom: 12px; }
-.pv-run-key { display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 0 0 22px; padding: 0; list-style: none; font-size: 13.5px; color: var(--night-txt); }
-.pv-run-key li { display: inline-flex; align-items: center; gap: 8px; }
-.pv-run-key svg { width: 16px; height: 16px; color: var(--blue-glow); }
-.pv-run-key b { font-weight: 700; color: #fff; }
-.pv-run-key span::before { content: "·"; margin-right: 8px; color: var(--blue-glow); }
-/* 17/11 : le portefeuille (trois sociétés Seed) et son filtre par sous-moteur ; une carte qui ne fait
-   pas tourner le sous-moteur choisi s'estompe (.off), la grille ne bouge pas */
-.pv-run-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
-.pv-run-filter button { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border: 0; border-radius: 999px; cursor: pointer;
-  background: transparent; box-shadow: inset 0 0 0 1px rgba(159, 182, 207, .24); color: var(--night-txt); font: inherit; font-size: 13.5px; font-weight: 650;
-  transition: background .2s ease, color .2s ease, box-shadow .2s ease; }
-.pv-run-filter button span { font-size: 11.5px; font-weight: 800; color: var(--blue-glow); }
-.pv-run-filter button:hover { color: #fff; box-shadow: inset 0 0 0 1px rgba(159, 182, 207, .5); }
-.pv-run-filter button[aria-pressed="true"] { background: #fff; box-shadow: none; color: var(--night); }
-.pv-run-filter button[aria-pressed="true"] span { color: var(--blue-dk); }
+/* 17/11 (2) : plus de légende des moteurs ni de filtre, le titre puis les cartes */
+.pv-run-head { margin-bottom: 20px; }
 .pv-run-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .pv-runc { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 18px 20px 20px; border-radius: var(--r-lg); color: #fff;
   background: linear-gradient(180deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .02));
-  box-shadow: inset 0 0 0 1px var(--night-line), 0 30px 60px -44px rgba(0, 0, 0, .9); transition: transform .25s ease, box-shadow .25s ease, opacity .3s ease; }
-.pv-runc.off { opacity: .26; }
+  box-shadow: inset 0 0 0 1px var(--night-line), 0 30px 60px -44px rgba(0, 0, 0, .9); transition: transform .25s ease, box-shadow .25s ease; }
 .pv-runc-st { display: inline-flex; flex: none; align-items: center; gap: 10px; font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-glow); }
 .pv-runc::before { content: ""; position: absolute; right: -30%; top: -60%; width: 80%; height: 110%; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(98, 124, 153, .24), rgba(98, 124, 153, 0)); pointer-events: none; }

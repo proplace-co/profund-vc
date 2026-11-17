@@ -42,8 +42,9 @@ const PHONE = '+33 6 83 10 72 86';           // le même que la fiche PDF (facts
 const PHONE_TEL = 'tel:+33683107286';
 const TICKET = 10_000_000;                    // l'allocation discutée en fin de page (page, pas modèle)
 // 17/11 (Alexandre) : les trois positions radar inaugurales (INAUGURAL, lib/fund.ts).
-const INAUGURAL_TICKET = INAUGURAL.ticket;
 const INAUGURAL_STAKE = INAUGURAL.stake;
+// 17/11 (2) : la même photo que la fiche (factsheet.py, PHOTO), sur /lp seulement (/pitch garde la sienne)
+const GP_PHOTO = '/gp-photo-sheet.jpg';
 
 const DELIVEROO_PROSPECTUS = 'https://lexismarkettracker.lexisnexis.com/documents/0035/35079/167313/MT_Deliveroo%20plc_prospectus_22%20March%202021.pdf';
 // ── Les sources : numérotées, cliquables, listées en bas de page ──────────────
@@ -290,10 +291,12 @@ function LpContent() {
           <p className="lp-hero-eye">Fund I · {FUND_SIZE} · EuVECA pre-marketing</p>
           <h1 className="lp-hero-h">Backing AI-native teams building self-improving AI systems.</h1>
           <p className="lp-hero-lead">A few people now build what used to take thousands. We stand beside them, on terms that finally say so.</p>
-          {/* 17/11 : un seul bouton, plus la capture du deal flow dessous */}
+          {/* 17/11 : un seul bouton, plus la capture du deal flow dessous. 17/11 (2) : les trois
+              documents juste dessous, en petit, sur une ligne (ils quittent « Check every figure ») */}
           <div className="pv-ctas">
             <a href="#allocation" className="pv-btn light">Talk to the Founding Partner <Icon name="arrow" /></a>
           </div>
+          <Downloads deck compact />
         </div>
       </header>
 
@@ -359,8 +362,8 @@ function LpContent() {
 
       {/* 17/11 (Alexandre) : les trois positions radar inaugurales, le portefeuille (« In portfolio »),
           puis leur fiche en direct dans le cockpit du deal flow (LiveReporting.tsx) */}
-      <Say id="engines" tone="night" title="We run on what we back."
-        lead={<p className="pv-say-p">This is a first fund, and we will not pretend otherwise. What we can show you is how we work: three inaugural Seed Radar positions (Proplace, Maximum Insurance and Sosuites: {eur(INAUGURAL_TICKET)} for {pct(INAUGURAL_STAKE)} each, included in Fund I from Day 1, with live automated reporting), and every Seed, Venture, and Growth company we review, every evening, in our live deal flow.</p>}>
+      {/* 17/11 (2) : plus de texte d'introduction (Alexandre) ; le titre, puis le portefeuille */}
+      <Say id="engines" tone="night" title="We run on what we back.">
         <div className="lp-run">
           <EnginesRunning kick="In portfolio">
             <p className="lp-run-note">Proplace, Maximum Insurance and Sosuites are 100% operated by ProFund, which holds {pct(INAUGURAL_STAKE)} of each.</p>
@@ -368,101 +371,8 @@ function LpContent() {
         </div>
         <LiveReporting />
       </Say>
-      <TheTeam lp tint={false} />
+      <TheTeam lp tint={false} photo={GP_PHOTO} />
 
-      {/* 07/11 : plus « The data room » (Alexandre : ils ne comprendront pas) ; purgée de ce qui
-          répétait la page (les chemins de dilution, la protection en double). */}
-      <Say id="check" tone="tint" title="Check every figure."
-        lead={<p className="pv-say-p">The detail behind this page. Each figure links to its source or to its line in our model.</p>}>
-        <div className="pv-say-folds">
-          <Fold id="room-keep" title="What founders really keep" sub="Seven European listings and Carta’s medians, every figure with its source">
-            <div className="lp-list" role="table">
-              <div className="lp-list-row head" role="row">
-                <span role="columnheader">Company</span>
-                <span role="columnheader">Valuation</span>
-                <span role="columnheader">Raised before</span>
-                <span role="columnheader">Founders’ stake at listing</span>
-              </div>
-              {LISTINGS.map((c) => (
-                <div key={c.co} className="lp-list-row" role="row">
-                  <span className="co" role="cell"><b>{c.co}</b><small>{c.where}</small></span>
-                  <span role="cell"><small>Valuation</small><CitedLink c={c.val} /></span>
-                  <span role="cell"><small>Raised before</small><CitedLink c={c.raised} /></span>
-                  <span className="st" role="cell"><small>Founders’ stake at listing</small><a href={c.stakeUrl} target="_blank" rel="noopener noreferrer">{c.stakes}</a>{c.note && <em>{c.note}</em>}</span>
-                </div>
-              ))}
-            </div>
-            <p className="lp-read"><b>In these seven listings, no founder holds 20% of the capital.</b> Every figure links to its source. Not a statistical sample: these stakes reflect dilution and, for some founders, shares sold along the way.</p>
-            <h3 className="pv-h3 lp-t">The median founding team</h3>
-            <div className="pv-real in lp-medians">
-              <div className="pv-real-carta">
-                <ol>
-                  {MEDIANS.map((c) => (
-                    <li key={c.l} style={{ ['--w' as string]: `${(c.v / MEDIANS[0].v) * 100}%` }}>
-                      <span className="l">{c.l}<Ref s={c.r} /><small>{c.s}</small></span>
-                      <b>{pct(c.v, 1)}</b>
-                      <i />
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-            <p className="pv-fine lp-under">Carta’s data, fully diluted, is not specific to Europe.</p>
-          </Fold>
-
-          <Fold id="room-exits" title="Europe’s exits follow a power law" sub="Atomico’s data, and 15 real exits at every size">
-            <Stats items={[
-              { b: '0.7% → 68%', t: <>$1B+ deals were 0.7% of European tech M&amp;A over the past decade, and 68% of its value.<Ref s={SRC.atomico25} /></> },
-              { b: '13% → 86%', t: <>$1B+ IPOs were 13% of European tech IPOs, and 86% of their value.<Ref s={SRC.atomico25} /></> },
-              { b: '77%', t: <>Of European tech M&amp;A deals in 2023 were under $100M.<Ref s={SRC.atomico23} /></> },
-            ]} />
-            <div className="pv-exit-bands lp-bands">
-              {EXIT_BANDS.map((band) => (
-                <div key={band.h} className="pv-exit-band">
-                  <h4>{band.h}</h4>
-                  <ul>
-                    {band.items.map((it) => (
-                      <li key={it.co}><b><ExitLink e={it} /></b><em>{it.v}</em><small>{it.d}</small></li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-            <p className="pv-fine">Each name links to the buyer’s announcement or filing. Values as disclosed, in their own currency.</p>
-          </Fold>
-
-          <Fold id="room-fund" title="The fund: layers, terms and allocation" sub="Size, tickets, fees, carry, GP commitment, where the money goes">
-            <div className="pv-stages lp-layers">
-              {(['seed', 'venture', 'growth'] as const).map((id, i) => (
-                <div key={id} className="pv-stage">
-                  <span className="pv-stage-n">Layer {i + 1}</span>
-                  <h3>{L[id].model_name}</h3>
-                  <dl>
-                    <div><dt>Stage</dt><dd>{['Pre-seed and seed', 'Pre-Series A and Series A', 'Series B and beyond'][i]}</dd></div>
-                    <div><dt>Ticket</dt><dd className="tk">{eurRange(L[id].ticket_min, id === 'growth' ? F.company_cap : L[id].ticket_max)}</dd></div>
-                    <div><dt>Companies</dt><dd>{L[id].companies}</dd></div>
-                  </dl>
-                </div>
-              ))}
-            </div>
-            <p className="lp-read lp-fold-lead">{pct(A.after_first_pct)} of what we invest goes in after the first cheque: buybacks and follow-ons.</p>
-            <div className="lp-fund-tables"><TermsTables /></div>
-          </Fold>
-
-          <Fold id="room-perf" title="Returns and stress tests" sub="Target, base and stress cases; without the unicorn; a bigger one">
-            <div className="lp-fund-tables"><PerformanceTables /></div>
-          </Fold>
-
-          <Fold id="room-sim" title="The simulation, line by line" sub="Every position of the three layers: cheques, buybacks, follow-ons, stake at exit, return">
-            <div className="lp-fund-tables lp-sim"><SimulationTables /></div>
-          </Fold>
-
-          <Fold id="room-engines" title="The two engines, step by step" sub="How they source for the fund, and what they run for each company">
-            <EnginesForLps />
-          </Fold>
-        </div>
-        <div className="lp-room-dl"><Downloads deck /></div>
-      </Say>
 
       <Say id="faq" title="Questions you might ask."
         lead={<p className="pv-say-p">Answered plainly. These are our intentions for the fund documents, which will settle each point; until then, terms may change.</p>}>
@@ -489,7 +399,7 @@ function LpContent() {
               <p className="lp-alloc-fine">Targets are model outputs, not a forecast or a guarantee. Pre-marketing: the fund is not yet established and no units can be subscribed; we register indicative interest only.</p>
             </div>
             <div className="lp-contact">
-              <img src="/gp-photo.jpg" alt="Alexandre Busson" width={88} height={110} />
+              <img src={GP_PHOTO} alt="Alexandre Busson" width={88} height={110} />
               <p className="lp-contact-name">Alexandre Busson</p>
               <p className="lp-contact-role">Founding Partner</p>
               <a className="lp-contact-line" href={PHONE_TEL}><Icon name="phone" />{PHONE}</a>
@@ -505,6 +415,102 @@ function LpContent() {
               Regulation (EU) No 345/2013 (EuVECA). The fund is not yet established and no units may
               be subscribed at this stage. For professional and eligible investors only.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 17/11 (2, Alexandre : « trop visible ») : le détail en annexe, en bas, discret comme les sources ;
+          plus « The data room » depuis le 07/11. Les documents sont montés dans le héros. */}
+      <section className="pv-sec lp-sources-sec lp-check-sec" id="check">
+        <div className="pv-wrap">
+          <p className="pv-kick">Check every figure</p>
+          <p className="pv-fine lp-check-lead">The detail behind this page. Each figure links to its source or to its line in our model.</p>
+          <div className="lp-checks">
+            <Fold id="room-keep" title="What founders really keep" sub="Seven European listings and Carta’s medians, every figure with its source">
+              <div className="lp-list" role="table">
+                <div className="lp-list-row head" role="row">
+                  <span role="columnheader">Company</span>
+                  <span role="columnheader">Valuation</span>
+                  <span role="columnheader">Raised before</span>
+                  <span role="columnheader">Founders’ stake at listing</span>
+                </div>
+                {LISTINGS.map((c) => (
+                  <div key={c.co} className="lp-list-row" role="row">
+                    <span className="co" role="cell"><b>{c.co}</b><small>{c.where}</small></span>
+                    <span role="cell"><small>Valuation</small><CitedLink c={c.val} /></span>
+                    <span role="cell"><small>Raised before</small><CitedLink c={c.raised} /></span>
+                    <span className="st" role="cell"><small>Founders’ stake at listing</small><a href={c.stakeUrl} target="_blank" rel="noopener noreferrer">{c.stakes}</a>{c.note && <em>{c.note}</em>}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="lp-read"><b>In these seven listings, no founder holds 20% of the capital.</b> Every figure links to its source. Not a statistical sample: these stakes reflect dilution and, for some founders, shares sold along the way.</p>
+              <h3 className="pv-h3 lp-t">The median founding team</h3>
+              <div className="pv-real in lp-medians">
+                <div className="pv-real-carta">
+                  <ol>
+                    {MEDIANS.map((c) => (
+                      <li key={c.l} style={{ ['--w' as string]: `${(c.v / MEDIANS[0].v) * 100}%` }}>
+                        <span className="l">{c.l}<Ref s={c.r} /><small>{c.s}</small></span>
+                        <b>{pct(c.v, 1)}</b>
+                        <i />
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+              <p className="pv-fine lp-under">Carta’s data, fully diluted, is not specific to Europe.</p>
+            </Fold>
+
+            <Fold id="room-exits" title="Europe’s exits follow a power law" sub="Atomico’s data, and 15 real exits at every size">
+              <Stats items={[
+                { b: '0.7% → 68%', t: <>$1B+ deals were 0.7% of European tech M&amp;A over the past decade, and 68% of its value.<Ref s={SRC.atomico25} /></> },
+                { b: '13% → 86%', t: <>$1B+ IPOs were 13% of European tech IPOs, and 86% of their value.<Ref s={SRC.atomico25} /></> },
+                { b: '77%', t: <>Of European tech M&amp;A deals in 2023 were under $100M.<Ref s={SRC.atomico23} /></> },
+              ]} />
+              <div className="pv-exit-bands lp-bands">
+                {EXIT_BANDS.map((band) => (
+                  <div key={band.h} className="pv-exit-band">
+                    <h4>{band.h}</h4>
+                    <ul>
+                      {band.items.map((it) => (
+                        <li key={it.co}><b><ExitLink e={it} /></b><em>{it.v}</em><small>{it.d}</small></li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <p className="pv-fine">Each name links to the buyer’s announcement or filing. Values as disclosed, in their own currency.</p>
+            </Fold>
+
+            <Fold id="room-fund" title="The fund: layers, terms and allocation" sub="Size, tickets, fees, carry, GP commitment, where the money goes">
+              <div className="pv-stages lp-layers">
+                {(['seed', 'venture', 'growth'] as const).map((id, i) => (
+                  <div key={id} className="pv-stage">
+                    <span className="pv-stage-n">Layer {i + 1}</span>
+                    <h3>{L[id].model_name}</h3>
+                    <dl>
+                      <div><dt>Stage</dt><dd>{['Pre-seed and seed', 'Pre-Series A and Series A', 'Series B and beyond'][i]}</dd></div>
+                      <div><dt>Ticket</dt><dd className="tk">{eurRange(L[id].ticket_min, id === 'growth' ? F.company_cap : L[id].ticket_max)}</dd></div>
+                      <div><dt>Companies</dt><dd>{L[id].companies}</dd></div>
+                    </dl>
+                  </div>
+                ))}
+              </div>
+              <p className="lp-read lp-fold-lead">{pct(A.after_first_pct)} of what we invest goes in after the first cheque: buybacks and follow-ons.</p>
+              <div className="lp-fund-tables"><TermsTables /></div>
+            </Fold>
+
+            <Fold id="room-perf" title="Returns and stress tests" sub="Target, base and stress cases; without the unicorn; a bigger one">
+              <div className="lp-fund-tables"><PerformanceTables /></div>
+            </Fold>
+
+            <Fold id="room-sim" title="The simulation, line by line" sub="Every position of the three layers: cheques, buybacks, follow-ons, stake at exit, return">
+              <div className="lp-fund-tables lp-sim"><SimulationTables /></div>
+            </Fold>
+
+            <Fold id="room-engines" title="The two engines, step by step" sub="How they source for the fund, and what they run for each company">
+              <EnginesForLps />
+            </Fold>
           </div>
         </div>
       </section>
