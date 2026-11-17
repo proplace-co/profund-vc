@@ -4,7 +4,7 @@ import DealFlowModal from './DealFlowModal';
 import { CONTACT } from './LeadForm';
 import { Icon, type IconName } from './Thesis';
 import { CollapseVisual, EnginesForLps, EnginesRunning, Numbers, Say, TheTeam, WhatWeBack } from './Founders';
-import LiveReporting from './LiveReporting';
+import LiveReporting, { DealFlowEmbed } from './LiveReporting';
 import { Downloads, PerformanceTables, SimulationTables, TermsTables } from './ProFundPage';
 import { Fold } from './Drawer';
 import { savedAccess } from '../lib/access';
@@ -369,6 +369,8 @@ function LpContent() {
             <p className="lp-run-note">Proplace, Maximum Insurance and Sosuites are 100% operated by ProFund, which holds {pct(INAUGURAL_STAKE)} of each.</p>
           </EnginesRunning>
         </div>
+        {/* 17/11 (3, Alexandre) : le deal flow par défaut, puis le reporting de chaque société, séparés */}
+        <DealFlowEmbed />
         <LiveReporting />
       </Say>
       <TheTeam lp tint={false} photo={GP_PHOTO} />

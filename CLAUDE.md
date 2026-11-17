@@ -23,7 +23,8 @@ src/
     TermsPage.tsx       route /terms — le pacte, page sombre sans barre du haut (texte dans Pact.tsx)
     CalculatorPage.tsx  route /calculator — « Run your numbers » ; exporte `Calculator` (aussi dans l'accueil)
     LpPage.tsx          route /lp — la page LP, fermée par une porte (LpGate) sauf accès accepté ou ?gp
-    LiveReporting.tsx   /lp « Live reporting & deal flow » : les 3 sociétés du portefeuille + le cockpit (iframe)
+    LiveReporting.tsx   /lp : « Deal flow » (le cockpit par défaut, iframe) et « Live reporting » (le Reporting
+                        des 3 sociétés, dessiné par /lp depuis POST /cibles/reporting/company du proxy Modal)
     SubPage.tsx         coquille de /terms, /calculator, /lp
     LeadForm.tsx        le formulaire de /lp → email préparé
     ProFundPage.tsx     route /pitch — le deck LP, une section par slide + annexe
@@ -220,6 +221,23 @@ petit, sur une ligne sous « Talk to the Founding Partner » ; « Check every fi
 discrète en bas de page, juste avant les sources et dans leur style (des lignes, pas des cartes) ; la photo
 du GP sur /lp est celle de la fiche (`gp-photo-sheet.jpg`, la même photo que celle envoyée par Alexandre, en
 meilleure définition), /pitch garde `gp-photo.jpg`.
+**17/11 (3, Alexandre : « c'est impératif »)** : sous le portefeuille de /lp, DEUX blocs que les LPs séparent
+dans leur tête. « Deal flow » : le cockpit du fonds tel qu'il s'ouvre par défaut, sans société choisie
+(iframe, `/carte/`, `guest=lp`). « Live reporting » (plus « & deal flow ») : les trois sociétés en boutons,
+Proplace d'abord, et leur Reporting DESSINÉ PAR /lp (LiveReporting.tsx), sans liste ni bandeau de thèse :
+le cockpit ne sait ouvrir ni son onglet Reporting, ni sa vue simplifiée, ni masquer ce bandeau par lien
+(vérifié le 17/11 dans le code et la version en ligne : uniquement par clic), et son code reste intouché.
+/lp lit la route que l'onglet Reporting du cockpit appelle lui-même : `POST /cibles/reporting/company` du
+proxy Modal (`{token, key, name, lang: 'en'}`, CORS *, contrat dans services/reporting/README.md du
+monorepo), DEUXIÈME APPEL RÉSEAU de l'app après celui du popup (et /profund/verify de /dealflow). Les
+chiffres sont lisibles sans session parce que l'opérateur les a rendus publics le 14/11 (`public: true`) ;
+s'il le retire, les tuiles privées s'affichent « Fund team only ». API interne : la réponse est validée,
+sinon « unavailable » et « Try again ». Montrés : couverture, tendance, santé de l'entreprise, KPI par
+famille (valeur, écart sur un mois, courbe, source, date ; la note en infobulle). Pas montrés : les
+connecteurs, la comparaison, les approches (masquées aux LPs dans le cockpit). Lecture seulement quand le
+bloc approche de l'écran ; un relevé de plus de 15 min lance un rafraîchissement côté proxy, comme
+l'ouverture de l'onglet. Au 17/11 les chiffres sont ceux du cockpit : 0 € de revenus et 0 client payant
+pour les trois, beaucoup d'indicateurs encore « To connect » (Alexandre prévenu).
 **/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
 (`CollapseVisual`) et la vision (`WhatWeBack`) de l'accueil (« The kingmakers » est remplacé ; les
 chiffres sourcés de Lovable et Bessemer restent sous l'implosion ; les quatre cartes `FourLaws` quittent

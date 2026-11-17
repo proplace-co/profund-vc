@@ -984,17 +984,17 @@ const RUN_ENGINES: { icon: IconName; k: string; name: string; caps: { id: RunCap
   { icon: 'bot', k: 'Internal', name: 'Internal AI Growth Engine', caps: [{ id: 'inbound', t: 'Inbound' }, { id: 'outbound', t: 'Outbound' }] },
 ];
 const RUN_LABEL: Record<RunCap, string> = { corpdev: 'corporate development', inbound: 'inbound', outbound: 'outbound' };
-/** `h` : la hauteur du logo en px (les logos n'ont pas les mêmes proportions). `dealflow` : la société
- *  est un dossier du cockpit du fonds (proplace.co/cibles/profund-vc), donc `?sel=&only=` ouvre sa fiche
- *  (/lp, LiveReporting.tsx). Sosuites n'y est pas au 17/11 : passer à true quand elle y entre. */
-export type PortfolioCo = { name: string; logo: string; href: string; h: number; d: string; caps: RunCap[]; dealflow: boolean };
+/** `h` : la hauteur du logo en px (les logos n'ont pas les mêmes proportions). Le domaine de `href` est
+ *  la clé de la société pour le reporting de /lp (LiveReporting.tsx) : proplace.co, maximum-insurance.com,
+ *  sosuites.com. */
+export type PortfolioCo = { name: string; logo: string; href: string; h: number; d: string; caps: RunCap[] };
 export const PORTFOLIO: PortfolioCo[] = [
   { name: 'Proplace', logo: '/portfolio-proplace.png', href: 'https://proplace.co', h: 27,
-    d: 'Autonomous AI operating system for corporate development and M&A.', caps: ['corpdev', 'inbound', 'outbound'], dealflow: true },
+    d: 'Autonomous AI operating system for corporate development and M&A.', caps: ['corpdev', 'inbound', 'outbound'] },
   { name: 'Maximum Insurance', logo: '/portfolio-maximum-insurance.svg', href: 'https://maximum-insurance.com', h: 14,
-    d: 'Travel insurance and duty of care for companies and their teams abroad.', caps: ['inbound', 'outbound'], dealflow: true },
+    d: 'Travel insurance and duty of care for companies and their teams abroad.', caps: ['inbound', 'outbound'] },
   { name: 'Sosuites', logo: '/portfolio-sosuites.png', href: 'https://www.sosuites.com', h: 17,
-    d: 'AI-assisted personalised art prints to share.', caps: ['inbound'], dealflow: false },
+    d: 'AI-assisted personalised art prints to share.', caps: ['inbound'] },
 ];
 
 // Les mêmes moteurs, vus des LPs (06/11) : le fonds s'en sert pour trouver ses sociétés,
