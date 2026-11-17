@@ -409,7 +409,8 @@ function layerIntro(id: LayerId, x: FundLayer): string {
   if (id === 'seed') {
     const l = x.tracks!.lead;
     const r = x.tracks!.radar;
-    return `${x.companies} companies: ${l.companies} leads (${l.first} to ${l.last}) + ${r.companies} radar tickets (${r.first} to ${r.last}), entries years ${y0}–${y1}`;
+    // 17/11 : les positions inaugurales, sans issue prêtée (gardées au coût), comme la fiche p. 4
+    return `${x.companies} companies: ${l.companies} leads (${l.first} to ${l.last}) + ${r.companies} radar tickets (${r.first} to ${r.last}), entries years ${y0}–${y1}. ${INAUGURAL.first} to ${INAUGURAL.last}: the inaugural positions (Proplace, Maximum Insurance, Sosuites), held at cost, no exit assumed`;
   }
   if (id === 'venture') {
     return `${x.companies} companies, first cheques of ${eurRange(x.first_cheque_range[0], x.first_cheque_range[1], 'table', '–')} at seed+ or Series A, entries years ${y0}–${y1}`;

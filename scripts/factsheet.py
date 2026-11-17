@@ -74,9 +74,8 @@ MONTHS = ("January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December")
 
 # Les societes que le GP opere avec ses agents. 17/11 (Alexandre) : trois positions radar inaugurales du
-# Fund I, le ticket radar du modele pour INAUGURAL_STAKE chacune (les termes de ces trois positions, pas
-# une sortie du modele ; la meme valeur sur /lp, LpPage.tsx), avec un reporting automatise en direct.
-INAUGURAL_STAKE = 0.02
+# Fund I (150 K EUR pour 2 % chacune, des l'annee 1, gardees au cout dans le modele), avec un reporting
+# automatise en direct. Lues dans fund.json (layers.seed.inaugural), comme le site.
 # Memes accroches que l'accueil (src/components/Thesis.tsx). Maximum Insurance
 # n'existe qu'en SVG cote site : reportlab ne lit pas le SVG, d'ou sa version
 # PNG dans scripts/assets/.
@@ -103,6 +102,7 @@ DATA = _load_fund()
 FUND = DATA["fund"]
 TERMS = DATA["terms"]
 LAYERS = DATA["layers"]
+INAUGURAL = LAYERS["seed"]["inaugural"]      # 17/11 : les trois positions radar inaugurales
 CASES = DATA["cases"]
 ALLOC = DATA["allocation"]
 SECONDARY = DATA["secondary"]
@@ -713,7 +713,7 @@ def page_two(F):
         "agreement and restore a classic lead's consents. "
         # 17/11 (Alexandre) : les trois positions inaugurales operees par le GP
         f"Inaugural Seed Radar stakes in GP-operated companies (Proplace, Maximum Insurance, Sosuites: "
-        f"{eur(LAYERS['seed']['tracks']['radar']['ticket_max'])} at {pct(INAUGURAL_STAKE)} each) are included at "
+        f"{eur(INAUGURAL['ticket'])} at {pct(INAUGURAL['stake'])} each) are included at "
         "inception; any follow-on goes to the independent valuer and the LP advisory committee."))
     hb = F.hpara(W - 72, txt, 9.6, "reg", 1.5) + 30
     F.rr(M, y, W, hb, 14, fill=BLUE_TINT, stroke="#DCE3EC", lw=1)
@@ -841,7 +841,7 @@ def page_three(F):
                            "operated almost entirely by our in-house engines and agents:"), 10, "reg", MUTED, 1.45) + 3
     # 17/11 (Alexandre) : les trois sont des positions radar inaugurales du Fund I
     y += F.para(M, y, W, x(f"Included in Fund I as inaugural Seed Radar positions "
-                           f"({eur(LAYERS['seed']['tracks']['radar']['ticket_max'])} / {pct(INAUGURAL_STAKE)} each) "
+                           f"({eur(INAUGURAL['ticket'])} / {pct(INAUGURAL['stake'])} each) "
                            f"with live automated reporting on {DEALFLOW_TXT}."), 10, "semi", BLUE_DK, 1.45) + 10
     gap = 12.0
     pcw = (W - 2 * gap) / 3
@@ -910,7 +910,10 @@ def seed_band():
     lead, radar = s["tracks"]["lead"], s["tracks"]["radar"]
     a, b = s["entry_years"]
     return (f"{s['companies']} companies: {lead['companies']} leads ({lead['first']} to {lead['last']}) + "
-            f"{radar['companies']} radar tickets ({radar['first']} to {radar['last']}), entries years {a}–{b}")
+            f"{radar['companies']} radar tickets ({radar['first']} to {radar['last']}), entries years {a}–{b}. "
+            # 17/11 : les positions inaugurales, sans issue pretee (gardees au cout)
+            f"{INAUGURAL['first']} to {INAUGURAL['last']}: the inaugural positions (Proplace, Maximum Insurance, "
+            f"Sosuites), held at cost, no exit assumed")
 
 
 def venture_band():

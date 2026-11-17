@@ -190,8 +190,8 @@ qui, les termes relus ; toujours ni frais ni BSA), la FAQ de /lp, /pitch, le `<n
 /lp, /pitch et la fiche disent encore « Chief Fundraising Officer » seul.
 **Le portefeuille (17/11, Alexandre)** : Proplace, Maximum Insurance et Sosuites, opérées à 100 % par
 l'équipe, sont trois positions radar inaugurales du Fund I (le ticket radar du modèle, `tracks.radar.ticket_max`,
-pour 2 % chacune : `INAUGURAL` dans lib/fund.ts, lu par /lp et /pitch, et `INAUGURAL_STAKE` dans
-factsheet.py, à changer ensemble ; les termes de ces positions, pas une sortie du modèle, qui n'a pas bougé).
+pour 2 % chacune ; depuis le 17/11 (4) dans le modèle, voir plus bas : `layers.seed.inaugural`, lu par
+`INAUGURAL` de lib/fund.ts et par factsheet.py, plus aucune valeur tapée à la main).
 /pitch dit les mêmes lignes que la fiche : sous « Proof of work » (Thesis.tsx) et dans « Conflicts policy ». « Running today » devient « Portfolio » (accueil) et « In portfolio »
 (/lp) : ces trois sociétés seules (`PORTFOLIO`, Founders.tsx ; WinHealth Group, Nexecur et S4BT en sortent,
 ce ne sont pas des participations ; ils restent dans `Powers` et la fiche p. 3), une pastille « Seed », un
@@ -238,6 +238,18 @@ connecteurs, la comparaison, les approches (masquées aux LPs dans le cockpit). 
 bloc approche de l'écran ; un relevé de plus de 15 min lance un rafraîchissement côté proxy, comme
 l'ouverture de l'onglet. Au 17/11 les chiffres sont ceux du cockpit : 0 € de revenus et 0 client payant
 pour les trois, beaucoup d'indicateurs encore « To connect » (Alexandre prévenu).
+**17/11 (4, Alexandre)** : « Aligned. » revient dans « How a focused fund wins » (« Founders keep control of
+their company. »). Les rendements de /lp ne changent pas (« gonfler » la cible a été écarté : 3,0× / 25 % net
+restent la cible prudente) ; la 4e tuile dit la loi 04, « €295M, one sale of our best company returns the
+whole fund » (`fund_returner.fund_returning_exit`), et le 1,4× sans licorne passe dans l'intro. LE MODÈLE
+intègre les trois positions inaugurales SANS LEUR PRÊTER D'ISSUE : S-48 à S-50 (`INAUGURAL_ID`), « Inaugural
+positions (×3), held at cost », 150 K€ pour 2 % (7,5 M€ de post-money) dès l'année 1, gardées au coût
+jusqu'à l'année 9 (recovery 1,0) ; elles remplacent trois des 28 pertes du radar (S-23–47, ×25). Le modèle
+vérifie leurs termes et les exporte (`layers.seed.inaugural`) ; la bande Seed de la simulation (fiche p. 4,
+/lp, /pitch) les nomme avec « held at cost, no exit assumed » (jamais une sortie fictive à côté d'un nom
+réel). Effets : aucune valeur publiée ne bouge (`PUBLISHED` passe) ; frais de gestion 12,7 M€ au lieu de
+12,6 (gardées jusqu'à l'année 9, elles restent dans l'assiette après la période d'investissement), réserve
+0,4 M€ au lieu de 0,5, TRI brut de l'upside 46 % au lieu de 47 %, multiple du radar 1,9× au lieu de 1,8×.
 **/lp, /pitch, la fiche alignés sur l'accueil (07/11)** : /lp et /pitch portent l'implosion
 (`CollapseVisual`) et la vision (`WhatWeBack`) de l'accueil (« The kingmakers » est remplacé ; les
 chiffres sourcés de Lovable et Bessemer restent sous l'implosion ; les quatre cartes `FourLaws` quittent

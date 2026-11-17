@@ -197,6 +197,9 @@ class Line:
 
 
 L = Line
+# 17/11 : la ligne des trois positions radar inaugurales (exportee dans layers.seed.inaugural, lue par
+# le site et la fiche : le ticket et les 2 % viennent d'ici, plus de valeur tapee a la main).
+INAUGURAL_ID = "S-48"
 LINES = (
     # Seed : 50 societes, pre-seed / seed, entrees annees 1-3.
     # S-01 a S-10 : leads de conviction ; S-11 a S-50 : tickets radar.
@@ -234,8 +237,14 @@ LINES = (
       150_000, 8 * M, 3, 6, exit_value=40 * M, track="radar"),
     L("S-15", "seed", "S-15", 8, "Zombies (×8)", "grey", "new",
       1_200_000, 8 * M, 3, 7, recovery=0.5, track="radar"),
-    L("S-23", "seed", "S-23", 28, "Losses (×28)", "red", "new",
-      4_200_000, 8 * M, 3, 5, recovery=0.0, track="radar"),
+    L("S-23", "seed", "S-23", 25, "Losses (×25)", "red", "new",
+      3_750_000, 8 * M, 3, 5, recovery=0.0, track="radar"),
+    # 17/11 (Alexandre) : les trois positions radar inaugurales, Proplace, Maximum Insurance et Sosuites,
+    # operees par le GP : 150 K EUR pour 2 % chacune (7,5 M EUR de post-money), des l'annee 1. Le modele
+    # ne leur prete AUCUNE issue : gardees a leur cout jusqu'a l'horizon (recovery 1,0, annee 9), jamais
+    # un nom de societe reelle a cote d'une sortie fictive. Elles viennent de trois des 28 pertes du radar.
+    L(INAUGURAL_ID, "seed", INAUGURAL_ID, 3, "Inaugural positions (×3), held at cost", "grey", "new",
+      450_000, 7_500_000, 1, 9, recovery=1.0, track="radar"),
     # Venture : 7 societes, premiers cheques de 2 a 4 M EUR en seed+ ou
     # Serie A, entrees annees 2-4 (v3.4 : 3 M EUR de moins qu'en v3.3 sur les lignes qui
     # vivent, passes au radar ; la perte V-07 garde son montant).
@@ -895,6 +904,10 @@ def validate(data: dict) -> Checks:
                        f"{x.id} : ticket {x.first / x.n:.0f} hors bornes {x.track} {lo}-{hi}")
         else:
             c.need(x.track is None, f"{x.id} : voie reservee au Seed")
+    # 17/11 : les positions inaugurales, aux termes annonces (150 K EUR pour 2 %, annee 1, au cout)
+    ina = data["layers"]["seed"]["inaugural"]
+    c.need(ina["companies"] == 3 and ina["ticket"] == 150_000 and ina["stake"] == 0.02 and ina["entry_year"] == 1
+           and ina["held_at_cost"], f"positions inaugurales : {ina}")
     # voies Seed : comptes, puis leads d'abord et numerotation continue
     tracks = data["layers"]["seed"]["tracks"]
     nxt = 1
@@ -987,6 +1000,14 @@ def seed_tracks() -> dict:
     return out
 
 
+def inaugural() -> dict:
+    """Les trois positions radar inaugurales (17/11) : identifiants, ticket, detention, annee d'entree."""
+    x = next(y for y in LINES if y.id == INAUGURAL_ID)
+    return {"first": x.id, "last": last_id(x), "companies": x.n, "ticket": x.first // x.n,
+            "entry_post": x.entry_post, "stake": entry_stake(x), "entry_year": x.entry_year,
+            "held_at_cost": x.recovery == 1.0}
+
+
 def per_company(lines, attr) -> tuple[int, int]:
     vals = [attr(x) / x.n for x in lines]
     return int(min(vals)), int(max(vals))
@@ -1022,6 +1043,7 @@ def build() -> dict:
         }
         if layer == "seed":
             entry["tracks"] = seed_tracks()
+            entry["inaugural"] = inaugural()
         for case in CASES:
             got = sum(proceeds(x, case) for x in lines)
             entry["proceeds"][case.id] = got

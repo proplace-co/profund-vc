@@ -15,7 +15,7 @@
     "first_close_max": 30000000,
     "company_cap": 10000000,
     "companies": 62,
-    "positions": 25
+    "positions": 26
   },
   "terms": {
     "fee_ip_pct": 0.02,
@@ -49,7 +49,7 @@
       "ownership_max": 0.2,
       "companies": 50,
       "breakouts": 0,
-      "positions": 13,
+      "positions": 14,
       "first": 14700000,
       "buyback": 5800000,
       "follow": 1000000,
@@ -67,9 +67,9 @@
         3
       ],
       "proceeds": {
-        "target": 361730000,
-        "base": 217620000,
-        "stress": 145560000
+        "target": 362180000,
+        "base": 218070000,
+        "stress": 146010000
       },
       "moic": {
         "target": 16.8,
@@ -456,17 +456,17 @@
         },
         {
           "id": "S-23",
-          "last": "S-50",
+          "last": "S-47",
           "company": "S-23",
-          "n": 28,
-          "status": "Losses (\u00d728)",
+          "n": 25,
+          "status": "Losses (\u00d725)",
           "tone": "red",
           "kind": "new",
           "track": "radar",
-          "first": 4200000,
+          "first": 3750000,
           "buyback": 0,
           "follow": 0,
-          "invested": 4200000,
+          "invested": 3750000,
           "entry_post": 8000000,
           "entry_pct": 0.019,
           "exit_pct": null,
@@ -477,6 +477,37 @@
           "moic": 0.0,
           "entry_year": 3,
           "exit_year": 5,
+          "buyback_year": null,
+          "buyback_value": null,
+          "discount": null,
+          "cancel": 0.0,
+          "dilution": 0.0,
+          "follow_year": null,
+          "follow_post": null
+        },
+        {
+          "id": "S-48",
+          "last": "S-50",
+          "company": "S-48",
+          "n": 3,
+          "status": "Inaugural positions (\u00d73), held at cost",
+          "tone": "grey",
+          "kind": "new",
+          "track": "radar",
+          "first": 450000,
+          "buyback": 0,
+          "follow": 0,
+          "invested": 450000,
+          "entry_post": 7500000,
+          "entry_pct": 0.02,
+          "exit_pct": null,
+          "exit_value": null,
+          "recovery": 1.0,
+          "partial": false,
+          "proceeds": 450000,
+          "moic": 1.0,
+          "entry_year": 1,
+          "exit_year": 9,
           "buyback_year": null,
           "buyback_value": null,
           "discount": null,
@@ -504,9 +535,19 @@
           "first": "S-11",
           "last": "S-50",
           "invested": 6800000,
-          "proceeds": 12380000,
-          "moic": 1.8
+          "proceeds": 12830000,
+          "moic": 1.9
         }
+      },
+      "inaugural": {
+        "first": "S-48",
+        "last": "S-50",
+        "companies": 3,
+        "ticket": 150000,
+        "entry_post": 7500000,
+        "stake": 0.02,
+        "entry_year": 1,
+        "held_at_cost": true
       }
     },
     "venture": {
@@ -982,9 +1023,9 @@
     "first": 45200000,
     "buyback_follow": 37800000,
     "after_first_pct": 0.46,
-    "mgmt_fees": 12600000,
+    "mgmt_fees": 12700000,
     "fund_expenses": 3900000,
-    "contingency": 500000,
+    "contingency": 400000,
     "total": 100000000
   },
   "spv": [
@@ -1016,27 +1057,27 @@
     "target": {
       "exit_mult": 1.0,
       "exit_cap": null,
-      "gross_proceeds": 576630000,
-      "gross_moic": 6.9,
-      "realised": 576600000,
-      "secondary_discount": 30000,
+      "gross_proceeds": 577080000,
+      "gross_moic": 7.0,
+      "realised": 577100000,
+      "secondary_discount": -20000,
       "paid_in": 99200000,
-      "mgmt_fees": 12600000,
+      "mgmt_fees": 12700000,
       "fund_expenses": 3900000,
-      "lp_distributions": 480900000,
-      "carry": 95400000,
+      "lp_distributions": 481200000,
+      "carry": 95500000,
       "net_tvpi": 4.8,
       "net_irr": 0.37,
-      "gross_irr": 0.47,
+      "gross_irr": 0.46,
       "dpi_year6": 0.6,
       "dpi_year7": 0.6,
       "largest_exit": 1000000000,
       "horizon_years": 9,
       "cashflows": {
         "investments": [
-          2500000,
+          3000000,
           14000000,
-          26200000,
+          25800000,
           28800000,
           11500000,
           0,
@@ -1046,14 +1087,14 @@
           0
         ],
         "calls": [
-          5300000,
+          5700000,
           16400000,
-          28600000,
+          28100000,
           31200000,
           13900000,
           1400000,
           1100000,
-          900000,
+          910000,
           600000,
           0
         ],
@@ -1066,7 +1107,7 @@
           44400000,
           8700000,
           97300000,
-          416200000,
+          416600000,
           0
         ],
         "lp": [
@@ -1078,7 +1119,7 @@
           44400000,
           8700000,
           85000000,
-          333000000,
+          333400000,
           0
         ],
         "gp": [
@@ -1090,7 +1131,7 @@
           0,
           0,
           12300000,
-          83100000,
+          83200000,
           0
         ]
       }
@@ -1098,15 +1139,15 @@
     "base": {
       "exit_mult": 0.6,
       "exit_cap": null,
-      "gross_proceeds": 350720000,
+      "gross_proceeds": 351170000,
       "gross_moic": 4.2,
-      "realised": 350700000,
-      "secondary_discount": 20000,
+      "realised": 351200000,
+      "secondary_discount": -30000,
       "paid_in": 99200000,
-      "mgmt_fees": 12600000,
+      "mgmt_fees": 12700000,
       "fund_expenses": 3900000,
-      "lp_distributions": 300100000,
-      "carry": 50200000,
+      "lp_distributions": 300500000,
+      "carry": 50300000,
       "net_tvpi": 3.0,
       "net_irr": 0.25,
       "gross_irr": 0.33,
@@ -1116,9 +1157,9 @@
       "horizon_years": 9,
       "cashflows": {
         "investments": [
-          2500000,
+          3000000,
           14000000,
-          26200000,
+          25800000,
           28800000,
           11500000,
           0,
@@ -1128,14 +1169,14 @@
           0
         ],
         "calls": [
-          5300000,
+          5700000,
           16400000,
-          28600000,
+          28100000,
           31200000,
           13900000,
           1400000,
           1100000,
-          900000,
+          910000,
           600000,
           0
         ],
@@ -1148,7 +1189,7 @@
           26700000,
           8700000,
           59600000,
-          249600000,
+          250000000,
           0
         ],
         "lp": [
@@ -1160,7 +1201,7 @@
           26700000,
           8700000,
           59600000,
-          199300000,
+          199700000,
           0
         ],
         "gp": [
@@ -1172,7 +1213,7 @@
           0,
           0,
           0,
-          50200000,
+          50300000,
           0
         ]
       }
@@ -1180,15 +1221,15 @@
     "stress": {
       "exit_mult": 0.4,
       "exit_cap": null,
-      "gross_proceeds": 239560000,
+      "gross_proceeds": 240010000,
       "gross_moic": 2.9,
-      "realised": 239600000,
-      "secondary_discount": -40000,
+      "realised": 240000000,
+      "secondary_discount": 10000,
       "paid_in": 99200000,
-      "mgmt_fees": 12600000,
+      "mgmt_fees": 12700000,
       "fund_expenses": 3900000,
-      "lp_distributions": 211200000,
-      "carry": 28000000,
+      "lp_distributions": 211600000,
+      "carry": 28100000,
       "net_tvpi": 2.1,
       "net_irr": 0.17,
       "gross_irr": 0.23,
@@ -1198,9 +1239,9 @@
       "horizon_years": 9,
       "cashflows": {
         "investments": [
-          2500000,
+          3000000,
           14000000,
-          26200000,
+          25800000,
           28800000,
           11500000,
           0,
@@ -1210,14 +1251,14 @@
           0
         ],
         "calls": [
-          5300000,
+          5700000,
           16400000,
-          28600000,
+          28100000,
           31200000,
           13900000,
           1400000,
           1100000,
-          900000,
+          910000,
           600000,
           0
         ],
@@ -1230,7 +1271,7 @@
           19600000,
           8700000,
           40700000,
-          166300000,
+          166700000,
           0
         ],
         "lp": [
@@ -1242,7 +1283,7 @@
           19600000,
           8700000,
           40700000,
-          138200000,
+          138600000,
           0
         ],
         "gp": [
@@ -1254,7 +1295,7 @@
           0,
           0,
           0,
-          28000000,
+          28100000,
           0
         ]
       }

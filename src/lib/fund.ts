@@ -81,6 +81,9 @@ export interface FundLayer {
   gross_irr: Record<CaseId, number>;
   lines: FundLine[];
   tracks?: Record<SeedTrackId, SeedTrack>;
+  /** 17/11 : les trois positions radar inaugurales (Seed seulement), gardées à leur coût dans le modèle. */
+  inaugural?: { first: string; last: string; companies: number; ticket: number; entry_post: number;
+    stake: number; entry_year: number; held_at_cost: boolean };
 }
 
 export interface FundCase {
@@ -215,10 +218,9 @@ export interface FundData {
 export const fund = raw as unknown as FundData;
 
 /** 17/11 (Alexandre) : Proplace, Maximum Insurance et Sosuites, opérées à 100 % par l'équipe, trois
- *  positions radar inaugurales du Fund I : le ticket radar du modèle, pour 2 % chacune (les termes de ces
- *  positions, pas une sortie du modèle). Lu par /lp et /pitch ; la même valeur dans scripts/factsheet.py
- *  (INAUGURAL_STAKE) : les changer ensemble. */
-export const INAUGURAL = { ticket: fund.layers.seed.tracks!.radar.ticket_max, stake: 0.02 };
+ *  positions radar inaugurales du Fund I (150 K€ pour 2 % chacune, dès l'année 1). Lues dans le modèle
+ *  (fund_model.py, layers.seed.inaugural) : /lp, /pitch et la fiche disent les mêmes chiffres. */
+export const INAUGURAL = fund.layers.seed.inaugural!;
 
 export const LAYER_IDS: LayerId[] = ['seed', 'venture', 'growth'];
 export const CASE_IDS: CaseId[] = ['target', 'base', 'stress'];

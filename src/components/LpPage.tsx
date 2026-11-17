@@ -352,12 +352,14 @@ function LpContent() {
       </Say>
 
       <Say id="returns" title="What is right for them is what pays us."
-        lead={<p className="pv-say-p">Every share a company does not issue protects the founders’ stake, and ours. The less equity a team needs, the more we both hold when it becomes a unicorn. One company can carry the fund. And if no unicorn comes, the fund still returns more than your capital.</p>}>
+        lead={<p className="pv-say-p">Every share a company does not issue protects the founders’ stake, and ours. The less equity a team needs, the more we both hold when it becomes a unicorn. One company can carry the fund. And even if no unicorn comes, the fund returns {mult(NO_UNI.net_tvpi)} net.</p>}>
+        {/* 17/11 (Alexandre : « plus excitant, en restant crédible ») : aucun chiffre ni hypothèse ne change ;
+            la 4e tuile dit la loi 04 (une seule vente rend le fonds), le 1,4× sans licorne passe dans l'intro */}
         <Numbers four items={[
           { b: mult(TARGET.net_tvpi), t: 'Target net TVPI' },
           { b: pct(TARGET.net_irr), t: 'Target net IRR' },
           { b: mult(UPSIDE.net_tvpi), t: 'Net TVPI in the upside, at modelled exit values' },
-          { b: mult(NO_UNI.net_tvpi), t: 'Net TVPI if no unicorn comes' },
+          { b: eur(FR.fund_returning_exit, 'val'), t: 'One sale of our best company returns the whole fund' },
         ]} />
         <p className="pv-fine pv-three-src">Outputs of our fund model, not a track record, a forecast or a guarantee. TVPI and IRR net of fees, expenses and carry. Target: every exit at {pct(C.base.exit_mult)} of its modelled value. Upside: modelled values; our best company, sold for {eur(UPSIDE.largest_exit, 'val')} with {pct(FR.stake_at_exit, 1)} at exit, returns {mult(FR.multiple_of_fund)} the fund on its own, and a {eur(FR.fund_returning_exit, 'val')} sale already returns it. Stress: every exit at {pct(C.stress.exit_mult)}, {mult(C.stress.net_tvpi)}. The target assumes our best company grows on bank debt; if it also sold {eur(FM.paths[1].equity, 'tile')} of equity along the way: {mult(UNI_SAME.net_tvpi)}. No company has followed this path yet.</p>
       </Say>
